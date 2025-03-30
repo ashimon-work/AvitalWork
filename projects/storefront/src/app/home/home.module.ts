@@ -1,0 +1,27 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { HomeRoutingModule } from './home-routing.module'; // Import routing module
+import { HomepageComponent } from './homepage/homepage.component'; // Import component
+
+// Import Standalone Components used by HomepageComponent
+import { CarouselComponent } from './components/carousel/carousel.component';
+import { CategoryCardComponent } from '../shared/components/category-card/category-card.component';
+import { ProductCardComponent } from '../shared/components/product-card/product-card.component';
+import { SearchBarComponent } from '../core/components/search-bar/search-bar.component'; // Assuming SearchBar is needed on homepage, though plan puts it in header
+import { NewsletterFormComponent } from '../shared/components/newsletter-form/newsletter-form.component'; // Assuming Newsletter is needed on homepage, though plan puts it in footer
+
+@NgModule({
+  declarations: [HomepageComponent], // Declare the component
+  imports: [
+    CommonModule,
+    HomeRoutingModule, // Import routing module
+    // Import standalone components needed by HomepageComponent template
+    CarouselComponent,
+    CategoryCardComponent,
+    ProductCardComponent,
+    SearchBarComponent, // Re-evaluate if needed directly here vs. header/footer
+    NewsletterFormComponent, // Re-evaluate if needed directly here vs. header/footer
+  ],
+})
+export class HomeModule {}

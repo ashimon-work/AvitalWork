@@ -1,0 +1,41 @@
+{
+  "name": "Magic Store Dev Container",
+  // Sets the run context to one level up instead of the .devcontainer folder.
+  "context": "..",
+  // Update the VARIANT arg in docker-compose.yml to pick a Node.js version
+  // Options: 18, 16, 14
+  "build": {
+    // Points to the Dockerfile in the .devcontainer directory
+    "dockerfile": "Dockerfile",
+    "context": ".." // Build context is the workspace root
+  },
+
+  // Configure tool-specific properties.
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "angular.ng-template", // Angular Language Service
+        "dbaeumer.vscode-eslint", // ESLint
+        "esbenp.prettier-vscode", // Prettier
+        "ms-azuretools.vscode-docker", // Docker extension
+        "firsttris.vscode-jest-runner" // Jest Runner (useful for backend tests)
+        // Add other extensions like GitLens, theme, etc. if desired
+      ],
+      "settings": {
+        // Add any specific VS Code settings for the container
+        "terminal.integrated.shell.linux": "/bin/bash" // Or /bin/zsh if installed
+      }
+    }
+  },
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [4200, 3000], // Forward Angular dev server and NestJS API ports
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "npm install --verbose", // Install dependencies, generating lockfile for container OS
+
+  // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+  "remoteUser": "node" // Run as the non-root 'node' user defined in the Dockerfile
+}

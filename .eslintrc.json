@@ -1,0 +1,55 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*" // Ignore project-specific configs if they exist later
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": [
+          "tsconfig.json" // Use the root tsconfig
+        ],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:prettier/recommended" // Enables eslint-plugin-prettier and eslint-config-prettier. Displays prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
+      ],
+      "rules": {
+        // Add any specific rule overrides here if needed
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app", // Adjust if needed
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app", // Adjust if needed
+            "style": "kebab-case"
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:prettier/recommended" // Apply prettier to HTML templates
+      ],
+      "rules": {
+        // Add any specific HTML rule overrides here if needed
+      }
+    }
+  ]
+}

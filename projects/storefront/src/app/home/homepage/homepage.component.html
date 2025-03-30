@@ -1,0 +1,30 @@
+<!-- Hero Banner Carousel -->
+<section class="hero-carousel">
+  <app-carousel></app-carousel>
+</section>
+
+<!-- Featured Categories -->
+<section class="featured-categories container">
+  <h2>Featured Categories</h2>
+  <div class="category-grid" *ngIf="featuredCategories$ | async as categories">
+    <app-category-card
+      *ngFor="let category of categories"
+      [category]="category"
+    ></app-category-card>
+  </div>
+  <!-- Add loading/error state handling later -->
+</section>
+
+<!-- Featured Products -->
+<section class="featured-products container">
+  <h2>Featured Products</h2>
+  <div class="product-grid" *ngIf="featuredProducts$ | async as products">
+    <app-product-card
+      *ngFor="let product of products"
+      [product]="product"
+    ></app-product-card>
+  </div>
+</section>
+
+<!-- Newsletter Signup - Note: Plan puts this in the footer, handled by app-footer -->
+<!-- Search Bar - Note: Plan puts this in the header, handled by app-header -->
