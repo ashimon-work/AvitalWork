@@ -1,21 +1,22 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
-import { RouterLink } from '@angular/router'; // For linking to product page
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Product } from '@shared-types';
-import { CartService } from '../../../core/services/cart.service'; // Import CartService
+import { CartService } from '../../../core/services/cart.service';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
   imports: [
-    CommonModule, // Add CommonModule
-    RouterLink    // Add RouterLink
+    CommonModule,
+    RouterLink
   ],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss'
 })
 export class ProductCardComponent {
   @Input() product!: Product;
+  @Input() storeSlug: string | null = null;
 
   constructor(private cartService: CartService) {}
 

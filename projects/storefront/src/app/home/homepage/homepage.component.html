@@ -10,6 +10,7 @@
     <app-category-card
       *ngFor="let category of categories"
       [category]="category"
+      [storeSlug]="currentStoreSlug$ | async"
     ></app-category-card>
   </div>
   <!-- Add loading/error state handling later -->
@@ -22,6 +23,7 @@
     <app-product-card
       *ngFor="let product of products"
       [product]="product"
+      [storeSlug]="currentStoreSlug$ | async"
     ></app-product-card>
   </div>
 </section>

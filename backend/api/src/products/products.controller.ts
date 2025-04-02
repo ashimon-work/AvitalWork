@@ -7,21 +7,20 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get('featured')
-  async getFeaturedProducts(): Promise<ProductEntity[]> { // Return ProductEntity array
-    return this.productsService.getFeaturedProducts();
+  async getFeaturedProducts(@Query('storeSlug') storeSlug?: string): Promise<ProductEntity[]> { // Accept storeSlug query param
+    return this.productsService.getFeaturedProducts(storeSlug); // Pass storeSlug to service
   }
 
   // Handle GET /products with query parameters for filtering, sorting, pagination
   @Get()
-  async findAll(@Query() queryParams: FindAllProductsParams): Promise<{ products: ProductEntity[], total: number }> { // Return ProductEntity array
-    // queryParams will contain validated and transformed query parameters if using ValidationPipe
-    // For now, we pass the raw query object to the service
+  async findAll(@Query() queryParams: FindAllProductsParams): Promise<{ products: ProductEntity[], total: number }> {
+    // The storeSlug will be part of queryParams if provided
     return this.productsService.findAll(queryParams);
   }
 
   @Get(':id') // Handle GET /products/:id
-  async findOne(@Param('id') id: string): Promise<ProductEntity> { // Return ProductEntity
-    const product = await this.productsService.findOne(id);
+  async findOne(@Param('id') id: string, @Query('storeSlug') storeSlug?: string): Promise<ProductEntity> { // Accept storeSlug query param
+    const product = await this.productsService.findOne(id, storeSlug); // Pass storeSlug to service
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }

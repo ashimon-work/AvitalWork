@@ -21,81 +21,103 @@ import { AccountChangePasswordComponent } from './account/account-change-passwor
 // Import Auth Guard
 import { authGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
+  // Redirect root path to a default store or a store selection page (TBD)
+  // For now, let's redirect to a default store slug for testing
+  { path: '', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
+
+  // Parent route to capture the store slug
   {
-    path: '',
-    loadChildren: () =>
-      import('./home/home.module').then((m) => m.HomeModule),
-  },
-  {
-    path: 'category',
-    loadChildren: () =>
-      import('./category/category.module').then((m) => m.CategoryModule),
-  },
-  {
-    path: 'product', // Route for product pages
-    loadChildren: () =>
-      import('./product/product.module').then((m) => m.ProductModule), // Lazy load ProductModule
-  },
-  // Routes for the newly generated standalone components
-  {
-    path: 'shop',
-    component: ShopPageComponent // Direct route to standalone component
-    // Or lazy load: loadComponent: () => import('./shop/shop-page/shop-page.component').then(m => m.ShopPageComponent)
-  },
-  {
-    path: 'about',
-    component: AboutPageComponent
-    // loadComponent: () => import('./about/about-page/about-page.component').then(m => m.AboutPageComponent)
-  },
-  {
-    path: 'contact',
-    component: ContactPageComponent
-    // loadComponent: () => import('./contact/contact-page/contact-page.component').then(m => m.ContactPageComponent)
-  },
-  {
-    path: 'account',
-    component: AccountPageComponent,
-    canActivate: [authGuard], // Apply the guard to the parent route
+    path: ':storeSlug',
+    // We can add a component here later if needed (e.g., a StoreLayoutComponent)
+    // or a resolver to fetch store details based on the slug
     children: [
-      { path: '', redirectTo: 'overview', pathMatch: 'full' }, // Default redirect
-      { path: 'overview', component: AccountOverviewComponent },
-      { path: 'orders', component: AccountOrdersComponent },
-      { path: 'addresses', component: AccountAddressesComponent },
-      { path: 'payment-methods', component: AccountPaymentMethodsComponent },
-      { path: 'personal-info', component: AccountPersonalInfoComponent },
-      { path: 'wishlist', component: AccountWishlistComponent },
-      { path: 'change-password', component: AccountChangePasswordComponent },
-      // Add routes for specific order details etc. later if needed
-      // { path: 'orders/:id', component: OrderDetailsComponent },
+      // Existing routes moved under the :storeSlug parameter
+      {
+        path: '', // Default path for a store (e.g., /awesome-gadgets)
+        loadChildren: () =>
+          import('./home/home.module').then((m) => m.HomeModule),
+      },
+      {
+        path: 'category', // e.g., /awesome-gadgets/category
+        loadChildren: () =>
+          import('./category/category.module').then((m) => m.CategoryModule),
+      },
+      {
+        path: 'product', // e.g., /awesome-gadgets/product
+        loadChildren: () =>
+          import('./product/product.module').then((m) => m.ProductModule),
+      },
+  // Routes for the newly generated standalone components
+      {
+        path: 'shop', // e.g., /awesome-gadgets/shop
+        component: ShopPageComponent
+      },
+      {
+        path: 'about', // e.g., /awesome-gadgets/about
+        component: AboutPageComponent
+      },
+      {
+        path: 'contact', // e.g., /awesome-gadgets/contact
+        component: ContactPageComponent
+      },
+      {
+        path: 'account', // e.g., /awesome-gadgets/account
+        component: AccountPageComponent,
+        canActivate: [authGuard],
+        children: [
+          { path: '', redirectTo: 'overview', pathMatch: 'full' },
+          { path: 'overview', component: AccountOverviewComponent },
+          { path: 'orders', component: AccountOrdersComponent },
+          { path: 'addresses', component: AccountAddressesComponent },
+          { path: 'payment-methods', component: AccountPaymentMethodsComponent },
+          { path: 'personal-info', component: AccountPersonalInfoComponent },
+          { path: 'wishlist', component: AccountWishlistComponent },
+          { path: 'change-password', component: AccountChangePasswordComponent },
+        ]
+      },
+      {
+        path: 'cart', // e.g., /awesome-gadgets/cart
+        component: CartPageComponent
+      },
+  // Routes for footer links
+      // Footer links - these might need to be store-specific too
+      {
+        path: 'faq', // e.g., /awesome-gadgets/faq
+        component: FaqPageComponent
+      },
+      {
+        path: 'shipping', // e.g., /awesome-gadgets/shipping
+        component: ShippingPolicyPageComponent
+      },
+      {
+        path: 'returns', // e.g., /awesome-gadgets/returns
+        component: ReturnPolicyPageComponent
+      },
+  // Auth Routes
+      // Auth routes - these are likely global, not store-specific, so keep outside :storeSlug
+      // Or maybe they should be under store? TBD. For now, keep them separate.
+      // {
+      //   path: 'register',
+      //   component: RegistrationPageComponent
+      // },
+      // {
+      //   path: 'login',
+      //   component: LoginPageComponent
+      // },
+      // Move Auth Routes inside :storeSlug
+      {
+        path: 'register', // e.g., /awesome-gadgets/register
+        component: RegistrationPageComponent
+      },
+      {
+        path: 'login', // e.g., /awesome-gadgets/login
+        component: LoginPageComponent
+      },
     ]
   },
-  {
-    path: 'cart',
-    component: CartPageComponent
-    // loadComponent: () => import('./cart/cart-page/cart-page.component').then(m => m.CartPageComponent)
-  },
-  // Routes for footer links
-  {
-    path: 'faq',
-    component: FaqPageComponent
-  },
-  {
-    path: 'shipping', // Or 'shipping-policy'
-    component: ShippingPolicyPageComponent
-  },
-  {
-    path: 'returns', // Or 'return-policy'
-    component: ReturnPolicyPageComponent
-  },
-  // Auth Routes
-  {
-    path: 'register',
-    component: RegistrationPageComponent
-  },
-  {
-    path: 'login',
-    component: LoginPageComponent // Add route for Login Page
-  },
+
+  // Consider adding a wildcard route for 404 page at the end
+  // { path: '**', component: NotFoundPageComponent }
   // Consider adding a wildcard route for 404 page at the end
   // { path: '**', component: NotFoundPageComponent }
 ];

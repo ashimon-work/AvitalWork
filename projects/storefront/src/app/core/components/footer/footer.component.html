@@ -9,12 +9,12 @@
     <!-- Quick Links Section (Example) -->
     <div class="footer-section links-section">
       <h4>Quick Links</h4>
-      <ul>
-        <li><a routerLink="/about">About Us</a></li>
-        <li><a routerLink="/contact">Contact Us</a></li>
-        <li><a routerLink="/faq">FAQ</a></li>
-        <li><a routerLink="/shipping">Shipping Policy</a></li>
-        <li><a routerLink="/returns">Return Policy</a></li>
+      <ul *ngIf="currentStoreSlug$ | async as storeSlug"> <!-- Add *ngIf -->
+        <li><a [routerLink]="['/', storeSlug, 'about']">About Us</a></li>
+        <li><a [routerLink]="['/', storeSlug, 'contact']">Contact Us</a></li>
+        <li><a [routerLink]="['/', storeSlug, 'faq']">FAQ</a></li>
+        <li><a [routerLink]="['/', storeSlug, 'shipping']">Shipping Policy</a></li>
+        <li><a [routerLink]="['/', storeSlug, 'returns']">Return Policy</a></li>
       </ul>
     </div>
 

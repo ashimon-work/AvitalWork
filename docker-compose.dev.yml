@@ -1,0 +1,65 @@
+services:
+  # PostgreSQL Database Service
+  db:
+    image: postgres:15 # Use a specific PostgreSQL version
+    container_name: magic_store_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-magic_store}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5432:5432" # Map host port 5432 to container port 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persist data using a named volume
+    restart: unless-stopped
+
+  # Backend API Service (NestJS)
+  api:
+    image: node:20-slim # Use a Node.js base image
+    container_name: magic_store_api
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app # Mount entire project root
+      - api_node_modules:/usr/src/app/node_modules # Use a named volume for node_modules
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    environment:
+      NODE_ENV: development
+      POSTGRES_HOST: db # Service name defined above
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-magic_store}
+    # Command to install dependencies (if needed) and start in dev mode
+    # Note: The working_dir is now the root, adjust npm commands if needed
+    # Assuming backend/api/package.json exists for the start:dev script
+    command: sh -c "cd backend/api && npm install && npm run start:dev"
+    depends_on:
+      - db # Ensure db starts before api
+    restart: unless-stopped
+
+  # Frontend Service (Angular)
+  frontend:
+    image: node:20-slim # Use a Node.js base image
+    container_name: magic_store_frontend
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app # Mount entire project root
+      - frontend_node_modules:/usr/src/app/node_modules # Use a named volume for node_modules
+      - angular_cache:/usr/src/app/.angular # Cache Angular build artifacts
+    ports:
+      - "4200:4200" # Map host port 4200 to container port 4200
+    # Command to install dependencies (if needed) and start Angular dev server
+    # --host 0.0.0.0 makes it accessible outside the container
+    # --poll=1000 helps with file change detection in some environments
+    command: sh -c "npm install && npx ng serve storefront --host 0.0.0.0 --poll=1000"
+    depends_on:
+      - api # Optional: ensure api starts before frontend (useful if frontend calls api on startup)
+    restart: unless-stopped
+
+# Named Volumes Definition
+volumes:
+  postgres_data:
+  api_node_modules:
+  frontend_node_modules:
+  angular_cache:

@@ -1,6 +1,6 @@
 # Project Progress: Online Business Promotion System
 
-*(As of 4/1/2025)*
+*(As of 4/2/2025 - Store-specific implementation complete. Login functionality implemented & debugged.)*
 
 ## I. Project Setup & Foundation
 
@@ -12,29 +12,29 @@
     *   [x] Global Marketplace App (`projects/global-marketplace`)
 *   [x] Initialize Backend Project (TypeScript/Node.js) - Initialized NestJS project `api` in `backend` dir
 *   [x] Initialize Shared Library/Folder Structure (`projects/shared-types`)
-*   [x] Setup Version Control (Git) - Corrected initial setup, force-pushed clean history to remote.
+*   [x] Setup Version Control (Git) - Corrected initial setup, force-pushed clean history to remote. Configured user, credential helper. Untracked node_modules.
 *   [x] Configure Linters/Formatters (ESLint, Prettier) - Added root configs
 *   [x] Choose and Configure Database - Chose PostgreSQL, added TypeORM config & .env
-*   [/] Setup Dev Container & Local Docker Build - In progress (paused for Git setup, now resuming)
+*   [x] Setup Dev Container & Local Docker Build - Development setup (`docker-compose.dev.yml`) functional.
 
 ## II. Storefront Website Development
 
 *   [x] Core Layout & Navigation (Header, Footer, Menu) - Basic structure generated and integrated
-*   [x] Homepage Implementation - Frontend complete (Carousel, Featured Sections, Search/Newsletter/Cart integration). Backend endpoints for Search, Newsletter, Cart needed.
+*   [x] Homepage Implementation - Frontend complete (Carousel, Featured Sections, Search/Newsletter/Cart integration). Backend endpoints for Search, Newsletter needed. Featured products endpoint fixed.
 *   [x] Homepage Styling (Modern & Minimalist Theme) - Applied global styles and styled core/homepage components.
 *   [/] Category Page Implementation - Basic structure, data fetching, filtering/sorting/pagination controls, styling implemented. Fetches from DB.
 *   [/] Product Page Implementation - Basic structure, data fetching, styling implemented. Fetches from DB.
 *   [x] Shopping Cart Implementation - Basic structure, data display, add/update/remove actions implemented (connected to backend in-memory cart API).
 *   [ ] Checkout Flow Implementation
 *   [ ] Order Confirmation Page
-*   [/] Authentication (Login, Registration, Recovery) - Registration page (frontend) and backend endpoint implemented & functional. Login pending.
+*   [x] Authentication (Login, Registration, Recovery) - Registration page (frontend/backend) functional. Login page (frontend/backend) functional, including JWT handling, profile loading, and store-specific routing/guard fixes. Recovery pending.
 *   [ ] User Account Pages (Overview, Orders, Addresses, etc.) - Placeholder component/route exists. Requires Login.
 *   [/] Contact Page - Placeholder component/route exists.
 *   [/] About Page - Placeholder component/route exists.
 *   [ ] 404 Page
 *   [ ] Responsiveness & Mobile Optimization
-*   [x] API Integration - Core API service updated with methods for product details, cart operations, registration. Backend endpoints implemented for these (using DB for products/categories, in-memory for cart). Search/Newsletter endpoints still pending.
-
+*   [x] API Integration - Core API service updated with methods for product details, cart operations, registration. Backend endpoints implemented for these (using DB for products/categories, in-memory for cart). Search/Newsletter endpoints still pending. **Updated to pass store context.**
+*   [x] Store-Specific Routing & Context - Implemented URL structure `/:storeSlug/...`, `StoreContextService` created, `ApiService` updated to use context. Fixed `routerLink`s in Header, Footer, Navigation, Product/Category Cards, and Category Page to use store context.
 ## III. Store Management Website Development
 
 *   [ ] Core Layout & Navigation
@@ -64,13 +64,13 @@
 ## V. Backend API Development
 
 *   [x] Initial Setup (NestJS, TypeORM, Config, Modules) - Basic setup complete
-*   [x] Define Basic Entities (User, Product, Category) - Entities created and configured with TypeORM.
-*   [/] Authentication Endpoints (Storefront Customer, Store Manager) - `/auth/register` implemented & functional. Login pending.
-*   [x] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, etc.) - Endpoints for Products (featured, list, details), Categories (featured, details), Cart (get, add, update, remove), Auth (register) implemented. Services refactored to use TypeORM (except Cart). Search/Newsletter pending.
+*   [x] Define Basic Entities (User, Product, Category, Store) - Entities created and configured with TypeORM. Relationships established.
+*   [x] Authentication Endpoints (Storefront Customer, Store Manager) - `/auth/register` and `/auth/login` implemented & functional. `/account/profile` (JWT protected) implemented.
+*   [x] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, etc.) - Endpoints for Products (featured, list, details), Categories (featured, details), Cart (get, add, update, remove), Auth (register) implemented. Services refactored to use TypeORM (except Cart). **Product/Category endpoints updated to filter by storeSlug.** Search/Newsletter pending.
 *   [ ] Store Management API Endpoints (Dashboard, Products, Orders, Customers, Settings, Profile, etc.)
 *   [ ] Marketplace API Endpoints (Aggregated Products, Categories, Stores, Search)
-*   [x] Database Schema Design & Migrations - Initial entities defined, TypeORM configured, data source file created, migration scripts added. Tables exist.
-*   [x] Database Seeding (Initial) - Script created and run for categories/products.
+*   [x] Database Schema Design & Migrations - Initial entities defined, TypeORM configured, data source file created, migration scripts added/fixed. Initial migration generated and run. **Store entity and relations migration created and run successfully after troubleshooting.**
+*   [x] Database Seeding (Initial) - Script created, expanded, fixed, and run for categories/products. **Updated to seed stores and associate data. Ran successfully.** Image URLs updated to picsum.photos.
 *   [ ] Data Synchronization Logic (Inventory, etc.)
 *   [ ] Security Implementation (Validation, Rate Limiting, Permissions)
 *   [ ] Testing (Unit, Integration)
@@ -87,7 +87,7 @@
 *   [ ] Unit Testing Strategy & Implementation
 *   [ ] Integration Testing
 *   [ ] End-to-End Testing Strategy
-*   [ ] Deployment Strategy & Setup (Per environment)
+*   [/] Deployment Strategy & Setup (Per environment) - Production Docker setup (Compose, Dockerfiles, Nginx) configured and debugged. Cloudflare DNS/SSL steps outlined.
 *   [ ] Performance Testing & Optimization
 
 ---

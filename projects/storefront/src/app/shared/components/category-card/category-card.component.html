@@ -1,12 +1,13 @@
 <!-- Structure based on plan: Link, Image, Name -->
-<a *ngIf="category" [routerLink]="['/category', category.id]" class="category-card-link" [title]="category.name">
+<!-- Make the link conditional, but display content regardless -->
+<a *ngIf="category" [routerLink]="storeSlug ? ['/', storeSlug, 'category', category.id] : null" class="category-card-link" [title]="category.name">
   <div class="category-card">
     <div class="category-image-wrapper">
       <!-- Use category image or placeholder -->
       <img [src]="category.imageUrl || '/assets/images/category-placeholder.png'"
            [alt]="category.name"
            class="category-image"
-           loading="lazy"> <!-- Add lazy loading for performance -->
+           loading="lazy">
     </div>
     <h5 class="category-name">{{ category.name }}</h5>
   </div>

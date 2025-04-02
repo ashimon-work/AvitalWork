@@ -2,34 +2,57 @@
 
 ## 1. High-Level Architecture
 
-The system comprises three distinct but interconnected web applications, following a modular monolith approach, communicating via APIs.
+The system comprises three distinct but interconnected web applications, communicating via APIs. The Storefront application is designed to be multi-tenant, serving different stores based on a URL slug.
 
 ```mermaid
 graph TD
     subgraph User Facing
-        SF[Storefront Website (Angular)]
-        MP[Global Marketplace Website (Angular)]
+        SF[Storefront Website (Angular)]:::angular
+        MP[Global Marketplace Website (Angular)]:::angular
     end
 
     subgraph Management
-        SM[Store Management Website (Angular)]
+        SM[Store Management Website (Angular)]:::angular
     end
 
     subgraph Backend / API Layer (NestJS / TypeORM)
-        API[Core API / Backend Services (/api prefix)]
-        DB[(PostgreSQL Database)]
+        API[Core API / Backend Services (/api prefix)]:::nestjs
+        DB[(PostgreSQL Database)]:::db
     end
 
-    SF -- HTTP Calls --> API
+    subgraph Data Model
+        Store[Store Entity]:::entity
+        Product[Product Entity]:::entity
+        Category[Category Entity]:::entity
+        User[User Entity]:::entity
+        Order[Order Entity]:::entity
+        Cart[Cart (DB/Session)]:::entity
+    end
+
+    SF -- HTTP Calls (/:storeSlug/*) --> API
     MP -- HTTP Calls --> API
     SM -- HTTP Calls --> API
     API -- Data Access (TypeORM) --> DB
+
+    %% Data Relationships
+    Store -- OneToMany --> Product
+    Store -- OneToMany --> Category
+    Product -- ManyToOne --> Store
+    Category -- ManyToOne --> Store
+    %% Other relations omitted for brevity
 
     %% Data Sync/Flow (Conceptual)
     SM -- Manages Data --> API
     API -- Updates --> DB
     DB -- Provides Data --> API
-    API -- Serves Data --> SF & MP
+    API -- Serves Data (Filtered by Store) --> SF
+    API -- Serves Aggregated Data --> MP
+
+    classDef angular fill:#DD0031,stroke:#333,stroke-width:2px,color:#fff;
+    classDef nestjs fill:#E0234E,stroke:#333,stroke-width:2px,color:#fff;
+    classDef db fill:#336791,stroke:#333,stroke-width:2px,color:#fff;
+    classDef entity fill:#4DB33D,stroke:#333,stroke-width:2px,color:#fff;
+
 ```
 
 ## 2. Key Architectural Decisions
@@ -38,45 +61,67 @@ graph TD
 *   **API-Driven:** All frontend applications interact with a central backend via RESTful APIs.
 *   **Centralized Backend:** A single backend built with NestJS (TypeScript/Node.js) manages business logic, data persistence (PostgreSQL via TypeORM), and serves all three frontends.
 *   **Global API Prefix:** The backend uses a global `/api` prefix for all its routes (`app.setGlobalPrefix('api')` in `main.ts`).
-*   **Data Synchronization:** Product, order, and customer data managed via the Store Management site needs to be consistently reflected in the Storefront and Marketplace. This will likely involve direct API reads, potential caching, and possibly event-driven updates.
+*   **Multi-Tenancy (Storefront):** The Storefront app uses a URL parameter (`/:storeSlug`) to identify the current store context. Backend APIs filter data based on this context (passed as `?storeSlug=...` query parameter).
+*   **Data Synchronization:** (As before) Product, order, and customer data managed via the Store Management site needs to be consistently reflected in the Storefront and Marketplace.
 *   **Shared Library (`@shared-types`):** Common TypeScript types/interfaces are defined in a dedicated Angular library (`projects/shared-types`). This library is built into `dist/shared-types`, and both frontend and backend applications configure path mapping in their respective `tsconfig.json` files to reference the built output.
 
 ## 3. Frontend Architecture (Angular)
 
 *   **Component-Based:** Standard Angular component architecture, favoring standalone components where appropriate.
 *   **Services:** Services for API interaction (`ApiService`), state management (`CartService` using `BehaviorSubject`), and shared logic.
-*   **Routing:** Angular Router for navigation within each application, utilizing lazy loading for feature modules.
-*   **State Management:** Simple state management via services with `BehaviorSubject` for now (e.g., `CartService`). More complex solutions (NgRx) might be considered later if needed.
+*   **Routing:** Angular Router for navigation. Storefront uses a parent route `/:storeSlug` to capture store context.
+*   **State Management:** Simple state management via services with `BehaviorSubject` (e.g., `CartService`, `StoreContextService`).
 *   **Development Proxy:** Angular CLI development server uses `proxy.conf.json` to forward requests starting with `/api` to the backend service (running at `http://localhost:3000`) without path rewriting.
+*   **Production Serving:** Built static files served via Nginx.
 
 ## 4. Backend Architecture (NestJS / TypeORM)
 
 *   **Framework:** NestJS (TypeScript/Node.js).
 *   **ORM:** TypeORM for database interaction with PostgreSQL.
 *   **Database:** PostgreSQL.
-*   **Modularity:** Backend structured modularly by domain (e.g., `ProductsModule`, `CategoriesModule`, `UsersModule`, `AuthModule`, `CartModule`, `NewsletterModule`). Modules are registered in `AppModule`.
-*   **Configuration:** Uses `@nestjs/config` for environment variable management (`.env` file).
-*   **Database Schema:** Managed via TypeORM migrations. `synchronize: false` is set in `data-source.ts`.
-*   **Migrations:** TypeORM CLI used via npm scripts (`migration:generate`, `migration:run`, `migration:revert`) defined in `backend/api/package.json`, referencing `backend/api/data-source.ts`. Migration files stored in `backend/api/src/migrations`.
-*   **Seeding:** Initial database data populated using a standalone script (`backend/api/src/seed.ts`) run via `npm run seed`. The script bootstraps the NestJS application context to access TypeORM repositories. Uses `upsert` to handle potential re-runs.
+*   **Modularity:** Backend structured modularly by domain (e.g., `ProductsModule`, `CategoriesModule`, `StoresModule`, `UsersModule`, `AuthModule`, `CartModule`). Modules are registered in `AppModule`.
+*   **Configuration:** Uses `@nestjs/config` for environment variable management (`.env` file) within the running application. `data-source.ts` reads `process.env` directly for CLI compatibility. `tsconfig.build.json` explicitly includes `data-source.ts` for compilation.
+*   **Database Schema:** Managed via TypeORM migrations. `synchronize: false` is set in `data-source.ts`. Entities are loaded at runtime via `autoLoadEntities: true` in `AppModule` (requires entities to be registered via `forFeature` in imported modules).
+*   **Migrations:** TypeORM CLI used via npm scripts (`migration:generate`, `migration:run`, `migration:revert`) defined in `backend/api/package.json`, referencing the compiled `dist/data-source.js`. Migration files stored in `backend/api/src/migrations`. Migrations generated via `docker exec` need copying to host.
+*   **Seeding:** Initial database data populated using a standalone script (`backend/api/src/seed.ts`) run via `npm run seed:prod` (using compiled JS). The script bootstraps the NestJS application context to access TypeORM repositories. Uses `upsert` to handle potential re-runs.
+
 ## 5. Authentication
 
-*   **JWT (JSON Web Tokens):** Standard for securing API endpoints and managing user sessions (planned).
+*   **JWT (JSON Web Tokens):** Standard for securing API endpoints and managing user sessions (planned). Requires `JWT_SECRET` environment variable.
 *   **Role-Based Access Control (RBAC):** Crucial for the Store Management website (planned).
 
-## 6. Development Environment Pattern (Docker Compose)
+## 6. Deployment Pattern (Docker Compose - Production)
 
-*   **Services:** `docker-compose.yml` defines services for the database (`db`), backend (`api`), and frontend (`frontend`).
-*   **Volumes:** Uses named volumes for `node_modules` persistence (`api_node_modules`, `frontend_node_modules`) and database data (`postgres_data`). Mounts the entire project root (`.:/usr/src/app`) into `api` and `frontend` containers to ensure access to shared code (`dist`) and facilitate hot-reloading/live updates.
-*   **Networking:** Services communicate via Docker's default network, using service names (e.g., `db`) as hostnames.
-*   **Debugging:** Running `docker compose up <service_name>` without `-d` allows viewing logs directly. Frontend often run locally via `ng serve` with proxy for easier debugging.
+*   **Files:** Uses `docker-compose.yml`, `backend/api/Dockerfile.prod`, `projects/storefront/Dockerfile.prod`, `docker/nginx/nginx.conf`, and `.env` (on server).
+*   **Services:**
+    *   `db`: PostgreSQL container using `postgres:15` image. Data persisted in named volume (`postgres_data_prod`). Runs on `internal_network`.
+    *   `api`: NestJS backend built using multi-stage `Dockerfile.prod`. Runs compiled JS (`node dist/src/main`). Connects to `db` via `internal_network`. Listens internally on port 3000. Also connected to `web_network`.
+    *   `frontend`: Nginx container using `nginx:stable-alpine`. Serves static Angular build output copied from multi-stage `Dockerfile.prod`. Mounts `nginx.conf`. Exposes port 80. Runs on `web_network`.
+*   **Networking:**
+    *   `internal_network`: For `db` <-> `api` communication.
+    *   `web_network`: For `frontend` (Nginx) <-> `api` communication and external access via Nginx.
+*   **Nginx Configuration (`nginx.conf`):**
+    *   Serves static files from `/usr/share/nginx/html`.
+    *   Uses `try_files $uri $uri/ /index.html;` for Angular routing.
+    *   Proxies `/api/` location to `http://api:3000` (using `resolver 127.0.0.11;` and variable for Docker DNS resolution, no trailing slash on `proxy_pass`). Handles Angular routes like `/:storeSlug/*` correctly.
+*   **Environment Variables:** Managed via `.env` file in the project root on the server (e.g., `POSTGRES_PASSWORD`, `JWT_SECRET`). Referenced in `docker-compose.yml`.
+*   **Build Process:** Requires building `shared-types` locally (`npx ng build shared-types`) before running `docker compose build`. Dockerfiles optimized for `npm install` caching.
+*   **Database Setup:** Requires running `npm run migration:run` and `npm run seed:prod` via `docker exec` after initial container startup.
 
-## 7. Development Workflow Pattern
+## 7. Development Environment Pattern (Docker Compose - Development)
+
+*   **Files:** Uses `docker-compose.dev.yml`.
+*   **Services:** `db`, `api` (runs `npm run start:dev`), `frontend` (runs `ng serve storefront`).
+*   **Volumes:** Mounts source code (`.:/usr/src/app`) for hot-reloading. Uses named volumes for `node_modules` and DB data.
+*   **Networking:** Services communicate via Docker's default network.
+*   **Proxy:** Relies on Angular's `proxy.conf.json` for API calls from `ng serve`.
+
+## 8. Development Workflow Pattern
 
 *   **Vertical Slices:** Development proceeds by implementing UI and corresponding backend endpoints for a specific feature/page.
 *   **Shared Library:** Build the `@shared-types` library (`ng build shared-types`) before starting/restarting the backend service to ensure it picks up the latest types.
 
-## 8. Frontend Form Pattern (Reactive Forms)
+## 9. Frontend Form Pattern (Reactive Forms)
 
 *   **Implementation:** Angular Reactive Forms (`ReactiveFormsModule`, `FormBuilder`, `FormGroup`, `FormControl`) used for complex forms like Registration.
 *   **Validation:**
@@ -89,4 +134,4 @@ graph TD
     *   API call errors (e.g., `409 Conflict` for existing email) are caught, and specific error messages are displayed to the user. `form.setErrors` can be used to mark specific fields as invalid based on API response.
 *   **UI Feedback:** Submit button disabled (`[disabled]="isSubmitting"`) during API call. Success/error messages displayed using `*ngIf`.
 
-*(Pattern definition updated as of 4/2/2025 based on implementation and debugging)*
+*(Pattern definition updated as of 4/2/2025 reflecting store-specific implementation)*

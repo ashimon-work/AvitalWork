@@ -1,0 +1,53 @@
+# Stage 1: Build the application
+FROM node:20-slim AS builder
+
+WORKDIR /usr/src/app
+
+# Copy only package files first for better caching
+COPY package.json package-lock.json* ./
+COPY backend/api/package.json backend/api/package-lock.json* ./backend/api/
+
+# Install root dependencies and backend dependencies
+# This layer is cached as long as lock files don't change
+RUN npm install
+RUN cd backend/api && npm install
+
+# Now copy the rest of the necessary files for the build
+COPY tsconfig.json ./
+# Copy the entire shared-types project directory
+COPY projects/shared-types ./projects/shared-types
+
+# Copy pre-built shared-types library (assuming it's built before this stage)
+# This still relies on the local build, but happens after npm install
+COPY dist/shared-types ./dist/shared-types
+
+# Copy the rest of the backend source code
+# This layer is invalidated more often, but npm install is cached
+COPY backend/api/ ./backend/api/
+
+# Build the NestJS application
+RUN cd backend/api && npm run build
+
+# Stage 2: Create the production image
+FROM node:20-slim AS production
+
+WORKDIR /usr/src/app
+
+# Set NODE_ENV to production
+ENV NODE_ENV=production
+
+# Copy only necessary files from the builder stage
+# Copy node_modules separately for potential layer reuse
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/backend/api/node_modules ./backend/api/node_modules
+# Copy built application
+COPY --from=builder /usr/src/app/backend/api/dist ./backend/api/dist
+# Copy backend package.json for running the app
+COPY --from=builder /usr/src/app/backend/api/package.json ./backend/api/package.json
+
+# Expose the port the app runs on (NestJS default is 3000)
+# This is internal to Docker; Nginx will handle external exposure
+EXPOSE 3000
+
+# Command to run the application
+CMD ["node", "backend/api/dist/src/main"]

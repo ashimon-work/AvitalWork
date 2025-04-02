@@ -2,7 +2,7 @@
   <div class="header-container">
     <!-- Store Logo -->
     <div class="logo">
-      <a routerLink="/">
+      <a [routerLink]="['/', currentStoreSlug$ | async]" *ngIf="currentStoreSlug$ | async as storeSlug"> <!-- Update logo link -->
         <!-- Placeholder for logo image -->
         <img src="/assets/images/logo-placeholder.png" alt="Store Logo" style="width: 150px;">
       </a>
@@ -14,15 +14,31 @@
     <!-- Right Section: Search, Account, Cart -->
     <div class="header-right">
       <app-search-bar class="search-bar"></app-search-bar>
-      <div class="user-actions">
-        <a routerLink="/account" class="action-icon" title="My Account">
-          <span class="material-icons">person</span> <!-- Placeholder icon -->
-        </a>
-        <a routerLink="/cart" class="action-icon" title="Shopping Cart">
-          <span class="material-icons">shopping_cart</span> <!-- Placeholder icon -->
-          <!-- Add cart count indicator later -->
-          <span class="cart-count" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
-        </a>
+      <div class="user-actions" *ngIf="currentStoreSlug$ | async as storeSlug">
+        <!-- Show Account/Cart/Logout if authenticated -->
+        <ng-container *ngIf="isAuthenticated$ | async; else loggedOutActions">
+          <a [routerLink]="['/', storeSlug, 'account']" class="action-icon" title="My Account">
+            <span class="material-icons">person</span>
+          </a>
+          <a [routerLink]="['/', storeSlug, 'cart']" class="action-icon" title="Shopping Cart">
+            <span class="material-icons">shopping_cart</span>
+            <span class="cart-count" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+          </a>
+          <button (click)="logout()" class="action-icon logout-button" title="Logout">
+            <span class="material-icons">logout</span>
+          </button>
+        </ng-container>
+
+        <!-- Show Login/Register if not authenticated -->
+        <ng-template #loggedOutActions>
+          <a [routerLink]="['/', storeSlug, 'login']" class="action-link" title="Login">Login</a>
+          <a [routerLink]="['/', storeSlug, 'register']" class="action-link" title="Register">Register</a>
+          <!-- Optionally show cart icon even when logged out -->
+          <a [routerLink]="['/', storeSlug, 'cart']" class="action-icon" title="Shopping Cart">
+            <span class="material-icons">shopping_cart</span>
+            <span class="cart-count" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+          </a>
+        </ng-template>
       </div>
     </div>
   </div>

@@ -9,7 +9,7 @@ import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CartModule } from './cart/cart.module';
 import { AccountModule } from './account/account.module'; // Import AccountModule
-
+import { StoresModule } from './stores/stores.module'; // Import StoresModule
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,6 +38,7 @@ import { AccountModule } from './account/account.module'; // Import AccountModul
     CategoriesModule,
     CartModule,
     AccountModule, // Add AccountModule here
+    StoresModule, // Add StoresModule here
   ],
   controllers: [AppController],
   providers: [AppService],

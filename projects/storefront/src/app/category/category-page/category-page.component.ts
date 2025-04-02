@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Category, Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
+import { StoreContextService } from '../../core/services/store-context.service'; // Import StoreContextService
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { Observable, switchMap, tap, map, BehaviorSubject, combineLatest, Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, RouterLink, Router, Params } from '@angular/router';
@@ -45,6 +46,7 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   itemsPerPage = 12;
 
   private destroy$ = new Subject<void>();
+  currentStoreSlug$: Observable<string | null>; // Add slug observable
 
   // Properties to bind to filter inputs in the template
   selectedPriceRange: string = ''; // e.g., '0-20', '20-50'
@@ -53,8 +55,11 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private apiService: ApiService
-  ) { }
+    private apiService: ApiService,
+    private storeContext: StoreContextService // Inject StoreContextService
+  ) {
+    this.currentStoreSlug$ = this.storeContext.currentStoreSlug$; // Assign slug observable
+  }
 
   ngOnInit(): void {
     this.initializeFromQueryParams();

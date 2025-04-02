@@ -14,6 +14,7 @@ export interface FindAllProductsParams {
   price_max?: number;
   tags?: string; // Comma-separated string from query params
   q?: string; // For search term
+  storeSlug?: string; // Added store slug for filtering
 }
 
 @Injectable()
@@ -23,26 +24,45 @@ export class ProductsService {
     private readonly productsRepository: Repository<ProductEntity>,
   ) {}
 
-  async getFeaturedProducts(): Promise<ProductEntity[]> {
+  async getFeaturedProducts(storeSlug?: string): Promise<ProductEntity[]> { // Add storeSlug parameter
     // Fetch products tagged as 'Featured'
     // Note: Using array_contains or similar depends on DB. This uses basic find.
     // A better approach might be a dedicated 'isFeatured' flag or relation.
+    const where: FindOptionsWhere<ProductEntity> = {
+      tags: ILike('%Featured%'),
+      isActive: true,
+    };
+
+    if (storeSlug) {
+      where.store = { slug: storeSlug }; // Filter by store slug if provided
+    }
+
     return this.productsRepository.find({
-       where: {
-         tags: In(['Featured']), // This might not work directly depending on DB/TypeORM version for array columns
-         isActive: true
-       },
-       take: 8 // Limit to 8 featured products
-     });
+      where,
+      take: 8, // Limit to 8 featured products
+      relations: ['store'], // Ensure store relation is loaded for filtering
+    });
      // Fallback/Alternative if In(['Featured']) doesn't work: Fetch more and filter in code
      // const candidates = await this.productsRepository.find({ where: { isActive: true }, take: 20 });
      // return candidates.filter(p => p.tags?.includes('Featured')).slice(0, 6);
   }
 
-  async findOne(id: string): Promise<ProductEntity | null> {
-    // Fetch from database using TypeORM repository
-    const product = await this.productsRepository.findOneBy({ id, isActive: true });
-    // Note: findOneBy returns null if not found, controller handles NotFoundException
+  async findOne(id: string, storeSlug?: string): Promise<ProductEntity | null> { // Add storeSlug parameter
+    const where: FindOptionsWhere<ProductEntity> = {
+      id,
+      isActive: true,
+    };
+
+    if (storeSlug) {
+      where.store = { slug: storeSlug }; // Filter by store slug if provided
+    }
+
+    // Use findOne with where and relations instead of findOneBy for relation filtering
+    const product = await this.productsRepository.findOne({
+      where,
+      relations: ['store'], // Ensure store relation is loaded for filtering
+    });
+
     return product;
   }
 
@@ -53,6 +73,11 @@ export class ProductsService {
 
     // Build WHERE conditions
     const where: FindOptionsWhere<ProductEntity> = { isActive: true };
+
+    // Add store filtering
+    if (params.storeSlug) {
+      where.store = { slug: params.storeSlug };
+    }
     if (params.q) {
       // Basic search on name and description
       where.name = ILike(`%${params.q}%`); // Case-insensitive search
@@ -103,7 +128,8 @@ export class ProductsService {
       order,
       take: limit,
       skip: skip,
-      // relations: ['categories'], // Include relations if needed after setup
+      relations: ['store'], // Load store relation for filtering
+      // relations: ['store', 'categories'], // Include categories later if needed
     });
 
     // TODO: Re-apply tag filtering here if DB query wasn't possible

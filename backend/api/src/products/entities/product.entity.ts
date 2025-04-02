@@ -5,8 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  ManyToOne, // Import ManyToOne
+  JoinColumn, // Import JoinColumn for explicit foreign key naming
 } from 'typeorm';
 import { Product as IProduct } from '@shared-types';
+import { StoreEntity } from '../../stores/entities/store.entity'; // Import StoreEntity
 
 @Entity('products')
 export class ProductEntity implements Omit<IProduct, 'categoryIds'> {
@@ -48,6 +51,17 @@ export class ProductEntity implements Omit<IProduct, 'categoryIds'> {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // Relation: A product belongs to one store
+  @ManyToOne(() => StoreEntity, (store) => store.products, {
+    nullable: false, // A product must belong to a store
+    onDelete: 'CASCADE', // Optional: Delete products if store is deleted
+  })
+  @JoinColumn({ name: 'storeId' }) // Explicitly define the foreign key column name
+  store: StoreEntity;
+
+  @Column() // Add the foreign key column explicitly if needed for queries without relation loading
+  storeId: string;
 
   // Add relations later (e.g., categories, variants, reviews)
 }

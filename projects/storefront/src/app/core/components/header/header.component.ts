@@ -4,8 +4,9 @@ import { RouterLink } from '@angular/router'; // For routerLink directives
 import { NavigationComponent } from '../navigation/navigation.component'; // Import Navigation
 import { SearchBarComponent } from '../search-bar/search-bar.component'; // Import Search Bar
 import { CartService } from '../../services/cart.service'; // Import CartService
+import { StoreContextService } from '../../services/store-context.service'; // Import StoreContextService
+import { AuthService } from '../../services/auth.service'; // Import AuthService
 import { Observable, Subscription } from 'rxjs'; // Import Observable and Subscription
-
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -22,9 +23,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   cartItemCount$: Observable<number> | undefined;
   cartItemCount: number = 0; // For direct binding in template
   private cartCountSubscription: Subscription | undefined;
+  currentStoreSlug$: Observable<string | null>; // Add slug observable
+  isAuthenticated$: Observable<boolean>; // Add auth state observable
 
-  // Inject CartService
-  constructor(private cartService: CartService) {}
+  // Inject CartService, StoreContextService, and AuthService
+  constructor(
+    private cartService: CartService,
+    private storeContext: StoreContextService,
+    private authService: AuthService // Inject AuthService
+  ) {
+    this.currentStoreSlug$ = this.storeContext.currentStoreSlug$; // Assign slug observable
+    this.isAuthenticated$ = this.authService.isAuthenticated$; // Assign auth state observable
+  }
 
   ngOnInit() {
     // Subscribe to the cart count observable
@@ -40,5 +50,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.cartCountSubscription) {
       this.cartCountSubscription.unsubscribe();
     }
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

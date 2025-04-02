@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { User } from '@shared-types'; // Assuming User interface exists in shared types
+import { Router, ActivatedRoute } from '@angular/router';
+import { User } from '@shared-types';
 
 // Define interfaces for API responses if not already in shared-types
 interface AuthResponse {
   access_token: string;
-  user?: Omit<User, 'passwordHash'>; // Optional user info on login/register
-  message?: string; // Optional message from backend
+  user?: Omit<User, 'passwordHash'>;
+  message?: string;
 }
 
 interface RegisterResponse {
@@ -19,12 +19,12 @@ interface RegisterResponse {
 
 
 @Injectable({
-  providedIn: 'root' // Provided globally
+  providedIn: 'root'
 })
 export class AuthService {
-  private authApiUrl = '/api/auth'; // Base URL for auth endpoints
-  private accountApiUrl = '/api/account'; // Base URL for account endpoints
-  private tokenKey = 'authToken'; // Key for storing token in localStorage
+  private authApiUrl = '/api/auth';
+  private accountApiUrl = '/api/account';
+  private tokenKey = 'authToken';
 
   // BehaviorSubject to track authentication status
   private _isAuthenticated = new BehaviorSubject<boolean>(this.hasToken());
@@ -36,10 +36,11 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     // Optionally load user profile if token exists on init
-    if (this.hasToken()) { this.loadUserProfile().subscribe(); } // Load profile on init if logged in
+    if (this.hasToken()) { this.loadUserProfile().subscribe(); }
   }
 
   private hasToken(): boolean {
@@ -54,7 +55,7 @@ export class AuthService {
   private removeToken(): void {
     localStorage.removeItem(this.tokenKey);
     this._isAuthenticated.next(false);
-    this._currentUser.next(null); // Clear user info on logout
+    this._currentUser.next(null);
   }
 
   getToken(): string | null {
@@ -68,7 +69,15 @@ export class AuthService {
           this.storeToken(response.access_token);
           // Fetch profile after successful login
           this.loadUserProfile().subscribe();
-          this.router.navigate(['/account']); // Redirect to account page on successful login
+          // Get current storeSlug for redirection
+          const storeSlug = this.route.snapshot.firstChild?.params['storeSlug'];
+          if (storeSlug) {
+            this.router.navigate(['/', storeSlug, 'account']);
+          } else {
+            console.error('AuthService: Could not determine storeSlug for redirect after login.');
+            // Fallback? Maybe redirect to root or a generic error page?
+            this.router.navigate(['/']); // Redirect to root as fallback
+          }
         }
       }),
       catchError(this.handleError)
@@ -88,7 +97,22 @@ export class AuthService {
 
   logout(): void {
     this.removeToken();
-    this.router.navigate(['/login']); // Redirect to login page on logout
+    // Get current storeSlug for redirection
+    // Need to get it asynchronously as logout might be called from anywhere
+    // Use the root route's first child to find the component with the slug
+    let currentRoute = this.router.routerState.root;
+    while (currentRoute.firstChild) {
+      currentRoute = currentRoute.firstChild;
+    }
+    const storeSlug = currentRoute.snapshot.params['storeSlug'];
+
+    if (storeSlug) {
+      this.router.navigate(['/', storeSlug, 'login']); // Redirect to store-specific login page
+    } else {
+      console.error('AuthService: Could not determine storeSlug for redirect after logout.');
+      // Fallback? Maybe redirect to root or a generic error page?
+      this.router.navigate(['/']); // Redirect to root as fallback
+    }
   }
 
   // Basic error handler
@@ -118,7 +142,7 @@ export class AuthService {
       catchError(error => {
         // If profile fetch fails (e.g., token expired, unauthorized), log out
         console.error('Failed to load user profile:', error);
-        this.logout();
+        this.logout(); // Call logout which now handles redirection correctly
         return throwError(() => new Error('Failed to load user profile. Please log in again.'));
       })
     );

@@ -1,1 +1,9 @@
-<p>navigation works!</p>
+<nav class="main-navigation" *ngIf="currentStoreSlug$ | async as storeSlug">
+  <ul>
+    <li><a [routerLink]="['/', storeSlug]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a></li>
+    <li><a [routerLink]="['/', storeSlug, 'shop']" routerLinkActive="active">Shop</a></li>
+    <li><a [routerLink]="['/', storeSlug, 'about']" routerLinkActive="active">About</a></li>
+    <li><a [routerLink]="['/', storeSlug, 'contact']" routerLinkActive="active">Contact</a></li>
+    <!-- Add other links as needed -->
+  </ul>
+</nav>

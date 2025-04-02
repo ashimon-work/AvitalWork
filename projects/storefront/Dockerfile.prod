@@ -1,0 +1,45 @@
+# Stage 1: Build the Angular application
+FROM node:20-slim AS builder
+
+WORKDIR /usr/src/app
+
+# Copy only package files first for better caching
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+# This layer is cached as long as lock files don't change
+RUN npm install
+
+# Now copy the rest of the necessary files for the build
+COPY angular.json tsconfig.json ./
+COPY projects/storefront/tsconfig.app.json ./projects/storefront/
+COPY projects/storefront/tsconfig.spec.json ./projects/storefront/
+# Copy the entire shared-types project directory
+COPY projects/shared-types ./projects/shared-types
+COPY projects/storefront/src ./projects/storefront/src
+COPY projects/storefront/public ./projects/storefront/public
+
+# Verify tsconfig.lib.json exists before building shared-types (Optional diagnostic)
+# RUN ls -l /usr/src/app/projects/shared-types/tsconfig.lib.json
+
+# Build the shared-types library (needed by storefront)
+RUN npx ng build shared-types
+
+# Build the storefront application for production
+# Output path is defined in angular.json, usually 'dist/storefront'
+RUN npx ng build storefront --configuration production
+
+# Stage 2: Serve application with Nginx
+FROM nginx:stable-alpine
+
+# Copy built Angular app contents from builder stage's browser output directory to Nginx html directory
+COPY --from=builder /usr/src/app/dist/storefront/browser /usr/share/nginx/html
+
+# Copy the custom Nginx configuration (Optional if always mounted via compose)
+# COPY docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Default command to start Nginx
+CMD ["nginx", "-g", "daemon off;"]
