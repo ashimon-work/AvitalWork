@@ -1,0 +1,23 @@
+<div class="account-container">
+  <aside class="account-sidebar">
+    <h2>My Account</h2>
+    <nav class="account-nav">
+      <ul>
+        <!-- Use routerLinkActive for styling the active link -->
+        <li><a routerLink="overview" routerLinkActive="active-link">Overview</a></li>
+        <li><a routerLink="orders" routerLinkActive="active-link">Orders</a></li>
+        <li><a routerLink="addresses" routerLinkActive="active-link">Addresses</a></li>
+        <li><a routerLink="payment-methods" routerLinkActive="active-link">Payment Methods</a></li>
+        <li><a routerLink="personal-info" routerLinkActive="active-link">Personal Information</a></li>
+        <li><a routerLink="wishlist" routerLinkActive="active-link">Wishlist</a></li>
+        <li><a routerLink="change-password" routerLinkActive="active-link">Change Password</a></li>
+      </ul>
+    </nav>
+    <button (click)="logout()" class="btn btn-secondary logout-btn">Logout</button>
+  </aside>
+
+  <main class="account-content">
+    <!-- Child routes will be rendered here -->
+    <router-outlet></router-outlet>
+  </main>
+</div>

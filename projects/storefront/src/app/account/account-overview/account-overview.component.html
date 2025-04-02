@@ -1,0 +1,24 @@
+<!-- Use async pipe to subscribe to currentUser$ -->
+<div *ngIf="currentUser$ | async as user">
+  <h3>Welcome back, {{ user.firstName }}!</h3>
+  <p>This is your account overview. More details coming soon.</p>
+
+  <!-- Placeholder sections based on plan -->
+  <div class="overview-section">
+    <h4>Recent Orders</h4>
+    <p>No recent orders found.</p> <!-- Replace with actual data later -->
+    <!-- <a routerLink="../orders">View all orders</a> -->
+  </div>
+
+  <div class="overview-section">
+    <h4>Default Address</h4>
+    <p>No default address set.</p> <!-- Replace with actual data later -->
+     <!-- <a routerLink="../addresses">Manage addresses</a> -->
+  </div>
+
+</div>
+
+<!-- Optional: Show loading or alternative message if user data isn't available yet -->
+<div *ngIf="!(currentUser$ | async)">
+  <p>Loading account details...</p>
+</div>

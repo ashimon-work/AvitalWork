@@ -1,0 +1,108 @@
+// Using global variables defined in src/styles.scss
+
+:host {
+  display: block;
+  margin-top: var(--spacing-xxl); // Add space above the footer
+}
+
+.store-footer {
+  background-color: var(--neutral-lightest); // Use a very light gray for footer background
+  color: var(--text-color-light); // Use lighter text color in the footer
+  padding-top: var(--spacing-xl);
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // Responsive grid layout
+  gap: var(--spacing-lg);
+
+  // Apply container constraints
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: var(--container-padding-x);
+  padding-left: var(--container-padding-x);
+  padding-bottom: var(--spacing-xl); // Padding at the bottom of the main content
+}
+
+.footer-section {
+  h4 {
+    font-size: 1.1rem; // Slightly smaller heading for footer sections
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color); // Use primary text color for headings
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+.links-section {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: var(--spacing-sm);
+
+      a {
+        color: var(--text-color-light); // Lighter link color
+        text-decoration: none;
+
+        &:hover,
+        &:focus {
+          color: var(--primary-color); // Highlight with primary color on hover
+          text-decoration: underline;
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+.social-section {
+  .social-links {
+    display: flex;
+    gap: var(--spacing-md);
+
+    a {
+      color: var(--text-color-light);
+      font-size: 24px; // Adjust if using icon fonts
+      text-decoration: none;
+
+      &:hover,
+      &:focus {
+        color: var(--primary-color);
+        opacity: 1;
+      }
+
+      // Placeholder for actual icons - replace span content later
+      span {
+        display: inline-block; // Needed for potential icon library styling
+        width: 24px; // Match font-size
+        height: 24px; // Match font-size
+        // Add background images or font-family if using icon fonts
+        // Example: background-color: #ccc; // Placeholder visual
+      }
+    }
+  }
+}
+
+.newsletter-section {
+  // Styling for app-newsletter-form will be within its own component SCSS
+  // Add any specific layout adjustments for this section if needed
+}
+
+.footer-bottom {
+  background-color: var(--neutral-light); // Slightly darker background for the bottom bar
+  padding: var(--spacing-md) var(--container-padding-x);
+  text-align: center;
+  margin-top: var(--spacing-lg); // Space between main footer content and bottom bar
+  border-top: var(--border-width) solid var(--border-color);
+
+  p {
+    margin-bottom: 0; // Remove default paragraph margin
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+  }
+}

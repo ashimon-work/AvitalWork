@@ -1,0 +1,92 @@
+<!-- Main container, waits for category data -->
+<div class="category-page-container" *ngIf="category$ | async as category; else loadingCategory">
+
+  <!-- Breadcrumbs -->
+  <div class="breadcrumbs">
+    <a [routerLink]="['/']">Home</a> > <span>{{ category.name }}</span>
+  </div>
+
+  <!-- Category Header -->
+  <div class="category-header">
+    <h1>{{ category.name }}</h1>
+    <p>{{ category.description }}</p>
+  </div>
+
+  <div class="category-content">
+    <!-- Filter Sidebar (Left) -->
+    <aside class="filter-sidebar">
+      <h2>Filters</h2>
+
+      <!-- Price Filter Example -->
+      <div class="filter-group">
+        <h3>Price Range</h3>
+        <select [(ngModel)]="selectedPriceRange" (ngModelChange)="applyFilters()">
+          <option value="">All Prices</option>
+          <option value="0-20">$0 - $20</option>
+          <option value="20-50">$20 - $50</option>
+          <option value="50-100">$50 - $100</option>
+          <option value="100-Infinity">$100+</option>
+        </select>
+      </div>
+
+      <!-- Tags Filter Example -->
+      <div class="filter-group">
+        <h3>Tags</h3>
+        <!-- Assuming tags are fetched or predefined -->
+        <div *ngFor="let tag of ['New', 'Sale', 'Featured']"> <!-- Example tags -->
+          <label>
+            <input type="checkbox" [(ngModel)]="selectedTags[tag]" (ngModelChange)="applyFilters()">
+            {{ tag }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Add other filters (color, size) similarly -->
+
+      <button (click)="clearFilters()">Clear All Filters</button>
+    </aside>
+
+    <!-- Main Content Area (Right) -->
+    <main class="main-content">
+      <!-- Sorting Options -->
+      <div class="sorting-options">
+        <label for="sort">Sort by:</label>
+        <!-- Bind to public sortSubject.value -->
+        <select id="sort" [ngModel]="sortSubject.value" (ngModelChange)="onSortChange($event)">
+          <option value="newest">Newest</option>
+          <option value="price-asc">Price Low-High</option>
+          <option value="price-desc">Price High-Low</option>
+          <option value="best-selling">Best Selling</option> <!-- Assuming API supports this -->
+        </select>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="product-grid-wrapper"> <!-- Added wrapper for loading/empty state -->
+        <ng-container *ngIf="products$ | async as products; else loadingProducts">
+          <div class="product-grid" *ngIf="products.length > 0; else noProducts">
+            <app-product-card *ngFor="let product of products" [product]="product"></app-product-card>
+          </div>
+          <ng-template #noProducts>
+            <p>No products found matching your criteria.</p>
+          </ng-template>
+        </ng-container>
+        <ng-template #loadingProducts><p>Loading products...</p></ng-template>
+      </div>
+
+
+      <!-- Pagination -->
+      <!-- Corrected *ngIf syntax -->
+      <div class="pagination" *ngIf="{ total: totalProducts$ | async, page: page$ | async } as paginationData">
+         <ng-container *ngIf="paginationData.total !== null && paginationData.page !== null && paginationData.total > 0">
+           <button (click)="onPageChange(paginationData.page - 1)" [disabled]="paginationData.page <= 1">Previous</button>
+           <span>Page {{ paginationData.page }} of {{ calculateTotalPages(paginationData.total) }}</span>
+           <button (click)="onPageChange(paginationData.page + 1)" [disabled]="paginationData.page >= calculateTotalPages(paginationData.total)">Next</button>
+           <p>Total Products: {{ paginationData.total }}</p>
+         </ng-container>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Loading template for category -->
+<ng-template #loadingCategory><p>Loading category details...</p></ng-template>

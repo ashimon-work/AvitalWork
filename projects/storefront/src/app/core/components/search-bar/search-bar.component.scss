@@ -1,0 +1,110 @@
+// Using global variables defined in src/styles.scss
+
+:host {
+  display: block;
+  position: relative; // Needed for absolute positioning of the suggestions list
+}
+
+.search-container {
+  position: relative; // Container for positioning
+}
+
+.search-input {
+  // Inherits base input styles from global styles.scss
+  // Add specific overrides or additions here if needed
+  padding-right: calc(var(--spacing-md) * 2.5); // Make space for a potential search icon inside
+  // Example: Add a subtle background
+  // background-color: var(--neutral-lightest);
+}
+
+/* Optional: Add a search icon inside the input */
+/*
+.search-container::after {
+  content: 'search'; // Material Icons ligature
+  font-family: 'Material Icons';
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-color-light);
+  pointer-events: none; // Don't interfere with input clicks
+  font-size: 20px;
+}
+*/
+
+.suggestions-list {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs)); // Position below the input with a small gap
+  left: 0;
+  right: 0;
+  background-color: var(--background-color);
+  border: var(--border-width) solid var(--border-color);
+  border-top: none; // Avoid double border with input focus ring
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md); // Rounded bottom corners
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1010; // Ensure it's above header but potentially below modals
+  max-height: 300px; // Limit height and allow scrolling
+  overflow-y: auto;
+  box-shadow: var(--box-shadow-md);
+
+  li {
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    border-bottom: var(--border-width) solid var(--neutral-lightest); // Separator line
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    // Style for "No results found" message
+    &:first-child:last-child { // If it's the only item
+      color: var(--text-color-light);
+      font-style: italic;
+      cursor: default;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      text-decoration: none;
+      color: var(--text-color); // Reset link color inside suggestions
+
+      &:hover,
+      &:focus {
+        text-decoration: none; // No underline needed here
+        opacity: 1;
+      }
+    }
+
+    &:hover,
+    &:focus-within { // Highlight on hover or when link inside is focused
+      background-color: var(--neutral-lightest);
+    }
+  }
+}
+
+.suggestion-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover; // Scale image nicely
+  border-radius: var(--border-radius-sm);
+  flex-shrink: 0;
+}
+
+.suggestion-name {
+  flex-grow: 1; // Take available space
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; // Prevent long names from breaking layout
+}
+
+.suggestion-price {
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+  white-space: nowrap;
+  margin-left: var(--spacing-sm);
+}

@@ -1,86 +1,114 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, FindOptionsWhere, ILike, MoreThanOrEqual, LessThanOrEqual, In, FindOptionsOrder, Between } from 'typeorm'; // Added Between
 import { Product } from '@shared-types'; // Import the shared interface
-import { v4 as uuidv4 } from 'uuid'; // For generating mock IDs
+import { ProductEntity } from './entities/product.entity';
+
+// Define interface for query parameters used in findAll
+export interface FindAllProductsParams {
+  category_id?: string;
+  sort?: string; // e.g., 'price-asc', 'price-desc', 'newest'
+  page?: number;
+  limit?: number;
+  price_min?: number;
+  price_max?: number;
+  tags?: string; // Comma-separated string from query params
+  q?: string; // For search term
+}
 
 @Injectable()
 export class ProductsService {
-  // Mock data for featured products
-  private featuredProducts: Product[] = [
-    {
-      id: uuidv4(),
-      sku: 'ELEC-001',
-      name: 'Wireless Noise-Cancelling Headphones',
-      description: 'Experience immersive sound with these premium headphones.',
-      price: 199.99,
-      imageUrl: '/assets/mock/products/headphones.jpg',
-      categoryIds: ['electronics-uuid'], // Replace with actual category ID if known
-      tags: ['New', 'Featured'],
-      stockLevel: 50,
-      isActive: true,
-    },
-    {
-      id: uuidv4(),
-      sku: 'APPA-001',
-      name: 'Classic Cotton T-Shirt',
-      description: 'A comfortable and stylish everyday essential.',
-      price: 24.99,
-      imageUrl: '/assets/mock/products/tshirt.jpg',
-      categoryIds: ['apparel-uuid'],
-      tags: ['Best Seller'],
-      stockLevel: 120,
-      isActive: true,
-    },
-    {
-      id: uuidv4(),
-      sku: 'HOME-001',
-      name: 'Ceramic Coffee Mug',
-      description: 'Start your day right with this durable mug.',
-      price: 12.5,
-      imageUrl: '/assets/mock/products/mug.jpg',
-      categoryIds: ['homegoods-uuid'],
-      stockLevel: 80,
-      isActive: true,
-    },
-    {
-      id: uuidv4(),
-      sku: 'BOOK-001',
-      name: 'The Mystery Novel',
-      description: 'A thrilling page-turner you won\'t want to put down.',
-      price: 15.99,
-      imageUrl: '/assets/mock/products/book.jpg',
-      categoryIds: ['books-uuid'],
-      tags: ['Featured'],
-      stockLevel: 30,
-      isActive: true,
-    },
-    {
-      id: uuidv4(),
-      sku: 'ELEC-002',
-      name: 'Smartwatch Series 8',
-      description: 'Stay connected and track your fitness.',
-      price: 349.0,
-      imageUrl: '/assets/mock/products/smartwatch.jpg',
-      categoryIds: ['electronics-uuid'],
-      tags: ['New', 'Featured'],
-      stockLevel: 25,
-      isActive: true,
-    },
-    {
-      id: uuidv4(),
-      sku: 'APPA-002',
-      name: 'Denim Jeans',
-      description: 'Classic fit denim jeans for any occasion.',
-      price: 59.99,
-      imageUrl: '/assets/mock/products/jeans.jpg',
-      categoryIds: ['apparel-uuid'],
-      stockLevel: 65,
-      isActive: true,
-    },
-  ];
+  constructor(
+    @InjectRepository(ProductEntity)
+    private readonly productsRepository: Repository<ProductEntity>,
+  ) {}
 
-  async getFeaturedProducts(): Promise<Product[]> {
-    // In a real scenario, this would fetch from a database based on criteria
-    // For now, return the mock data
-    return this.featuredProducts;
+  async getFeaturedProducts(): Promise<ProductEntity[]> {
+    // Fetch products tagged as 'Featured'
+    // Note: Using array_contains or similar depends on DB. This uses basic find.
+    // A better approach might be a dedicated 'isFeatured' flag or relation.
+    return this.productsRepository.find({
+       where: {
+         tags: In(['Featured']), // This might not work directly depending on DB/TypeORM version for array columns
+         isActive: true
+       },
+       take: 8 // Limit to 8 featured products
+     });
+     // Fallback/Alternative if In(['Featured']) doesn't work: Fetch more and filter in code
+     // const candidates = await this.productsRepository.find({ where: { isActive: true }, take: 20 });
+     // return candidates.filter(p => p.tags?.includes('Featured')).slice(0, 6);
+  }
+
+  async findOne(id: string): Promise<ProductEntity | null> {
+    // Fetch from database using TypeORM repository
+    const product = await this.productsRepository.findOneBy({ id, isActive: true });
+    // Note: findOneBy returns null if not found, controller handles NotFoundException
+    return product;
+  }
+
+  async findAll(params: FindAllProductsParams): Promise<{ products: ProductEntity[], total: number }> {
+    const page = params.page ? +params.page : 1;
+    const limit = params.limit ? +params.limit : 12;
+    const skip = (page - 1) * limit;
+
+    // Build WHERE conditions
+    const where: FindOptionsWhere<ProductEntity> = { isActive: true };
+    if (params.q) {
+      // Basic search on name and description
+      where.name = ILike(`%${params.q}%`); // Case-insensitive search
+      // Add description search if needed, might need OR condition which is more complex
+      // where.description = ILike(`%${params.q}%`);
+    }
+    // Handle price range filtering correctly
+    if (params.price_min !== undefined && params.price_max !== undefined) {
+      where.price = Between(params.price_min, params.price_max);
+    } else if (params.price_min !== undefined) {
+      where.price = MoreThanOrEqual(params.price_min);
+    } else if (params.price_max !== undefined) {
+      where.price = LessThanOrEqual(params.price_max);
+    }
+    if (params.tags) {
+      // Filtering by tags in simple-array might require specific DB functions or fetching then filtering
+      // where.tags = In(params.tags.split(',')); // This might not work directly
+      // For now, we might have to fetch more and filter in code, or omit tag filtering here
+    }
+    // !! IMPORTANT: Category filtering needs relations setup in entities !!
+    // if (params.category_id) {
+    //   where.categories = { id: params.category_id }; // Example if relation 'categories' exists
+    // }
+
+
+    // Build ORDER conditions
+    const order: FindOptionsOrder<ProductEntity> = {};
+    switch (params.sort) {
+      case 'price-asc':
+        order.price = 'ASC';
+        break;
+      case 'price-desc':
+        order.price = 'DESC';
+        break;
+      case 'name-asc':
+         order.name = 'ASC';
+         break;
+      case 'newest': // Assuming 'createdAt' field exists
+         order.createdAt = 'DESC';
+         break;
+      default:
+         order.name = 'ASC'; // Default sort
+         break;
+    }
+
+    const [results, total] = await this.productsRepository.findAndCount({
+      where,
+      order,
+      take: limit,
+      skip: skip,
+      // relations: ['categories'], // Include relations if needed after setup
+    });
+
+    // TODO: Re-apply tag filtering here if DB query wasn't possible
+    // if (params.tags) { ... filter results array ... }
+
+    return { products: results, total };
   }
 }

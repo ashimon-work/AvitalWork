@@ -1,0 +1,112 @@
+// Using global variables defined in src/styles.scss
+
+:host {
+  display: block; // Ensure the component takes up block space
+}
+
+.store-header {
+  background-color: var(--background-color);
+  border-bottom: var(--border-width) solid var(--border-color);
+  padding: var(--spacing-sm) 0; // Vertical padding, horizontal handled by container
+  position: sticky; // Make header sticky
+  top: 0;
+  z-index: 1000; // Ensure it stays above other content
+  box-shadow: var(--box-shadow-sm); // Subtle shadow for separation
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg); // Space between logo, nav, right section
+
+  // Apply container constraints
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: var(--container-padding-x);
+  padding-left: var(--container-padding-x);
+}
+
+.logo {
+  flex-shrink: 0; // Prevent logo from shrinking
+
+  a {
+    display: inline-block; // Ensures link wraps the image correctly
+    line-height: 0; // Remove extra space below image if any
+  }
+
+  img {
+    height: 40px; // Adjust height as needed, maintain aspect ratio
+    width: auto; // Let width adjust automatically
+    vertical-align: middle; // Align image nicely if there's text nearby
+  }
+}
+
+.navigation {
+  flex-grow: 1; // Allow navigation to take up available space
+  display: flex;
+  justify-content: center; // Center navigation links (adjust if needed)
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md); // Space between search and user actions
+  flex-shrink: 0;
+}
+
+.search-bar {
+  // Placeholder: Specific styling will be in search-bar.component.scss
+  // Might need width constraints here depending on the search bar's internal styling
+  max-width: 300px; // Example constraint
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md); // Space between icons
+}
+
+.action-icon {
+  color: var(--text-color); // Use default text color for icons
+  text-decoration: none;
+  position: relative; // For positioning the cart count badge
+  display: flex; // Helps center the icon vertically if needed
+  align-items: center;
+  padding: var(--spacing-xs); // Small padding for better click area
+  border-radius: 50%; // Make it circular on hover/focus
+
+  &:hover,
+  &:focus {
+    color: var(--primary-color); // Change color on hover/focus
+    background-color: var(--neutral-lightest); // Subtle background
+    text-decoration: none; // Remove underline
+    opacity: 1; // Override default link opacity hover
+    outline: none; // Remove default focus outline if needed
+  }
+
+  .material-icons {
+    font-size: 24px; // Standard icon size
+    vertical-align: middle;
+  }
+}
+
+.cart-count {
+  position: absolute;
+  top: -5px; // Adjust position relative to the icon
+  right: -8px; // Adjust position relative to the icon
+  background-color: var(--error-color); // Use error/alert color for emphasis
+  color: white;
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  border-radius: 50%;
+  padding: 2px 5px;
+  line-height: 1;
+  min-width: 18px; // Ensure it's roughly circular even for single digits
+  text-align: center;
+}
+
+// Responsive adjustments might be needed later
+// e.g., hiding navigation behind a burger menu on smaller screens

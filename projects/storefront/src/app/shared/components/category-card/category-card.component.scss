@@ -1,0 +1,71 @@
+// Using global variables defined in src/styles.scss
+
+:host {
+  display: block; // Ensure the component takes up block space
+  // The grid layout in homepage.component.scss handles sizing/spacing
+}
+
+.category-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit; // Inherit text color from parent
+  border-radius: var(--border-radius-lg); // Rounded corners for the whole card link
+  overflow: hidden; // Clip content like image zoom effect
+  transition: var(--transition-base);
+  box-shadow: var(--box-shadow-sm); // Subtle shadow for depth
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+    box-shadow: var(--box-shadow-md); // Slightly larger shadow on hover/focus
+    transform: translateY(-2px); // Subtle lift effect
+  }
+
+  &:focus {
+    outline: 2px solid var(--primary-color); // Focus outline
+    outline-offset: 2px;
+  }
+}
+
+.category-card {
+  background-color: var(--background-color);
+  // Dimensions based on plan (approximate via aspect ratio or fixed height)
+  // Let the grid define width, control height via aspect-ratio or fixed value
+  // height: 200px; // Fixed height as per plan
+  aspect-ratio: 3 / 2; // 300x200 ratio
+  display: flex;
+  flex-direction: column;
+}
+
+.category-image-wrapper {
+  overflow: hidden; // Hide image overflow if needed
+  position: relative;
+  flex-grow: 1; // Allow image area to take up most space
+  background-color: var(--neutral-lightest); // Placeholder background
+}
+
+.category-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; // Cover the area, cropping if necessary
+  transition: transform 0.3s ease; // Zoom effect on hover
+
+  .category-card-link:hover &,
+  .category-card-link:focus & {
+    transform: scale(1.05); // Slight zoom effect
+  }
+}
+
+.category-name {
+  padding: var(--spacing-sm) var(--spacing-md); // Padding around the name
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+  background-color: var(--background-color); // Ensure background covers image edge
+  margin: 0; // Reset heading margin
+  white-space: nowrap; // Prevent wrapping
+  overflow: hidden;
+  text-overflow: ellipsis; // Add ellipsis if name is too long
+}

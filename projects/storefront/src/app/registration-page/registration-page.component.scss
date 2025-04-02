@@ -1,0 +1,171 @@
+// Using global variables defined in src/styles.scss
+
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // Align to top
+  padding: var(--spacing-xxl) var(--container-padding-x);
+  min-height: 70vh; // Ensure it takes up significant height
+}
+
+.registration-container {
+  width: 100%;
+  max-width: 500px; // Limit form width
+  padding: var(--spacing-xl);
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-md);
+
+  h1 {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    font-size: 1.8rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md); // Space between form groups
+
+    .form-group {
+      label {
+        display: block;
+        margin-bottom: var(--spacing-xs);
+        font-weight: var(--font-weight-medium);
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="tel"] {
+        // Inherits base styles from global styles.scss
+        width: 100%; // Ensure full width within container
+      }
+
+      // Styling for invalid inputs
+      input.is-invalid {
+        border-color: var(--error-color);
+        &:focus {
+          box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25); // Red focus ring
+        }
+      }
+
+      .invalid-feedback {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: var(--spacing-xs);
+      }
+
+      // Password requirements list styling (nested within form-group)
+      .password-requirements {
+        font-size: 0.8rem;
+        color: var(--text-color-light);
+        list-style: disc;
+        padding-left: 1.5rem; // Indent list items
+        margin-top: var(--spacing-xs);
+        margin-bottom: 0; // Reset default margin
+      }
+
+      // Placeholder styling for strength meter (nested within form-group)
+      .password-strength-meter {
+        font-size: 0.8rem;
+        color: var(--text-color-light);
+        margin-top: var(--spacing-xs);
+        // Add more specific styles when implemented
+      }
+    } // End of .form-group
+
+    // Styling for checkbox groups (direct child of form)
+    .form-check {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--spacing-sm); // Smaller margin for checkboxes
+
+      .form-check-input {
+        margin-right: var(--spacing-sm);
+        cursor: pointer;
+        // Use browser default or apply custom styles if needed
+
+        &.is-invalid {
+           // Add specific invalid style if needed, e.g., outline
+           outline: 1px solid var(--error-color);
+        }
+      }
+
+      .form-check-label {
+        margin-bottom: 0; // Align label vertically
+        font-weight: normal; // Normal weight for checkbox labels
+        cursor: pointer;
+        user-select: none;
+
+        a { // Style link within label (e.g., Terms)
+          color: var(--primary-color);
+          text-decoration: none;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      // Need to target the invalid-feedback *after* the form-check div
+      // This assumes the invalid-feedback div is placed immediately after the form-check div in the HTML
+      + .invalid-feedback {
+         color: var(--error-color);
+         font-size: 0.85rem;
+         margin-top: var(--spacing-xs);
+         display: block; // Ensure it shows
+      }
+    } // End of .form-check
+
+    .alert {
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+      border: 1px solid transparent;
+      border-radius: var(--border-radius-md);
+      text-align: center;
+
+      &.alert-success {
+        color: #0f5132;
+        background-color: #d1e7dd;
+        border-color: #badbcc;
+      }
+
+      &.alert-danger {
+        color: #842029;
+        background-color: #f8d7da;
+        border-color: #f5c2c7;
+      }
+    } // End of .alert
+
+    .submit-btn {
+      // Inherits base button styles
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-md) var(--spacing-lg);
+      font-size: 1.1rem;
+
+      &:disabled {
+        background-color: var(--neutral-medium);
+        border-color: var(--neutral-medium);
+        cursor: not-allowed;
+      }
+    } // End of .submit-btn
+
+  } // End of form
+
+  .login-link {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+
+    a {
+      font-weight: var(--font-weight-medium);
+      color: var(--primary-color);
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  } // End of .login-link
+
+} // End of .registration-container

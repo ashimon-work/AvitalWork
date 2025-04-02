@@ -1,0 +1,124 @@
+<div class="registration-container">
+      <h1>Create Account</h1>
+
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Success Message -->
+        <div *ngIf="successMessage" class="alert alert-success">
+          {{ successMessage }}
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage" class="alert alert-danger">
+          {{ errorMessage }}
+        </div>
+
+        <!-- First Name -->
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" formControlName="firstName"
+                 [ngClass]="{ 'is-invalid': firstName?.invalid && (firstName?.dirty || firstName?.touched) }">
+          <div *ngIf="firstName?.invalid && (firstName?.dirty || firstName?.touched)" class="invalid-feedback">
+            <div *ngIf="firstName?.errors?.['required']">First name is required.</div>
+            <div *ngIf="firstName?.errors?.['maxlength']">First name cannot exceed 50 characters.</div>
+          </div>
+        </div>
+
+        <!-- Last Name -->
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" formControlName="lastName"
+                 [ngClass]="{ 'is-invalid': lastName?.invalid && (lastName?.dirty || lastName?.touched) }">
+          <div *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)" class="invalid-feedback">
+            <div *ngIf="lastName?.errors?.['required']">Last name is required.</div>
+            <div *ngIf="lastName?.errors?.['maxlength']">Last name cannot exceed 50 characters.</div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" formControlName="email"
+                 [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }">
+          <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="invalid-feedback">
+            <div *ngIf="email?.errors?.['required']">Email is required.</div>
+            <div *ngIf="email?.errors?.['email']">Please enter a valid email address.</div>
+            <div *ngIf="email?.errors?.['maxlength']">Email cannot exceed 100 characters.</div>
+            <div *ngIf="email?.errors?.['emailExists']">This email address is already registered.</div>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" formControlName="password"
+                 [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }">
+          <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="invalid-feedback">
+            <div *ngIf="password?.errors?.['required']">Password is required.</div>
+            <div *ngIf="password?.errors?.['minlength']">Password must be at least 8 characters long.</div>
+            <div *ngIf="password?.errors?.['maxlength']">Password cannot exceed 100 characters.</div>
+            <div *ngIf="password?.errors?.['pattern']">Password requires uppercase, lowercase, number, and special character.</div>
+          </div>
+          <!-- Placeholder for Password Strength Meter -->
+          <div class="password-strength-meter">
+            <!-- Implement strength visualization later (e.g., using a library or custom component) -->
+            Strength: [ Placeholder ]
+          </div>
+          <ul class="password-requirements">
+            <li>At least 8 characters</li>
+            <li>Uppercase & lowercase letters</li>
+            <li>At least one number</li>
+            <li>At least one special character (&#64;$!%*?&)</li>
+          </ul>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" formControlName="confirmPassword"
+                 [ngClass]="{ 'is-invalid': (confirmPassword?.invalid || registrationForm.hasError('passwordMismatch')) && (confirmPassword?.dirty || confirmPassword?.touched) }">
+          <div *ngIf="(confirmPassword?.invalid || registrationForm.hasError('passwordMismatch')) && (confirmPassword?.dirty || confirmPassword?.touched)" class="invalid-feedback">
+            <div *ngIf="confirmPassword?.errors?.['required']">Please confirm your password.</div>
+            <div *ngIf="registrationForm.hasError('passwordMismatch') && !confirmPassword?.errors?.['required']">Passwords do not match.</div>
+          </div>
+        </div>
+
+        <!-- Phone (Optional) -->
+        <div class="form-group">
+          <label for="phone">Phone Number (Optional)</label>
+          <input type="tel" id="phone" formControlName="phone"
+                 [ngClass]="{ 'is-invalid': phone?.invalid && (phone?.dirty || phone?.touched) }">
+          <div *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="invalid-feedback">
+             <div *ngIf="phone?.errors?.['pattern']">Please enter a valid phone number.</div>
+             <div *ngIf="phone?.errors?.['maxlength']">Phone number cannot exceed 20 characters.</div>
+          </div>
+        </div>
+
+        <!-- Newsletter Opt-in -->
+        <div class="form-group form-check">
+          <input type="checkbox" id="newsletterOptIn" formControlName="newsletterOptIn" class="form-check-input">
+          <label for="newsletterOptIn" class="form-check-label">Sign up for our newsletter</label>
+        </div>
+
+        <!-- Terms and Conditions -->
+        <div class="form-group form-check">
+          <input type="checkbox" id="terms" formControlName="terms" class="form-check-input"
+                 [ngClass]="{ 'is-invalid': terms?.invalid && (terms?.dirty || terms?.touched || submitted) }">
+          <label for="terms" class="form-check-label">
+            I agree to the <a href="/terms-and-conditions" target="_blank">Terms and Conditions</a> <!-- Link to actual terms page later -->
+          </label>
+          <div *ngIf="terms?.invalid && (terms?.dirty || terms?.touched || submitted)" class="invalid-feedback">
+            You must agree to the terms and conditions.
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Registering...' : 'Create Account' }}
+        </button>
+
+      </form>
+
+      <div class="login-link">
+        Already have an account? <a [routerLink]="['/login']">Log In</a> <!-- Link to login page later -->
+      </div>
+    </div>

@@ -1,61 +1,70 @@
-# Active Context: Online Business Promotion System (Git Setup & Dev Environment)
+# Active Context: Online Business Promotion System (Backend DB Integration & Auth)
 
 ## 1. Current Focus
 
-*   **Git Repository Setup:** Ensuring the project is correctly configured under Git version control and pushed to the remote repository.
-*   **Resume Dev Environment Setup:** Continue setting up the VS Code Dev Container and local Docker build verification process.
+*   **Backend Database Integration:** Refactoring backend services (Products, Categories) to use TypeORM and PostgreSQL instead of mock data. Setting up migrations and seeding.
+*   **Backend API Implementation:** Adding missing API endpoints required by the frontend (e.g., product/category details, cart operations, registration).
+*   **Storefront Implementation:** Implementing core pages (Category, Product, Cart, Registration) and connecting them to the backend API.
+*   **Debugging:** Resolving backend dependency injection errors and frontend runtime errors.
+*   **Memory Bank Maintenance:** Keeping progress and context files up-to-date.
 
-## 2. Reason for Pivot
+## 2. Recent Changes & Debugging
 
-*   Encountered persistent `esbuild` platform/version mismatch errors during local Angular build (`ng serve` on Windows). Multiple attempts to resolve via dependency reinstallation were unsuccessful.
-*   Using a Dev Container provides a consistent Linux-based development environment directly within VS Code.
-*   Using a separate Docker build file allows for local simulation of CI build checks without relying on external services like GitHub Actions.
+*   **Backend Database Integration:**
+    *   Refactored `ProductsService` and `CategoriesService` to use TypeORM repositories instead of mock data.
+    *   Created `CategoryEntity`.
+    *   Ensured `ProductEntity` and `CategoryEntity` are registered in their respective modules (`ProductsModule`, `CategoriesModule`).
+    *   Created `data-source.ts` for TypeORM CLI configuration.
+    *   Added TypeORM migration scripts to `backend/api/package.json`.
+    *   Confirmed database tables exist (via `migration:generate` output).
+    *   Created `seed.ts` script to populate `categories` and `products` tables.
+    *   Updated seed data with static category IDs and placeholder image URLs (`placehold.co`).
+    *   Ran seed script successfully.
+*   **Backend API Endpoints:**
+    *   Implemented `GET /products/:id` endpoint.
+    *   Implemented `GET /categories/:id` endpoint.
+    *   Implemented `GET /products` endpoint (with basic filtering/sorting/pagination on DB data).
+    *   Implemented `POST /api/cart/add` endpoint (using in-memory cart).
+    *   Implemented `GET /api/cart`, `PATCH /api/cart/:productId`, `DELETE /api/cart/:productId` endpoints (using in-memory cart).
+    *   Implemented `POST /auth/register` endpoint (hashes password, saves user to DB).
+*   **Frontend Implementation:**
+    *   Implemented basic `CategoryPageComponent` (TS logic, HTML, SCSS) connected to backend.
+    *   Implemented basic `ProductPageComponent` (TS logic, HTML, SCSS) connected to backend.
+    *   Implemented basic `CartPageComponent` (TS logic, HTML, SCSS) connected to backend cart endpoints.
+    *   Implemented `RegistrationPageComponent` (TS logic with Reactive Forms, HTML, SCSS) connected to backend.
+    *   Added routes for all implemented pages (`/category/:id`, `/product/:id`, `/cart`, `/register`, `/faq`, `/shipping`, `/returns`, `/shop`, `/about`, `/contact`, `/account`).
+    *   Updated `ApiService` with methods for product details, cart operations, and registration.
+    *   Refactored `CartService` to use `ApiService` and manage state based on backend responses.
+*   **Debugging:**
+    *   Fixed `404 Not Found` errors for product/category details and product list by implementing backend endpoints.
+    *   Fixed `404 Not Found` error for cart operations by implementing backend endpoints.
+    *   Fixed frontend runtime error (`ReferenceError: process is not defined`) by removing NestJS `Logger` from Angular `CartService`.
+    *   Fixed backend dependency injection error (`UnknownDependenciesException`) for `AuthController` by exporting `UsersService` from `UsersModule`.
+    *   Fixed TypeORM migration generation errors related to shared types and CLI pathing.
 
-## 3. Recent Changes
+## 3. Next Steps (Based on Plan)
 
-*   Completed initial Storefront Homepage vertical slice implementation.
-*   Attempted to run `ng serve` locally, encountering persistent `esbuild` errors.
-*   Discussed and revised the plan to focus on local Docker solutions (Dev Containers + local build check).
-*   Initialized Git repository within `magic-store-workspace`.
-*   Updated `.gitignore` to exclude `backend/api/.env`.
-*   Corrected initial Git setup issues where files outside the workspace were tracked and the remote URL was incorrect.
-*   Successfully force-pushed the clean initial commit to the `master` branch on `https://github.com/hishtadlut/magic-store-monorepo.git`.
+1.  **Implement Login Functionality:** Backend (`/auth/login`, JWT) and Frontend (`LoginPageComponent`, `AuthService`).
+2.  **Implement Product <-> Category Relationship:** Backend (Entities, Migration, Seeding, Service Update).
+3.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update).
+4.  **Implement Basic Account Page:** Backend (`/account/profile`), Frontend (`AccountPageComponent` data display, `JwtAuthGuard`).
+5.  **Implement Static Pages:** Frontend (`AboutPageComponent`, `ContactPageComponent` content/styling).
 
-## 4. Next Steps (Resume Dev Environment Setup)
+## 4. Active Decisions & Considerations
 
-*   **Continue Dev Container Strategy:**
-    *   Verify/Create `.devcontainer` folder in `magic-store-workspace`.
-    *   Verify/Create `.devcontainer/devcontainer.json`: Configure image/Dockerfile, VS Code extensions (e.g., Docker, Angular Language Service, ESLint, Prettier), settings, port forwarding (4200 for Angular, 3000 for API), and a `postCreateCommand` (e.g., `npm install`) to install dependencies after the container starts.
-    *   Verify/Create `.devcontainer/Dockerfile`: Use a Node.js LTS image (e.g., `node:20-bullseye-slim`), install necessary OS packages (`git`, etc.), set up a non-root user.
-*   **Continue Local Build Dockerfile Strategy:**
-    *   Verify/Create `Dockerfile.build` in `magic-store-workspace`.
-    *   Use multi-stage builds.
-    *   Base stage with Node.js LTS (e.g., `node:20-slim`).
-    *   Dependency stage: Copy `package*.json`, run `npm ci`.
-    *   Build stage(s): Copy source code, copy `node_modules` from dependency stage, run build commands (`npm run build --workspace=backend/api`, `npm run build --workspace=projects/storefront -- --configuration=production`).
-*   **Test:**
-    *   Attempt to "Reopen in Container" in VS Code.
-    *   Run `docker build -f Dockerfile.build .` locally to check the production build process.
+*   **API Prefix:** Using a global `/api` prefix in the NestJS backend.
+*   **Proxy:** Angular dev server proxies `/api` to `http://localhost:3000` without path rewriting.
+*   **Shared Library:** Building the `@shared-types` library and referencing the `dist` output in the backend `tsconfig.json`. Docker mounts the root project directory for the `api` service to ensure access to `dist`.
+*   **Development:** Running frontend (`ng serve`) locally and backend (`db`, `api`) via `docker compose up`. Backend uses TypeORM connected to the DB. Seeding via `npm run seed`.
 
-## 5. Active Decisions & Considerations
+## 5. Learnings & Insights
 
-*   **Development Environment:** VS Code Dev Container using Docker.
-*   **Build Verification:** Local `docker build` using a dedicated `Dockerfile.build`.
-*   **Dev Container Base Image:** `node:20-bullseye-slim` (or similar Debian-based slim image) for better dev tool compatibility.
-*   **Build Dockerfile Base Image:** `node:20-slim` is suitable.
-*   **Dependency Installation (Dev Container):** Use `postCreateCommand` in `devcontainer.json` for flexibility.
-*   **Dependency Installation (Build Dockerfile):** Use `npm ci` in a dedicated stage for caching.
+*   Angular proxy configuration (`proxy.conf.json` and `angular.json`) is crucial for local development.
+*   Path aliases (`@shared-types`) in monorepos require building the library and careful configuration.
+*   Global API prefixes in NestJS simplify routing.
+*   Debugging requires checking configurations, code logic, and logs across frontend, backend, and potentially the database.
+*   NestJS Dependency Injection requires providers to be exported from their modules if used by other modules.
+*   TypeORM CLI requires correct data source configuration and often needs shared libraries to be built first.
+*   Frontend code cannot directly use backend-specific modules (like NestJS `Logger`).
 
-## 6. Important Patterns & Preferences
-
-*   **Memory Bank:** Maintain diligently.
-*   **Consistency:** Dev Containers provide a consistent Linux environment for all developers.
-*   **Local Control:** Keep build and development processes local using Docker.
-
-## 7. Learnings & Insights
-
-*   Local environment inconsistencies can be effectively bypassed using containerized development environments like VS Code Dev Containers.
-*   A separate Dockerfile for build verification provides a local alternative to cloud CI for checking production builds.
-*   Initializing Git and running `git add .` must be done carefully from the correct project root directory to avoid tracking unintended files from parent directories. Force-pushing (`git push --force`) is necessary but potentially dangerous when correcting repository history.
-
-*(As of 3/30/2025 - Git setup corrected, resuming Dev Container setup)*
+*(As of 4/2/2025 - Backend refactored to use DB for products/categories, basic Cart API and Registration implemented, frontend pages connected)*

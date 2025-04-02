@@ -1,40 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { Category } from '@shared-types'; // Import the shared interface
-import { v4 as uuidv4 } from 'uuid'; // For generating mock IDs
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CategoryEntity } from './entities/category.entity';
+// Remove Category interface import if not needed elsewhere in this file
+// import { Category } from '@shared-types';
 
 @Injectable()
 export class CategoriesService {
-  // Mock data for featured categories
-  private featuredCategories: Category[] = [
-    {
-      id: uuidv4(),
-      name: 'Electronics',
-      imageUrl: '/assets/mock/categories/electronics.jpg',
-      description: 'Gadgets and devices',
-    },
-    {
-      id: uuidv4(),
-      name: 'Apparel',
-      imageUrl: '/assets/mock/categories/apparel.jpg',
-      description: 'Clothing and fashion',
-    },
-    {
-      id: uuidv4(),
-      name: 'Home Goods',
-      imageUrl: '/assets/mock/categories/homegoods.jpg',
-      description: 'Items for your home',
-    },
-    {
-      id: uuidv4(),
-      name: 'Books',
-      imageUrl: '/assets/mock/categories/books.jpg',
-      description: 'Literature and reading materials',
-    },
-  ];
+  constructor(
+    @InjectRepository(CategoryEntity)
+    private readonly categoriesRepository: Repository<CategoryEntity>,
+  ) {}
 
-  async getFeaturedCategories(): Promise<Category[]> {
-    // In a real scenario, this would fetch from a database
-    // For now, return the mock data
-    return this.featuredCategories;
+  async getFeaturedCategories(): Promise<CategoryEntity[]> {
+    // Fetch first 4 categories as "featured" for now
+    // Add specific criteria later (e.g., isFeatured flag)
+    return this.categoriesRepository.find({
+      take: 4,
+      order: { name: 'ASC' } // Example ordering
+    });
+  }
+
+  async findOne(id: string): Promise<CategoryEntity | null> {
+    // Fetch from database using TypeORM repository
+    const category = await this.categoriesRepository.findOneBy({ id });
+    // Note: findOneBy returns null if not found, controller handles NotFoundException
+    return category;
   }
 }

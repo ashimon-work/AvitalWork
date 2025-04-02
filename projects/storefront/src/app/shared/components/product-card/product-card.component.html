@@ -1,1 +1,18 @@
-<p>product-card works!</p>
+<div class="product-card" *ngIf="product">
+  <a [routerLink]="['/product', product.id]" class="product-link">
+    <div class="product-image-container">
+      <img [src]="product.imageUrl || '/assets/images/placeholder.png'"
+           [alt]="product.name"
+           class="product-image">
+    </div>
+    <div class="product-info">
+      <h3 class="product-name">{{ product.name }}</h3>
+      <p class="product-price">{{ product.price | currency }}</p>
+      <!-- Add other info like rating or tags if needed -->
+    </div>
+  </a>
+  <div class="product-actions">
+    <button class="add-to-cart-btn" (click)="onAddToCart()">Add to Cart</button>
+    <!-- Optional: Add wishlist button -->
+  </div>
+</div>

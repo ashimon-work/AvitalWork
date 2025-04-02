@@ -1,0 +1,55 @@
+// Using global variables defined in src/styles.scss
+
+:host {
+  display: block; // Ensure component takes up block space
+}
+
+// Add vertical spacing between homepage sections
+.hero-carousel,
+.featured-categories,
+.featured-products {
+  margin-bottom: var(--spacing-xxl); // Add significant space below each section (e.g., 48px)
+}
+
+// Specific adjustments for sections if needed
+
+.featured-categories,
+.featured-products {
+  // The .container class is applied in the HTML, handling horizontal padding/max-width
+  h2 {
+    text-align: center; // Center the section titles
+    margin-bottom: var(--spacing-xl); // Add space below the title (e.g., 32px)
+  }
+}
+
+// Grid layout for categories and products
+.category-grid,
+.product-grid {
+  display: grid;
+  gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
+
+  // Responsive grid columns
+  // Start with 1 column on smallest screens
+  grid-template-columns: 1fr;
+
+  // Example: 2 columns on small screens and up
+  @media (min-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // Example: 3 columns on medium screens and up
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  // Example: 4 columns on large screens and up (adjust as needed)
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// Ensure cards within the grid don't have extra bottom margin if they have it internally
+.category-grid > *,
+.product-grid > * {
+  margin-bottom: 0;
+}

@@ -1,0 +1,141 @@
+// Using global variables defined in src/styles.scss
+
+:host {
+  display: block;
+}
+
+.product-page-container {
+  // Use the global container for max-width and padding
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: var(--spacing-xl) auto; // Add vertical margin
+  padding: 0 var(--container-padding-x);
+}
+
+.breadcrumbs {
+  margin-bottom: var(--spacing-lg);
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+
+  a {
+    color: var(--text-color-light);
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  span {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+  }
+}
+
+.product-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; // 50% / 50% split
+  gap: var(--spacing-xxl); // Generous gap between image and info
+  margin-bottom: var(--spacing-xxl);
+
+  @media (max-width: 768px) { // Stack on smaller screens
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+}
+
+.product-image-section {
+  // Styles for image area
+  .main-product-image {
+    width: 100%;
+    max-width: 500px; // Max width as per plan
+    height: auto;
+    aspect-ratio: 1 / 1; // Maintain square aspect ratio
+    object-fit: cover;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--neutral-lightest); // Placeholder background
+  }
+  // Add styles for thumbnails later
+}
+
+.product-info-section {
+  // Styles for info area
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md); // Spacing between info elements
+
+  .product-name {
+    font-size: 2rem; // Larger heading for product name
+    margin-bottom: 0; // Adjust spacing via gap
+  }
+
+  .product-price {
+    font-size: 1.8rem; // Prominent price
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color); // Highlight color
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .product-rating {
+    // Add styles for star display later
+    margin-bottom: var(--spacing-md);
+    color: var(--text-color-light);
+  }
+
+  .product-description {
+    line-height: var(--line-height-base);
+    color: var(--text-color-light);
+  }
+
+  .product-variants,
+  .product-meta-info {
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+    margin-top: var(--spacing-sm);
+  }
+
+  .product-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    flex-wrap: wrap; // Allow wrapping on small screens
+
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+
+      label {
+        font-weight: var(--font-weight-medium);
+      }
+
+      .quantity-input {
+        width: 70px; // Fixed width for quantity input
+        text-align: center;
+        padding: var(--spacing-xs) var(--spacing-sm);
+      }
+    }
+
+    .add-to-cart-btn {
+      // Inherits base button styles
+      flex-grow: 1; // Allow button to take space
+      min-width: 150px; // Minimum width
+      padding: var(--spacing-md) var(--spacing-lg); // Larger padding for primary action
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.product-lower-sections {
+  margin-top: var(--spacing-xxl);
+  padding-top: var(--spacing-xl);
+  border-top: var(--border-width) solid var(--border-color);
+  // Add styles for tabs/accordions later
+}
+
+// Loading state styling
+p {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-color-light);
+}

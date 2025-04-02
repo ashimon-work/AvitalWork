@@ -1,1 +1,35 @@
-<p>footer works!</p>
+<footer class="store-footer">
+  <div class="footer-container">
+    <!-- Newsletter Section -->
+    <div class="footer-section newsletter-section">
+      <h4>Subscribe to our Newsletter</h4>
+      <app-newsletter-form></app-newsletter-form>
+    </div>
+
+    <!-- Quick Links Section (Example) -->
+    <div class="footer-section links-section">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a routerLink="/about">About Us</a></li>
+        <li><a routerLink="/contact">Contact Us</a></li>
+        <li><a routerLink="/faq">FAQ</a></li>
+        <li><a routerLink="/shipping">Shipping Policy</a></li>
+        <li><a routerLink="/returns">Return Policy</a></li>
+      </ul>
+    </div>
+
+    <!-- Social Media Section -->
+    <div class="footer-section social-section">
+      <h4>Follow Us</h4>
+      <div class="social-links">
+        <a href="#" target="_blank" title="Facebook"><span class="icon-facebook"></span></a> <!-- Placeholder -->
+        <a href="#" target="_blank" title="Twitter"><span class="icon-twitter"></span></a>   <!-- Placeholder -->
+        <a href="#" target="_blank" title="Instagram"><span class="icon-instagram"></span></a> <!-- Placeholder -->
+        <!-- Add actual icons/images later -->
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; {{ currentYear }} Your Store Name. All Rights Reserved.</p>
+  </div>
+</footer>

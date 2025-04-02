@@ -1,0 +1,92 @@
+<div class="cart-page-container" *ngIf="cartState$ | async as cartState; else loadingCart">
+  <h1>Shopping Cart</h1>
+
+  <ng-container *ngIf="cartState.items.length > 0; else emptyCart">
+    <div class="cart-layout">
+      <!-- Left Section: Cart Items -->
+      <div class="cart-items-section">
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+              <th></th> <!-- For remove button -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of cartState.items" class="cart-item">
+              <td class="item-image">
+                <a [routerLink]="['/product', item.product.id]">
+                  <img [src]="item.product.imageUrl || '/assets/images/placeholder.png'" [alt]="item.product.name">
+                </a>
+              </td>
+              <td class="item-details">
+                <a [routerLink]="['/product', item.product.id]" class="item-name">{{ item.product.name }}</a>
+                <!-- Display selected variants later if applicable -->
+              </td>
+              <td class="item-price">{{ item.product.price | currency }}</td>
+              <td class="item-quantity">
+                <!-- Basic quantity input - enhance later -->
+                <input type="number"
+                       [ngModel]="item.quantity"
+                       (ngModelChange)="updateQuantity(item, $event)"
+                       min="1"
+                       step="1">
+              </td>
+              <td class="item-subtotal">{{ calculateItemSubtotal(item) | currency }}</td>
+              <td class="item-remove">
+                <button (click)="removeItem(item)" title="Remove Item">&times;</button> <!-- Simple remove button -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="cart-actions-lower">
+          <button class="continue-shopping-btn" [routerLink]="['/']">Continue Shopping</button>
+          <button class="update-cart-btn" (click)="updateCart()">Update Cart</button> <!-- Might not be needed if quantity updates automatically -->
+        </div>
+      </div>
+
+      <!-- Right Section: Order Summary -->
+      <aside class="order-summary-section">
+        <h2>Order Summary</h2>
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>{{ calculateCartSubtotal(cartState.items) | currency }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping:</span>
+          <span>(Calculated at checkout)</span>
+        </div>
+        <div class="summary-row">
+          <span>Taxes:</span>
+          <span>(Calculated at checkout)</span>
+        </div>
+        <hr>
+        <div class="summary-row total">
+          <span>Total:</span>
+          <!-- Calculate total later including shipping/taxes -->
+          <span>{{ calculateCartSubtotal(cartState.items) | currency }}</span>
+        </div>
+        <div class="promo-code">
+          <label for="promo">Promo Code:</label>
+          <input type="text" id="promo" placeholder="Enter code">
+          <button>Apply</button>
+        </div>
+        <button class="checkout-btn" (click)="proceedToCheckout()">Proceed to Checkout</button>
+      </aside>
+    </div>
+  </ng-container>
+
+  <ng-template #emptyCart>
+    <div class="empty-cart-message">
+      <p>Your shopping cart is empty.</p>
+      <button [routerLink]="['/']">Shop Now</button>
+    </div>
+  </ng-template>
+</div>
+
+<ng-template #loadingCart>
+  <p>Loading cart...</p>
+</ng-template>

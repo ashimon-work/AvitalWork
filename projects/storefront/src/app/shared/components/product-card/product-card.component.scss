@@ -1,0 +1,118 @@
+// Using global variables defined in src/styles.scss
+
+:host {
+  display: block; // Ensure the component takes up block space
+}
+
+.product-card {
+  background-color: var(--background-color);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden; // Clip content
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Make card fill grid cell height if needed
+  transition: var(--transition-base);
+  box-shadow: var(--box-shadow-sm);
+
+  // Approximate size from plan (250x350px) - aspect ratio can help
+  // aspect-ratio: 250 / 350;
+  // Or let the grid define width and control height implicitly or explicitly
+
+  &:hover,
+  &:focus-within { // Highlight when card or interactive elements inside have focus
+    box-shadow: var(--box-shadow-md);
+    transform: translateY(-3px);
+    border-color: var(--neutral-medium);
+  }
+}
+
+.product-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; // Allow link content to take available space above actions
+
+  &:focus {
+    outline: none; // Remove default outline, rely on card focus style
+  }
+}
+
+.product-image-container {
+  position: relative;
+  overflow: hidden;
+  // Define aspect ratio for image area, e.g., square or slightly taller
+  aspect-ratio: 1 / 1;
+  background-color: var(--neutral-lightest); // Placeholder background
+
+  .product-card:hover &,
+  .product-card:focus-within & {
+    // Optional: Add effect on card hover/focus
+  }
+}
+
+.product-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; // Or 'contain' if full image visibility is crucial
+  transition: transform 0.3s ease;
+
+  .product-link:hover &,
+  .product-link:focus & {
+     transform: scale(1.05); // Zoom effect on link hover/focus
+  }
+}
+
+.product-info {
+  padding: var(--spacing-md);
+  text-align: center; // Center align text info
+  flex-grow: 1; // Allow info to push actions down
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; // Push price down if space allows
+}
+
+.product-name {
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+  margin-bottom: var(--spacing-xs);
+  // Limit lines and add ellipsis for long names
+  display: -webkit-box;
+  -webkit-line-clamp: 2; // Show max 2 lines
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: calc(1.3em * 2); // Reserve space for 2 lines
+}
+
+.product-price {
+  font-size: 1.2rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color); // Highlight price
+  margin-top: auto; // Push price towards the bottom of info section
+  margin-bottom: 0; // Remove default paragraph margin
+}
+
+.product-actions {
+  padding: 0 var(--spacing-md) var(--spacing-md); // Padding around the button area
+  margin-top: var(--spacing-sm); // Space above the button
+}
+
+.add-to-cart-btn {
+  // Inherits base button styles from global styles.scss
+  width: 100%; // Make button full width within actions area
+  font-size: 0.9rem;
+  padding: var(--spacing-sm) var(--spacing-md); // Slightly smaller padding
+
+  // Optional: Style adjustments for secondary action feel
+  // background-color: var(--secondary-color);
+  // border-color: var(--secondary-color);
+  // color: var(--primary-color);
+
+  &:hover, &:focus {
+    // Adjust hover state if needed
+  }
+}

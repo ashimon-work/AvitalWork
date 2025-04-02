@@ -1,6 +1,6 @@
 # Project Progress: Online Business Promotion System
 
-*(As of 3/30/2025)*
+*(As of 4/1/2025)*
 
 ## I. Project Setup & Foundation
 
@@ -17,22 +17,23 @@
 *   [x] Choose and Configure Database - Chose PostgreSQL, added TypeORM config & .env
 *   [/] Setup Dev Container & Local Docker Build - In progress (paused for Git setup, now resuming)
 
-## II. Storefront Website Development (Paused pending Dev Container setup)
+## II. Storefront Website Development
 
 *   [x] Core Layout & Navigation (Header, Footer, Menu) - Basic structure generated and integrated
-*   [x] Homepage Implementation - Initial UI slice with mock data fetching complete
-*   [ ] Category Page Implementation
-*   [ ] Product Page Implementation
-*   [ ] Shopping Cart Implementation
+*   [x] Homepage Implementation - Frontend complete (Carousel, Featured Sections, Search/Newsletter/Cart integration). Backend endpoints for Search, Newsletter, Cart needed.
+*   [x] Homepage Styling (Modern & Minimalist Theme) - Applied global styles and styled core/homepage components.
+*   [/] Category Page Implementation - Basic structure, data fetching, filtering/sorting/pagination controls, styling implemented. Fetches from DB.
+*   [/] Product Page Implementation - Basic structure, data fetching, styling implemented. Fetches from DB.
+*   [x] Shopping Cart Implementation - Basic structure, data display, add/update/remove actions implemented (connected to backend in-memory cart API).
 *   [ ] Checkout Flow Implementation
 *   [ ] Order Confirmation Page
-*   [ ] Authentication (Login, Registration, Recovery)
-*   [ ] User Account Pages (Overview, Orders, Addresses, etc.)
-*   [ ] Contact Page
-*   [ ] About Page
+*   [/] Authentication (Login, Registration, Recovery) - Registration page (frontend) and backend endpoint implemented & functional. Login pending.
+*   [ ] User Account Pages (Overview, Orders, Addresses, etc.) - Placeholder component/route exists. Requires Login.
+*   [/] Contact Page - Placeholder component/route exists.
+*   [/] About Page - Placeholder component/route exists.
 *   [ ] 404 Page
 *   [ ] Responsiveness & Mobile Optimization
-*   [ ] API Integration
+*   [x] API Integration - Core API service updated with methods for product details, cart operations, registration. Backend endpoints implemented for these (using DB for products/categories, in-memory for cart). Search/Newsletter endpoints still pending.
 
 ## III. Store Management Website Development
 
@@ -63,22 +64,23 @@
 ## V. Backend API Development
 
 *   [x] Initial Setup (NestJS, TypeORM, Config, Modules) - Basic setup complete
-*   [x] Define Basic Entities (User, Product) - Initial versions created
-*   [ ] Authentication Endpoints (Storefront Customer, Store Manager)
-*   [/] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, etc.) - Mock featured category/product endpoints added
+*   [x] Define Basic Entities (User, Product, Category) - Entities created and configured with TypeORM.
+*   [/] Authentication Endpoints (Storefront Customer, Store Manager) - `/auth/register` implemented & functional. Login pending.
+*   [x] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, etc.) - Endpoints for Products (featured, list, details), Categories (featured, details), Cart (get, add, update, remove), Auth (register) implemented. Services refactored to use TypeORM (except Cart). Search/Newsletter pending.
 *   [ ] Store Management API Endpoints (Dashboard, Products, Orders, Customers, Settings, Profile, etc.)
 *   [ ] Marketplace API Endpoints (Aggregated Products, Categories, Stores, Search)
-*   [ ] Database Schema Design & Migrations
+*   [x] Database Schema Design & Migrations - Initial entities defined, TypeORM configured, data source file created, migration scripts added. Tables exist.
+*   [x] Database Seeding (Initial) - Script created and run for categories/products.
 *   [ ] Data Synchronization Logic (Inventory, etc.)
 *   [ ] Security Implementation (Validation, Rate Limiting, Permissions)
 *   [ ] Testing (Unit, Integration)
 
 ## VI. Shared Library Development
 
-*   [x] Define Core Data Models/Interfaces (Product, Order, User, Category, etc.) - Category added and exported
-*   [ ] Define DTOs (Data Transfer Objects) for API communication
+*   [x] Define Core Data Models/Interfaces (Product, Order, User, Category, etc.) - Category interface updated (optional imageUrl).
+*   [x] Setup Build/Packaging for Shared Library - Built successfully.
+*   [/] Define DTOs (Data Transfer Objects) for API communication - CreateUserDto created.
 *   [ ] Implement Shared Utility Functions/Classes
-*   [ ] Setup Build/Packaging for Shared Library
 
 ## VII. Testing & Deployment
 

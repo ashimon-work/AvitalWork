@@ -1,1 +1,22 @@
-<p>search-bar works!</p>
+<div class="search-container">
+  <input type="text"
+         placeholder="Search products..."
+         class="search-input"
+         [(ngModel)]="searchQuery"
+         (input)="search(searchQuery)"
+         (blur)="hideSuggestions()"> <!-- Hide suggestions when input loses focus -->
+
+  <!-- Suggestions Dropdown -->
+  <ul class="suggestions-list" *ngIf="showSuggestions && (searchResults$ | async) as results">
+    <li *ngIf="results.length === 0 && searchQuery.length >= 3">No results found for "{{ searchQuery }}"</li>
+    <li *ngFor="let product of results" (mousedown)="selectSuggestion(product)"> <!-- Use mousedown to register click before blur hides list -->
+      <!-- Basic suggestion display - enhance as needed -->
+      <a [routerLink]="['/product', product.id]"> <!-- Link to product page -->
+        <img [src]="product.imageUrl || '/assets/images/placeholder.png'" alt="{{ product.name }}" class="suggestion-image">
+        <span class="suggestion-name">{{ product.name }}</span>
+        <span class="suggestion-price">{{ product.price | currency }}</span>
+      </a>
+    </li>
+    <!-- Optional: Add loading indicator -->
+  </ul>
+</div>

@@ -1,1 +1,29 @@
-<p>header works!</p>
+<header class="store-header">
+  <div class="header-container">
+    <!-- Store Logo -->
+    <div class="logo">
+      <a routerLink="/">
+        <!-- Placeholder for logo image -->
+        <img src="/assets/images/logo-placeholder.png" alt="Store Logo" style="width: 150px;">
+      </a>
+    </div>
+
+    <!-- Navigation -->
+    <app-navigation class="navigation"></app-navigation>
+
+    <!-- Right Section: Search, Account, Cart -->
+    <div class="header-right">
+      <app-search-bar class="search-bar"></app-search-bar>
+      <div class="user-actions">
+        <a routerLink="/account" class="action-icon" title="My Account">
+          <span class="material-icons">person</span> <!-- Placeholder icon -->
+        </a>
+        <a routerLink="/cart" class="action-icon" title="Shopping Cart">
+          <span class="material-icons">shopping_cart</span> <!-- Placeholder icon -->
+          <!-- Add cart count indicator later -->
+          <span class="cart-count" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>

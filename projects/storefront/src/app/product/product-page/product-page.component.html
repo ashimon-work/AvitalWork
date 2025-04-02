@@ -1,0 +1,74 @@
+<!-- Wait for product data -->
+<div class="product-page-container" *ngIf="product$ | async as product; else loadingProduct">
+
+  <!-- Breadcrumbs (Example - Needs category data if available) -->
+  <div class="breadcrumbs">
+    <a [routerLink]="['/']">Home</a>
+    <!-- Add category link if product data includes it -->
+    <!-- > <a [routerLink]="['/category', product.categoryId]">{{ product.categoryName }}</a> -->
+    > <span>{{ product.name }}</span>
+  </div>
+
+  <div class="product-details-grid">
+    <!-- Left Section: Image -->
+    <div class="product-image-section">
+      <!-- Basic image display - Carousel/Zoom later -->
+      <img [src]="product.imageUrl || '/assets/images/placeholder.png'" [alt]="product.name" class="main-product-image">
+      <!-- Thumbnails would go here -->
+    </div>
+
+    <!-- Right Section: Info & Actions -->
+    <div class="product-info-section">
+      <h1 class="product-name">{{ product.name }}</h1>
+
+      <!-- Price - Style based on global vars -->
+      <p class="product-price">{{ product.price | currency }}</p>
+
+      <!-- Average Rating Placeholder -->
+      <div class="product-rating">
+        <!-- Add star rating display later -->
+        <span>⭐⭐⭐⭐⭐ (Placeholder)</span>
+      </div>
+
+      <!-- Description -->
+      <div class="product-description">
+        <p>{{ product.description || 'No description available.' }}</p>
+        <!-- Add formatted text/bullets later -->
+      </div>
+
+      <!-- Variant Selection Placeholder -->
+      <div class="product-variants">
+        <!-- Add dropdowns for Size, Color etc. later -->
+        <p>(Variant selection placeholder)</p>
+      </div>
+
+      <!-- Quantity & Add to Cart -->
+      <div class="product-actions">
+        <div class="quantity-selector">
+          <label for="quantity">Quantity:</label>
+          <!-- Basic number input - Add +/- buttons later -->
+          <input type="number" id="quantity" [(ngModel)]="quantity" min="1" step="1" class="quantity-input">
+        </div>
+        <button class="add-to-cart-btn" (click)="onAddToCart(product)">Add to Cart</button>
+        <!-- Add Wishlist button later -->
+      </div>
+
+      <!-- Shipping/Return Info Placeholder -->
+      <div class="product-meta-info">
+        <p>(Shipping/Return info placeholder)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lower Sections: Details, Reviews, Related -->
+  <div class="product-lower-sections">
+    <!-- Add Tabs/Sections for Specs, Reviews, Related Products later -->
+    <p>(Detailed Specs / Reviews / Related Products placeholder)</p>
+  </div>
+
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingProduct>
+  <p>Loading product details...</p>
+</ng-template>

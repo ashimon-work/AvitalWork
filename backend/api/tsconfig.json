@@ -10,9 +10,9 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "paths": { // Add paths configuration
+    "paths": {
       "@shared-types": [
-        "../../projects/shared-types/src/public-api.ts" // Relative path from backend/api
+        "../../dist/shared-types" // Point to the built library in dist
       ]
     },
     "incremental": true,

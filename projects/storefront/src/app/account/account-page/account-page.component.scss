@@ -1,0 +1,68 @@
+@import '../../../styles/_variables.scss'; // Import SCSS variables first
+
+:host {
+  display: block; // Ensure the host element takes up space
+  padding: $spacing-lg $container-padding-x; // Use SCSS vars
+}
+
+.account-container {
+  display: flex;
+  gap: $spacing-xl; // Use SCSS var
+  max-width: $container-max-width; // Use SCSS var
+  margin: 0 auto;
+}
+
+.account-sidebar {
+  flex: 0 0 250px; // Fixed width for sidebar (adjust as needed)
+  border-right: 1px solid $border-color; // Use SCSS var
+  padding-right: $spacing-xl; // Use SCSS var
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: $spacing-lg; // Use SCSS var
+    color: $text-color; // Use SCSS var
+  }
+
+  .account-nav {
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: $spacing-sm; // Use SCSS var
+
+        a {
+          display: block;
+          padding: $spacing-sm $spacing-md; // Use SCSS vars
+          color: $text-color-light; // Use SCSS var
+          text-decoration: none;
+          border-radius: $border-radius-sm; // Use SCSS var
+          transition: background-color 0.2s ease, color 0.2s ease;
+
+          &:hover {
+            background-color: $neutral-light; // Use SCSS var
+            color: $primary-color; // Use SCSS var
+          }
+
+          &.active-link { // Style for the active route
+            background-color: $primary-color-light; // Use SCSS var
+            color: $primary-color; // Use SCSS var
+            font-weight: $font-weight-medium; // Use SCSS var
+          }
+        }
+      }
+    }
+  }
+
+  .logout-btn {
+    margin-top: $spacing-xl; // Use SCSS var
+    width: 100%;
+    // Inherit button styles or add specific ones
+  }
+}
+
+.account-content {
+  flex: 1; // Takes up remaining space
+  padding: $spacing-sm 0 $spacing-sm $spacing-md; // Use SCSS vars
+}
