@@ -1,6 +1,6 @@
 # Project Progress: Online Business Promotion System
 
-*(As of 4/2/2025 - Store-specific implementation complete. Login functionality implemented & debugged.)*
+*(As of 4/2/2025 - Store-specific implementation complete. Login/Registration functionality implemented and debugged (DB migration, frontend routing, JWT config). Account section routing fixed.)*
 
 ## I. Project Setup & Foundation
 
@@ -27,14 +27,14 @@
 *   [x] Shopping Cart Implementation - Basic structure, data display, add/update/remove actions implemented (connected to backend in-memory cart API).
 *   [ ] Checkout Flow Implementation
 *   [ ] Order Confirmation Page
-*   [x] Authentication (Login, Registration, Recovery) - Registration page (frontend/backend) functional. Login page (frontend/backend) functional, including JWT handling, profile loading, and store-specific routing/guard fixes. Recovery pending.
+*   [x] Authentication (Login, Registration, Recovery) - Registration page (frontend/backend) functional. Login page (frontend/backend) functional, including JWT handling (secret/expiration config fixed), profile loading, and store-specific routing/guard fixes. Recovery pending.
 *   [ ] User Account Pages (Overview, Orders, Addresses, etc.) - Placeholder component/route exists. Requires Login.
 *   [/] Contact Page - Placeholder component/route exists.
 *   [/] About Page - Placeholder component/route exists.
 *   [ ] 404 Page
 *   [ ] Responsiveness & Mobile Optimization
 *   [x] API Integration - Core API service updated with methods for product details, cart operations, registration. Backend endpoints implemented for these (using DB for products/categories, in-memory for cart). Search/Newsletter endpoints still pending. **Updated to pass store context.**
-*   [x] Store-Specific Routing & Context - Implemented URL structure `/:storeSlug/...`, `StoreContextService` created, `ApiService` updated to use context. Fixed `routerLink`s in Header, Footer, Navigation, Product/Category Cards, and Category Page to use store context.
+*   [x] Store-Specific Routing & Context - Implemented URL structure `/:storeSlug/...`, `StoreContextService` created, `ApiService` updated to use context. Fixed `routerLink`s in Header, Footer, Navigation, Product/Category Cards, Category Page, Login Page, Registration Page to use store context. Fixed `AuthService` redirection logic.
 ## III. Store Management Website Development
 
 *   [ ] Core Layout & Navigation
@@ -65,11 +65,11 @@
 
 *   [x] Initial Setup (NestJS, TypeORM, Config, Modules) - Basic setup complete
 *   [x] Define Basic Entities (User, Product, Category, Store) - Entities created and configured with TypeORM. Relationships established.
-*   [x] Authentication Endpoints (Storefront Customer, Store Manager) - `/auth/register` and `/auth/login` implemented & functional. `/account/profile` (JWT protected) implemented.
+*   [x] Authentication Endpoints (Storefront Customer, Store Manager) - `/auth/register` and `/auth/login` implemented & functional (JWT config fixed). `/account/profile` (JWT protected) implemented.
 *   [x] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, etc.) - Endpoints for Products (featured, list, details), Categories (featured, details), Cart (get, add, update, remove), Auth (register) implemented. Services refactored to use TypeORM (except Cart). **Product/Category endpoints updated to filter by storeSlug.** Search/Newsletter pending.
 *   [ ] Store Management API Endpoints (Dashboard, Products, Orders, Customers, Settings, Profile, etc.)
 *   [ ] Marketplace API Endpoints (Aggregated Products, Categories, Stores, Search)
-*   [x] Database Schema Design & Migrations - Initial entities defined, TypeORM configured, data source file created, migration scripts added/fixed. Initial migration generated and run. **Store entity and relations migration created and run successfully after troubleshooting.**
+*   [x] Database Schema Design & Migrations - Initial entities defined, TypeORM configured, data source file created, migration scripts added/fixed. Initial migration generated and run. **Store entity and relations migration created and run successfully after troubleshooting.** **User entity migration generated and run successfully after troubleshooting CLI/build issues.**
 *   [x] Database Seeding (Initial) - Script created, expanded, fixed, and run for categories/products. **Updated to seed stores and associate data. Ran successfully.** Image URLs updated to picsum.photos.
 *   [ ] Data Synchronization Logic (Inventory, etc.)
 *   [ ] Security Implementation (Validation, Rate Limiting, Permissions)

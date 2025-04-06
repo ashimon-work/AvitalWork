@@ -52,20 +52,26 @@
     *   Moved `/login` and `/register` routes inside the `/:storeSlug` parent route in `app.routes.ts`.
     *   Updated `AuthGuard` to extract `storeSlug` from the target URL (`state.url`) and redirect to the store-specific login path (e.g., `/:storeSlug/login`).
     *   Verified the login flow now correctly handles redirection and maintains store context.
+*   **Account Section Routing Debugging (Frontend):**
+    *   Identified issue where navigating within the account section caused duplicated URL segments (e.g., `/account/account/orders`).
+    *   Traced issue to absolute path redirection (`/account`, `/login`) in `AuthService` after login/logout.
+    *   Updated `AuthService` to inject `ActivatedRoute` and construct store-specific relative paths (e.g., `['/', storeSlug, 'account']`) for navigation after login and logout.
+    *   Verified navigation within the account section now works correctly.
 
 ## 3. Next Steps (Immediate & Planned)
 
-1.  **Commit Changes:** Commit all backend and frontend changes related to store implementation and login fix.
-2.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update). Consider if cart needs to be store-specific.
-3.  **Implement Basic Account Page:** Backend (`/account/profile` exists), Frontend (`AccountPageComponent` data display, `JwtAuthGuard` applied). Needs UI implementation to show profile data.
-4.  **Frontend UI Integration:** Update relevant frontend components (e.g., Homepage, Category Page, Product Page) to use the `storeSlug` from `StoreContextService` when displaying data or making API calls via `ApiService`. (Currently, `ApiService` handles adding the slug, but components might need awareness for other logic).
+1.  **Commit Changes:** Commit all backend and frontend changes related to store implementation, login fixes, and account routing fixes.
+2.  **Fix JWT Configuration:** Resolved the `expiresIn` error during login by adding `JWT_EXPIRATION_TIME` to `.env`, ensuring `ConfigModule` was global, adding logging/defaults to `AuthModule`, and restarting the container. Verified working.
+3.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update). Consider if cart needs to be store-specific.
+4.  **Implement Basic Account Page:** Backend (`/account/profile` exists), Frontend (`AccountPageComponent` data display, `JwtAuthGuard` applied). Needs UI implementation to show profile data.
+5.  **Frontend UI Integration:** Update relevant frontend components (e.g., Homepage, Category Page, Product Page) to use the `storeSlug` from `StoreContextService` when displaying data or making API calls via `ApiService`. (Currently, `ApiService` handles adding the slug, but components might need awareness for other logic).
 
 ## 4. Active Decisions & Considerations
 
 *   **Store Identification:** Using a URL slug (`/:storeSlug`) to identify the active store in the frontend.
 *   **Backend Filtering:** API endpoints use the `storeSlug` passed as a query parameter (`?storeSlug=...`) to filter database results via TypeORM relations (`where: { store: { slug: storeSlug } }`).
 *   **Frontend Context:** Using a dedicated Angular service (`StoreContextService`) to read the `storeSlug` from the route parameters and provide it as an observable. `ApiService` subscribes to this observable to add the slug to API requests.
-*   **Frontend Routing Structure:** Routes requiring store context (including auth pages like login/register) must be nested under the `/:storeSlug` parameter to ensure context is available and preserved during navigation/redirection. Guards redirecting to auth pages must construct the store-specific path.
+*   **Frontend Routing Structure:** Routes requiring store context (including auth pages like login/register) must be nested under the `/:storeSlug` parameter to ensure context is available and preserved during navigation/redirection. Guards redirecting to auth pages must construct the store-specific path. Service-based navigation (like in `AuthService`) must also construct store-specific paths, potentially by accessing route parameters.
 *   **Migration Strategy:** When adding non-nullable foreign keys (`storeId`) to tables with existing data, the migration must first add the column as nullable, update existing rows with a default value (potentially inserting the default referenced entity first), and then alter the column to be non-nullable.
 *   **Production Environment:** (As before) Using Docker Compose with separate production Dockerfiles and Nginx reverse proxy. Environment variables managed via `.env` file on the server.
 *   **Image Placeholders:** (As before) Using `picsum.photos`.
@@ -85,4 +91,4 @@
 *   **Angular Route Structure:** The placement of routes (inside or outside parameterized parent routes) significantly impacts context availability and how guards should handle redirection.
 *   **(Previous Learnings Still Valid):** Docker build context, `npm install` caching, `--ignore-scripts` issues, TypeORM CLI env vars, Nginx resolver/proxy_pass, Angular budgets, `simple-array` querying, `upsert` results.
 
-*(As of 4/2/2025 - Store-specific implementation complete. Login functionality implemented and debugged.)*
+*(As of 4/2/2025 - Store-specific implementation complete. Login/Registration functionality implemented and debugged, including DB migration and frontend routing fixes. Account section routing fixed.)*
