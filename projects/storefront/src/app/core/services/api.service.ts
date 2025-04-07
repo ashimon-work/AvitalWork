@@ -1,21 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, switchMap, take } from 'rxjs'; // Import switchMap and take
-import { Category, Product } from '@shared-types'; // Import shared interfaces
-import { StoreContextService } from './store-context.service'; // Import StoreContextService
+import { Observable, switchMap, take, catchError, of } from 'rxjs';
+import { Category, Product } from '@shared-types';
+import { CarouselSlide } from '../../home/components/carousel/carousel.component';
+import { StoreContextService } from './store-context.service';
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private storeContext = inject(StoreContextService); // Inject StoreContextService
-  private apiUrl = '/api'; // Assuming API is proxied or on the same domain
-
-  constructor() {} // Keep constructor if needed for other DI, otherwise remove if only using inject()
+  private storeContext = inject(StoreContextService);
+  private apiUrl = '/api';
 
   getFeaturedCategories(): Observable<Category[]> {
     return this.storeContext.currentStoreSlug$.pipe(
-      take(1), // Take the current value and complete
+      take(1),
       switchMap(storeSlug => {
         let params = new HttpParams();
         if (storeSlug) {
@@ -47,7 +46,6 @@ export class ApiService {
         if (storeSlug) {
           params = params.set('storeSlug', storeSlug);
         }
-        // Consider adding catchError operator if specific handling is needed.
         return this.http.get<Category>(`${this.apiUrl}/categories/${categoryId}`, { params });
       })
     );
@@ -59,17 +57,14 @@ export class ApiService {
       take(1),
       switchMap(storeSlug => {
         let httpParams = new HttpParams();
-        // Add storeSlug first
         if (storeSlug) {
           httpParams = httpParams.set('storeSlug', storeSlug);
         }
-        // Build HttpParams from the queryParams object
         Object.keys(queryParams).forEach(key => {
           if (queryParams[key] !== undefined && queryParams[key] !== null) {
             httpParams = httpParams.set(key, queryParams[key].toString());
           }
         });
-        // Assuming the API returns an object like { products: Product[], total: number }
         return this.http.get<{ products: Product[], total: number }>(`${this.apiUrl}/products`, { params: httpParams });
       })
     );
@@ -91,7 +86,6 @@ export class ApiService {
     );
   }
 
-  // Method to fetch details for a single product
   getProductDetails(productId: string): Observable<Product> {
     return this.storeContext.currentStoreSlug$.pipe(
       take(1),
@@ -100,27 +94,20 @@ export class ApiService {
         if (storeSlug) {
           params = params.set('storeSlug', storeSlug);
         }
-        // Assuming API returns 404 if not found, handled by HttpClient
         return this.http.get<Product>(`${this.apiUrl}/products/${productId}`, { params });
       })
     );
   }
 
-  // Method to add item to cart
-  addToCart(payload: { productId: string, quantity: number }): Observable<any> { // Assuming API returns new cart state or success
-    // The backend endpoint might be POST /api/cart/add as per plan
+  addToCart(payload: { productId: string, quantity: number }): Observable<any> {
     return this.http.post(`${this.apiUrl}/cart/add`, payload);
   }
 
-  // Method for newsletter subscription
-  subscribeNewsletter(email: string): Observable<any> { // Assuming API returns simple success/error
-    // The backend endpoint might be POST /api/newsletter/subscribe as per plan
+  subscribeNewsletter(email: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/newsletter/subscribe`, { email });
   }
 
-  // --- Cart Methods ---
-
-  getCart(): Observable<any> { // Define a proper Cart interface later
+  getCart(): Observable<any> {
     return this.http.get(`${this.apiUrl}/cart`);
   }
 
@@ -132,12 +119,28 @@ export class ApiService {
     return this.http.delete(`${this.apiUrl}/cart/${productId}`);
   }
 
-  // --- Auth Methods ---
-
-  register(userData: any): Observable<any> { // Use a proper DTO type later if needed on frontend
+  register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register`, userData);
   }
 
-  // Add login method later
+  getCarouselImages(): Observable<CarouselSlide[]> {
+    return this.storeContext.currentStoreSlug$.pipe(
+      take(1),
+      switchMap(storeSlug => {
+        let params = new HttpParams();
+        if (storeSlug) {
+          params = params.set('storeSlug', storeSlug);
+        } else {
+          console.error('Store slug is missing when fetching carousel images.');
+        }
+        console.log('Fetching carousel images from API');
+        return this.http.get<CarouselSlide[]>(`${this.apiUrl}/carousel`, { params }).pipe(
+          catchError(error => {
+            console.error('Error fetching carousel images from API:', error);
+            return of([]);
+          })
+        );
+      })
+    );
+  }
 }
-

@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { CategoryEntity } from './categories/entities/category.entity';
 import { ProductEntity } from './products/entities/product.entity';
 import { StoreEntity } from './stores/entities/store.entity';
+import { CarouselItem } from './carousel/entities/carousel.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Logger } from '@nestjs/common';
@@ -68,6 +69,22 @@ const productData = [
   { sku: 'TOY-004', name: 'Remote Control Car', description: 'Fast and fun remote control car for indoor/outdoor play.', price: 29.99, imageUrl: 'https://picsum.photos/seed/TOY-004/500/500', tags: ['Outdoor', 'Kids', 'Sale'], stockLevel: 70, isActive: true, storeId: storeData[1].id },
 ];
 
+// Assign carousel items to stores
+const carouselData = [
+  // Store 1: Awesome Gadgets & Goods (slug: awesome-gadgets)
+  // Link to product ELEC-001 (using SKU as identifier for now, assuming product routes use SKU or ID)
+  { imageUrl: 'https://picsum.photos/seed/carousel1-store1/1920/400', altText: 'Promotion: Wireless Headphones', linkUrl: `ELEC-001`, storeId: storeData[0].id }, // Store only SKU
+  // Link to product HOME-001
+  { imageUrl: 'https://picsum.photos/seed/carousel2-store1/1920/400', altText: 'Promotion: Coffee Mug Set', linkUrl: `HOME-001`, storeId: storeData[0].id }, // Store only SKU
+  // Link to product BOOK-001
+  { imageUrl: 'https://picsum.photos/seed/carousel3-store1/1920/400', altText: 'Featured Book: The Midnight Library', linkUrl: `BOOK-001`, storeId: storeData[0].id }, // Store only SKU
+  // Store 2: Fashion & Fun Zone (slug: fashion-fun)
+  // Link to product APPA-001
+  { imageUrl: 'https://picsum.photos/seed/carousel1-store2/1920/400', altText: 'Featured: Classic Cotton T-Shirt', linkUrl: `APPA-001`, storeId: storeData[1].id }, // Store only SKU
+  // Link to product SPRT-001
+  { imageUrl: 'https://picsum.photos/seed/carousel2-store2/1920/400', altText: 'Featured: Premium Yoga Mat', linkUrl: `SPRT-001`, storeId: storeData[1].id }, // Store only SKU
+];
+
 
 async function bootstrap() {
   const logger = new Logger('Seed');
@@ -80,11 +97,12 @@ async function bootstrap() {
   const storeRepository = appContext.get<Repository<StoreEntity>>(getRepositoryToken(StoreEntity));
   const categoryRepository = appContext.get<Repository<CategoryEntity>>(getRepositoryToken(CategoryEntity));
   const productRepository = appContext.get<Repository<ProductEntity>>(getRepositoryToken(ProductEntity));
+  const carouselRepository = appContext.get<Repository<CarouselItem>>(getRepositoryToken(CarouselItem));
 
   try {
     // --- Seed Stores ---
     logger.log('Seeding stores...');
-    const storeUpsertResult = await storeRepository.upsert(storeData, ['id']); // Upsert based on ID
+    const storeUpsertResult = await storeRepository.upsert(storeData, ['id']);
     logger.log(`Stores seeded/updated: ${storeUpsertResult.raw?.length || storeUpsertResult.generatedMaps?.length || 'N/A (check upsert result)'}`);
     const storeCount = await storeRepository.count();
     logger.log(`Total stores in DB after seeding: ${storeCount}`);
@@ -103,6 +121,16 @@ async function bootstrap() {
     const productCount = await productRepository.count(); // Count products after upsert
     logger.log(`Total products in DB after seeding: ${productCount}`);
 
+    // --- Seed Carousel Items ---
+    logger.log('Seeding carousel items...');
+    // Use simple `create` and `save` in a loop or `upsert` if you add a unique constraint later
+    // For simplicity with potential re-runs, let's clear existing items for the seeded stores first
+    await carouselRepository.delete({ storeId: storeData[0].id });
+    await carouselRepository.delete({ storeId: storeData[1].id });
+    const createdCarouselItems = carouselRepository.create(carouselData);
+    await carouselRepository.save(createdCarouselItems);
+    const carouselCount = await carouselRepository.count();
+    logger.log(`Total carousel items in DB after seeding: ${carouselCount}`);
 
     logger.log('Database seeding completed successfully.');
   } catch (error) {

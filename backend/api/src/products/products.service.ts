@@ -12,9 +12,9 @@ export interface FindAllProductsParams {
   limit?: number;
   price_min?: number;
   price_max?: number;
-  tags?: string; // Comma-separated string from query params
-  q?: string; // For search term
-  storeSlug?: string; // Added store slug for filtering
+  tags?: string;
+  q?: string;
+  storeSlug?: string;
 }
 
 @Injectable()
@@ -34,33 +34,29 @@ export class ProductsService {
     };
 
     if (storeSlug) {
-      where.store = { slug: storeSlug }; // Filter by store slug if provided
+      where.store = { slug: storeSlug };
     }
 
     return this.productsRepository.find({
       where,
-      take: 8, // Limit to 8 featured products
-      relations: ['store'], // Ensure store relation is loaded for filtering
+      take: 8,
+      relations: ['store'],
     });
-     // Fallback/Alternative if In(['Featured']) doesn't work: Fetch more and filter in code
-     // const candidates = await this.productsRepository.find({ where: { isActive: true }, take: 20 });
-     // return candidates.filter(p => p.tags?.includes('Featured')).slice(0, 6);
   }
 
-  async findOne(id: string, storeSlug?: string): Promise<ProductEntity | null> { // Add storeSlug parameter
+  async findOne(id: string, storeSlug?: string): Promise<ProductEntity | null> {
     const where: FindOptionsWhere<ProductEntity> = {
-      id,
+      sku: id,
       isActive: true,
     };
 
     if (storeSlug) {
-      where.store = { slug: storeSlug }; // Filter by store slug if provided
+      where.store = { slug: storeSlug };
     }
 
-    // Use findOne with where and relations instead of findOneBy for relation filtering
     const product = await this.productsRepository.findOne({
       where,
-      relations: ['store'], // Ensure store relation is loaded for filtering
+      relations: ['store'],
     });
 
     return product;

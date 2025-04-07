@@ -3,11 +3,12 @@
      (mouseleave)="startAutoPlay()">
 
   <!-- Slides -->
-  <div class="slides-wrapper">
+  <div class="slides-wrapper" [style.transform]="slidesTransform">
     <div class="slide"
-         *ngFor="let slide of slides; let i = index"
-         [ngClass]="{'active': i === currentSlideIndex}">
-      <a *ngIf="slide.linkUrl; else noLink" [href]="slide.linkUrl" target="_blank" rel="noopener noreferrer">
+         *ngFor="let slide of slides; let i = index; trackBy: trackByFn"
+         >
+      <a *ngIf="slide.linkUrl && (currentStoreSlug$ | async) as storeSlug; else noLink"
+         [routerLink]="['/', storeSlug, 'product', slide.linkUrl]">
         <img [src]="slide.imageUrl" [alt]="slide.altText">
       </a>
       <ng-template #noLink>

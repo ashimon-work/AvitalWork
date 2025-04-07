@@ -63,8 +63,9 @@
 *   **Migrations:**
     *   Managed via TypeORM CLI scripts added to `backend/api/package.json` (`migration:generate`, `migration:run`, `migration:revert`), referencing compiled data source.
     *   Migration files stored in `backend/api/src/migrations`.
-    *   Generated via `docker exec ... npm run typeorm -- migration:generate ...` and copied to host.
-    *   Run via `docker exec ... npm run migration:run`.
+    *   Generated via `docker compose exec --workdir /usr/src/app/backend/api api npm run typeorm -- migration:generate ...`. The `--workdir` is crucial because the `npm run typeorm` script needs to find `package.json` in `backend/api`. **Note:** Files generated inside Docker by root might have incorrect host permissions; use `sudo chown $(whoami):$(whoami) path/to/migration.ts` if needed.
+    *   **Production Environment Note:** Since the production `api` service in `docker-compose.yml` does not mount the source code volume, generated files (like migrations) exist only inside the container. Use `docker cp CONTAINER_NAME:/path/to/file /local/path` (e.g., `sudo docker cp magic_store_api_prod:/usr/src/app/backend/api/src/migrations/MIGRATION_FILE.ts ./backend/api/src/migrations/`) to copy them to the host.
+    *   Run via `docker compose exec --workdir /usr/src/app/backend/api api npm run migration:run`.
 *   **Seeding:**
     *   Initial data seeding handled by `backend/api/src/seed.ts`.
     *   Script uses NestJS application context to access repositories.

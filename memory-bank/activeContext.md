@@ -57,14 +57,32 @@
     *   Traced issue to absolute path redirection (`/account`, `/login`) in `AuthService` after login/logout.
     *   Updated `AuthService` to inject `ActivatedRoute` and construct store-specific relative paths (e.g., `['/', storeSlug, 'account']`) for navigation after login and logout.
     *   Verified navigation within the account section now works correctly.
+*   **Carousel Implementation & Troubleshooting:**
+    *   Corrected `CarouselItem` entity (UUID PK, relation to `StoreEntity`).
+    *   Corrected `StoreEntity` (added `OneToMany` to `CarouselItem`).
+    *   Corrected `CarouselModule` (import `CarouselItem`).
+    *   Corrected `data-source.ts` (added `CarouselItem` to entities list).
+    *   Cleaned up multiple incorrect migration files.
+    *   Troubleshot migration generation failures:
+        *   Docker permission errors (`/var/run/docker.sock`) resolved using `sudo`.
+        *   `ENOENT` error for `package.json` resolved using `docker compose exec --workdir /usr/src/app/backend/api ...`.
+        *   Migration file not appearing on host due to lack of volume mount in production `api` service (`docker-compose.yml`). Resolved by using `sudo docker cp ...` to copy the file from the container.
+        *   Documented `--workdir` and `docker cp` necessity in `techContext.md`.
+    *   Generated and successfully ran the correct `CreateCarouselItemsTable` migration.
+    *   Updated `CarouselService` and `CarouselController` to filter by `storeSlug`.
+    *   Updated `ApiService` (`getCarouselImages`) to pass `storeSlug`.
+    *   Updated `CarouselComponent` to fetch its own data via `ApiService`.
+    *   Fixed `HomepageComponent` template error by removing `[slides]` binding.
+    *   Updated `seed.ts` to include `CarouselItem` data and ran seed script successfully.
+    *   Identified and removed misplaced `CarouselAddComponent` and `createCarouselImage` method from Storefront project (belongs in Store Management). Fixed resulting build error.
 
 ## 3. Next Steps (Immediate & Planned)
 
-1.  **Commit Changes:** Commit all backend and frontend changes related to store implementation, login fixes, and account routing fixes.
-2.  **Fix JWT Configuration:** Resolved the `expiresIn` error during login by adding `JWT_EXPIRATION_TIME` to `.env`, ensuring `ConfigModule` was global, adding logging/defaults to `AuthModule`, and restarting the container. Verified working.
+1.  **Commit Changes:** Commit all backend and frontend changes related to store implementation, login fixes, account routing fixes, and **carousel implementation/fixes**.
+2.  **(DONE)** Fix JWT Configuration: Resolved.
 3.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update). Consider if cart needs to be store-specific.
 4.  **Implement Basic Account Page:** Backend (`/account/profile` exists), Frontend (`AccountPageComponent` data display, `JwtAuthGuard` applied). Needs UI implementation to show profile data.
-5.  **Frontend UI Integration:** Update relevant frontend components (e.g., Homepage, Category Page, Product Page) to use the `storeSlug` from `StoreContextService` when displaying data or making API calls via `ApiService`. (Currently, `ApiService` handles adding the slug, but components might need awareness for other logic).
+5.  **Frontend UI Integration:** Update relevant frontend components (e.g., Category Page, Product Page) to use the `storeSlug` from `StoreContextService` when displaying data or making API calls via `ApiService`. (Homepage seems okay now).
 
 ## 4. Active Decisions & Considerations
 
@@ -89,6 +107,10 @@
 *   **Migration Constraints:** Adding `NOT NULL` columns or foreign key constraints to tables with existing data requires careful handling (add nullable, update data, alter to not null, add constraint) to avoid errors. Inserting required related data (like a default store) within the migration itself can resolve FK violations.
 *   **UUID Format:** Ensure strings used for UUIDs adhere to the standard format when inserting or comparing in the database.
 *   **Angular Route Structure:** The placement of routes (inside or outside parameterized parent routes) significantly impacts context availability and how guards should handle redirection.
-*   **(Previous Learnings Still Valid):** Docker build context, `npm install` caching, `--ignore-scripts` issues, TypeORM CLI env vars, Nginx resolver/proxy_pass, Angular budgets, `simple-array` querying, `upsert` results.
+*   **Docker `exec` Working Directory:** When running commands like `npm run ...` inside a container via `docker compose exec`, ensure the correct working directory is specified using `--workdir` if the `package.json` is not in the container's default working directory.
+*   **Docker Volumes (Prod vs. Dev):** Production Docker Compose setups often omit source code volume mounts for performance/security. Files created inside the container (e.g., migrations) will *not* appear on the host unless explicitly copied out (e.g., using `docker cp`). Development setups (`docker-compose.dev.yml`) typically *do* mount volumes, allowing changes to reflect immediately.
+*   **Docker Permissions:** Files created/copied from Docker containers might have incorrect host permissions, requiring `sudo chown`.
+*   **Verify Feature Placement:** Always double-check component/feature placement against the project plan (e.g., `CarouselAddComponent` belonged in Store Management, not Storefront).
+*   **(Previous Learnings Still Valid):** TypeORM entity loading/CLI config, TS build includes, Docker build cache/CMD path, migration constraints, UUID format, Angular route structure/guards, JWT config, etc.
 
-*(As of 4/2/2025 - Store-specific implementation complete. Login/Registration functionality implemented and debugged, including DB migration and frontend routing fixes. Account section routing fixed.)*
+*(As of 4/6/2025 - Carousel implementation fixed, including backend entity/migration/service/controller, frontend service/component, seeding, and Docker troubleshooting. Misplaced carousel creation code removed from Storefront.)*

@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { ProductEntity } from '../../products/entities/product.entity';
 import { CategoryEntity } from '../../categories/entities/category.entity';
+import { CarouselItem } from '../../carousel/entities/carousel.entity';
 
 // Define an interface for Store if needed in shared-types later
 // import { Store as IStore } from '@shared-types';
@@ -36,6 +37,10 @@ export class StoreEntity /* implements IStore */ {
   // Relation: A store can have many categories
   @OneToMany(() => CategoryEntity, (category) => category.store)
   categories: CategoryEntity[];
+
+  // Relation: A store can have many carousel items
+  @OneToMany(() => CarouselItem, (carouselItem) => carouselItem.store)
+  carouselItems: CarouselItem[];
 
   @CreateDateColumn()
   createdAt: Date;

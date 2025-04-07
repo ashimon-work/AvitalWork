@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { HomeRoutingModule } from './home-routing.module'; // Import routing module
 import { HomepageComponent } from './homepage/homepage.component'; // Import component
@@ -8,20 +9,20 @@ import { HomepageComponent } from './homepage/homepage.component'; // Import com
 import { CarouselComponent } from './components/carousel/carousel.component';
 import { CategoryCardComponent } from '../shared/components/category-card/category-card.component';
 import { ProductCardComponent } from '../shared/components/product-card/product-card.component';
-import { SearchBarComponent } from '../core/components/search-bar/search-bar.component'; // Assuming SearchBar is needed on homepage, though plan puts it in header
-import { NewsletterFormComponent } from '../shared/components/newsletter-form/newsletter-form.component'; // Assuming Newsletter is needed on homepage, though plan puts it in footer
+// import { SearchBarComponent } from '../core/components/search-bar/search-bar.component'; // Assuming SearchBar is needed on homepage, though plan puts it in header
+// import { NewsletterFormComponent } from '../shared/components/newsletter-form/newsletter-form.component'; // Assuming Newsletter is needed on homepage, though plan puts it in footer
 
 @NgModule({
-  declarations: [HomepageComponent], // Declare the component
+  declarations: [HomepageComponent],
   imports: [
     CommonModule,
-    HomeRoutingModule, // Import routing module
-    // Import standalone components needed by HomepageComponent template
+    FormsModule,
+    HomeRoutingModule,
     CarouselComponent,
     CategoryCardComponent,
     ProductCardComponent,
-    SearchBarComponent, // Re-evaluate if needed directly here vs. header/footer
-    NewsletterFormComponent, // Re-evaluate if needed directly here vs. header/footer
+    // SearchBarComponent, // Re-evaluate if needed directly here vs. header/footer
+    // NewsletterFormComponent, // Re-evaluate if needed directly here vs. header/footer
   ],
 })
 export class HomeModule {}

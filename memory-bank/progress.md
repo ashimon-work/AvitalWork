@@ -1,6 +1,6 @@
 # Project Progress: Online Business Promotion System
 
-*(As of 4/2/2025 - Store-specific implementation complete. Login/Registration functionality implemented and debugged (DB migration, frontend routing, JWT config). Account section routing fixed.)*
+*(As of 4/6/2025 - Carousel implementation fixed (backend entity/migration/service/controller, frontend service/component, seeding, Docker troubleshooting). Misplaced carousel creation code removed from Storefront.)*
 
 ## I. Project Setup & Foundation
 
@@ -20,7 +20,7 @@
 ## II. Storefront Website Development
 
 *   [x] Core Layout & Navigation (Header, Footer, Menu) - Basic structure generated and integrated
-*   [x] Homepage Implementation - Frontend complete (Carousel, Featured Sections, Search/Newsletter/Cart integration). Backend endpoints for Search, Newsletter needed. Featured products endpoint fixed.
+*   [x] Homepage Implementation - Frontend complete (Carousel **fixed & seeded**, Featured Sections, Search/Newsletter/Cart integration). Backend endpoints for Search, Newsletter needed. Featured products endpoint fixed.
 *   [x] Homepage Styling (Modern & Minimalist Theme) - Applied global styles and styled core/homepage components.
 *   [/] Category Page Implementation - Basic structure, data fetching, filtering/sorting/pagination controls, styling implemented. Fetches from DB.
 *   [/] Product Page Implementation - Basic structure, data fetching, styling implemented. Fetches from DB.
@@ -64,13 +64,13 @@
 ## V. Backend API Development
 
 *   [x] Initial Setup (NestJS, TypeORM, Config, Modules) - Basic setup complete
-*   [x] Define Basic Entities (User, Product, Category, Store) - Entities created and configured with TypeORM. Relationships established.
+*   [x] Define Basic Entities (User, Product, Category, Store, **CarouselItem**) - Entities created and configured with TypeORM. Relationships established.
 *   [x] Authentication Endpoints (Storefront Customer, Store Manager) - `/auth/register` and `/auth/login` implemented & functional (JWT config fixed). `/account/profile` (JWT protected) implemented.
-*   [x] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, etc.) - Endpoints for Products (featured, list, details), Categories (featured, details), Cart (get, add, update, remove), Auth (register) implemented. Services refactored to use TypeORM (except Cart). **Product/Category endpoints updated to filter by storeSlug.** Search/Newsletter pending.
+*   [x] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, **Carousel**, etc.) - Endpoints for Products (featured, list, details), Categories (featured, details), Cart (get, add, update, remove), Auth (register), **Carousel (get)** implemented. Services refactored to use TypeORM (except Cart). **Product/Category/Carousel endpoints updated to filter by storeSlug.** Search/Newsletter pending.
 *   [ ] Store Management API Endpoints (Dashboard, Products, Orders, Customers, Settings, Profile, etc.)
 *   [ ] Marketplace API Endpoints (Aggregated Products, Categories, Stores, Search)
-*   [x] Database Schema Design & Migrations - Initial entities defined, TypeORM configured, data source file created, migration scripts added/fixed. Initial migration generated and run. **Store entity and relations migration created and run successfully after troubleshooting.** **User entity migration generated and run successfully after troubleshooting CLI/build issues.**
-*   [x] Database Seeding (Initial) - Script created, expanded, fixed, and run for categories/products. **Updated to seed stores and associate data. Ran successfully.** Image URLs updated to picsum.photos.
+*   [x] Database Schema Design & Migrations - Initial entities defined, TypeORM configured, data source file created, migration scripts added/fixed. Initial migration generated and run. **Store entity and relations migration created and run successfully after troubleshooting.** **User entity migration generated and run successfully after troubleshooting CLI/build issues.** **CarouselItem migration created and run successfully after troubleshooting Docker/CLI issues.**
+*   [x] Database Seeding (Initial) - Script created, expanded, fixed, and run for categories/products. **Updated to seed stores and associate data.** **Updated to seed CarouselItems.** Ran successfully. Image URLs updated to picsum.photos.
 *   [ ] Data Synchronization Logic (Inventory, etc.)
 *   [ ] Security Implementation (Validation, Rate Limiting, Permissions)
 *   [ ] Testing (Unit, Integration)
