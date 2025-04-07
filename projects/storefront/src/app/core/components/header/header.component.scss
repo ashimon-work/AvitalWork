@@ -55,6 +55,8 @@
   align-items: center;
   gap: var(--spacing-md); // Space between search and user actions
   flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end; /* Align items to the end of the container */
 }
 
 .search-bar {
@@ -108,5 +110,138 @@
   text-align: center;
 }
 
-// Responsive adjustments might be needed later
-// e.g., hiding navigation behind a burger menu on smaller screens
+// Hamburger Button Styles (Hidden on Desktop)
+.hamburger-button {
+  display: none; // Hidden by default
+  background: none;
+  border: none;
+  padding: var(--spacing-xs);
+  cursor: pointer;
+  color: var(--text-color);
+
+  .material-icons {
+    font-size: 28px; // Larger icon for touch
+    vertical-align: middle;
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--primary-color);
+    background-color: var(--neutral-lightest);
+    border-radius: 50%;
+    outline: none;
+  }
+}
+
+// Mobile Menu Container Styles (Hidden on Desktop)
+.mobile-menu-content {
+  display: none; // Hidden by default
+}
+
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .header-container {
+    gap: var(--spacing-xs); // Further reduce gap
+    padding-right: var(--spacing-xs); // Further reduce padding
+    padding-left: var(--spacing-xs); // Further reduce padding
+    position: relative; // Needed for absolute positioning of the menu
+  }
+
+  // Reduce logo size on mobile
+  .logo img {
+    height: 30px; // Smaller logo height
+  }
+
+  // Hide original nav and search bar (now inside mobile menu)
+  .navigation,
+  .search-bar {
+    display: none;
+  }
+
+  // Show hamburger button
+  .hamburger-button {
+    display: block;
+    order: 3; // Place it after logo and user actions
+
+    .material-icons {
+      font-size: 18px; // Smaller menu icon
+    }
+  }
+
+  // Keep user actions visible, adjust gap
+  .header-right {
+    order: 2; // Place user actions before hamburger
+    gap: var(--spacing-xs); // Further reduce gap between user actions and hamburger
+    flex-wrap: nowrap;
+    justify-content: flex-end; // Keep this alignment
+
+    .action-icon .material-icons {
+      font-size: 18px;
+    }
+
+    .user-actions {
+      gap: var(--spacing-xxs); // Reduce gap even further
+      font-size: 0.6rem; // Even smaller font size for all text
+    }
+    justify-content: flex-end;
+  }
+
+  // Style the mobile menu container
+  .mobile-menu-content {
+    display: none; // Hidden by default
+    position: absolute;
+    top: 100%; // Position below the header
+    left: 0;
+    right: 0;
+    background-color: var(--background-color);
+    border-top: var(--border-width) solid var(--border-color);
+    box-shadow: var(--box-shadow-md);
+    padding: var(--spacing-md);
+    z-index: 999; // Below header but above page content
+
+    // Show when open
+    &.open {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    // Ensure nav and search display correctly inside the menu
+    .navigation,
+    .search-bar {
+      display: block; // Show them inside the menu
+      width: 100%; // Take full width
+      max-width: none; // Remove previous max-width constraint on search
+      margin-bottom: var(--spacing-sm); // Add some spacing
+    }
+
+    // Adjust navigation styles for vertical layout if needed
+    .navigation {
+      // Example: If app-navigation uses flex row, change it
+      // ::ng-deep ul { flex-direction: column; align-items: flex-start; }
+      justify-content: flex-start; // Align items to the start
+    }
+
+    .action-link {
+      font-size: 0.85rem; // Smaller font size for mobile
+    }
+
+    .action-icon {
+      padding: var(--spacing-xxs); // Even smaller padding
+    }
+
+    .user-actions {
+      gap: var(--spacing-xxs); // Reduce gap even further
+    }
+
+    .cart-count {
+      font-size: 0.7rem; // Reduce cart count font size
+    }
+  }
+}
+
+// Define extra small spacing variable if it doesn't exist
+:root {
+  --spacing-xxs: calc(0.25 * var(--spacing-unit)); // 2px
+}

@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { startWith } from 'rxjs';
-import { Observable } from 'rxjs';
+import { startWith, tap, catchError, Observable, of } from 'rxjs'; // Import tap, catchError, of
 import { Category, Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { StoreContextService } from '../../core/services/store-context.service';
@@ -15,11 +14,19 @@ export class HomepageComponent {
   private storeContext = inject(StoreContextService);
   featuredCategories$: Observable<Category[]>;
   featuredProducts$: Observable<Product[]>;
-  currentStoreSlug: string | null = this.storeContext.getCurrentStoreSlug();
+  currentStoreSlug$: Observable<string | null> = this.storeContext.currentStoreSlug$;
   carouselSlides$: Observable<CarouselSlide[]>;
 
   constructor() {
-    this.featuredCategories$ = this.apiService.getFeaturedCategories();
+    console.log('<<<<< HomepageComponent Constructor Start >>>>>'); // Add this very first line
+    console.log('[HomepageComponent] Fetching featured categories...');
+    this.featuredCategories$ = this.apiService.getFeaturedCategories().pipe(
+      tap(categories => console.log('[HomepageComponent] Featured categories fetched:', categories)),
+      catchError(error => {
+        console.error('[HomepageComponent] Error fetching featured categories:', error);
+        return of([]); // Return empty array on error to avoid breaking the template
+      })
+    );
 
     this.featuredProducts$ = this.apiService.getFeaturedProducts();
 

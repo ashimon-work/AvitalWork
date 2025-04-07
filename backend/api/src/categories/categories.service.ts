@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common'; // Import Logger
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere } from 'typeorm'; // Import FindOptionsWhere
+import { Repository, FindOptionsWhere, FindManyOptions } from 'typeorm'; // Import FindOptionsWhere, FindManyOptions
 import { CategoryEntity } from './entities/category.entity';
 // Remove Category interface import if not needed elsewhere in this file
 // import { Category } from '@shared-types';
 
 @Injectable()
 export class CategoriesService {
+  private readonly logger = new Logger(CategoriesService.name); // Instantiate Logger
   constructor(
     @InjectRepository(CategoryEntity)
     private readonly categoriesRepository: Repository<CategoryEntity>,
@@ -18,12 +19,16 @@ export class CategoriesService {
       where.store = { slug: storeSlug }; // Filter by store slug if provided
     }
 
-    return this.categoriesRepository.find({
+    const findOptions: FindManyOptions<CategoryEntity> = { // Explicitly type findOptions
       where,
       take: 4,
-      order: { name: 'ASC' }, // Example ordering
-      relations: ['store'], // Ensure store relation is loaded for filtering
-    });
+      order: { name: 'ASC' }, // TypeORM should now infer 'ASC' correctly
+      relations: ['store'],
+    };
+    this.logger.log(`Finding featured categories with options: ${JSON.stringify(findOptions)}`);
+    const categories = await this.categoriesRepository.find(findOptions);
+    this.logger.log(`Found ${categories.length} featured categories.`);
+    return categories;
   }
 
   async findOne(id: string, storeSlug?: string): Promise<CategoryEntity | null> { // Add storeSlug parameter

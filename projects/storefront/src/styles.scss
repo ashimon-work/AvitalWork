@@ -1,3 +1,4 @@
+
 @import './styles/_variables.scss'; // Import SCSS variables first
 
 /* Global Styles - Modern & Minimalist Theme */
@@ -70,6 +71,7 @@
 html {
   font-size: var(--font-size-base); // Typically 16px
   scroll-behavior: smooth;
+  overflow-x: hidden; // Prevent horizontal scroll at the root
 }
 
 body {
@@ -79,6 +81,7 @@ body {
   background-color: var(--background-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; // Prevent horizontal scroll on body as well
 }
 
 /* 3. Typography Defaults */
@@ -187,6 +190,13 @@ select {
   margin-left: auto;
   padding-right: var(--container-padding-x);
   padding-left: var(--container-padding-x);
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .container {
+    width: 100%; /* Make container full width on smaller screens */
+  }
 }
 
 /* Add more utility classes as needed (e.g., for text alignment, display, etc.) */

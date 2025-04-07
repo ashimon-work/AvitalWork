@@ -7,6 +7,7 @@ import { CartService } from '../../services/cart.service'; // Import CartService
 import { StoreContextService } from '../../services/store-context.service'; // Import StoreContextService
 import { AuthService } from '../../services/auth.service'; // Import AuthService
 import { Observable, Subscription } from 'rxjs'; // Import Observable and Subscription
+
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -25,6 +26,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private cartCountSubscription: Subscription | undefined;
   currentStoreSlug$: Observable<string | null>; // Add slug observable
   isAuthenticated$: Observable<boolean>; // Add auth state observable
+  isMobileMenuOpen: boolean = false; // State for mobile menu toggle
 
   // Inject CartService, StoreContextService, and AuthService
   constructor(
@@ -50,6 +52,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.cartCountSubscription) {
       this.cartCountSubscription.unsubscribe();
     }
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
   logout(): void {

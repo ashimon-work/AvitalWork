@@ -3,19 +3,33 @@
      (mouseleave)="startAutoPlay()">
 
   <!-- Slides -->
-  <div class="slides-wrapper" [style.transform]="slidesTransform">
+  <div class="slides-wrapper"
+       [style.transform]="slidesTransform"
+       [class.no-transition]="transitioning"> <!-- Add class to disable transition -->
+
+    <!-- Original Slides -->
     <div class="slide"
-         *ngFor="let slide of slides; let i = index; trackBy: trackByFn"
-         >
-      <a *ngIf="slide.linkUrl && (currentStoreSlug$ | async) as storeSlug; else noLink"
-         [routerLink]="['/', storeSlug, 'product', slide.linkUrl]">
+         *ngFor="let slide of slides; let i = index; trackBy: trackByFn">
+      <a *ngIf="slide.linkUrl && (currentStoreSlug | async); else noLink"
+         [routerLink]="['/', (currentStoreSlug | async), 'product', slide.linkUrl]">
         <img [src]="slide.imageUrl" [alt]="slide.altText">
       </a>
       <ng-template #noLink>
         <img [src]="slide.imageUrl" [alt]="slide.altText">
       </ng-template>
-      <!-- Optional: Add text overlays or calls to action here -->
     </div>
+
+    <!-- Cloned First Slide (for infinite loop illusion) -->
+    <div class="slide" *ngIf="slides.length > 1">
+       <a *ngIf="slides[0].linkUrl && (currentStoreSlug | async); else noLinkClone"
+         [routerLink]="['/', (currentStoreSlug | async), 'product', slides[0].linkUrl]">
+        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText + ' (Clone)'"> <!-- Added (Clone) for debugging clarity if needed -->
+      </a>
+      <ng-template #noLinkClone>
+        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText + ' (Clone)'"> <!-- Added (Clone) for debugging clarity if needed -->
+      </ng-template>
+    </div>
+
   </div>
 
   <!-- Navigation Arrows -->
@@ -26,7 +40,7 @@
   <div class="carousel-indicators">
     <span *ngFor="let slide of slides; let i = index"
           class="indicator-dot"
-          [ngClass]="{'active': i === currentSlideIndex}"
+          [ngClass]="{'active': i === currentSlideIndex || (currentSlideIndex === slides.length && i === 0)}"
           (click)="selectSlide(i)">
     </span>
   </div>

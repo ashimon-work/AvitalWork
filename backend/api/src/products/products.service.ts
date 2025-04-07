@@ -46,7 +46,7 @@ export class ProductsService {
 
   async findOne(id: string, storeSlug?: string): Promise<ProductEntity | null> {
     const where: FindOptionsWhere<ProductEntity> = {
-      sku: id,
+      id: id, // Use the primary 'id' field for lookup
       isActive: true,
     };
 

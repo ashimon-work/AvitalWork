@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router'; // For routerLink
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { Observable } from 'rxjs';
 import { CartService, CartState, CartItem } from '../../core/services/cart.service'; // Import service and interfaces
+import { StoreContextService } from '../../core/services/store-context.service'; // Import StoreContextService
 import { Product } from '@shared-types'; // Import Product type if needed
 
 @Component({
@@ -19,9 +20,12 @@ import { Product } from '@shared-types'; // Import Product type if needed
 })
 export class CartPageComponent {
   private cartService = inject(CartService);
+  private storeContextService = inject(StoreContextService);
 
   // Expose the cart state observable directly to the template
   cartState$: Observable<CartState> = this.cartService.cartState$;
+  // Expose the store slug observable
+  currentStoreSlug$: Observable<string | null> = this.storeContextService.currentStoreSlug$;
 
   // Method to calculate item subtotal
   calculateItemSubtotal(item: CartItem): number {

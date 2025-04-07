@@ -32,7 +32,7 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/storefront/public"
+                "input": "projects/storefront/src/assets"
               }
             ],
             "styles": [

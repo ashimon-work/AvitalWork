@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, switchMap, take, catchError, of } from 'rxjs';
+import { Observable, switchMap, take, catchError, of, tap } from 'rxjs'; // Import tap
 import { Category, Product } from '@shared-types';
 import { CarouselSlide } from '../../home/components/carousel/carousel.component';
 import { StoreContextService } from './store-context.service';
@@ -20,7 +20,15 @@ export class ApiService {
         if (storeSlug) {
           params = params.set('storeSlug', storeSlug);
         }
-        return this.http.get<Category[]>(`${this.apiUrl}/categories/featured`, { params });
+        const url = `${this.apiUrl}/categories/featured`;
+        console.log(`[ApiService] Fetching featured categories from: ${url} with params:`, params.toString());
+        return this.http.get<Category[]>(url, { params }).pipe(
+          tap(response => console.log('[ApiService] Featured categories response:', response)),
+          catchError(error => {
+            console.error('[ApiService] Error fetching featured categories:', error);
+            return of([]); // Return empty array on error
+          })
+        );
       })
     );
   }

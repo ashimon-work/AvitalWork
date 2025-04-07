@@ -15,8 +15,12 @@
 
 .slides-wrapper {
   display: flex;
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.5s linear;
   height: 100%;
+
+  &.no-transition {
+    transition: none; // Disable transition during the reset jump
+  }
 }
 
 .slide {

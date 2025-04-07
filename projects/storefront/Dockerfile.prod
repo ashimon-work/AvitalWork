@@ -27,7 +27,7 @@ RUN npx ng build shared-types
 
 # Build the storefront application for production
 # Output path is defined in angular.json, usually 'dist/storefront'
-RUN npx ng build storefront --configuration production
+RUN npx ng build storefront --configuration production --source-map
 
 # Stage 2: Serve application with Nginx
 FROM nginx:stable-alpine

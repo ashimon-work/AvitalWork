@@ -82,7 +82,7 @@
   <ng-template #emptyCart>
     <div class="empty-cart-message">
       <p>Your shopping cart is empty.</p>
-      <button [routerLink]="['/']">Shop Now</button>
+      <button [routerLink]="['/', currentStoreSlug$ | async]">Shop Now</button>
     </div>
   </ng-template>
 </div>

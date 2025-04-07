@@ -5,7 +5,7 @@ import { ProductEntity } from './products/entities/product.entity';
 import { StoreEntity } from './stores/entities/store.entity';
 import { CarouselItem } from './carousel/entities/carousel.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm'; // Import In operator
 import { Logger } from '@nestjs/common';
 
 // --- Define Seed Data --- 
@@ -69,21 +69,11 @@ const productData = [
   { sku: 'TOY-004', name: 'Remote Control Car', description: 'Fast and fun remote control car for indoor/outdoor play.', price: 29.99, imageUrl: 'https://picsum.photos/seed/TOY-004/500/500', tags: ['Outdoor', 'Kids', 'Sale'], stockLevel: 70, isActive: true, storeId: storeData[1].id },
 ];
 
-// Assign carousel items to stores
-const carouselData = [
-  // Store 1: Awesome Gadgets & Goods (slug: awesome-gadgets)
-  // Link to product ELEC-001 (using SKU as identifier for now, assuming product routes use SKU or ID)
-  { imageUrl: 'https://picsum.photos/seed/carousel1-store1/1920/400', altText: 'Promotion: Wireless Headphones', linkUrl: `ELEC-001`, storeId: storeData[0].id }, // Store only SKU
-  // Link to product HOME-001
-  { imageUrl: 'https://picsum.photos/seed/carousel2-store1/1920/400', altText: 'Promotion: Coffee Mug Set', linkUrl: `HOME-001`, storeId: storeData[0].id }, // Store only SKU
-  // Link to product BOOK-001
-  { imageUrl: 'https://picsum.photos/seed/carousel3-store1/1920/400', altText: 'Featured Book: The Midnight Library', linkUrl: `BOOK-001`, storeId: storeData[0].id }, // Store only SKU
-  // Store 2: Fashion & Fun Zone (slug: fashion-fun)
-  // Link to product APPA-001
-  { imageUrl: 'https://picsum.photos/seed/carousel1-store2/1920/400', altText: 'Featured: Classic Cotton T-Shirt', linkUrl: `APPA-001`, storeId: storeData[1].id }, // Store only SKU
-  // Link to product SPRT-001
-  { imageUrl: 'https://picsum.photos/seed/carousel2-store2/1920/400', altText: 'Featured: Premium Yoga Mat', linkUrl: `SPRT-001`, storeId: storeData[1].id }, // Store only SKU
-];
+// Define which product SKUs are used in the carousel for easier lookup
+const carouselProductSkus = ['ELEC-001', 'HOME-001', 'BOOK-001', 'APPA-001', 'SPRT-001'];
+
+// Placeholder for carousel data - will be populated after fetching product IDs
+let carouselData: Omit<CarouselItem, 'id' | 'store'>[] = [];
 
 
 async function bootstrap() {
@@ -121,14 +111,42 @@ async function bootstrap() {
     const productCount = await productRepository.count(); // Count products after upsert
     logger.log(`Total products in DB after seeding: ${productCount}`);
 
+    // --- Fetch Product IDs for Carousel Links ---
+    logger.log('Fetching product IDs for carousel links...');
+    const productsForCarousel = await productRepository.find({
+      where: { sku: In(carouselProductSkus) },
+      select: ['id', 'sku'], // Select only necessary fields
+    });
+
+    const skuToIdMap = new Map<string, string>();
+    productsForCarousel.forEach(p => skuToIdMap.set(p.sku, p.id));
+    logger.log(`Mapped SKUs to IDs: ${JSON.stringify(Object.fromEntries(skuToIdMap))}`);
+
+    // --- Build Carousel Data with Correct Product IDs ---
+    carouselData = [
+      // Store 1: Awesome Gadgets & Goods
+      { imageUrl: 'https://picsum.photos/seed/carousel1-store1/1920/400', altText: 'Promotion: Wireless Headphones', linkUrl: skuToIdMap.get('ELEC-001'), storeId: storeData[0].id },
+      { imageUrl: 'https://picsum.photos/seed/carousel2-store1/1920/400', altText: 'Promotion: Coffee Mug Set', linkUrl: skuToIdMap.get('HOME-001'), storeId: storeData[0].id },
+      { imageUrl: 'https://picsum.photos/seed/carousel3-store1/1920/400', altText: 'Featured Book: The Midnight Library', linkUrl: skuToIdMap.get('BOOK-001'), storeId: storeData[0].id },
+      // Store 2: Fashion & Fun Zone
+      { imageUrl: 'https://picsum.photos/seed/carousel1-store2/1920/400', altText: 'Featured: Classic Cotton T-Shirt', linkUrl: skuToIdMap.get('APPA-001'), storeId: storeData[1].id },
+      { imageUrl: 'https://picsum.photos/seed/carousel2-store2/1920/400', altText: 'Featured: Premium Yoga Mat', linkUrl: skuToIdMap.get('SPRT-001'), storeId: storeData[1].id },
+    ].filter(item => !!item.linkUrl); // Filter out items if product ID wasn't found (optional safety)
+
+
     // --- Seed Carousel Items ---
     logger.log('Seeding carousel items...');
-    // Use simple `create` and `save` in a loop or `upsert` if you add a unique constraint later
-    // For simplicity with potential re-runs, let's clear existing items for the seeded stores first
-    await carouselRepository.delete({ storeId: storeData[0].id });
-    await carouselRepository.delete({ storeId: storeData[1].id });
-    const createdCarouselItems = carouselRepository.create(carouselData);
-    await carouselRepository.save(createdCarouselItems);
+    // Clear existing items for the seeded stores first to prevent duplicates on re-run
+    await carouselRepository.delete({ storeId: In(storeData.map(s => s.id)) });
+    logger.log(`Cleared existing carousel items for seeded stores.`);
+
+    if (carouselData.length > 0) {
+        const createdCarouselItems = carouselRepository.create(carouselData);
+        await carouselRepository.save(createdCarouselItems);
+        logger.log(`Saved ${createdCarouselItems.length} new carousel items.`);
+    } else {
+        logger.log('No carousel items to save (possibly due to missing product IDs).');
+    }
     const carouselCount = await carouselRepository.count();
     logger.log(`Total carousel items in DB after seeding: ${carouselCount}`);
 

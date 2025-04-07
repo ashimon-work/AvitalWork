@@ -4,16 +4,24 @@
     <div class="logo">
       <a [routerLink]="['/', currentStoreSlug$ | async]" *ngIf="currentStoreSlug$ | async as storeSlug"> <!-- Update logo link -->
         <!-- Placeholder for logo image -->
-        <img src="/assets/images/logo-placeholder.png" alt="Store Logo" style="width: 150px;">
+        <img src="https://via.placeholder.com/150x40?text=Logo" alt="Store Logo" style="width: 150px;">
       </a>
     </div>
 
-    <!-- Navigation -->
-    <app-navigation class="navigation"></app-navigation>
+    <!-- Mobile Menu Toggle Button -->
+    <button class="hamburger-button" (click)="toggleMobileMenu()">
+      <span class="material-icons">menu</span>
+    </button>
 
-    <!-- Right Section: Search, Account, Cart -->
-    <div class="header-right">
+    <!-- Collapsible Menu Content (Nav + Search) -->
+    <div class="mobile-menu-content" [class.open]="isMobileMenuOpen">
+      <app-navigation class="navigation"></app-navigation>
       <app-search-bar class="search-bar"></app-search-bar>
+    </div>
+
+    <!-- Right Section: User Actions (Always Visible) -->
+    <div class="header-right">
+      <!-- Search Bar is now inside mobile-menu-content -->
       <div class="user-actions" *ngIf="currentStoreSlug$ | async as storeSlug">
         <!-- Show Account/Cart/Logout if authenticated -->
         <ng-container *ngIf="isAuthenticated$ | async; else loggedOutActions">

@@ -10,11 +10,11 @@
     <div class="footer-section links-section">
       <h4>Quick Links</h4>
       <ul *ngIf="currentStoreSlug$ | async as storeSlug"> <!-- Add *ngIf -->
-        <li><a [routerLink]="['/', storeSlug, 'about']">About Us</a></li>
-        <li><a [routerLink]="['/', storeSlug, 'contact']">Contact Us</a></li>
-        <li><a [routerLink]="['/', storeSlug, 'faq']">FAQ</a></li>
-        <li><a [routerLink]="['/', storeSlug, 'shipping']">Shipping Policy</a></li>
-        <li><a [routerLink]="['/', storeSlug, 'returns']">Return Policy</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'about' }">About Us</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'contact' }">Contact Us</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'faq' }">FAQ</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'shipping' }">Shipping Policy</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'returns' }">Return Policy</a></li>
       </ul>
     </div>
 

@@ -25,4 +25,8 @@ import { ProductCardComponent } from '../shared/components/product-card/product-
     // NewsletterFormComponent, // Re-evaluate if needed directly here vs. header/footer
   ],
 })
-export class HomeModule {}
+export class HomeModule {
+  constructor() {
+    console.log('<<<<< HomeModule Constructor Loaded >>>>>'); // Add log here
+  }
+}

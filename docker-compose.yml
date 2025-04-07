@@ -27,7 +27,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Use environment variable
       POSTGRES_DB: ${POSTGRES_DB:-magic_store_prod}
-      # Add other production environment variables (JWT_SECRET, etc.) here
       JWT_SECRET: ${JWT_SECRET} # Pass JWT_SECRET from .env file
     depends_on:
       - db

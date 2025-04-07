@@ -9,8 +9,8 @@
   <div class="category-grid" *ngIf="featuredCategories$ | async as categories">
     <app-category-card
       *ngFor="let category of categories"
+      [storeSlug]="currentStoreSlug$ | async"
       [category]="category"
-      [storeSlug]="currentStoreSlug"
     ></app-category-card>
   </div>
   <!-- Add loading/error state handling later -->
@@ -23,7 +23,7 @@
     <app-product-card
       *ngFor="let product of products"
       [product]="product"
-      [storeSlug]="currentStoreSlug"
+      [storeSlug]="currentStoreSlug$ | async"
     ></app-product-card>
   </div>
 </section>

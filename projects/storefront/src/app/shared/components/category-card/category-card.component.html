@@ -1,6 +1,6 @@
 <!-- Structure based on plan: Link, Image, Name -->
 <!-- Make the link conditional, but display content regardless -->
-<a *ngIf="category" [routerLink]="storeSlug ? ['/', storeSlug, 'category', category.id] : null" class="category-card-link" [title]="category.name">
+<a *ngIf="category" [routerLink]="['/', storeSlug, 'category', category.id]" class="category-card-link" [title]="category.name">
   <div class="category-card">
     <div class="category-image-wrapper">
       <!-- Use category image or placeholder -->
