@@ -6,7 +6,7 @@
 </button>
 
 <!-- Overlay for mobile menu -->
-<div class="mobile-menu-overlay" [class.active]="isMobileMenuOpen" (click)="toggleMobileMenu()"></div>
+<div class="mobile-menu-overlay" (click)="toggleMobileMenu()"></div>
 
 <div class="account-container">
   <!-- Wrapper for sidebar with conditional class -->
@@ -26,7 +26,7 @@
           <li><a routerLink="change-password" routerLinkActive="active-link" (click)="toggleMobileMenu()">Change Password</a></li>
         </ul>
       </nav>
-      <button (click)="logout()" class="btn btn-secondary logout-btn">Logout</button>
+      <button (click)="logout()" class="btn btn-secondary logout-btn" style="background-color: #bf0f0f; border-color: #bf0f0f;">Logout</button>
     </aside>
   </div>
 
