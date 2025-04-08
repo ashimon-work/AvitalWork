@@ -21,6 +21,7 @@ const categoryData = [
   { id: 'aaa00001-c246-4913-9166-f75a99ee0c21', name: 'Electronics', description: 'Gadgets and devices', imageUrl: 'https://picsum.photos/seed/aaa00001/300/200', storeId: storeData[0].id },
   { id: 'aaa00003-c246-4913-9166-f75a99ee0c21', name: 'Home Goods', description: 'Items for your home', imageUrl: 'https://picsum.photos/seed/aaa00003/300/200', storeId: storeData[0].id },
   { id: 'aaa00004-c246-4913-9166-f75a99ee0c21', name: 'Books', description: 'Literature and reading materials', imageUrl: 'https://picsum.photos/seed/aaa00004/300/200', storeId: storeData[0].id },
+  { id: 'aaa00007-c246-4913-9166-f75a99ee0c21', name: 'Category_4', description: 'A new category', imageUrl: 'https://picsum.photos/seed/aaa00007/300/200', storeId: storeData[0].id },
   // Store 2: Fashion & Fun Zone
   { id: 'aaa00002-c246-4913-9166-f75a99ee0c21', name: 'Apparel', description: 'Clothing and fashion', imageUrl: 'https://picsum.photos/seed/aaa00002/300/200', storeId: storeData[1].id },
   { id: 'aaa00005-c246-4913-9166-f75a99ee0c21', name: 'Sports & Outdoors', description: 'Equipment for sports and outdoor activities.', imageUrl: 'https://picsum.photos/seed/aaa00005/300/200', storeId: storeData[1].id },
