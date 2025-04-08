@@ -1,14 +1,13 @@
-// Using global variables defined in src/styles.scss
+/* Using global variables defined in src/styles.scss */
 
 :host {
   display: block;
 }
 
 .category-page-container {
-  // Use the global container for max-width and padding
   width: 100%;
   max-width: var(--container-max-width);
-  margin: var(--spacing-xl) auto; // Add vertical margin
+  margin: var(--spacing-xl) auto;
   padding: 0 var(--container-padding-x);
 }
 
@@ -39,17 +38,17 @@
   }
   p {
     color: var(--text-color-light);
-    max-width: 70ch; // Limit description width for readability
+    max-width: 70ch;
     margin: 0 auto;
   }
 }
 
 .category-content {
   display: grid;
-  grid-template-columns: 240px 1fr; // Fixed sidebar width, flexible main content
+  grid-template-columns: 240px 1fr;
   gap: var(--spacing-xl);
 
-  @media (max-width: 768px) { // Stack on smaller screens
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 }
@@ -59,7 +58,13 @@
   border-radius: var(--border-radius-md);
   padding: var(--spacing-lg);
   background-color: var(--neutral-lightest);
-  align-self: start; // Prevent sidebar stretching vertically
+  align-self: start;
+  width: 240px;
+
+  @media (max-width: 768px) {
+    width: 240px;
+    padding: var(--spacing-lg);
+  }
 
   h2 {
     font-size: 1.4rem;
@@ -84,34 +89,31 @@
 
     input[type="checkbox"] {
       margin-right: var(--spacing-sm);
-      width: auto; // Override global input width: 100%
-      display: inline-block; // Align checkbox with label text
+      width: auto;
+      display: inline-block;
     }
   }
 
-  button { // Clear filters button
-    // Inherit base button styles implicitly or explicitly if needed
-    @extend button; // Extend the base button for padding, font, etc. if not inherited
+  button {
+    /* Inherit base button styles */
+    @extend button;
     width: 100%;
     margin-top: var(--spacing-md);
-    // Apply secondary button styles directly:
     background-color: transparent;
     border-color: var(--primary-color);
     color: var(--primary-color);
 
     &:hover, &:focus {
-      background-color: rgba(52, 152, 219, 0.1); // Light primary background on hover
+      background-color: rgba(52, 152, 219, 0.1);
       opacity: 1;
-      color: var(--primary-color); // Ensure text color remains on hover
-      border-color: var(--primary-color); // Ensure border color remains on hover
+      color: var(--primary-color);
+      border-color: var(--primary-color);
     }
-    // color: var(--primary-color);
-    // &:hover { background-color: rgba(52, 152, 219, 0.1); }
   }
 }
 
 .main-content {
-  // Styles for main area
+  /* Styles for main area */
 }
 
 .sorting-options {
@@ -126,24 +128,19 @@
   }
 
   select {
-    width: auto; // Don't take full width
-    padding: var(--spacing-xs) var(--spacing-sm); // Smaller padding
+    width: auto;
+    padding: var(--spacing-xs) var(--spacing-sm);
   }
 }
 
 .product-grid-wrapper {
-  min-height: 300px; // Prevent layout collapse while loading
+  min-height: 300px;
 }
 
 .product-grid {
   display: grid;
   gap: var(--spacing-lg);
-  // Responsive grid columns - adjust as needed for this context
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); // Slightly smaller min size
-
-  // Example breakpoints (could differ from homepage)
-  // @media (min-width: 576px) { grid-template-columns: repeat(2, 1fr); }
-  // @media (min-width: 992px) { grid-template-columns: repeat(3, 1fr); }
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
 .pagination {
@@ -156,7 +153,6 @@
   border-top: var(--border-width) solid var(--border-color);
 
   button {
-    // Use base button styles
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 0.9rem;
 
@@ -172,7 +168,7 @@
     font-weight: var(--font-weight-medium);
   }
 
-  p { // Total products text
+  p {
     margin-left: var(--spacing-lg);
     font-size: 0.9rem;
     color: var(--text-color-light);
@@ -180,8 +176,8 @@
   }
 }
 
-// Loading/Empty states styling
-p { // Basic styling for loading/empty messages
+/* Loading/Empty states styling */
+p {
   text-align: center;
   padding: var(--spacing-xl);
   color: var(--text-color-light);

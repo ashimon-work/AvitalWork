@@ -3,7 +3,7 @@
 
   <!-- Breadcrumbs -->
   <div class="breadcrumbs">
-    <a [routerLink]="['/']">Home</a> > <span>{{ category.name }}</span>
+    <a [routerLink]="[ (currentStoreSlug$ | async) ? '/' + (currentStoreSlug$ | async) : '/']">Home</a> > <span>{{ category.name }}</span>
   </div>
 
   <!-- Category Header -->
