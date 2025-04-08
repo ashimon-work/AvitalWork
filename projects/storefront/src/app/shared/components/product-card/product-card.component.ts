@@ -17,6 +17,7 @@ import { CartService } from '../../../core/services/cart.service';
 export class ProductCardComponent {
   @Input() product!: Product;
   @Input() storeSlug: string | null = null;
+  @Input() categoryId: string | null = null;
 
   constructor(private cartService: CartService) {}
 

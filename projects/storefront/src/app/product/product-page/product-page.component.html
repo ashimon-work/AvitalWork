@@ -4,8 +4,9 @@
   <!-- Breadcrumbs (Example - Needs category data if available) -->
   <div class="breadcrumbs">
     <a [routerLink]="[ (currentStoreSlug$ | async) ? '/' + (currentStoreSlug$ | async) : '/']">Home</a>
-    <!-- Add category link if product data includes it -->
-    <!-- > <a [routerLink]="['/category', product.categoryId]">{{ product.categoryName }}</a> -->
+    <ng-container *ngIf="categoryId$ | async as categoryId">
+      > <a *ngIf="categoryId" [routerLink]="['/', (currentStoreSlug$ | async), 'category', categoryId]">{{ categoryId }}</a>
+    </ng-container>
     > <span>{{ product.name }}</span>
   </div>
 

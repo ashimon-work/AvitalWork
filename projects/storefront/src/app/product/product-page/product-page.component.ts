@@ -1,20 +1,20 @@
-import { Component, OnInit, inject } from '@angular/core'; // Added OnInit, inject
-import { CommonModule } from '@angular/common'; // For *ngIf, async pipe etc.
-import { ActivatedRoute, Router, RouterModule } from '@angular/router'; // For reading route params, navigation, breadcrumbs
-import { FormsModule } from '@angular/forms'; // For quantity input [(ngModel)]
-import { Observable, switchMap, tap, map } from 'rxjs';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Observable, switchMap, tap, map, of } from 'rxjs';
 import { Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
-import { CartService } from '../../core/services/cart.service'; // Import CartService
-import { StoreContextService } from '../../core/services/store-context.service'; // Import StoreContextService
+import { CartService } from '../../core/services/cart.service';
+import { StoreContextService } from '../../core/services/store-context.service';
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule, // For breadcrumbs routerLink
-    FormsModule   // For quantity ngModel
+    RouterModule,
+    FormsModule
   ],
   templateUrl: './product-page.component.html',
   styleUrl: './product-page.component.scss'
@@ -26,9 +26,15 @@ export class ProductPageComponent implements OnInit {
   private cartService = inject(CartService);
   private storeContext = inject(StoreContextService);
   public currentStoreSlug$ = this.storeContext.currentStoreSlug$;
-
+  categoryId$: Observable<string | null>;
   product$: Observable<Product | null> | undefined;
-  quantity: number = 1; // Default quantity
+  quantity: number = 1;
+
+  constructor(private activatedRoute: ActivatedRoute) {
+    this.categoryId$ = this.activatedRoute.queryParamMap.pipe(
+      map(params => params.get('categoryId'))
+    );
+  }
 
   ngOnInit(): void {
     this.product$ = this.route.paramMap.pipe(
@@ -36,18 +42,18 @@ export class ProductPageComponent implements OnInit {
       tap(id => {
         if (!id) {
           console.error('Product ID missing from route');
-          this.router.navigate(['/']); // Redirect if no ID
+          this.router.navigate(['/']);
         }
       }),
       switchMap(id => {
         if (!id) {
-          return new Observable<Product | null>(subscriber => subscriber.next(null)); // Return null observable if no ID
+          return of(null);
         }
         return this.apiService.getProductDetails(id).pipe(
           tap(product => {
             if (!product) {
               console.error(`Product with ID ${id} not found`);
-              this.router.navigate(['/not-found']); // Redirect if product not found
+              this.router.navigate(['/not-found']);
             }
           })
         );
