@@ -11,9 +11,15 @@ import { RouterModule } from '@angular/router'; // Import RouterModule
   styleUrl: './account-page.component.scss'
 })
 export class AccountPageComponent {
+  isMobileMenuOpen = false; // State for mobile menu
 
   // Inject AuthService
   constructor(private authService: AuthService) {}
+
+  // Method to toggle mobile menu
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
 
   // Method to handle logout
   logout(): void {
