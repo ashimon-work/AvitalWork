@@ -3,7 +3,7 @@
 
   <!-- Breadcrumbs (Example - Needs category data if available) -->
   <div class="breadcrumbs">
-    <a [routerLink]="['/']">Home</a>
+    <a [routerLink]="[ (currentStoreSlug$ | async) ? '/' + (currentStoreSlug$ | async) : '/']">Home</a>
     <!-- Add category link if product data includes it -->
     <!-- > <a [routerLink]="['/category', product.categoryId]">{{ product.categoryName }}</a> -->
     > <span>{{ product.name }}</span>

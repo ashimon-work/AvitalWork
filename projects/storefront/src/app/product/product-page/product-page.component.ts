@@ -6,6 +6,7 @@ import { Observable, switchMap, tap, map } from 'rxjs';
 import { Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { CartService } from '../../core/services/cart.service'; // Import CartService
+import { StoreContextService } from '../../core/services/store-context.service'; // Import StoreContextService
 
 @Component({
   selector: 'app-product-page',
@@ -22,7 +23,9 @@ export class ProductPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private apiService = inject(ApiService);
-  private cartService = inject(CartService); // Inject CartService
+  private cartService = inject(CartService);
+  private storeContext = inject(StoreContextService);
+  public currentStoreSlug$ = this.storeContext.currentStoreSlug$;
 
   product$: Observable<Product | null> | undefined;
   quantity: number = 1; // Default quantity

@@ -8,11 +8,6 @@
       </a>
     </div>
 
-    <!-- Mobile Menu Toggle Button -->
-    <button class="hamburger-button" (click)="toggleMobileMenu()">
-      <span class="material-icons">menu</span>
-    </button>
-
     <!-- Collapsible Menu Content (Nav + Search) -->
     <div class="mobile-menu-content" [class.open]="isMobileMenuOpen">
       <app-navigation class="navigation"></app-navigation>
@@ -49,5 +44,10 @@
         </ng-template>
       </div>
     </div>
+
+    <!-- Mobile Menu Toggle Button -->
+    <button class="hamburger-button" (click)="toggleMobileMenu()">
+      <span class="material-icons">menu</span>
+    </button>
   </div>
 </header>

@@ -22,9 +22,8 @@
   }
 }
 
-// Grid layout for categories and products
-.category-grid,
-.product-grid {
+// Grid layout for categories
+.category-grid {
   display: grid;
   gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
 
@@ -45,6 +44,31 @@
   // Example: 4 columns on large screens and up (adjust as needed)
   @media (min-width: 992px) {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// Grid layout for products
+.product-grid {
+  display: grid;
+  gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
+
+  // Responsive grid columns
+  // Start with 1 column on smallest screens
+  grid-template-columns: 1fr;
+
+  // Example: 2 columns on small screens and up
+  @media (min-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // Example: 3 columns on medium screens and up
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  // Example: 3 columns on large screens and up (adjust as needed)
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

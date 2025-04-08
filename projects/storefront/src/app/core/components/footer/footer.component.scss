@@ -63,34 +63,19 @@
 .social-section {
   .social-links {
     display: flex;
-    gap: var(--spacing-md);
+    flex-direction: column;
+    /* Stack the links vertically */
+    gap: var(--spacing-xs);
+    /* Reduce the gap between links */
 
-    a {
+    h5 {
+      font-size: 0.8rem;
+      /* Make the text smaller */
+      margin: 0;
+      /* Remove default margins */
       color: var(--text-color-light);
-      font-size: 24px; // Adjust if using icon fonts
-      text-decoration: none;
-
-      &:hover,
-      &:focus {
-        color: var(--primary-color);
-        opacity: 1;
-      }
-
-      // Placeholder for actual icons - replace span content later
-      span {
-        display: inline-block; // Needed for potential icon library styling
-        width: 24px; // Match font-size
-        height: 24px; // Match font-size
-        // Add background images or font-family if using icon fonts
-        // Example: background-color: #ccc; // Placeholder visual
-      }
     }
   }
-}
-
-.newsletter-section {
-  // Styling for app-newsletter-form will be within its own component SCSS
-  // Add any specific layout adjustments for this section if needed
 }
 
 .footer-bottom {

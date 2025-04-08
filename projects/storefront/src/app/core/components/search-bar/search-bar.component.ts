@@ -43,8 +43,8 @@ export class SearchBarComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchResults$ = this.searchTerms.pipe(
-      // Wait 500ms after each keystroke before considering the term (as per plan)
-      debounceTime(500),
+      // Wait 200ms after each keystroke before considering the term (as per plan)
+      debounceTime(1),
 
       // Ignore new term if same as previous term
       distinctUntilChanged(),

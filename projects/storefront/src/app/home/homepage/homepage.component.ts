@@ -24,7 +24,7 @@ export class HomepageComponent {
       tap(categories => console.log('[HomepageComponent] Featured categories fetched:', categories)),
       catchError(error => {
         console.error('[HomepageComponent] Error fetching featured categories:', error);
-        return of([]); // Return empty array on error to avoid breaking the template
+        return of([]);
       })
     );
 

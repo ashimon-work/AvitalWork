@@ -89,7 +89,9 @@ export class ApiService {
         }
         // Assuming the backend search endpoint is /api/search or maybe /api/products?q=...
         // Let's assume /api/products for now, consistent with getProducts
-        return this.http.get<Product[]>(`${this.apiUrl}/products`, { params });
+        return this.http.get<Product[]>(`${this.apiUrl}/products`, { params }).pipe(
+          tap(response => console.log('[ApiService] Search products response:', response))
+        );
       })
     );
   }

@@ -46,6 +46,7 @@
       // Styling for invalid inputs
       input.is-invalid {
         border-color: var(--error-color);
+
         &:focus {
           box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25); // Red focus ring
         }
@@ -74,7 +75,9 @@
         margin-top: var(--spacing-xs);
         // Add more specific styles when implemented
       }
-    } // End of .form-group
+    }
+
+    // End of .form-group
 
     // Styling for checkbox groups (direct child of form)
     .form-check {
@@ -88,8 +91,8 @@
         // Use browser default or apply custom styles if needed
 
         &.is-invalid {
-           // Add specific invalid style if needed, e.g., outline
-           outline: 1px solid var(--error-color);
+          // Add specific invalid style if needed, e.g., outline
+          outline: 1px solid var(--error-color);
         }
       }
 
@@ -99,9 +102,11 @@
         cursor: pointer;
         user-select: none;
 
-        a { // Style link within label (e.g., Terms)
+        a {
+          // Style link within label (e.g., Terms)
           color: var(--primary-color);
           text-decoration: none;
+
           &:hover {
             text-decoration: underline;
           }
@@ -110,13 +115,15 @@
 
       // Need to target the invalid-feedback *after* the form-check div
       // This assumes the invalid-feedback div is placed immediately after the form-check div in the HTML
-      + .invalid-feedback {
-         color: var(--error-color);
-         font-size: 0.85rem;
-         margin-top: var(--spacing-xs);
-         display: block; // Ensure it shows
+      +.invalid-feedback {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: var(--spacing-xs);
+        display: block; // Ensure it shows
       }
-    } // End of .form-check
+    }
+
+    // End of .form-check
 
     .alert {
       padding: var(--spacing-md);
@@ -136,22 +143,30 @@
         background-color: #f8d7da;
         border-color: #f5c2c7;
       }
-    } // End of .alert
+    }
+
+    // End of .alert
 
     .submit-btn {
       // Inherits base button styles
       margin-top: var(--spacing-md);
       padding: var(--spacing-md) var(--spacing-lg);
       font-size: 1.1rem;
+      background-color: #1ec423;
+      border-color: #1ec423;
 
       &:disabled {
         background-color: var(--neutral-medium);
         border-color: var(--neutral-medium);
         cursor: not-allowed;
       }
-    } // End of .submit-btn
+    }
 
-  } // End of form
+    // End of .submit-btn
+
+  }
+
+  // End of form
 
   .login-link {
     text-align: center;
@@ -162,10 +177,15 @@
     a {
       font-weight: var(--font-weight-medium);
       color: var(--primary-color);
+
       &:hover {
         text-decoration: underline;
       }
     }
-  } // End of .login-link
+  }
 
-} // End of .registration-container
+  // End of .login-link
+
+}
+
+// End of .registration-container

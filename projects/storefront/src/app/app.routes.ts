@@ -23,7 +23,7 @@ import { authGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   // Redirect root path to a default store or a store selection page (TBD)
   // For now, let's redirect to a default store slug for testing
-  { path: '', redirectTo: '/', pathMatch: 'full' },
+  { path: '', redirectTo: '/default', pathMatch: 'full' },
 
   // Parent route to capture the store slug
   {
