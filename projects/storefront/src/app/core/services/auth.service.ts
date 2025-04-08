@@ -138,7 +138,10 @@ export class AuthService {
   loadUserProfile(): Observable<Omit<User, 'passwordHash'>> {
     // Assumes a /api/account/profile endpoint protected by JwtAuthGuard
     return this.http.get<Omit<User, 'passwordHash'>>(`${this.accountApiUrl}/profile`).pipe(
-      tap(user => this._currentUser.next(user)), // Store user data on success
+      tap(user => {
+        this._currentUser.next(user);
+        this._isAuthenticated.next(true); // Update authentication status
+      }), // Store user data on success
       catchError(error => {
         // If profile fetch fails (e.g., token expired, unauthorized), log out
         console.error('Failed to load user profile:', error);

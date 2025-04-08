@@ -1,7 +1,6 @@
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
-import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AuthService } from '../services/auth.service'; // Import AuthService
+// Removed AuthService import to break circular dependency
 
 // Functional Interceptor
 export const authInterceptor: HttpInterceptorFn = (
@@ -9,8 +8,9 @@ export const authInterceptor: HttpInterceptorFn = (
     next: HttpHandlerFn
   ): Observable<HttpEvent<unknown>> => {
 
-  const authService = inject(AuthService); // Inject AuthService using inject()
-  const authToken = authService.getToken();
+  // Directly access localStorage to avoid injecting AuthService and causing circular dependency
+  const tokenKey = 'authToken'; // Use the same key as in AuthService
+  const authToken = localStorage.getItem(tokenKey);
   let clonedRequest = req; // Start with the original request
 
   // Clone the request and add the authorization header if token exists
