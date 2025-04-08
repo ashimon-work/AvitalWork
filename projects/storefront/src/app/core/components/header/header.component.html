@@ -2,7 +2,7 @@
   <div class="header-container">
     <!-- Store Logo -->
     <div class="logo">
-      <a [routerLink]="['/', currentStoreSlug$ | async]" *ngIf="currentStoreSlug$ | async as storeSlug"> <!-- Update logo link -->
+      <a [routerLink]="['/awesome-gadgets']" *ngIf="currentStoreSlug$ | async as storeSlug"> <!-- Logo link always points to awesome-gadgets -->
         <!-- Placeholder for logo image -->
         <img src="https://via.placeholder.com/150x40?text=Logo" alt="Store Logo" style="width: 150px;">
       </a>
