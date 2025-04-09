@@ -5,9 +5,6 @@
   <span class="hamburger-icon"></span>
 </button>
 
-<!-- Overlay for mobile menu -->
-<div class="mobile-menu-overlay" (click)="toggleMobileMenu()"></div>
-
 <div class="account-container">
   <!-- Wrapper for sidebar with conditional class -->
   <div class="sidebar-wrapper" [class.open]="isMobileMenuOpen">
@@ -23,6 +20,7 @@
           <li><a routerLink="payment-methods" routerLinkActive="active-link" (click)="toggleMobileMenu()">Payment Methods</a></li>
           <li><a routerLink="personal-info" routerLinkActive="active-link" (click)="toggleMobileMenu()">Personal Information</a></li>
           <li><a routerLink="wishlist" routerLinkActive="active-link" (click)="toggleMobileMenu()">Wishlist</a></li>
+          <li><a routerLink="change-password" routerLinkActive="active-link">Change Password</a></li>
           <li><a routerLink="change-password" routerLinkActive="active-link" (click)="toggleMobileMenu()">Change Password</a></li>
         </ul>
       </nav>
@@ -34,4 +32,6 @@
     <!-- Child routes will be rendered here -->
     <router-outlet></router-outlet>
   </main>
+  <!-- Overlay for mobile menu -->
+  <div class="mobile-menu-overlay" (click)="toggleMobileMenu()"></div>
 </div>

@@ -1,20 +1,20 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule for *ngIf etc. if needed later
+import { Component, ElementRef, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
-import { RouterModule } from '@angular/router'; // Import RouterModule
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-account-page',
   standalone: true,
-  imports: [CommonModule, RouterModule], // Add RouterModule
+  imports: [CommonModule, RouterModule],
   templateUrl: './account-page.component.html',
   styleUrl: './account-page.component.scss'
 })
 export class AccountPageComponent {
-  isMobileMenuOpen = false; // State for mobile menu
+  isMobileMenuOpen = false;
 
   // Inject AuthService
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private el: ElementRef) {}
 
   // Method to toggle mobile menu
   toggleMobileMenu(): void {
@@ -25,5 +25,14 @@ export class AccountPageComponent {
   logout(): void {
     this.authService.logout();
     // Navigation is handled within AuthService.logout()
+  }
+
+  @HostListener('document:click', ['$event'])
+  clickout(event: Event): void {
+    if (event.target instanceof HTMLElement &&
+        !this.el.nativeElement.contains(event.target) &&
+        !event.target.classList.contains('mobile-menu-toggle')) {
+      this.isMobileMenuOpen = false;
+    }
   }
 }
