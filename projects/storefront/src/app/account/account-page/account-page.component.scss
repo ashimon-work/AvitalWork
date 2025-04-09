@@ -101,7 +101,6 @@ $mobile-breakpoint: 768px;
 }
 
 .mobile-menu-overlay {
-  display: none; // Hidden by default
   position: fixed;
   top: 0;
   left: 0;
@@ -110,11 +109,13 @@ $mobile-breakpoint: 768px;
   background-color: rgba(0, 0, 0, 0.5); // Semi-transparent black
   z-index: 1040; // Below sidebar, above content
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  visibility: hidden; // Initially hidden
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 
   &.active {
     display: block;
     opacity: 1;
+    visibility: visible;
   }
 }
 

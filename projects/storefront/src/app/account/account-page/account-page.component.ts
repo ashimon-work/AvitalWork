@@ -18,6 +18,7 @@ export class AccountPageComponent {
 
   // Method to toggle mobile menu
   toggleMobileMenu(): void {
+    console.log('toggleMobileMenu called');
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
@@ -27,12 +28,4 @@ export class AccountPageComponent {
     // Navigation is handled within AuthService.logout()
   }
 
-  @HostListener('document:click', ['$event'])
-  clickout(event: Event): void {
-    if (event.target instanceof HTMLElement &&
-        !this.el.nativeElement.contains(event.target) &&
-        !event.target.classList.contains('mobile-menu-toggle')) {
-      this.isMobileMenuOpen = false;
-    }
-  }
 }

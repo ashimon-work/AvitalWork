@@ -31,7 +31,7 @@
   <main class="account-content">
     <!-- Child routes will be rendered here -->
     <router-outlet></router-outlet>
+    <!-- Overlay for mobile menu -->
+    <div class="mobile-menu-overlay" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen"></div>
   </main>
-  <!-- Overlay for mobile menu -->
-  <div class="mobile-menu-overlay" (click)="toggleMobileMenu()"></div>
 </div>
