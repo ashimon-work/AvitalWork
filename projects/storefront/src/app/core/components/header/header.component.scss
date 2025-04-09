@@ -101,7 +101,7 @@
   top: -5px; // Adjust position relative to the icon
   right: -8px; // Adjust position relative to the icon
   background-color: var(--error-color); // Use error/alert color for emphasis
-  color: white;
+  color: rgb(255, 255, 255);
   font-size: 11px;
   font-weight: var(--font-weight-medium);
   border-radius: 50%;
@@ -122,7 +122,7 @@
   color: var(--text-color);
 
   .material-icons {
-    font-size: 28px; // Larger icon for touch
+    font-size: 22px; // Larger icon for touch
     vertical-align: middle;
   }
 
@@ -226,7 +226,13 @@
   }
 
   .action-link {
-    font-size: 1.15rem; // Smaller font size for mobile
+    font-size: 1.15rem;
+  }
+
+  @media (min-width: 769px) {
+    .header-right .action-link {
+      font-size: 1.35rem;
+    }
   }
 
   .action-icon {
