@@ -38,7 +38,7 @@ $mobile-breakpoint: 768px;
         a {
           display: block;
           padding: $spacing-sm $spacing-md; // Use SCSS vars
-          color: $text-color-light; // Use SCSS var
+          color: rgb(67, 66, 66); // Use SCSS var
           text-decoration: none;
           border-radius: $border-radius-sm; // Use SCSS var
           transition: background-color 0.2s ease, color 0.2s ease;
