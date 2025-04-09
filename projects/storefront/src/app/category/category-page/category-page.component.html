@@ -14,37 +14,39 @@
 
   <div class="category-content">
     <!-- Filter Sidebar (Left) -->
-    <aside class="filter-sidebar">
-      <h2>Filters</h2>
+    <div class="filter-wrapper">
+      <aside class="filter-sidebar">
+        <h2>Filters</h2>
 
-      <!-- Price Filter Example -->
-      <div class="filter-group">
-        <h3>Price Range</h3>
-        <select [(ngModel)]="selectedPriceRange" (ngModelChange)="applyFilters()">
-          <option value="">All Prices</option>
-          <option value="0-20">$0 - $20</option>
-          <option value="20-50">$20 - $50</option>
-          <option value="50-100">$50 - $100</option>
-          <option value="100-Infinity">$100+</option>
-        </select>
-      </div>
-
-      <!-- Tags Filter Example -->
-      <div class="filter-group">
-        <h3>Tags</h3>
-        <!-- Assuming tags are fetched or predefined -->
-        <div *ngFor="let tag of ['New', 'Sale', 'Featured']"> <!-- Example tags -->
-          <label>
-            <input type="checkbox" [(ngModel)]="selectedTags[tag]" (ngModelChange)="applyFilters()">
-            {{ tag }}
-          </label>
+        <!-- Price Filter Example -->
+        <div class="filter-group">
+          <h3>Price Range</h3>
+          <select [(ngModel)]="selectedPriceRange" (ngModelChange)="applyFilters()">
+            <option value="">All Prices</option>
+            <option value="0-20">$0 - $20</option>
+            <option value="20-50">$20 - $50</option>
+            <option value="50-100">$50 - $100</option>
+            <option value="100-Infinity">$100+</option>
+          </select>
         </div>
-      </div>
 
-      <!-- Add other filters (color, size) similarly -->
+        <!-- Tags Filter Example -->
+        <div class="filter-group">
+          <h3>Tags</h3>
+          <!-- Assuming tags are fetched or predefined -->
+          <div *ngFor="let tag of ['New', 'Sale', 'Featured']"> <!-- Example tags -->
+            <label>
+              <input type="checkbox" [(ngModel)]="selectedTags[tag]" (ngModelChange)="applyFilters()">
+              {{ tag }}
+            </label>
+          </div>
+        </div>
 
-      <button (click)="clearFilters()">Clear All Filters</button>
-    </aside>
+        <!-- Add other filters (color, size) similarly -->
+
+        <button (click)="clearFilters()">Clear All Filters</button>
+      </aside>
+    </div>
 
     <!-- Main Content Area (Right) -->
     <main class="main-content">

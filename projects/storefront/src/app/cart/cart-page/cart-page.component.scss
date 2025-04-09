@@ -209,6 +209,16 @@
       opacity: 0.85;
     }
   }
+
+  &.bordered-button {
+    border: 1px solid var(--primary-color);
+    background-color: transparent;
+    color: var(--primary-color);
+
+    &:hover {
+      background-color: rgba(var(--primary-color-rgb), 0.1);
+    }
+  }
 }
 
 // --- Empty Cart ---

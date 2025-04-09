@@ -62,7 +62,7 @@
   width: 240px;
 
   @media (max-width: 768px) {
-    width: 240px;
+    width: 320px;
     padding: var(--spacing-lg);
   }
 
@@ -109,6 +109,13 @@
       color: var(--primary-color);
       border-color: var(--primary-color);
     }
+  }
+}
+
+.filter-wrapper {
+  @media (max-width: 768px) {
+    display: flex;
+    justify-content: center;
   }
 }
 
