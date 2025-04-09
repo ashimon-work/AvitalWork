@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'; // Added OnInit, OnDestroy
+import { Component, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core'; // Added OnInit, OnDestroy
 import { CommonModule } from '@angular/common'; // For *ngIf
 import { RouterLink } from '@angular/router'; // For routerLink directives
 import { NavigationComponent } from '../navigation/navigation.component'; // Import Navigation
@@ -32,7 +32,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private cartService: CartService,
     private storeContext: StoreContextService,
-    private authService: AuthService // Inject AuthService
+    private authService: AuthService, // Inject AuthService
+    private el: ElementRef
   ) {
     this.currentStoreSlug$ = this.storeContext.currentStoreSlug$; // Assign slug observable
     this.isAuthenticated$ = this.authService.isAuthenticated$; // Assign auth state observable
@@ -56,6 +57,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  @HostListener('document:click', ['$event'])
+  clickout(event: Event): void {
+    if (!this.el.nativeElement.contains(event.target) && this.isMobileMenuOpen) {
+      this.isMobileMenuOpen = false;
+    }
   }
 
   logout(): void {
