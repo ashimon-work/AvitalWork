@@ -21,16 +21,23 @@ import { AccountWishlistComponent } from './account/account-wishlist/account-wis
 import { AccountChangePasswordComponent } from './account/account-change-password/account-change-password.component';
 // Import Auth Guard
 import { authGuard } from './core/guards/auth.guard';
+import { storeSlugGuard } from './core/guards/store-slug.guard'; // Import the guard
 export const routes: Routes = [
   // Redirect root path to a default store or a store selection page (TBD)
   // For now, let's redirect to a default store slug for testing
   { path: '', redirectTo: '/default-store', pathMatch: 'full' }, // Redirect root to a default store slug
 
-  // Parent route to capture the store slug
+  // Explicit route for the generic 404 page
+  { path: '404', component: NotFoundPageComponent },
+
+  // Parent route to capture the store slug (MUST come AFTER explicit /404)
   {
     path: ':storeSlug',
-    // We can add a component here later if needed (e.g., a StoreLayoutComponent)
-    // or a resolver to fetch store details based on the slug
+    // Remove the resolve property
+    // resolve: {
+    //     isStoreValid: storeSlugResolver
+    // },
+    canActivate: [storeSlugGuard], // Use the CanActivate guard instead
     children: [
       // Existing routes moved under the :storeSlug parameter
       {

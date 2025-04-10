@@ -133,4 +133,23 @@ export class ProductsService {
 
     return { products: results, total };
   }
+
+  async getSearchSuggestions(query: string, storeSlug?: string, limit: number = 5): Promise<ProductEntity[]> {
+    const where: FindOptionsWhere<ProductEntity> = {
+      name: ILike(`%${query}%`), // Case-insensitive partial match on name
+      isActive: true,
+    };
+
+    if (storeSlug) {
+      where.store = { slug: storeSlug };
+    }
+
+    return this.productsRepository.find({
+      where,
+      take: limit,
+      select: ['id', 'name', 'imageUrl', 'price'], // Also select imageUrl and price for display
+      relations: ['store'], // Needed for store slug filtering
+      order: { name: 'ASC' } // Optional: order suggestions
+    });
+  }
 }

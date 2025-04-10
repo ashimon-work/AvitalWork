@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, switchMap, take, catchError, of, tap } from 'rxjs'; // Import tap
+import { Observable, of, throwError } from 'rxjs';
+import { switchMap, take, catchError, tap, filter, map } from 'rxjs/operators'; // Add map
 import { Category, Product } from '@shared-types';
 import { CarouselSlide } from '../../home/components/carousel/carousel.component';
 import { StoreContextService } from './store-context.service';
@@ -151,4 +152,92 @@ export class ApiService {
       })
     );
   }
-}
+
+  // Method to fetch popular navigation links (e.g., for 404 page)
+  getPopularNavigation(): Observable<{ name: string; path: string; }[]> {
+    return this.storeContext.currentStoreSlug$.pipe(
+      take(1),
+      switchMap(storeSlug => {
+        let params = new HttpParams();
+        if (storeSlug) {
+          params = params.set('storeSlug', storeSlug);
+        }
+        // Assuming the endpoint is /api/navigation/popular
+        const url = `${this.apiUrl}/navigation/popular`;
+        console.log(`[ApiService] Fetching popular navigation from: ${url} with params:`, params.toString());
+        return this.http.get<{ name: string; path: string; }[]>(url, { params }).pipe(
+          tap(response => console.log('[ApiService] Popular navigation response:', response)),
+          catchError(error => {
+            console.error('[ApiService] Error fetching popular navigation:', error);
+            return of([]); // Return empty array on error
+          })
+        );
+      })
+    );
+  }
+
+  // Method to fetch search suggestions
+  getSearchSuggestions(query: string, limit: number = 5): Observable<Product[]> { // Assuming suggestions are Product-like
+    // This method is called within the switchMap in SearchBarComponent,
+    // so we perform the synchronous check here.
+    const currentSlug = this.storeContext.getCurrentStoreSlug();
+
+    if (!currentSlug) {
+      const errorMsg = '[ApiService] Cannot fetch search suggestions: Store slug is missing.';
+      console.error(errorMsg);
+      // Return an observable that immediately throws an error
+      return throwError(() => new Error(errorMsg));
+    }
+
+    // Slug exists, proceed with the HTTP request
+    let params = new HttpParams()
+      .set('q', query)
+      .set('limit', limit.toString())
+      .set('storeSlug', currentSlug);
+
+    const url = `${this.apiUrl}/products/suggest`;
+    console.log(`[ApiService] Fetching search suggestions from: ${url} with params:`, params.toString());
+
+    // Return the HTTP request observable
+    return this.http.get<Product[]>(url, { params }).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error fetching search suggestions:', error);
+        // The component's catchError will handle this, but we return empty array
+        // so the stream doesn't break if the component doesn't handle it.
+        return of([]);
+      })
+    );
+  }
+  // Method to fetch store search results
+  searchStores(query: string, limit: number = 10): Observable<any[]> { // Assuming StoreEntity structure for now
+    if (!query || query.trim().length < 2) {
+      return of([]); // Return empty if query is too short
+    }
+    let params = new HttpParams()
+      .set('q', query.trim())
+      .set('limit', limit.toString());
+
+    const url = `${this.apiUrl}/stores/search`;
+    console.log(`[ApiService] Fetching store search results from: ${url} with params:`, params.toString());
+
+    return this.http.get<any[]>(url, { params }).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error fetching store search results:', error);
+        return of([]); // Return empty array on error
+      })
+    );
+  }
+
+  // Method to check if a store slug is valid
+  checkStoreSlug(slug: string): Observable<boolean> {
+    const url = `${this.apiUrl}/stores/slug/${slug}`;
+    console.log(`[ApiService] Checking store slug validity: ${url}`);
+    return this.http.get<any>(url).pipe(
+      map(() => true), // If request succeeds (2xx), slug is valid
+      catchError(error => {
+        console.warn(`[ApiService] Store slug "${slug}" is invalid or API error:`, error.status);
+        return of(false); // If request fails (e.g., 404), slug is invalid
+      })
+    );
+  }
+} // End of ApiService class

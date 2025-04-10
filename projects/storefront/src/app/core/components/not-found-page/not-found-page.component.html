@@ -2,30 +2,69 @@
   <h1>404 - Page Not Found</h1>
   <p>Oops! The page you are looking for does not exist or may have been moved.</p>
 
-  <!-- Placeholder for Search Bar -->
+  <!-- Conditional Search Section -->
   <div class="search-section">
-    <p>Try searching for what you need:</p>
-    <div class="search-input-group"> <!-- Wrapper for input and button -->
-      <input type="search" placeholder="Search store...">
-      <button>Search</button>
-    </div>
+    <ng-container *ngIf="currentStoreSlug$ | async as slug; else storeSearchBlock">
+      <!-- Product Search (within store context) -->
+      <p>Try searching for products in this store:</p>
+      <form (ngSubmit)="onProductSearch()" class="search-input-group">
+        <input type="search"
+               placeholder="Search products..."
+               [(ngModel)]="searchQuery"
+               name="searchQueryProduct">
+        <button type="submit">Search Products</button>
+      </form>
+    </ng-container>
+
+    <ng-template #storeSearchBlock>
+      <!-- Store Search (no store context) -->
+      <p>Try searching for a store:</p>
+      <form class="search-input-group"> <!-- Removed (ngSubmit) -->
+        <input type="search"
+               placeholder="Search stores..."
+               [(ngModel)]="searchQuery"
+               (ngModelChange)="onSearchQueryChange($event)"
+               name="searchQueryStore">
+        <!-- Removed submit button as search is reactive -->
+        <!-- <button type="submit">Search Stores</button> -->
+      </form>
+      <!-- Display Store Search Results -->
+      <div class="store-search-results" *ngIf="storeSearchResults$ | async as stores">
+         <ul *ngIf="stores.length > 0; else noStoresFound">
+           <li *ngFor="let store of stores">
+             <a [routerLink]="['/', store.slug]">{{ store.name }}</a>
+             <p *ngIf="store.description">{{ store.description }}</p>
+           </li>
+         </ul>
+         <ng-template #noStoresFound>
+           <p *ngIf="searchQuery.length >= 2">No stores found matching "{{ searchQuery }}".</p>
+         </ng-template>
+       </div>
+    </ng-template>
   </div>
 
   <div class="navigation-links">
     <!-- Use async pipe to get the current store slug for the link -->
-    <a [routerLink]="['/', currentStoreSlug$ | async]" class="btn btn-primary">Back to Home</a>
+    <!-- Conditional Back Button -->
+    <a *ngIf="currentStoreSlug$ | async as slug" [routerLink]="['/', slug]" class="btn btn-primary">Back to Store Home</a>
+    <a *ngIf="!(currentStoreSlug$ | async)" routerLink="/" class="btn btn-primary">Back to Site Home</a>
     <!-- Add link to contact page or sitemap later if desired -->
   </div>
 
-  <!-- Placeholder for Suggested Pages -->
-  <div class="suggested-pages">
-    <h2>Maybe you were looking for:</h2>
-    <ul>
-      <!-- Fetch popular pages/categories later -->
-      <li><a routerLink="/">Homepage</a></li>
-      <li><a routerLink="/shop">Shop All</a></li>
-      <!-- Add more suggestions dynamically -->
-    </ul>
+  <!-- Suggested Pages -->
+  <!-- Suggested Pages (Only show if in store context) -->
+  <div class="suggested-pages" *ngIf="currentStoreSlug$ | async as slug">
+    <ng-container *ngIf="suggestedLinks$ | async as links">
+      <ng-container *ngIf="links && links.length > 0">
+        <h2>Maybe you were looking for:</h2>
+        <ul>
+          <li *ngFor="let link of links">
+            <!-- Assuming link.path is relative to the store slug -->
+            <a [routerLink]="['/', slug, link.path]">{{ link.name }}</a>
+          </li>
+        </ul>
+      </ng-container>
+    </ng-container>
   </div>
 
   <!-- Optional: Add an image or animation -->

@@ -2,10 +2,9 @@
 
 ## 1. Current Focus
 
-*   **Store-Specific Functionality:** Implementing the backend and frontend changes required to make the storefront application display data specific to a store identified by a URL slug (e.g., `/store-slug/home`).
-*   **API Filtering:** Ensuring backend API endpoints correctly filter data (products, categories) based on the provided store context.
-*   **Frontend Context:** Making the current store context available throughout the Angular application.
-*   **Memory Bank Maintenance:** Updating documentation to reflect the new store architecture.
+*   **Backend API Implementation:** Planning and implementing backend endpoints required by the Storefront, starting with search suggestions.
+*   **Frontend Implementation:** Continuing implementation of Storefront pages based on the plan and backend availability.
+*   **Memory Bank Maintenance:** Updating documentation with backend status and plans.
 
 ## 2. Recent Changes & Debugging
 *   **(Previous Session) Production Deployment & Debugging:** Successfully configured Docker Compose, Dockerfiles, Nginx, database migrations, and seeding for the production environment. Resolved various build and runtime errors. Fixed featured products query.
@@ -75,14 +74,19 @@
     *   Fixed `HomepageComponent` template error by removing `[slides]` binding.
     *   Updated `seed.ts` to include `CarouselItem` data and ran seed script successfully.
     *   Identified and removed misplaced `CarouselAddComponent` and `createCarouselImage` method from Storefront project (belongs in Store Management). Fixed resulting build error.
+ *   **Storefront Page Review (Frontend):** Reviewed implementation status of all 12 Storefront pages against the plan, documented in `storefront-page-status.md`.
+ *   **404 Page Implementation (Frontend):** Implemented basic 404 page component, routing, styling, "Back to Home" link (with store slug), and placeholder search/suggestions. Fixed root redirect loop.
+ *   **Backend API Review:** Assessed current backend API implementation (`backend/api/src`) against Storefront requirements. Documented status in `backend-api-status.md`. Found most core endpoints exist.
+ *   **Backend API Planning:** Created and refined backend implementation plan (`backend-api-plan.md`), incorporating search suggestions and prioritizing missing endpoints (`/api/navigation/popular`, `/api/search/suggest`).
 
 ## 3. Next Steps (Immediate & Planned)
 
-1.  **Commit Changes:** Commit all backend and frontend changes related to store implementation, login fixes, account routing fixes, and **carousel implementation/fixes**.
-2.  **(DONE)** Fix JWT Configuration: Resolved.
-3.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update). Consider if cart needs to be store-specific.
-4.  **Implement Basic Account Page:** Backend (`/account/profile` exists), Frontend (`AccountPageComponent` data display, `JwtAuthGuard` applied). Needs UI implementation to show profile data.
-5.  **Frontend UI Integration:** Update relevant frontend components (e.g., Category Page, Product Page) to use the `storeSlug` from `StoreContextService` when displaying data or making API calls via `ApiService`. (Homepage seems okay now).
+1.  **Implement Backend Search Suggest:** Create `SearchController`/`Service` (or enhance `Products*`) for `GET /api/search/suggest`.
+2.  **Implement Backend Popular Nav:** Create `NavigationController`/`Service` for `GET /api/navigation/popular`.
+3.  **Implement Frontend Search Autocomplete:** Update Header/Search component to call `/api/search/suggest` and display results.
+4.  **Implement Frontend Search Results Page:** Create route and component for `/search` to display results from `GET /products?q=...`.
+5.  **Continue Frontend Page Implementation:** Proceed with implementing pages based on `storefront-page-status.md` (e.g., About, Contact, Account sections).
+6.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update).
 
 ## 4. Active Decisions & Considerations
 
@@ -113,4 +117,4 @@
 *   **Verify Feature Placement:** Always double-check component/feature placement against the project plan (e.g., `CarouselAddComponent` belonged in Store Management, not Storefront).
 *   **(Previous Learnings Still Valid):** TypeORM entity loading/CLI config, TS build includes, Docker build cache/CMD path, migration constraints, UUID format, Angular route structure/guards, JWT config, etc.
 
-*(As of 4/6/2025 - Carousel implementation fixed, including backend entity/migration/service/controller, frontend service/component, seeding, and Docker troubleshooting. Misplaced carousel creation code removed from Storefront.)*
+*(As of 4/10/2025 - Storefront page status reviewed. Basic 404 page implemented. Backend status reviewed and plan updated. Next step: Implement backend search suggestions.)*

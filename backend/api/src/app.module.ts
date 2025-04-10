@@ -11,6 +11,7 @@ import { CartModule } from './cart/cart.module';
 import { AccountModule } from './account/account.module';
 import { StoresModule } from './stores/stores.module';
 import { CarouselModule } from './carousel/carousel.module';
+import { NavigationModule } from './navigation/navigation.module'; // Import NavigationModule
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -41,6 +42,7 @@ import { CarouselModule } from './carousel/carousel.module';
     AccountModule,
     StoresModule,
     CarouselModule,
+    NavigationModule, // Add NavigationModule here
   ],
   controllers: [AppController],
   providers: [AppService],

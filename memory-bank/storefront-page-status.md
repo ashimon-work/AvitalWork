@@ -22,15 +22,15 @@ Status Legend:
         *   `[x]` Friendly error message (Implemented in HTML).
         *   `[ ]` Search bar (Placeholder input exists, needs component/logic).
         *   `[x]` "Back to Home" button (Implemented with `routerLink` in HTML).
-        *   `[ ]` Suggested popular pages/categories (Placeholder exists, needs dynamic data).
+        *   `[/]` Suggested popular pages/categories (Implemented using `suggestedLinks$`, API call added).
         *   `[ ]` Humorous image/animation (Optional, placeholder commented out).
     *   `[/]` User Actions:
-        *   `[ ]` Search functionality (Not implemented).
+        *   `[/]` Search functionality (Input bound, triggers navigation to placeholder `/search` route with query param).
         *   `[x]` Return to homepage button action (Implemented via `routerLink`).
-        *   `[ ]` Navigate to suggested pages (Placeholders exist, needs dynamic data/links).
+        *   `[x]` Navigate to suggested pages (Implemented via dynamic `routerLink`).
         *   `[ ]` Report broken link (Not implemented).
     *   `[ ]` Technical Details:
-        *   `[ ]` API Integration: `GET /api/search`, `GET /api/navigation/popular` (Not implemented).
+        *   `[/]` API Integration: `GET /api/search` (Handled by search results page), `GET /api/navigation/popular` (Implemented in `ApiService` and called by component).
         *   `[ ]` Component Interaction: Logging 404s, recording referrer (Not implemented).
 
 ---

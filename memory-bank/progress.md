@@ -1,6 +1,6 @@
 # Project Progress: Online Business Promotion System
 
-*(As of 4/6/2025 - Carousel implementation fixed (backend entity/migration/service/controller, frontend service/component, seeding, Docker troubleshooting). Misplaced carousel creation code removed from Storefront.)*
+*(As of 4/10/2025 - Storefront page status reviewed. Basic 404 page implemented. Backend status reviewed and plan updated. Next step: Implement backend search suggestions.)*
 
 ## I. Project Setup & Foundation
 
@@ -31,7 +31,7 @@
 *   [ ] User Account Pages (Overview, Orders, Addresses, etc.) - Placeholder component/route exists. Requires Login.
 *   [/] Contact Page - Placeholder component/route exists.
 *   [/] About Page - Placeholder component/route exists.
-*   [ ] 404 Page
+*   [/] 404 Page - Basic component, routing, styling, "Back to Home" link, placeholder search/suggestions implemented. Search/suggestion logic pending.
 *   [ ] Responsiveness & Mobile Optimization
 *   [x] API Integration - Core API service updated with methods for product details, cart operations, registration. Backend endpoints implemented for these (using DB for products/categories, in-memory for cart). Search/Newsletter endpoints still pending. **Updated to pass store context.**
 *   [x] Store-Specific Routing & Context - Implemented URL structure `/:storeSlug/...`, `StoreContextService` created, `ApiService` updated to use context. Fixed `routerLink`s in Header, Footer, Navigation, Product/Category Cards, Category Page, Login Page, Registration Page to use store context. Fixed `AuthService` redirection logic.
@@ -66,7 +66,7 @@
 *   [x] Initial Setup (NestJS, TypeORM, Config, Modules) - Basic setup complete
 *   [x] Define Basic Entities (User, Product, Category, Store, **CarouselItem**) - Entities created and configured with TypeORM. Relationships established.
 *   [x] Authentication Endpoints (Storefront Customer, Store Manager) - `/auth/register` and `/auth/login` implemented & functional (JWT config fixed). `/account/profile` (JWT protected) implemented.
-*   [x] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, **Carousel**, etc.) - Endpoints for Products (featured, list, details), Categories (featured, details), Cart (get, add, update, remove), Auth (register), **Carousel (get)** implemented. Services refactored to use TypeORM (except Cart). **Product/Category/Carousel endpoints updated to filter by storeSlug.** Search/Newsletter pending.
+*   [/] Storefront API Endpoints (Categories, Products, Cart, Orders, Account, **Carousel**, etc.) - Endpoints for Products (featured, list, details), Categories (featured, details), Cart (get, add, update, remove), Auth (register), **Carousel (get)** implemented. Services refactored to use TypeORM (except Cart). **Product/Category/Carousel endpoints updated to filter by storeSlug.** Search (full results via `GET /products?q=...` exists, suggestions pending), Newsletter, Popular Navigation pending. Backend status documented in `backend-api-status.md`. Plan created in `backend-api-plan.md`.
 *   [ ] Store Management API Endpoints (Dashboard, Products, Orders, Customers, Settings, Profile, etc.)
 *   [ ] Marketplace API Endpoints (Aggregated Products, Categories, Stores, Search)
 *   [x] Database Schema Design & Migrations - Initial entities defined, TypeORM configured, data source file created, migration scripts added/fixed. Initial migration generated and run. **Store entity and relations migration created and run successfully after troubleshooting.** **User entity migration generated and run successfully after troubleshooting CLI/build issues.** **CarouselItem migration created and run successfully after troubleshooting Docker/CLI issues.**

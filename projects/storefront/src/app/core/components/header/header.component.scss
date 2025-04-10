@@ -156,7 +156,7 @@
   // Hide original nav and search bar (now inside mobile menu)
   .navigation,
   .search-bar {
-    display: none;
+    display: none; // Hide original nav
   }
 
   // Show hamburger button
@@ -185,6 +185,11 @@
       font-size: 0.6rem; // Even smaller font size for all text
     }
     justify-content: flex-end;
+
+    // Hide the desktop search bar specifically on mobile
+    .desktop-search {
+      display: none;
+    }
   }
 
   // Style the mobile menu container

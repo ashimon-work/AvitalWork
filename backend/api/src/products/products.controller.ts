@@ -18,6 +18,20 @@ export class ProductsController {
     return this.productsService.findAll(queryParams);
   }
 
+  // Define specific routes like 'suggest' BEFORE parameterized routes like ':id'
+  @Get('suggest') // Handle GET /products/suggest
+  async getSuggestions(
+    @Query('q') query: string,
+    @Query('storeSlug') storeSlug?: string,
+    @Query('limit') limit?: string // Query params are strings
+  ): Promise<ProductEntity[]> {
+    if (!query) {
+      return []; // Return empty if no query provided
+    }
+    const suggestionLimit = limit ? parseInt(limit, 10) : 5; // Default limit to 5
+    return this.productsService.getSearchSuggestions(query, storeSlug, suggestionLimit);
+  }
+
   @Get(':id') // Handle GET /products/:id
   async findOne(@Param('id') id: string, @Query('storeSlug') storeSlug?: string): Promise<ProductEntity> { // Accept storeSlug query param
     const product = await this.productsService.findOne(id, storeSlug); // Pass storeSlug to service
