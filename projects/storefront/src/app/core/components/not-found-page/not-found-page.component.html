@@ -1,0 +1,34 @@
+<div class="not-found-container">
+  <h1>404 - Page Not Found</h1>
+  <p>Oops! The page you are looking for does not exist or may have been moved.</p>
+
+  <!-- Placeholder for Search Bar -->
+  <div class="search-section">
+    <p>Try searching for what you need:</p>
+    <div class="search-input-group"> <!-- Wrapper for input and button -->
+      <input type="search" placeholder="Search store...">
+      <button>Search</button>
+    </div>
+  </div>
+
+  <div class="navigation-links">
+    <!-- Use async pipe to get the current store slug for the link -->
+    <a [routerLink]="['/', currentStoreSlug$ | async]" class="btn btn-primary">Back to Home</a>
+    <!-- Add link to contact page or sitemap later if desired -->
+  </div>
+
+  <!-- Placeholder for Suggested Pages -->
+  <div class="suggested-pages">
+    <h2>Maybe you were looking for:</h2>
+    <ul>
+      <!-- Fetch popular pages/categories later -->
+      <li><a routerLink="/">Homepage</a></li>
+      <li><a routerLink="/shop">Shop All</a></li>
+      <!-- Add more suggestions dynamically -->
+    </ul>
+  </div>
+
+  <!-- Optional: Add an image or animation -->
+  <!-- <img src="/assets/images/404-image.svg" alt="Page not found illustration"> -->
+
+</div>
