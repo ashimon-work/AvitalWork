@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere, ILike, MoreThanOrEqual, LessThanOrEqual, In, FindOptionsOrder, Between } from 'typeorm'; // Added Between
 import { Product } from '@shared-types'; // Import the shared interface
@@ -63,6 +63,7 @@ export class ProductsService {
   }
 
   async findAll(params: FindAllProductsParams): Promise<{ products: ProductEntity[], total: number }> {
+    console.log('[ProductsService] findAll received params:', JSON.stringify(params)); // Added log
     const page = params.page ? +params.page : 1;
     const limit = params.limit ? +params.limit : 12;
     const skip = (page - 1) * limit;
@@ -118,6 +119,7 @@ export class ProductsService {
          order.name = 'ASC'; // Default sort
          break;
     }
+    console.log('[ProductsService] Constructed order object:', JSON.stringify(order)); // Added log
 
     const [results, total] = await this.productsRepository.findAndCount({
       where,
