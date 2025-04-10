@@ -51,6 +51,7 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   // Properties to bind to filter inputs in the template
   selectedPriceRange: string = ''; // e.g., '0-20', '20-50'
   selectedTags: { [key: string]: boolean } = {}; // e.g., { 'New': true, 'Sale': false }
+  isMobileFiltersVisible: boolean = false; // State for mobile filter overlay
 
   constructor(
     private route: ActivatedRoute,
@@ -174,9 +175,9 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     this.pageSubject.next(1);
   }
 
-  onSortChange(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement;
-    this.sortSubject.next(selectElement.value);
+  onSortChange(newValue: string): void { // Changed parameter type from Event to string
+    // The newValue is passed directly from (ngModelChange)
+    this.sortSubject.next(newValue);
     this.pageSubject.next(1);
   }
 
@@ -228,5 +229,9 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
       return 1; // Or 0, depending on desired behavior for no items
     }
     return Math.ceil(totalItems / this.itemsPerPage);
+  }
+
+  toggleMobileFilters(): void {
+    this.isMobileFiltersVisible = !this.isMobileFiltersVisible;
   }
 }

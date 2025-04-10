@@ -4,6 +4,22 @@
   display: block;
 }
 
+// Utility classes for responsive visibility
+.desktop-only {
+  display: block; // Or grid, flex, etc. depending on element
+  @media (max-width: 768px) {
+    display: none !important; // Hide on mobile
+  }
+}
+
+.mobile-only {
+  display: none !important; // Hide on desktop
+  @media (max-width: 768px) {
+    display: inline-block !important; // Or block, flex, etc. depending on element
+  }
+}
+
+
 .category-page-container {
   width: 100%;
   max-width: var(--container-max-width);
@@ -45,26 +61,22 @@
 
 .category-content {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px 1fr; // Desktop layout
   gap: var(--spacing-xl);
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; // Mobile layout (single column)
   }
 }
 
+// Desktop Filter Sidebar Styles
 .filter-sidebar {
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-lg);
   background-color: var(--neutral-lightest);
-  align-self: start;
-  width: 240px;
-
-  @media (max-width: 768px) {
-    width: 320px;
-    padding: var(--spacing-lg);
-  }
+  align-self: start; // Keep aligned to top in grid cell
+  width: 240px; // Fixed width for desktop
 
   h2 {
     font-size: 1.4rem;
@@ -96,7 +108,7 @@
 
   button {
     /* Inherit base button styles */
-    @extend button;
+    @extend button; // Assuming a global button style exists
     width: 100%;
     margin-top: var(--spacing-md);
     background-color: transparent;
@@ -112,11 +124,9 @@
   }
 }
 
+// Wrapper for desktop sidebar (now hidden on mobile via .desktop-only)
 .filter-wrapper {
-  @media (max-width: 768px) {
-    display: flex;
-    justify-content: center;
-  }
+  // No specific styles needed here anymore unless for alignment
 }
 
 .main-content {
@@ -125,18 +135,48 @@
 
 .sorting-options {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-end; // Default to right alignment (desktop)
   align-items: center;
   margin-bottom: var(--spacing-lg);
   gap: var(--spacing-sm);
 
-  label {
-    font-weight: var(--font-weight-medium);
+  @media (max-width: 768px) {
+    justify-content: space-between; // Space out button and sort on mobile
   }
 
-  select {
-    width: auto;
+  .filter-button {
+    // Inherits .mobile-only styles for visibility
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background-color: transparent;
+    color: var(--text-color);
     padding: var(--spacing-xs) var(--spacing-sm);
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+    line-height: inherit;
+    height: auto;
+
+    &:hover {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+  }
+
+  .sort-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    label {
+      font-weight: var(--font-weight-medium);
+    }
+
+    select {
+      width: auto;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: var(--border-width) solid var(--border-color);
+      border-radius: var(--border-radius-sm);
+    }
   }
 }
 
@@ -188,4 +228,75 @@ p {
   text-align: center;
   padding: var(--spacing-xl);
   color: var(--text-color-light);
+}
+
+
+// Mobile Filter Overlay Styles
+.mobile-filter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000; // Ensure it's above other content
+  display: flex; // Use flex for positioning sidebar
+  // Add transitions for smooth appearance if desired
+}
+
+.mobile-filter-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); // Semi-transparent backdrop
+  z-index: 1001; // Below sidebar but above page content
+}
+
+.filter-sidebar.mobile-filters {
+  position: relative; // Position relative to overlay container
+  z-index: 1002; // Above backdrop
+  width: 80%; // Or a fixed width like 300px
+  max-width: 320px;
+  height: 100%;
+  background-color: var(--neutral-lightest); // Same as desktop
+  padding: var(--spacing-lg);
+  overflow-y: auto; // Allow scrolling if content exceeds height
+  box-shadow: 2px 0 5px rgba(0,0,0,0.2); // Add shadow for depth
+  border: none; // Remove border inherited from desktop version
+  border-radius: 0; // Remove border-radius
+
+  // Adjustments for mobile context
+  align-self: flex-start; // Align to the start (left)
+
+  .close-filters {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    padding: 0;
+    color: var(--text-color-light);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--text-color);
+    }
+  }
+
+  // Style the explicit apply button for mobile
+  .apply-filters-mobile {
+    @extend button; // Use base button styles
+    width: 100%;
+    margin-top: var(--spacing-lg);
+    background-color: var(--primary-color); // Make it prominent
+    color: var(--button-text-color);
+    border: none;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
 }
