@@ -11,6 +11,7 @@ import { CartModule } from './cart/cart.module';
 import { AccountModule } from './account/account.module';
 import { StoresModule } from './stores/stores.module';
 import { CarouselModule } from './carousel/carousel.module';
+import { NewsletterModule } from './newsletter/newsletter.module'; // Added NewsletterModule import
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -41,6 +42,7 @@ import { CarouselModule } from './carousel/carousel.module';
     AccountModule,
     StoresModule,
     CarouselModule,
+    NewsletterModule, // Added NewsletterModule registration
   ],
   controllers: [AppController],
   providers: [AppService],
