@@ -142,6 +142,7 @@
 
   @media (max-width: 768px) {
     justify-content: space-between; // Space out button and sort on mobile
+    position: relative; // Needed for absolute positioning of the filter popover
   }
 
   .filter-button {
@@ -231,45 +232,106 @@ p {
 }
 
 
-// Mobile Filter Overlay Styles
+// Mobile Filter Popover Styles
 .mobile-filter-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: absolute; // Position relative to .sorting-options
+  top: 100%; // Position below the sorting options container
+  left: 0; // Align with the left edge of the container
+  width: auto; // Let content determine width, or set a specific width
+  min-width: 250px; // Ensure a minimum usable width
+  max-width: calc(100% - var(--spacing-sm)); // Prevent overflow on very small screens
   z-index: 1000; // Ensure it's above other content
-  display: flex; // Use flex for positioning sidebar
-  // Add transitions for smooth appearance if desired
+  background-color: var(--neutral-lightest); // Background for the popover
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow-md); // Standard dropdown shadow
+  padding: var(--spacing-lg); // Padding inside the popover
+  margin-top: var(--spacing-xs); // Small gap below the button
+  // Visibility is controlled by *ngIf="isMobileFiltersVisible" in the HTML
 }
 
-.mobile-filter-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); // Semi-transparent backdrop
-  z-index: 1001; // Below sidebar but above page content
-}
+// Remove the backdrop entirely
+// .mobile-filter-backdrop { ... } // Removed
 
 .filter-sidebar.mobile-filters {
-  position: relative; // Position relative to overlay container
-  z-index: 1002; // Above backdrop
-  width: 80%; // Or a fixed width like 300px
-  max-width: 320px;
-  height: 100%;
-  background-color: var(--neutral-lightest); // Same as desktop
-  padding: var(--spacing-lg);
-  overflow-y: auto; // Allow scrolling if content exceeds height
-  box-shadow: 2px 0 5px rgba(0,0,0,0.2); // Add shadow for depth
-  border: none; // Remove border inherited from desktop version
-  border-radius: 0; // Remove border-radius
+  // Revert to standard vertical layout inside the popover
+  position: static;
+  z-index: auto;
+  width: 100%; // Fill the overlay popover
+  max-width: none;
+  height: auto;
+  background-color: transparent; // Popover has background
+  padding: 0; // Popover has padding
+  overflow-y: auto; // Allow scroll if content overflows popover height
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  align-self: auto;
 
-  // Adjustments for mobile context
-  align-self: flex-start; // Align to the start (left)
+  // Restore vertical layout styles (similar to original desktop sidebar)
+  h2 {
+    display: block; // Show heading again
+    font-size: 1.2rem; // Slightly smaller for popover
+    margin-bottom: var(--spacing-md);
+    border-bottom: var(--border-width) solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+  }
 
+  .filter-group {
+    margin-bottom: var(--spacing-md); // Restore vertical spacing
+    flex: none; // Remove flex properties
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    select, label {
+      display: block; // Stack elements vertically
+      margin-bottom: var(--spacing-sm);
+      margin-right: 0;
+    }
+    select {
+       min-width: 0; // Remove min-width from flex layout
+       width: 100%; // Make select full width of popover
+    }
+    div {
+      display: block; // Stack tag labels vertically
+      gap: 0;
+      label { // Ensure labels within the div are block too
+        display: block;
+        margin-bottom: var(--spacing-sm);
+      }
+    }
+     input[type="checkbox"] { // Copied from desktop styles
+        margin-right: var(--spacing-sm);
+        width: auto;
+        display: inline-block;
+     }
+  }
+
+  // Restore button styles
+  button {
+    margin-top: var(--spacing-md);
+    width: 100%; // Make buttons full width
+    padding: var(--spacing-sm) var(--spacing-md); // Standard button padding
+    flex-shrink: 1; // Default shrink behavior
+  }
+  // Restore button order/specific styles
+  .clear-filters {
+     order: 0; // Default order
+  }
+  .apply-filters-mobile {
+     order: 0; // Default order
+     // Keep prominent style from previous attempt
+     @extend button;
+     background-color: var(--primary-color);
+     color: var(--button-text-color);
+     border: none;
+     &:hover { opacity: 0.9; }
+  }
   .close-filters {
+    order: 0; // Default order
     position: absolute;
     top: var(--spacing-sm);
     right: var(--spacing-sm);
