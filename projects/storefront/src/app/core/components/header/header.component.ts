@@ -7,6 +7,7 @@ import { CartService } from '../../services/cart.service'; // Import CartService
 import { StoreContextService } from '../../services/store-context.service'; // Import StoreContextService
 import { AuthService } from '../../services/auth.service'; // Import AuthService
 import { Observable, Subscription } from 'rxjs'; // Import Observable and Subscription
+import { MobileMenuService } from '../../services/mobile-menu.service'; // Import MobileMenuService
 
 @Component({
   selector: 'app-header',
@@ -26,17 +27,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private cartCountSubscription: Subscription | undefined;
   currentStoreSlug$: Observable<string | null>; // Add slug observable
   isAuthenticated$: Observable<boolean>; // Add auth state observable
-  isMobileMenuOpen: boolean = false; // State for mobile menu toggle
+  isMobileMenuOpen$: Observable<boolean>; // Use observable from service
 
   // Inject CartService, StoreContextService, and AuthService
   constructor(
     private cartService: CartService,
     private storeContext: StoreContextService,
     private authService: AuthService, // Inject AuthService
+    private mobileMenuService: MobileMenuService, // Inject MobileMenuService
     private el: ElementRef
   ) {
     this.currentStoreSlug$ = this.storeContext.currentStoreSlug$; // Assign slug observable
     this.isAuthenticated$ = this.authService.isAuthenticated$; // Assign auth state observable
+    this.isMobileMenuOpen$ = this.mobileMenuService.isOpen$; // Assign menu state observable
   }
 
   ngOnInit() {
@@ -53,16 +56,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.cartCountSubscription) {
       this.cartCountSubscription.unsubscribe();
     }
-  }
+}
+
+closeMobileMenuOnClick(): void {
+  this.mobileMenuService.closeMenu();
+}
 
   toggleMobileMenu(): void {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    this.mobileMenuService.toggleMenu();
   }
 
   @HostListener('document:click', ['$event'])
   clickout(event: Event): void {
-    if (!this.el.nativeElement.contains(event.target) && this.isMobileMenuOpen) {
-      this.isMobileMenuOpen = false;
+    // Check if the click is outside the header element AND if the menu is open (using service state)
+    if (!this.el.nativeElement.contains(event.target) && this.mobileMenuService.isOpen) {
+       this.mobileMenuService.closeMenu(); // Use service to close
     }
   }
 

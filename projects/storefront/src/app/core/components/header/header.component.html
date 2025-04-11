@@ -9,7 +9,7 @@
     </div>
 
     <!-- Collapsible Menu Content (Nav + Search) -->
-    <div class="mobile-menu-content" [class.open]="isMobileMenuOpen">
+    <div class="mobile-menu-content" [class.open]="isMobileMenuOpen$ | async">
       <app-navigation class="navigation"></app-navigation>
       <app-search-bar class="search-bar"></app-search-bar>
     </div>
