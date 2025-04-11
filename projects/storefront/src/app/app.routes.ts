@@ -25,6 +25,9 @@ export const routes: Routes = [
   // For now, let's redirect to a default store slug for testing
   { path: '', redirectTo: '/default', pathMatch: 'full' },
 
+  // Redirect /default specifically to /awesome-gadgets
+  { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
+
   // Parent route to capture the store slug
   {
     path: ':storeSlug',
