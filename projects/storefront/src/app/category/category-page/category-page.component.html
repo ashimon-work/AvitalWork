@@ -65,12 +65,12 @@
         <!-- Mobile Filter Overlay - Moved inside sorting-options &amp; added template ref -->
         <div #mobileFilterOverlay class="mobile-filter-overlay" *ngIf="isMobileFiltersVisible">
           <aside class="filter-sidebar mobile-filters"> <!-- Re-use sidebar structure -->
-            <button class="close-filters" (click)="toggleMobileFilters()">&amp;times;</button> <!-- Close button -->
+            <button class="close-filters" (click)="toggleMobileFilters()">X</button> <!-- Close button -->
             <h2>Filters</h2>
             <!-- Price Filter Example -->
             <div class="filter-group">
               <h3>Price Range</h3>
-              <select [(ngModel)]="selectedPriceRange" (ngModelChange)="applyFilters(); toggleMobileFilters()"> <!-- Close on change -->
+              <select [(ngModel)]="selectedPriceRange" (ngModelChange)="applyFilters()"> <!-- Don't close on change -->
                 <option value="">All Prices</option>
                 <option value="0-20">$0 - $20</option>
                 <option value="20-50">$20 - $50</option>
