@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common'; // For async pipe, ngIf, ngFor
+import { CommonModule, Location } from '@angular/common'; // For async pipe, ngIf, ngFor, Location
 import { RouterModule } from '@angular/router'; // For routerLink
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { Observable } from 'rxjs';
@@ -21,6 +21,7 @@ import { Product } from '@shared-types'; // Import Product type if needed
 export class CartPageComponent {
   private cartService = inject(CartService);
   private storeContextService = inject(StoreContextService);
+  private location = inject(Location);
 
   // Expose the cart state observable directly to the template
   cartState$: Observable<CartState> = this.cartService.cartState$;
@@ -91,5 +92,10 @@ export class CartPageComponent {
     console.log('Proceeding to checkout...');
     // TODO: Implement navigation to checkout route
     // this.router.navigate(['/checkout']);
+  }
+
+  // Method to navigate back
+  goBack(): void {
+    this.location.back();
   }
 }

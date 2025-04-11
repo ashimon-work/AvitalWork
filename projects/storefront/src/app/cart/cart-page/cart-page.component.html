@@ -43,7 +43,7 @@
           </tbody>
         </table>
         <div class="cart-actions-lower">
-          <button class="continue-shopping-btn" [routerLink]="['/']">Continue Shopping</button>
+          <button class="continue-shopping-btn" (click)="goBack()">Continue Shopping</button>
           <button class="update-cart-btn" (click)="updateCart()">Update Cart</button> <!-- Might not be needed if quantity updates automatically -->
         </div>
       </div>
