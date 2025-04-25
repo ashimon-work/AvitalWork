@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap, catchError, throwError, map, first } from 'rxjs'; // Added first
+import { BehaviorSubject, Observable, tap, catchError, throwError, map, first, Subject } from 'rxjs'; // Added first, Subject
 import { Product } from '@shared-types';
 import { ApiService } from './api.service';
 // Removed incorrect NestJS Logger import
@@ -25,6 +25,10 @@ export class CartService {
   // Use BehaviorSubject to hold and emit cart state
   private cartStateSubject = new BehaviorSubject<CartState>({ items: [], totalItems: 0 });
   cartState$ = this.cartStateSubject.asObservable();
+
+  // Subject to signal when an item is successfully added
+  private itemAddedSource = new Subject<void>();
+  itemAdded$ = this.itemAddedSource.asObservable();
 
   constructor(private apiService: ApiService) {
     this.loadInitialCart();
@@ -63,6 +67,7 @@ export class CartService {
         if (response.success) {
           this._updateStateFromBackendCart(response.cart || {});
           console.log(`Item added successfully. New state updated.`); // Replaced logger
+          this.itemAddedSource.next(); // Signal that item was added
         } else {
           console.warn(`Failed to add item via API: ${response.message}`); // Replaced logger
           // Optionally re-sync state if API failed but local state was optimistic

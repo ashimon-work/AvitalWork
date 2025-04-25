@@ -3,5 +3,9 @@
 <main style="overflow-x: hidden;">
   <router-outlet></router-outlet>
 </main>
+<!-- Cart Notification -->
+<div *ngIf="showCartNotification" class="cart-notification">
+  Item successfully added to cart.
+</div>
 
 <app-footer></app-footer>
