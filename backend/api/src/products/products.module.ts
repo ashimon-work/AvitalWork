@@ -9,5 +9,6 @@ import { ProductsService } from './products.service';
   controllers: [ProductsController],
   providers: [ProductsService],
   // Add controllers and providers later
+  exports: [TypeOrmModule] // Export TypeOrmModule to make ProductEntityRepository available
 })
 export class ProductsModule {}

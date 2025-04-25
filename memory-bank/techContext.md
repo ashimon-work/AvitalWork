@@ -11,10 +11,10 @@
 *   **Backend:** NestJS (~v10, Node.js ~v20 runtime)
     *   Framework for building the API layer and business logic.
     *   TypeScript as the primary language.
-    *   Modules: `AppModule`, `AuthModule`, `UsersModule`, `ProductsModule`, `CategoriesModule`, `StoresModule`, `CartModule`.
+    *   Modules: `AppModule`, `AuthModule`, `UsersModule`, `ProductsModule`, `CategoriesModule`, `StoresModule`, `CartModule`, `AddressesModule`, `OrdersModule`, `WishlistModule`, `NavigationModule`.
 *   **Database:** PostgreSQL (~v15)
     *   Relational database managed via TypeORM.
-    *   Entities defined in `src/*/entities/*.entity.ts`.
+    *   Entities defined in `src/*/entities/*.entity.ts` (User, Product, Category, Store, CarouselItem, Address, Order, OrderItem, Wishlist, WishlistItem).
     *   TypeORM configuration via `TypeOrmModule.forRootAsync` in `AppModule` and `TypeOrmModule.forFeature` in feature modules.
 *   **API Style:** RESTful with a global `/api` prefix.
 *   **Web Server (Production):** Nginx (`stable-alpine` image)
@@ -36,14 +36,15 @@
 
 ## 3. Key Technical Requirements & Constraints
 
-*   **Shared Code (`@shared-types`):** Common types/interfaces managed in an Angular library (`projects/shared-types`). The library is built (`ng build shared-types`) to `dist/shared-types`. Frontend and backend applications use TypeScript path mapping (`tsconfig.json`) to reference the built output. Production Dockerfiles copy necessary source/config for building or copy pre-built output.
+*   **Shared Code (`@shared-types`):** Common types/interfaces managed in an Angular library (`projects/shared-types`). The library is built (`ng build shared-types`) to `dist/shared-types`. Frontend and backend applications use TypeScript path mapping (`tsconfig.json`) to reference the built output. Production Dockerfiles copy necessary source/config for building or copy pre-built output. (`state` field removed from `Address` interface).
 *   **Responsiveness:** All frontend applications must be fully responsive across devices.
 *   **Performance:** Adherence to performance goals outlined in the plan (e.g., page load times, API response times). Angular build budgets increased.
 *   **Security:** Implementation of security best practices.
     *   Password hashing using `bcrypt` implemented in `UsersService`. Native compilation handled during Docker build.
     *   Basic DTO validation using `class-validator` and `ValidationPipe` implemented for registration.
-    *   JWT Authentication requires `JWT_SECRET` environment variable in production.
-    *   Authentication/Authorization (JWT, Guards, RBAC) still pending full implementation.
+    *   JWT Authentication implemented (`JwtModule`, `JwtStrategy`, `JwtAuthGuard`). Requires `JWT_SECRET` environment variable in production.
+    *   `StoreContextGuard` created to extract `storeId` from route slug.
+    *   Role-Based Access Control (RBAC) still pending full implementation.
 *   **Maintainability:** Code should be well-structured, documented, and testable.
 
 ## 4. Integration Points
@@ -59,7 +60,7 @@
 ## 6. Database Management
 
 *   **ORM:** TypeORM used for database interaction.
-*   **Data Source:** Configuration for TypeORM CLI defined in `backend/api/data-source.ts` (reads `process.env` directly).
+*   **Data Source:** Configuration for TypeORM CLI defined in `backend/api/data-source.ts` (reads `process.env` directly, explicitly lists all entities).
 *   **Migrations:**
     *   Managed via TypeORM CLI scripts added to `backend/api/package.json` (`migration:generate`, `migration:run`, `migration:revert`), referencing compiled data source.
     *   Migration files stored in `backend/api/src/migrations`.
@@ -70,6 +71,6 @@
     *   Initial data seeding handled by `backend/api/src/seed.ts`.
     *   Script uses NestJS application context to access repositories.
     *   Run via `npm run seed:prod` script (using compiled JS) via `docker exec`.
-    *   Currently seeds stores, categories, and products, associating products/categories with stores.
+    *   Currently seeds stores, categories, products, carousel items, users, addresses, orders, and wishlists. Deletion order corrected for FK constraints. `state` removed from address data.
 
 *(Context updated as of 4/2/2025 reflecting store-specific implementation)*

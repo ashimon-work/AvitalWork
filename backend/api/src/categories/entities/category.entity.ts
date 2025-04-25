@@ -7,12 +7,14 @@ import {
   Index,
   ManyToOne,
   JoinColumn,
+  ManyToMany, // Import ManyToMany
 } from 'typeorm';
-import { Category as ICategory } from '@shared-types';
+// import { Category as ICategory } from '@shared-types'; // Remove implements
 import { StoreEntity } from '../../stores/entities/store.entity';
+import { ProductEntity } from '../../products/entities/product.entity'; // Import ProductEntity
 
 @Entity('categories')
-export class CategoryEntity implements ICategory {
+export class CategoryEntity { // Remove implements
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -41,4 +43,8 @@ export class CategoryEntity implements ICategory {
 
   @UpdateDateColumn()
   updatedAt: Date;
+  // Relation: Products (Many-to-Many, inverse side)
+  @ManyToMany(() => ProductEntity, (product) => product.categories)
+  // No @JoinTable needed here, it's defined on ProductEntity
+  products: ProductEntity[];
 }

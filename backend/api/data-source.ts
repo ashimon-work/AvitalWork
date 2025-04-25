@@ -4,7 +4,13 @@ import { CategoryEntity } from './src/categories/entities/category.entity';
 import { StoreEntity } from './src/stores/entities/store.entity';
 import { UserEntity } from './src/users/entities/user.entity';
 import { CarouselItem } from './src/carousel/entities/carousel.entity';
+import { AddressEntity } from './src/addresses/entities/address.entity';
+import { OrderEntity } from './src/orders/entities/order.entity';
+import { OrderItemEntity } from './src/orders/entities/order-item.entity';
+import { WishlistEntity } from './src/wishlist/entities/wishlist.entity';
+import { WishlistItemEntity } from './src/wishlist/entities/wishlist-item.entity';
 import * as dotenv from 'dotenv';
+import { ProductVariantEntity } from 'src/products/entities/product-variant.entity';
 dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions = {
@@ -20,6 +26,12 @@ export const dataSourceOptions: DataSourceOptions = {
     StoreEntity,
     UserEntity,
     CarouselItem,
+    AddressEntity, // Add new entity
+    OrderEntity, // Add new entity
+    OrderItemEntity, // Add new entity
+    WishlistEntity, // Add new entity
+    WishlistItemEntity, // Add new entity
+    ProductVariantEntity, // Add ProductVariantEntity
     // Add other entities here
     // __dirname + '/../**/*.entity{.ts,.js}', // Alternative: Use glob pattern
   ],

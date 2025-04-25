@@ -1,1 +1,39 @@
-<p>account-wishlist works!</p>
+<h3>My Wishlist</h3>
+
+<!-- Loading Indicator -->
+<div *ngIf="isLoading && !(items$ | async)" class="loading-indicator">Loading wishlist...</div>
+
+<!-- Success/Error Messages -->
+<div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+<div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+<!-- Wishlist Items Grid -->
+<ng-container *ngIf="(items$ | async) as items">
+  <div *ngIf="items.length > 0; else noItems" class="wishlist-grid">
+    <div *ngFor="let item of items" class="wishlist-item-card">
+      <a [routerLink]="['/product', item.productId]" class="product-image-link">
+        <!-- Use a placeholder if imageUrl is missing -->
+        <img [src]="item.product.imageUrls?.[0] || 'https://via.placeholder.com/150'"
+             [alt]="item.product.name || 'Product Image'"
+             class="product-image">
+      </a>
+      <div class="product-details">
+        <h5 class="product-name">
+          <a [routerLink]="['/product', item.productId]">{{ item.product.name || 'Product Name Unavailable' }}</a>
+        </h5>
+        <p class="product-price">{{ item.product.price | currency }}</p>
+        <p class="added-date"><small>Added on: {{ item.addedAt | date:'shortDate' }}</small></p>
+      </div>
+      <div class="item-actions">
+        <button (click)="addToCart(item)" class="btn btn-sm btn-success me-2" [disabled]="isLoading">Add to Cart</button>
+        <button (click)="removeItem(item.id)" class="btn btn-sm btn-outline-danger" [disabled]="isLoading">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noItems>
+    <p>Your wishlist is empty.</p>
+    <!-- Optional: Link to shop -->
+    <!-- <a routerLink="/shop" class="btn btn-primary">Start Shopping</a> -->
+  </ng-template>
+</ng-container>

@@ -1,1 +1,139 @@
-<p>account-addresses works!</p>
+<h3>Manage Addresses</h3>
+
+<!-- Loading Indicator -->
+<div *ngIf="isLoading" class="loading-indicator">Loading addresses...</div>
+
+<!-- Success/Error Messages -->
+<div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+<div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+<!-- Address List -->
+<div *ngIf="!showForm && (addresses$ | async) as addresses">
+  <button (click)="openAddForm()" class="btn btn-primary mb-3">Add New Address</button>
+
+  <div *ngIf="addresses.length > 0; else noAddresses" class="address-list">
+    <div *ngFor="let address of addresses" class="address-card">
+      <h4>{{ address.fullName }}</h4>
+      <p>
+        {{ address.street1 }}<br>
+        <ng-container *ngIf="address.street2">{{ address.street2 }}<br></ng-container>
+        {{ address.city }}, {{ address.postalCode }}<br> <!-- Removed state -->
+        {{ address.country }}<br>
+        <ng-container *ngIf="address.phoneNumber">Phone: {{ address.phoneNumber }}</ng-container>
+      </p>
+      <div class="address-status">
+        <span *ngIf="address.isDefaultShipping" class="badge bg-info me-1">Default Shipping</span>
+        <span *ngIf="address.isDefaultBilling" class="badge bg-secondary">Default Billing</span>
+      </div>
+      <div class="address-actions mt-2">
+        <button (click)="openEditForm(address)" class="btn btn-sm btn-outline-secondary me-2">Edit</button>
+        <button (click)="deleteAddress(address.id)" class="btn btn-sm btn-outline-danger me-2"
+          [disabled]="isLoading">Delete</button>
+        <button *ngIf="!address.isDefaultShipping" (click)="setDefault(address.id, 'shipping')"
+          class="btn btn-sm btn-outline-primary me-2" [disabled]="isLoading">Set Default Shipping</button>
+        <button *ngIf="!address.isDefaultBilling" (click)="setDefault(address.id, 'billing')"
+          class="btn btn-sm btn-outline-primary" [disabled]="isLoading">Set Default Billing</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noAddresses>
+    <p>You haven't saved any addresses yet.</p>
+  </ng-template>
+</div>
+
+<!-- Add/Edit Form -->
+<div *ngIf="showForm" class="address-form-container">
+  <h4>{{ isEditing ? 'Edit Address' : 'Add New Address' }}</h4>
+  <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" novalidate>
+
+    <!-- Full Name -->
+    <div class="form-group mb-3">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" formControlName="fullName" class="form-control"
+        [ngClass]="{ 'is-invalid': fullName?.invalid && (fullName?.dirty || fullName?.touched) }">
+      <div *ngIf="fullName?.invalid && (fullName?.dirty || fullName?.touched)" class="invalid-feedback">
+        <div *ngIf="fullName?.errors?.['required']">Full name is required.</div>
+        <div *ngIf="fullName?.errors?.['maxlength']">Full name cannot exceed 100 characters.</div>
+      </div>
+    </div>
+
+    <!-- Street 1 -->
+    <div class="form-group mb-3">
+      <label for="street1">Street Address 1</label>
+      <input type="text" id="street1" formControlName="street1" class="form-control"
+        [ngClass]="{ 'is-invalid': street1?.invalid && (street1?.dirty || street1?.touched) }">
+      <div *ngIf="street1?.invalid && (street1?.dirty || street1?.touched)" class="invalid-feedback">
+        <div *ngIf="street1?.errors?.['required']">Street address is required.</div>
+        <div *ngIf="street1?.errors?.['maxlength']">Street address cannot exceed 255 characters.</div>
+      </div>
+    </div>
+
+    <!-- Street 2 -->
+    <div class="form-group mb-3">
+      <label for="street2">Street Address 2 (Optional)</label>
+      <input type="text" id="street2" formControlName="street2" class="form-control">
+    </div>
+
+    <!-- City -->
+    <div class="form-group mb-3">
+      <label for="city">City</label>
+      <input type="text" id="city" formControlName="city" class="form-control"
+        [ngClass]="{ 'is-invalid': city?.invalid && (city?.dirty || city?.touched) }">
+      <div *ngIf="city?.invalid && (city?.dirty || city?.touched)" class="invalid-feedback">
+        <div *ngIf="city?.errors?.['required']">City is required.</div>
+        <div *ngIf="city?.errors?.['maxlength']">City cannot exceed 100 characters.</div>
+      </div>
+    </div>
+
+    <!-- State (Removed) -->
+    <!--
+    <div class="form-group mb-3">
+      <label for="state">State/Province</label>
+      <input type="text" id="state" formControlName="state" class="form-control"
+             [ngClass]="{ 'is-invalid': state?.invalid && (state?.dirty || state?.touched) }">
+      <div *ngIf="state?.invalid && (state?.dirty || state?.touched)" class="invalid-feedback">
+        <div *ngIf="state?.errors?.['required']">State/Province is required.</div>
+        <div *ngIf="state?.errors?.['maxlength']">State/Province cannot exceed 100 characters.</div>
+      </div>
+    </div>
+    -->
+
+    <!-- Postal Code -->
+    <div class="form-group mb-3">
+      <label for="postalCode">Postal Code</label>
+      <input type="text" id="postalCode" formControlName="postalCode" class="form-control"
+        [ngClass]="{ 'is-invalid': postalCode?.invalid && (postalCode?.dirty || postalCode?.touched) }">
+      <div *ngIf="postalCode?.invalid && (postalCode?.dirty || postalCode?.touched)" class="invalid-feedback">
+        <div *ngIf="postalCode?.errors?.['required']">Postal code is required.</div>
+        <div *ngIf="postalCode?.errors?.['maxlength']">Postal code cannot exceed 20 characters.</div>
+      </div>
+    </div>
+
+    <!-- Country (Now defaulted and disabled) -->
+    <div class="form-group mb-3">
+      <label for="country">Country</label>
+      <input type="text" id="country" formControlName="country" class="form-control" readonly>
+      <!-- Removed validation display as it's disabled -->
+      <!-- <div *ngIf="country?.invalid && (country?.dirty || country?.touched)" class="invalid-feedback">
+        <div *ngIf="country?.errors?.['required']">Country is required.</div> -->
+      <div *ngIf="country?.errors?.['maxlength']">Country cannot exceed 100 characters.</div>
+    </div> <!-- Re-add missing closing div for invalid-feedback -->
+
+
+    <!-- Phone Number -->
+    <div class="form-group mb-3">
+      <label for="phoneNumber">Phone Number (Optional)</label>
+      <input type="tel" id="phoneNumber" formControlName="phoneNumber" class="form-control">
+      <!-- Add pattern validation message if needed -->
+    </div>
+
+    <div class="form-actions mt-3">
+      <button type="submit" class="btn btn-success me-2" [disabled]="isLoading">
+        {{ isLoading ? 'Saving...' : (isEditing ? 'Update Address' : 'Save Address') }}
+      </button>
+      <button type="button" (click)="closeForm()" class="btn btn-secondary" [disabled]="isLoading">Cancel</button>
+    </div>
+
+  </form>
+</div>

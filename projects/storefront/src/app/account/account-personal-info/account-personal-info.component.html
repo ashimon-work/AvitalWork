@@ -1,1 +1,61 @@
-<p>account-personal-info works!</p>
+<h3>Personal Information</h3>
+
+<!-- Loading Indicator -->
+<div *ngIf="isFetching" class="loading-indicator">Loading profile...</div>
+
+<!-- Success/Error Messages -->
+<div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+<div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+<!-- Form -->
+<form *ngIf="!isFetching" [formGroup]="personalInfoForm" (ngSubmit)="savePersonalInfo()" novalidate>
+
+  <!-- Email (Display Only) -->
+  <div class="form-group mb-3">
+    <label for="email">Email Address</label>
+    <input type="email" id="email" formControlName="email" class="form-control" readonly>
+    <small class="form-text text-muted">Email address cannot be changed.</small>
+  </div>
+
+  <!-- First Name -->
+  <div class="form-group mb-3">
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" formControlName="firstName" class="form-control"
+           [ngClass]="{ 'is-invalid': firstName?.invalid && (firstName?.dirty || firstName?.touched) }">
+    <div *ngIf="firstName?.invalid && (firstName?.dirty || firstName?.touched)" class="invalid-feedback">
+      <div *ngIf="firstName?.errors?.['required']">First name is required.</div>
+      <div *ngIf="firstName?.errors?.['maxlength']">First name cannot exceed 50 characters.</div>
+    </div>
+  </div>
+
+  <!-- Last Name -->
+  <div class="form-group mb-3">
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" formControlName="lastName" class="form-control"
+           [ngClass]="{ 'is-invalid': lastName?.invalid && (lastName?.dirty || lastName?.touched) }">
+    <div *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)" class="invalid-feedback">
+      <div *ngIf="lastName?.errors?.['required']">Last name is required.</div>
+      <div *ngIf="lastName?.errors?.['maxlength']">Last name cannot exceed 50 characters.</div>
+    </div>
+  </div>
+
+  <!-- Phone Number -->
+  <div class="form-group mb-3">
+    <label for="phone">Phone Number (Optional)</label>
+    <input type="tel" id="phone" formControlName="phone" class="form-control"
+           [ngClass]="{ 'is-invalid': phone?.invalid && (phone?.dirty || phone?.touched) }">
+    <div *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="invalid-feedback">
+       <div *ngIf="phone?.errors?.['pattern']">Please enter a valid phone number.</div>
+       <div *ngIf="phone?.errors?.['maxlength']">Phone number cannot exceed 20 characters.</div>
+    </div>
+  </div>
+
+  <!-- Add Birthday field later if needed -->
+
+  <div class="form-actions mt-3">
+    <button type="submit" class="btn btn-primary" [disabled]="isLoading || personalInfoForm.pristine">
+      {{ isLoading ? 'Saving...' : 'Save Changes' }}
+    </button>
+  </div>
+
+</form>

@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common'; // Add NotFoundException
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserEntity } from '../users/entities/user.entity'; // Use the actual entity class name
+import { ChangePasswordDto } from './dto/change-password.dto'; // Import DTO
 
 @Injectable()
 export class AuthService {
@@ -30,4 +31,28 @@ export class AuthService {
 
   // Registration logic is likely handled directly in AuthController calling UsersService.create
   // Or could be moved here if more complex auth logic is needed during registration.
+
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<void> {
+    const user = await this.usersService.findOneById(userId); // Need findOneById in UsersService
+    if (!user) {
+      // Should not happen if called from an authenticated route, but good practice
+      throw new NotFoundException('User not found');
+    }
+
+    // Verify current password
+    const isPasswordMatching = await bcrypt.compare(
+      changePasswordDto.currentPassword,
+      user.passwordHash,
+    );
+
+    if (!isPasswordMatching) {
+      throw new BadRequestException('Incorrect current password');
+    }
+
+    // Hash the new password
+    const newPasswordHash = await bcrypt.hash(changePasswordDto.newPassword, 10); // Use salt rounds
+
+    // Update user password via UsersService
+    await this.usersService.updatePassword(userId, newPasswordHash); // Need updatePassword in UsersService
+  }
 }

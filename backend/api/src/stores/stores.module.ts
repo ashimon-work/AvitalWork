@@ -9,6 +9,6 @@ import { StoresService } from './stores.service'; // Uncommented
   imports: [TypeOrmModule.forFeature([StoreEntity])], // Register StoreEntity
   controllers: [StoresController], // Uncommented
   providers: [StoresService], // Uncommented
-  exports: [TypeOrmModule], // Export TypeOrmModule if other modules need StoreRepository
+  exports: [TypeOrmModule, StoresService], // Export StoresService
 })
 export class StoresModule {}

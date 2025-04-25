@@ -26,6 +26,10 @@ graph TD
         Category[Category Entity]:::entity
         User[User Entity]:::entity
         Order[Order Entity]:::entity
+        OrderItem[OrderItem Entity]:::entity
+        Address[Address Entity]:::entity
+        Wishlist[Wishlist Entity]:::entity
+        WishlistItem[WishlistItem Entity]:::entity
         Cart[Cart (DB/Session)]:::entity
     end
 
@@ -39,6 +43,12 @@ graph TD
     Store -- OneToMany --> Category
     Product -- ManyToOne --> Store
     Category -- ManyToOne --> Store
+    User -- OneToMany --> Address
+    User -- OneToMany --> Order
+    User -- OneToMany --> Wishlist
+    Order -- OneToMany --> OrderItem
+    Order -- ManyToOne --> Address
+    Wishlist -- OneToMany --> WishlistItem
     %% Other relations omitted for brevity
 
     %% Data Sync/Flow (Conceptual)
@@ -79,7 +89,7 @@ graph TD
 *   **Framework:** NestJS (TypeScript/Node.js).
 *   **ORM:** TypeORM for database interaction with PostgreSQL.
 *   **Database:** PostgreSQL.
-*   **Modularity:** Backend structured modularly by domain (e.g., `ProductsModule`, `CategoriesModule`, `StoresModule`, `UsersModule`, `AuthModule`, `CartModule`). Modules are registered in `AppModule`.
+*   **Modularity:** Backend structured modularly by domain (e.g., `ProductsModule`, `CategoriesModule`, `StoresModule`, `UsersModule`, `AuthModule`, `CartModule`, `AddressesModule`, `OrdersModule`, `WishlistModule`, `NavigationModule`). Modules are registered in `AppModule`. Modules export providers (`TypeOrmModule`) where necessary for cross-module dependency injection (`ProductsModule` -> `WishlistModule`, `StoresModule` -> `WishlistModule` via `StoreContextGuard`).
 *   **Configuration:** Uses `@nestjs/config` for environment variable management (`.env` file) within the running application. `data-source.ts` reads `process.env` directly for CLI compatibility. `tsconfig.build.json` explicitly includes `data-source.ts` for compilation.
 *   **Database Schema:** Managed via TypeORM migrations. `synchronize: false` is set in `data-source.ts`. Entities are loaded at runtime via `autoLoadEntities: true` in `AppModule` (requires entities to be registered via `forFeature` in imported modules).
 *   **Migrations:** TypeORM CLI used via npm scripts (`migration:generate`, `migration:run`, `migration:revert`) defined in `backend/api/package.json`, referencing the compiled `dist/data-source.js`. Migration files stored in `backend/api/src/migrations`. Migrations generated via `docker exec` need copying to host.
@@ -87,7 +97,8 @@ graph TD
 
 ## 5. Authentication
 
-*   **JWT (JSON Web Tokens):** Standard for securing API endpoints and managing user sessions (planned). Requires `JWT_SECRET` environment variable.
+*   **JWT (JSON Web Tokens):** Used for securing API endpoints (`JwtAuthGuard`). Requires `JWT_SECRET` environment variable.
+*   **Guards:** `JwtAuthGuard` protects authenticated routes. `StoreContextGuard` created to extract `storeId` from `storeSlug` route parameter and attach to request (used by `WishlistController`).
 *   **Role-Based Access Control (RBAC):** Crucial for the Store Management website (planned).
 
 ## 6. Deployment Pattern (Docker Compose - Production)

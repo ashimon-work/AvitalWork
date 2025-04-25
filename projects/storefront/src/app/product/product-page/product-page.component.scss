@@ -35,8 +35,10 @@
   grid-template-columns: 1fr 1fr; // 50% / 50% split
   gap: var(--spacing-xxl); // Generous gap between image and info
   margin-bottom: var(--spacing-xxl);
+  // Ensure content doesn't overflow the grid items
+  overflow: hidden;
 
-  @media (max-width: 768px) { // Stack on smaller screens
+  @media (max-width: 992px) { // Adjust breakpoint for stacking
     grid-template-columns: 1fr;
     gap: var(--spacing-xl);
   }
@@ -76,9 +78,15 @@
   }
 
   .product-rating {
-    // Add styles for star display later
     margin-bottom: var(--spacing-md);
     color: var(--text-color-light);
+
+    .star {
+      color: var(--neutral-dark); // Default star color
+      &.filled {
+        color: var(--warning-color); // Filled star color (e.g., yellow/orange)
+      }
+    }
   }
 
   .product-description {
@@ -130,8 +138,186 @@
   margin-top: var(--spacing-xxl);
   padding-top: var(--spacing-xl);
   border-top: var(--border-width) solid var(--border-color);
-  // Add styles for tabs/accordions later
 }
+
+.product-tabs {
+  margin-bottom: var(--spacing-xxl);
+
+  .tab-headers {
+    display: flex;
+    border-bottom: var(--border-width) solid var(--border-color);
+    margin-bottom: var(--spacing-lg);
+
+    .tab-button {
+      background-color: transparent;
+      border: none;
+      padding: var(--spacing-md) var(--spacing-lg);
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text-color-light);
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s ease, border-bottom-color 0.2s ease;
+
+      &:hover {
+        color: var(--text-color);
+      }
+
+      &.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        font-weight: var(--font-weight-medium);
+      }
+    }
+  }
+
+  .tab-content {
+    padding-top: var(--spacing-md);
+  }
+}
+
+.product-reviews {
+  .review-item {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color); // Lighter separator
+
+    &:last-child {
+      border-bottom: none; // No border for the last review
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-color-light);
+      margin-bottom: var(--spacing-xs);
+
+      strong {
+        color: var(--text-color);
+      }
+    }
+
+    .review-rating {
+      margin-bottom: var(--spacing-sm);
+      font-size: 1rem;
+      color: var(--text-color-light);
+
+      .star {
+        color: var(--neutral-dark); // Default star color
+        &.filled {
+          color: var(--warning-color); // Filled star color (e.g., yellow/orange)
+        }
+      }
+    }
+
+    .review-comment {
+      line-height: var(--line-height-base);
+      color: var(--text-color);
+    }
+  }
+
+  .write-review-form {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+
+    h4 {
+      margin-bottom: var(--spacing-md);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-md);
+
+      label {
+        display: block;
+        margin-bottom: var(--spacing-xs);
+        font-weight: var(--font-weight-medium);
+      }
+
+      input[type="number"],
+      textarea {
+        width: 100%;
+        padding: var(--spacing-sm);
+        border: var(--border-width) solid var(--border-color);
+        border-radius: var(--border-radius-sm);
+        font-size: 1rem;
+      }
+    }
+
+    .submit-review-btn {
+      // Inherits base button styles
+      background-color: var(--primary-color);
+      color: white;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border: none;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        // Use CSS filter for darkening with CSS variables
+        filter: brightness(90%);
+      }
+    }
+
+    .error-message {
+      color: var(--danger-color);
+      margin-top: var(--spacing-sm);
+      font-size: 0.9rem;
+    }
+  }
+}
+
+
+.related-products-section {
+  margin-top: var(--spacing-xxl); // Space below tabs
+  h3 {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .related-products-scroll-container {
+    overflow-x: auto; // Enable horizontal scrolling
+    padding-bottom: var(--spacing-md); // Add padding for scrollbar visibility
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+
+    &::-webkit-scrollbar { // Hide scrollbar for aesthetic purposes
+      display: none;
+    }
+  }
+
+  .related-products-list {
+    display: flex; // Arrange items in a row
+    gap: var(--spacing-md); // Space between product cards
+    padding-right: var(--spacing-md); // Ensure last item is not cut off
+    // Use min-content to ensure the flex container is at least the size of its content
+    width: min-content;
+
+    app-product-card {
+      flex: 0 0 250px; // Prevent cards from shrinking and set fixed width
+      width: 250px; // Redundant but good for clarity
+    }
+  }
+}
+
+.add-to-wishlist-btn {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }
+}
+
 
 // Loading state styling
 p {

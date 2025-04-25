@@ -25,6 +25,26 @@ This document summarizes the status of NestJS backend API endpoints relevant to 
 *   **Carousel (`/carousel`)**
     *   `GET /`: Gets carousel slides (accepts `storeSlug`).
 
+**Implemented Account Endpoints (Partial/Full):**
+
+*   **Account (`/account`)**
+    *   `GET /profile`: Gets basic user profile (from JWT).
+    *   `POST /change-password`: Changes user password.
+*   **Addresses (`/account/addresses`)**
+    *   `GET /`: Gets user's addresses.
+    *   `POST /`: Adds a new address.
+    *   `PATCH /:id`: Updates an address.
+    *   `DELETE /:id`: Deletes an address.
+    *   `PUT /:id/default/shipping`: Sets default shipping address.
+    *   `PUT /:id/default/billing`: Sets default billing address.
+*   **Orders (`/account/orders`)**
+    *   `GET /`: Gets user's orders (paginated).
+    *   `GET /:id`: Gets details for a single order.
+*   **Wishlist (`/account/wishlist`)**
+    *   `GET /`: Gets user's wishlist for the current store.
+    *   `POST /items`: Adds an item to the wishlist.
+    *   `DELETE /items/:itemId`: Removes an item from the wishlist.
+
 **Missing/Unimplemented Endpoints (Based on Storefront Plan):**
 
 *   **Auth (`/auth`)**
@@ -38,26 +58,17 @@ This document summarizes the status of NestJS backend API endpoints relevant to 
 *   **Cart (`/cart`)**
     *   `POST /promo`
 *   **Account (`/account` - Likely New Controller Needed)**
-    *   `GET /overview`
-    *   `GET /orders`
-    *   `GET /addresses`
-    *   `POST /addresses`
-    *   `PATCH /addresses/:addressId`
-    *   `DELETE /addresses/:addressId`
-    *   `GET /payment-methods`
-    *   `POST /payment-methods` (Potentially, depends on integration)
-    *   `DELETE /payment-methods/:methodId`
-    *   `PATCH /personal-info`
-    *   `GET /wishlist`
-    *   `POST /wishlist/add` (Could also be `/wishlist`)
-    *   `DELETE /wishlist/:productId` (Could also be `/wishlist`)
-    *   `POST /change-password`
+    *   `GET /overview` (Backend logic not implemented)
+    *   `GET /payment-methods` (Backend logic not implemented)
+    *   `POST /payment-methods` (Backend logic not implemented, depends on integration)
+    *   `DELETE /payment-methods/:methodId` (Backend logic not implemented)
+    *   `PATCH /personal-info` (Backend logic not implemented)
 *   **Checkout (New Controller Needed)**
     *   `GET /shipping/methods`
     *   `GET /tax/estimate`
     *   `POST /orders`
 *   **Order Confirmation (Handled by `OrdersController`?)**
-    *   `GET /orders/:id`
+    *   (Endpoint `GET /orders/:id` implemented)
 *   **Products (`/products`)**
     *   `GET /recommended` (e.g., `?based_on={order_id}` or `?related_to={product_id}`)
     *   `GET /:id/reviews`

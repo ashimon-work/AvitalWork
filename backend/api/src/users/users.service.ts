@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -61,4 +61,12 @@ export class UsersService {
    async findOneById(id: string): Promise<UserEntity | null> {
      return this.usersRepository.findOneBy({ id });
    }
+
+  // Method specifically for updating the password hash
+  async updatePassword(userId: string, newPasswordHash: string): Promise<void> {
+    const result = await this.usersRepository.update(userId, { passwordHash: newPasswordHash });
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with ID "${userId}" not found for password update.`);
+    }
+  }
 }
