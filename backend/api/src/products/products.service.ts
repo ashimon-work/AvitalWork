@@ -1,8 +1,9 @@
  import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, ILike, MoreThanOrEqual, LessThanOrEqual, In, FindOptionsOrder, Between } from 'typeorm'; // Added Between
-import { Product } from '@shared-types'; // Import the shared interface
+import { Repository, FindOptionsWhere, ILike, MoreThanOrEqual, LessThanOrEqual, In, FindOptionsOrder, Between } from 'typeorm';
+// import { Product } from '@shared-types'; // No longer directly using shared interface for entity return
 import { ProductEntity } from './entities/product.entity';
+import { CategoryEntity } from '../categories/entities/category.entity'; // Import CategoryEntity
 
 // Define interface for query parameters used in findAll
 export interface FindAllProductsParams {
@@ -40,7 +41,7 @@ export class ProductsService {
     return this.productsRepository.find({
       where,
       take: 8,
-      relations: ['store'],
+      relations: ['store', 'categories', 'variants'], // Load categories and variants
     });
   }
 
@@ -56,7 +57,7 @@ export class ProductsService {
 
     const product = await this.productsRepository.findOne({
       where,
-      relations: ['store'],
+      relations: ['store', 'categories', 'variants'], // Load categories and variants for detailed view
     });
 
     return product;
@@ -94,10 +95,12 @@ export class ProductsService {
       // where.tags = In(params.tags.split(',')); // This might not work directly
       // For now, we might have to fetch more and filter in code, or omit tag filtering here
     }
-    // !! IMPORTANT: Category filtering needs relations setup in entities !!
-    // if (params.category_id) {
-    //   where.categories = { id: params.category_id }; // Example if relation 'categories' exists
-    // }
+    // Category filtering using the ManyToMany relation
+    if (params.category_id) {
+      // This requires joining the categories table
+      // TypeORM allows filtering on relations directly in where clause
+      where.categories = { id: params.category_id } as FindOptionsWhere<CategoryEntity>;
+    }
 
 
     // Build ORDER conditions
@@ -134,5 +137,24 @@ export class ProductsService {
     // if (params.tags) { ... filter results array ... }
 
     return { products: results, total };
+  }
+
+  async getSearchSuggestions(query: string, storeSlug?: string, limit: number = 5): Promise<ProductEntity[]> {
+    const where: FindOptionsWhere<ProductEntity> = {
+      name: ILike(`%${query}%`), // Case-insensitive partial match on name
+      isActive: true,
+    };
+
+    if (storeSlug) {
+      where.store = { slug: storeSlug };
+    }
+
+    return this.productsRepository.find({
+      where,
+      take: limit,
+      select: ['id', 'name', 'imageUrls', 'price'], // Also select imageUrls and price for display
+      relations: ['store'], // Needed for store slug filtering
+      order: { name: 'ASC' } // Optional: order suggestions
+    });
   }
 }

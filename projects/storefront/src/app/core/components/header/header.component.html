@@ -11,12 +11,13 @@
     <!-- Collapsible Menu Content (Nav + Search) -->
     <div class="mobile-menu-content" [class.open]="isMobileMenuOpen$ | async">
       <app-navigation class="navigation"></app-navigation>
-      <app-search-bar class="search-bar"></app-search-bar>
+      <!-- Search bar moved to header-right for desktop -->
     </div>
 
     <!-- Right Section: User Actions (Always Visible) -->
     <div class="header-right">
-      <!-- Search Bar is now inside mobile-menu-content -->
+      <!-- Search Bar for Desktop -->
+      <app-search-bar class="search-bar desktop-search"></app-search-bar>
       <div class="user-actions" *ngIf="currentStoreSlug$ | async as storeSlug">
         <!-- Show Account/Cart/Logout if authenticated -->
         <ng-container *ngIf="isAuthenticated$ | async; else loggedOutActions">

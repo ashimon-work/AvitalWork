@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -12,12 +12,19 @@ export class StoreContextService {
   public currentStoreSlug$: Observable<string | null> = this.currentStoreSlugSubject.asObservable();
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {
+    console.log('[StoreContextService] Constructor: Subscribing to router events.');
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd), // Type guard for event
+      tap(event => console.log(`[StoreContextService] NavigationEnd event detected: ${event.urlAfterRedirects}`)),
       map(() => this.extractSlugFromRoute()) // Use helper function
     ).subscribe(slug => {
-      if (slug !== this.currentStoreSlugSubject.value) {
+      const currentSlug = this.currentStoreSlugSubject.value;
+      console.log(`[StoreContextService] Extracted slug: ${slug}, Current subject value: ${currentSlug}`);
+      if (slug !== currentSlug) {
+        console.log(`[StoreContextService] Updating slug subject to: ${slug}`);
         this.currentStoreSlugSubject.next(slug);
+      } else {
+        console.log(`[StoreContextService] Extracted slug is same as current, no update needed.`);
       }
     });
   }
@@ -56,22 +63,28 @@ export class StoreContextService {
 
 
   private extractSlugFromRoute(): string | null {
-    // Traverse the route tree to find the activated route snapshot containing the slug
-    let route = this.activatedRoute.firstChild;
-    let slug: string | null = null;
-    while (route) {
-      if (route.snapshot.paramMap.has('storeSlug')) {
-        slug = route.snapshot.paramMap.get('storeSlug');
-        break; // Found the slug
-      }
-      // Check if the route itself has the slug (for root-level slugs if applicable)
-      if (!route.firstChild && route.snapshot.paramMap.has('storeSlug')) {
-         slug = route.snapshot.paramMap.get('storeSlug');
-         break;
-      }
-      route = route.firstChild;
+    // Use the router state snapshot after navigation ends for more accuracy
+    let routeSnapshot = this.router.routerState.snapshot.root;
+
+    // Traverse down the primary outlet path as far as possible
+    while (routeSnapshot.firstChild) {
+      routeSnapshot = routeSnapshot.firstChild;
     }
-    return slug;
+
+    // Check the deepest activated route and its parents for the slug
+    while (routeSnapshot) {
+      if (routeSnapshot.paramMap.has('storeSlug')) {
+        const slug = routeSnapshot.paramMap.get('storeSlug');
+        console.log(`[StoreContextService] Extracted slug "${slug}" from route snapshot.`);
+        return slug;
+      }
+      // Check parent route only if routeSnapshot.parent exists
+      if (!routeSnapshot.parent) break;
+      routeSnapshot = routeSnapshot.parent;
+    }
+
+    console.log('[StoreContextService] No storeSlug found in the current route snapshot path.');
+    return null; // No slug found in the activated path
   }
 
   getCurrentStoreSlug(): string | null {

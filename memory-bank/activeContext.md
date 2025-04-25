@@ -2,10 +2,9 @@
 
 ## 1. Current Focus
 
-*   **Store-Specific Functionality:** Implementing the backend and frontend changes required to make the storefront application display data specific to a store identified by a URL slug (e.g., `/store-slug/home`).
-*   **API Filtering:** Ensuring backend API endpoints correctly filter data (products, categories) based on the provided store context.
-*   **Frontend Context:** Making the current store context available throughout the Angular application.
-*   **Memory Bank Maintenance:** Updating documentation to reflect the new store architecture.
+*   **Backend API Implementation:** Implementing remaining endpoints for Storefront (Personal Info update, Payment Methods, etc.).
+*   **Frontend Implementation:** Styling and refining implemented Account sub-pages. Implementing remaining Storefront pages (Checkout, Order Confirmation, etc.).
+*   **Memory Bank Maintenance:** Updating documentation after Account page implementation.
 
 ## 2. Recent Changes & Debugging
 *   **(Previous Session) Production Deployment & Debugging:** Successfully configured Docker Compose, Dockerfiles, Nginx, database migrations, and seeding for the production environment. Resolved various build and runtime errors. Fixed featured products query.
@@ -75,14 +74,43 @@
     *   Fixed `HomepageComponent` template error by removing `[slides]` binding.
     *   Updated `seed.ts` to include `CarouselItem` data and ran seed script successfully.
     *   Identified and removed misplaced `CarouselAddComponent` and `createCarouselImage` method from Storefront project (belongs in Store Management). Fixed resulting build error.
+ *   **Storefront Page Review (Frontend):** Reviewed implementation status of all 12 Storefront pages against the plan, documented in `storefront-page-status.md`. (Status updated for Account page).
+ *   **404 Page Implementation (Frontend):** Implemented basic 404 page component, routing, styling, "Back to Home" link (with store slug), and placeholder search/suggestions. Fixed root redirect loop.
+ *   **Backend API Implementation (Account):**
+     *   Created Entities: `AddressEntity`, `OrderEntity`, `OrderItemEntity`, `WishlistEntity`, `WishlistItemEntity`.
+     *   Updated `UserEntity` with relations.
+     *   Created Modules: `AddressesModule`, `OrdersModule`, `WishlistModule`.
+     *   Created Services: `AddressesService`, `OrdersService`, `WishlistService`.
+     *   Created Controllers: `AddressesController`, `OrdersController`, `WishlistController`.
+     *   Created DTOs for Addresses, Orders, Wishlist.
+     *   Created `StoreContextGuard`.
+     *   Implemented `changePassword` in `AuthService`/`AccountController`.
+     *   Updated `AppModule`, `ProductsModule`, `StoresModule`, `data-source.ts`.
+     *   Troubleshot and fixed various dependency injection issues.
+ *   **Database (Account):**
+     *   Generated `AddAccountEntities` migration.
+     *   Updated `seed.ts` for new entities and fixed deletion order.
+     *   Ran migration and seed script successfully after troubleshooting DB connection and FK constraint errors.
+ *   **Address Field Removal ('state'):**
+     *   Removed 'state' field from frontend component (.ts, .html), shared interface, backend DTOs, backend entity, seed data.
+     *   Generated and ran migration `RemoveStateFromAddresses`.
+ *   **Frontend Implementation (Account):**
+     *   Updated `ApiService` with methods for Addresses, Orders, Wishlist, Personal Info, Password Change.
+     *   Implemented components (.ts, .html) for `AccountAddressesComponent`, `AccountOrdersComponent`, `AccountWishlistComponent`, `AccountPersonalInfoComponent`, `AccountChangePasswordComponent`.
+     *   Implemented basic `AccountPaymentMethodsComponent` (view/delete only).
+     *   Fixed various template errors and service method signatures.
 
 ## 3. Next Steps (Immediate & Planned)
 
-1.  **Commit Changes:** Commit all backend and frontend changes related to store implementation, login fixes, account routing fixes, and **carousel implementation/fixes**.
-2.  **(DONE)** Fix JWT Configuration: Resolved.
-3.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update). Consider if cart needs to be store-specific.
-4.  **Implement Basic Account Page:** Backend (`/account/profile` exists), Frontend (`AccountPageComponent` data display, `JwtAuthGuard` applied). Needs UI implementation to show profile data.
-5.  **Frontend UI Integration:** Update relevant frontend components (e.g., Category Page, Product Page) to use the `storeSlug` from `StoreContextService` when displaying data or making API calls via `ApiService`. (Homepage seems okay now).
+1.  **Implement Backend Endpoints:**
+    *   `PATCH /api/account/personal-info`
+    *   `GET /api/account/payment-methods`
+    *   `DELETE /api/account/payment-methods/:id`
+    *   (Others from plan: Checkout, Order Confirmation, Contact, About, Reviews, etc.)
+2.  **Refine Frontend Account UI/UX:** Add styling, improve error handling, implement order details view.
+3.  **Continue Frontend Page Implementation:** Checkout flow, Order Confirmation, Contact, About pages.
+4.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update).
+6.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update).
 
 ## 4. Active Decisions & Considerations
 
@@ -111,6 +139,10 @@
 *   **Docker Volumes (Prod vs. Dev):** Production Docker Compose setups often omit source code volume mounts for performance/security. Files created inside the container (e.g., migrations) will *not* appear on the host unless explicitly copied out (e.g., using `docker cp`). Development setups (`docker-compose.dev.yml`) typically *do* mount volumes, allowing changes to reflect immediately.
 *   **Docker Permissions:** Files created/copied from Docker containers might have incorrect host permissions, requiring `sudo chown`.
 *   **Verify Feature Placement:** Always double-check component/feature placement against the project plan (e.g., `CarouselAddComponent` belonged in Store Management, not Storefront).
-*   **(Previous Learnings Still Valid):** TypeORM entity loading/CLI config, TS build includes, Docker build cache/CMD path, migration constraints, UUID format, Angular route structure/guards, JWT config, etc.
+*   **(Previous Learnings Still Valid):** TypeORM entity loading/CLI config, TS build includes, Docker build cache/CMD path, migration constraints, UUID format, Angular route structure/guards, JWT config, Docker exec/cp, etc.
+*   **NestJS Dependency Injection:** Ensure modules providing services/repositories are correctly imported *and exported* if needed by other modules. Check module context carefully when resolving dependency errors.
+*   **TypeORM Relations in Queries:** Use the relation property name (e.g., `user: { id: userId }`) in `where` clauses for repository methods like `find`, `findOne`, `update`, `delete` when querying based on a relation's ID, not the raw foreign key column name.
+*   **Database Constraints:** Foreign key constraints dictate the order of operations (e.g., delete dependent records before deleting the referenced record).
+*   **Angular Template Access:** Component properties accessed in the template must be public. Global objects like `Math` are not directly accessible; calculations should be done in the component or via pipes/helper methods. Event bindings (`(click)`) cannot directly use complex expressions involving async pipes or non-null assertions.
 
-*(As of 4/6/2025 - Carousel implementation fixed, including backend entity/migration/service/controller, frontend service/component, seeding, and Docker troubleshooting. Misplaced carousel creation code removed from Storefront.)*
+*(As of 4/10/2025 - Implemented backend structure and frontend components for Account sub-pages: Addresses, Orders, Wishlist, Personal Info, Password Change. Removed 'state' field from addresses. Next step: Implement remaining backend endpoints for Account page.)*

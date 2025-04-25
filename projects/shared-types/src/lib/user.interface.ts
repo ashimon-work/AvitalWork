@@ -2,7 +2,7 @@ export interface Address {
   street1: string;
   street2?: string;
   city: string;
-  state: string;
+  // state: string; // Removed state
   postalCode: string;
   country: string;
 }

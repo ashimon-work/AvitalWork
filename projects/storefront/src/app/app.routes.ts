@@ -10,6 +10,7 @@ import { ShippingPolicyPageComponent } from './shipping-policy/shipping-policy-p
 import { ReturnPolicyPageComponent } from './return-policy/return-policy-page/return-policy-page.component';
 import { RegistrationPageComponent } from './registration-page/registration-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
+import { NotFoundPageComponent } from './core/components/not-found-page/not-found-page.component'; // Import NotFoundPageComponent
 // Import Account section components
 import { AccountOverviewComponent } from './account/account-overview/account-overview.component';
 import { AccountOrdersComponent } from './account/account-orders/account-orders.component';
@@ -20,19 +21,26 @@ import { AccountWishlistComponent } from './account/account-wishlist/account-wis
 import { AccountChangePasswordComponent } from './account/account-change-password/account-change-password.component';
 // Import Auth Guard
 import { authGuard } from './core/guards/auth.guard';
+import { storeSlugGuard } from './core/guards/store-slug.guard'; // Import the guard
 export const routes: Routes = [
   // Redirect root path to a default store or a store selection page (TBD)
   // For now, let's redirect to a default store slug for testing
-  { path: '', redirectTo: '/default', pathMatch: 'full' },
 
   // Redirect /default specifically to /awesome-gadgets
   { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
+  { path: '', redirectTo: '/default-store', pathMatch: 'full' }, // Redirect root to a default store slug
 
-  // Parent route to capture the store slug
+  // Explicit route for the generic 404 page
+  { path: '404', component: NotFoundPageComponent },
+
+  // Parent route to capture the store slug (MUST come AFTER explicit /404)
   {
     path: ':storeSlug',
-    // We can add a component here later if needed (e.g., a StoreLayoutComponent)
-    // or a resolver to fetch store details based on the slug
+    // Remove the resolve property
+    // resolve: {
+    //     isStoreValid: storeSlugResolver
+    // },
+    canActivate: [storeSlugGuard], // Use the CanActivate guard instead
     children: [
       // Existing routes moved under the :storeSlug parameter
       {
@@ -119,8 +127,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Consider adding a wildcard route for 404 page at the end
-  // { path: '**', component: NotFoundPageComponent }
-  // Consider adding a wildcard route for 404 page at the end
-  // { path: '**', component: NotFoundPageComponent }
+  // Wildcard route for 404 page - MUST BE LAST
+  { path: '**', component: NotFoundPageComponent }
 ];

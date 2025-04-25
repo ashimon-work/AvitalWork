@@ -1,0 +1,99 @@
+/* Basic styling for the 404 page container */
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh; /* Adjust as needed */
+  text-align: center;
+  padding: 40px 20px;
+
+  h1 {
+    font-size: 3rem; /* Larger heading */
+    color: var(--primary-color, #007bff); /* Use theme variable or default */
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px; /* Limit width for readability */
+  }
+
+  .search-section {
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 400px; /* Limit search bar width */
+    margin-left: auto; /* Center the block */
+    margin-right: auto; /* Center the block */
+    text-align: center; /* Center the text/inline elements inside */
+
+    input[type="search"] {
+      padding: 0.5rem 1rem;
+      margin-right: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: calc(100% - 100px); /* Adjust width considering button */
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+
+    .search-input-group {
+      display: flex;
+      justify-content: center; /* Center items horizontally */
+      align-items: center; /* Align items vertically if needed */
+      gap: 0.5rem; /* Add some space between input and button */
+
+      input[type="search"] {
+        width: auto; /* Let flexbox determine width, or set a specific flex-grow */
+        flex-grow: 1; /* Allow input to take available space */
+        max-width: 300px; /* Optional: Limit input growth */
+        margin-right: 0; /* Remove previous margin */
+      }
+    }
+  }
+
+  .navigation-links {
+    margin-bottom: 2rem;
+
+    .btn-primary {
+      /* Style based on global button styles */
+      padding: 10px 20px;
+      text-decoration: none;
+      /* Add background, color, border-radius etc. */
+    }
+  }
+
+  .suggested-pages {
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        margin-bottom: 0.5rem;
+
+        a {
+          text-decoration: none;
+          color: var(--link-color, #0056b3); /* Use theme variable or default */
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  img {
+    max-width: 300px; /* Limit image size */
+    margin-top: 2rem;
+  }
+}

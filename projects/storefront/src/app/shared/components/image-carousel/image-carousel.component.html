@@ -1,0 +1,20 @@
+<div class="image-carousel-container">
+  <div class="main-image-container">
+    <img [src]="images[currentImageIndex] || '/assets/images/placeholder.png'" alt="Product Image" class="main-image">
+    <!-- Add zoom functionality later -->
+  </div>
+
+  <div class="thumbnail-container">
+    <img
+      *ngFor="let image of images; let i = index"
+      [src]="image || '/assets/images/placeholder.png'"
+      alt="Product Thumbnail"
+      [class.active]="i === currentImageIndex"
+      (click)="selectImage(i)"
+      class="thumbnail">
+  </div>
+
+  <!-- Navigation buttons (optional, can use swipe gestures later) -->
+  <button class="prev-button" (click)="prevImage()" [disabled]="images.length <= 1">Prev</button>
+  <button class="next-button" (click)="nextImage()" [disabled]="images.length <= 1">Next</button>
+</div>

@@ -84,7 +84,7 @@ export class AuthService {
     );
   }
 
-  register(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'roles' | 'passwordHash'> & {password: string}): Observable<RegisterResponse> {
+  register(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'roles' | 'passwordHash'> & { password: string }): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.authApiUrl}/register`, userData).pipe(
       tap(response => {
         // Optionally auto-login or just show success message
@@ -154,5 +154,18 @@ export class AuthService {
   // Helper to get current user synchronously (use with caution, prefer observable)
   getCurrentUserSnapshot(): Omit<User, 'passwordHash'> | null {
     return this._currentUser.getValue();
+  }
+
+  // Method to update the current user state (e.g., after profile update)
+  updateCurrentUserState(updatedUserInfo: Partial<Omit<User, 'passwordHash'>>): void {
+    const currentUser = this.getCurrentUserSnapshot();
+    if (currentUser) {
+      // Merge the updated info with the current user state
+      const newUserState = { ...currentUser, ...updatedUserInfo };
+      this._currentUser.next(newUserState);
+      console.log('AuthService: Updated current user state.');
+    } else {
+      console.warn('AuthService: Cannot update state, no current user loaded.');
+    }
   }
 }

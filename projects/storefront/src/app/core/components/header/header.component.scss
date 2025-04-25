@@ -158,7 +158,7 @@
   // Hide original nav and search bar (now inside mobile menu)
   .navigation,
   .search-bar {
-    display: none;
+    display: none; // Hide original nav
   }
 
   // Show hamburger button
@@ -186,8 +186,34 @@
       gap: var(--spacing-xxs); // Reduce gap even further
       font-size: 0.6rem; // Even smaller font size for all text
     }
+
+    justify-content: flex-end;
+
+    // Hide the desktop search bar specifically on mobile
+    .desktop-search {
+      display: none;
+    }
   }
-}
+
+  // Style the mobile menu container
+  .mobile-menu-content {
+    display: none; // Hidden by default
+    position: absolute;
+    top: 100%; // Position below the header
+    left: 0;
+    right: 0;
+    background-color: var(--background-color);
+    border-top: var(--border-width) solid var(--border-color);
+    box-shadow: var(--box-shadow-md);
+    padding: var(--spacing-md);
+    z-index: 999; // Below header but above page content
+
+    // Show when open
+    &.open {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
 
 // Style the mobile menu container
 .mobile-menu-content {

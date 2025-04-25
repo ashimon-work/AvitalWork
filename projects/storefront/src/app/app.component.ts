@@ -6,11 +6,12 @@ import { FooterComponent } from './core/components/footer/footer.component';
 import { AuthService } from './core/services/auth.service';
 import { CartService } from './core/services/cart.service'; // Added CartService
 import { CommonModule } from '@angular/common';
+import { NotificationToastComponent } from './shared/components/notification-toast/notification-toast.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, CommonModule],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, CommonModule, NotificationToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

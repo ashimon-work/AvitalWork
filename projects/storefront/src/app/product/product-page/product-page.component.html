@@ -3,33 +3,38 @@
 
   <!-- Breadcrumbs (Example - Needs category data if available) -->
   <div class="breadcrumbs">
-    <a [routerLink]="[ (currentStoreSlug$ | async) ? '/' + (currentStoreSlug$ | async) : '/']">Home</a>
-    <!-- Use category$ observable to get category details -->
-    <ng-container *ngIf="category$ | async as category">
-      > <a [routerLink]="['/', (currentStoreSlug$ | async), 'category', category.id]">{{ category.name }}</a>
+    <a [routerLink]="['/']">Home</a>
+    <!-- Add category link if product data includes it -->
+    <ng-container *ngIf="productCategory">
+      > <a [routerLink]="['/category', productCategory.id]">{{ productCategory.name }}</a>
     </ng-container>
     > <span>{{ product.name }}</span>
   </div>
 
   <div class="product-details-grid">
-    <!-- Left Section: Image -->
+    <!-- Left Section: Images (using Image Carousel Component) -->
     <div class="product-image-section">
-      <!-- Basic image display - Carousel/Zoom later -->
-      <img [src]="product.imageUrl || '/assets/images/placeholder.png'" [alt]="product.name" class="main-product-image">
-      <!-- Thumbnails would go here -->
+      <app-image-carousel [images]="product.imageUrls"></app-image-carousel>
     </div>
 
     <!-- Right Section: Info & Actions -->
     <div class="product-info-section">
       <h1 class="product-name">{{ product.name }}</h1>
 
-      <!-- Price - Style based on global vars -->
-      <p class="product-price">{{ product.price | currency }}</p>
+      <!-- Price - Use currentPrice which updates with variant selection -->
+      <p class="product-price">{{ currentPrice | currency }}</p>
 
-      <!-- Average Rating Placeholder -->
+      <!-- Average Rating Display -->
       <div class="product-rating">
-        <!-- Add star rating display later -->
-        <span>⭐⭐⭐⭐⭐ (Placeholder)</span>
+        <ng-container *ngIf="averageRating > 0; else noReviewsYet">
+          <span *ngFor="let star of getStarArray(averageRating); let i = index" class="star" [class.filled]="star">
+            {{ star ? '★' : '☆' }} <!-- Unicode stars -->
+          </span>
+          <span>{{ averageRating | number:'1.1-1' }} / 5 ({{ reviews.length }} reviews)</span>
+        </ng-container>
+        <ng-template #noReviewsYet>
+          <span>No reviews yet.</span>
+        </ng-template>
       </div>
 
       <!-- Description -->
@@ -38,34 +43,136 @@
         <!-- Add formatted text/bullets later -->
       </div>
 
-      <!-- Variant Selection Placeholder -->
-      <div class="product-variants">
-        <!-- Add dropdowns for Size, Color etc. later -->
-        <p>(Variant selection placeholder)</p>
+      <!-- Variant Selection -->
+      <div class="product-variants" *ngIf="availableOptions.length > 0">
+        <div *ngFor="let option of availableOptions" class="variant-option">
+          <label>{{ option.name }}:</label>
+          <select [(ngModel)]="selectedOptions[option.name]" (change)="onOptionChange(option.name, $event)">
+            <option *ngFor="let value of option.values" [value]="value">{{ value }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Stock Level -->
+      <div class="product-stock">
+        <span *ngIf="currentStock !== undefined">
+          Stock: {{ currentStock > 0 ? currentStock : 'Out of Stock' }}
+        </span>
       </div>
 
       <!-- Quantity & Add to Cart -->
       <div class="product-actions">
         <div class="quantity-selector">
           <label for="quantity">Quantity:</label>
-          <!-- Basic number input - Add +/- buttons later -->
-          <input type="number" id="quantity" [(ngModel)]="quantity" min="1" step="1" class="quantity-input">
+          <button (click)="decrementQuantity()" [disabled]="quantity <= 1">-</button>
+          <input type="number" id="quantity" [(ngModel)]="quantity" min="1" [max]="currentStock || 0" (change)="onQuantityChange($event)" class="quantity-input">
+          <button (click)="incrementQuantity()" [disabled]="quantity >= (currentStock || 0)">+</button>
         </div>
-        <button class="add-to-cart-btn" (click)="onAddToCart(product)">Add to Cart</button>
-        <!-- Add Wishlist button later -->
+        <button class="add-to-cart-btn" (click)="onAddToCart(product)" [disabled]="(currentStock || 0) <= 0 || quantity <= 0">Add to Cart</button>
+        <!-- Add Wishlist button -->
+        <!-- Add Wishlist button -->
+        <button
+          *ngIf="isLoggedIn$ | async"
+          class="add-to-wishlist-btn"
+          [class.in-wishlist]="isInWishlist"
+          (click)="toggleWishlist(product)">
+          {{ isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist' }}
+        </button>
       </div>
 
-      <!-- Shipping/Return Info Placeholder -->
+      <!-- Shipping/Return Info -->
       <div class="product-meta-info">
-        <p>(Shipping/Return info placeholder)</p>
+        <h4>Shipping Information</h4>
+        <p>Estimated delivery: 3-5 business days</p>
+        <p>Shipping costs calculated at checkout.</p>
+        <h4>Return Policy</h4>
+        <p>30-day hassle-free returns. See our <a href="/return-policy">Return Policy</a> page for details.</p>
       </div>
     </div>
   </div>
 
-  <!-- Lower Sections: Details, Reviews, Related -->
+  <!-- Lower Sections: Tabs for Specs/Reviews, and Related Products -->
   <div class="product-lower-sections">
-    <!-- Add Tabs/Sections for Specs, Reviews, Related Products later -->
-    <p>(Detailed Specs / Reviews / Related Products placeholder)</p>
+    <div class="product-tabs">
+      <div class="tab-headers">
+        <button class="tab-button" [class.active]="selectedTab === 'specs'" (click)="selectTab('specs')">Product Specifications</button>
+        <button class="tab-button" [class.active]="selectedTab === 'reviews'" (click)="selectTab('reviews')">Customer Reviews ({{ reviews.length }})</button>
+      </div>
+      <div class="tab-content">
+        <!-- Product Specifications Tab -->
+        <div *ngIf="selectedTab === 'specs'" class="product-specs">
+          <h3>Product Specifications</h3>
+          <!-- Add dynamic spec display later -->
+          <ul>
+            <li>Material: High-quality fabric</li>
+            <li>Weight: 0.5 kg</li>
+            <li>Dimensions: 20x15x5 cm</li>
+            <li>Manufacturer: Acme Corp</li>
+          </ul>
+        </div>
+
+        <!-- Customer Reviews Tab -->
+        <div *ngIf="selectedTab === 'reviews'" class="product-reviews">
+          <h3>Customer Reviews ({{ reviews.length }})</h3>
+
+          <div *ngIf="reviews.length === 0; else displayReviews">
+            <p>No reviews yet. Be the first to write one!</p>
+          </div>
+
+          <ng-template #displayReviews>
+            <div *ngFor="let review of reviews" class="review-item">
+              <div class="review-header">
+                <strong>{{ review.user?.name || 'Anonymous' }}</strong>
+                <span class="review-date">{{ review.createdAt | date }}</span>
+              </div>
+              <div class="review-rating">
+                <!-- Display star rating based on review.rating -->
+                <ng-container *ngIf="review.rating !== undefined">
+                  <span *ngFor="let star of getStarArray(review.rating); let i = index" class="star" [class.filled]="star">
+                    {{ star ? '★' : '☆' }} <!-- Unicode stars -->
+                  </span>
+                  <span>{{ review.rating }}/5</span>
+                </ng-container>
+              </div>
+              <div class="review-comment">
+                <p>{{ review.comment }}</p>
+              </div>
+              <hr> <!-- Separator between reviews -->
+            </div>
+          </ng-template>
+
+          <!-- Write a Review Form (Visible if logged in) -->
+          <div *ngIf="isLoggedIn$ | async" class="write-review-form">
+            <h4>Write a Review</h4>
+            <div class="form-group">
+              <label for="reviewRating">Rating:</label>
+              <input type="number" id="reviewRating" [(ngModel)]="newReviewRating" min="1" max="5" required>
+            </div>
+            <div class="form-group">
+              <label for="reviewComment">Comment:</label>
+              <textarea id="reviewComment" [(ngModel)]="newReviewComment" rows="4" required></textarea>
+            </div>
+            <button class="submit-review-btn" (click)="submitReview(product?.id)">Submit Review</button>
+            <p *ngIf="reviewSubmissionError" class="error-message">{{ reviewSubmissionError }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products Section (outside of tabs) -->
+    <div class="related-products-section">
+      <h3>Related Products</h3>
+      <div class="related-products-scroll-container">
+        <div *ngIf="relatedProducts.length === 0; else displayRelatedProducts">
+          <p>No related products found.</p>
+        </div>
+        <ng-template #displayRelatedProducts>
+          <div class="related-products-list">
+            <app-product-card *ngFor="let relatedProduct of relatedProducts" [product]="relatedProduct"></app-product-card>
+          </div>
+        </ng-template>
+      </div>
+    </div>
   </div>
 
 </div>

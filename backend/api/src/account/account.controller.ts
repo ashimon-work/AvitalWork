@@ -1,6 +1,8 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common'; // Add Post, Body, HttpCode, HttpStatus
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Import the guard
 import { UserEntity } from '../users/entities/user.entity'; // Import UserEntity
+import { AuthService } from '../auth/auth.service'; // Import AuthService
+import { ChangePasswordDto } from '../auth/dto/change-password.dto'; // Import DTO
 
 // Define the shape of the request object after JWT validation
 interface AuthenticatedRequest extends Request {
@@ -9,7 +11,7 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('account') // Base path for account-related endpoints
 export class AccountController {
-  // Constructor could inject services if needed for more complex logic
+  constructor(private readonly authService: AuthService) {} // Inject AuthService
 
   @UseGuards(JwtAuthGuard) // Protect this route with the JWT guard
   @Get('profile') // Endpoint: GET /api/account/profile
@@ -27,4 +29,15 @@ export class AccountController {
   // @Patch('profile')
   // @UseGuards(JwtAuthGuard)
   // updateProfile(@Request() req: AuthenticatedRequest, @Body() updateDto: UpdateProfileDto) { ... }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  @HttpCode(HttpStatus.NO_CONTENT) // Return 204 No Content on success
+  async changePassword(
+    @Request() req: AuthenticatedRequest,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ): Promise<void> {
+    const userId = req.user.id;
+    await this.authService.changePassword(userId, changePasswordDto);
+  }
 }
