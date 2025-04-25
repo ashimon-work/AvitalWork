@@ -1,6 +1,6 @@
 <div class="product-card" *ngIf="product">
   <!-- Make the link conditional, but display content regardless -->
-  <a [routerLink]="storeSlug ? ['/', storeSlug, 'product', product.id] : null" class="product-link">
+  <a [routerLink]="storeSlug ? ['/', storeSlug, 'product', product.id] : null" [queryParams]="{ categoryId: categoryId }" class="product-link">
     <div class="product-image-container">
       <img [src]="product.imageUrls[0] || '/assets/images/placeholder.png'"
            [alt]="product.name"

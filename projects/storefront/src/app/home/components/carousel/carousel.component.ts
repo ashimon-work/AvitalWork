@@ -38,7 +38,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
   }
 
   currentStoreSlug: Observable<string | null>;
-  currentSlideIndex = 0;
+  currentSlideIndex = 1;
   transitioning = false; // Flag to disable transition during reset
   private autoPlaySubscription: Subscription | null = null;
 
@@ -69,7 +69,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
           console.log('No slides fetched');
         }
         this.slides = fetchedSlides;
-        this.currentSlideIndex = 0;
+        this.currentSlideIndex = this.slides.length > 0 ? 1 : 0; // Start at the first real slide
         if (this.slides?.length > 0) {
           this.startAutoPlay();
         } else {
@@ -104,7 +104,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
   selectSlide(index: number): void {
     console.log('selectSlide() called with index:', index);
     if (this.transitioning) return; // Prevent selection during reset
-    this.currentSlideIndex = index;
+    this.currentSlideIndex = index + 1; // Adjust index because 0 is the cloned last slide
     this.startAutoPlay(); // Restart timer on manual selection
   }
 
@@ -112,11 +112,36 @@ export class CarouselComponent implements OnInit, OnDestroy {
     console.log('prevSlide called');
     console.log('slides length in prevSlide:', this.slides.length);
     console.log('Before prevSlide:', this.currentSlideIndex);
-    if (this.transitioning) return; // Prevent action during reset
-    // Basic prev logic - doesn't handle infinite backward yet
-    this.currentSlideIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
-    console.log('After prevSlide:', this.currentSlideIndex);
-    this.startAutoPlay(); // Restart timer
+    if (this.transitioning || this.slides.length <= 1) return; // Prevent action during reset or if only one slide
+
+    console.log('Before prevSlide:', this.currentSlideIndex);
+
+    this.currentSlideIndex--; // Move to the previous index (could be the clone at 0)
+    console.log('After decrement:', this.currentSlideIndex);
+
+    // Check if we moved to the cloned last slide (index = 0)
+    if (this.currentSlideIndex === 0) {
+      console.log('Reached clone last, resetting...');
+      // Wait for the transition to the clone to finish
+      setTimeout(() => {
+        this.transitioning = true; // Disable transition
+        this.currentSlideIndex = this.slides.length; // Jump to the real last slide
+        console.log('Jumped to index', this.slides.length);
+        this.cdr.detectChanges(); // Ensure Angular detects the jump
+
+        // Very short delay to allow Angular to apply the no-transition state
+        // before re-enabling transitions
+        setTimeout(() => {
+          this.transitioning = false;
+          console.log('Re-enabled transitions');
+          this.cdr.detectChanges(); // Ensure Angular detects the re-enabled transition
+        }, 10); // Small delay
+
+      }, this.transitionDurationMs); // Wait for CSS transition
+    } else {
+       console.log('Moved to index:', this.currentSlideIndex);
+    }
+    // Don't restart autoplay here, let the interval handle it or manual interaction
   }
 
   nextSlide(): void {
@@ -125,36 +150,39 @@ export class CarouselComponent implements OnInit, OnDestroy {
     console.log('nextSlide called');
     console.log('Before nextSlide:', this.currentSlideIndex);
 
-    this.currentSlideIndex++; // Move to the next index (could be the clone)
+    this.currentSlideIndex++; // Move to the next index (could be the appended clone)
     console.log('After increment:', this.currentSlideIndex);
 
     // Check if we moved to the cloned slide (index = slides.length)
-    if (this.currentSlideIndex === this.slides.length) {
+    // Index of the appended clone is slides.length + 1 (0=clone_last, 1=first_real, ..., N=last_real, N+1=clone_first)
+    if (this.currentSlideIndex === this.slides.length + 1) {
       console.log('Reached clone, resetting...');
       // Wait for the transition to the clone to finish
       setTimeout(() => {
         this.transitioning = true; // Disable transition
-        this.currentSlideIndex = 0; // Jump to the real first slide
-        console.log('Jumped to index 0');
+        this.currentSlideIndex = 1; // Jump to the real first slide (index 1)
+        console.log('Jumped to index 1');
+        this.cdr.detectChanges(); // Ensure Angular detects the jump
 
         // Very short delay to allow Angular to apply the no-transition state
         // before re-enabling transitions for the next user interaction/autoplay
         setTimeout(() => {
           this.transitioning = false;
           console.log('Re-enabled transitions');
+          this.cdr.detectChanges(); // Ensure Angular detects the re-enabled transition
         }, 10); // Small delay like 10ms is usually enough
 
       }, this.transitionDurationMs); // Wait for CSS transition to complete
     } else {
        console.log('Moved to index:', this.currentSlideIndex);
     }
-     // Don't restart autoplay here, let the interval handle it
+     // Don't restart autoplay here, let the interval handle it or manual interaction
   }
 
   // Calculate the transform style for the slides wrapper
   // Calculate the transform style for the slides wrapper
   get slidesTransform(): string {
-    // Use currentSlideIndex which might point to the clone temporarily
+    // Use currentSlideIndex which might point to the prepended (-1) or appended (N+1) clone temporarily
     return `translateX(-${this.currentSlideIndex * 100}%)`;
   }
 

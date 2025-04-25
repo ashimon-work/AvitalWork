@@ -3,7 +3,7 @@
 
   <!-- Breadcrumbs -->
   <div class="breadcrumbs">
-    <a [routerLink]="['/']">Home</a> > <span>{{ category.name }}</span>
+    <a [routerLink]="[ (currentStoreSlug$ | async) ? '/' + (currentStoreSlug$ | async) : '/']">Home</a> > <span>{{ category.name }}</span>
   </div>
 
   <!-- Category Header -->
@@ -12,59 +12,94 @@
     <p>{{ category.description }}</p>
   </div>
 
+  <!-- Grid container for filters and main content -->
   <div class="category-content">
-    <!-- Filter Sidebar (Left) -->
-    <aside class="filter-sidebar">
-      <h2>Filters</h2>
 
-      <!-- Price Filter Example -->
-      <div class="filter-group">
-        <h3>Price Range</h3>
-        <select [(ngModel)]="selectedPriceRange" (ngModelChange)="applyFilters()">
-          <option value="">All Prices</option>
-          <option value="0-20">$0 - $20</option>
-          <option value="20-50">$20 - $50</option>
-          <option value="50-100">$50 - $100</option>
-          <option value="100-Infinity">$100+</option>
-        </select>
-      </div>
-
-      <!-- Tags Filter Example -->
-      <div class="filter-group">
-        <h3>Tags</h3>
-        <!-- Assuming tags are fetched or predefined -->
-        <div *ngFor="let tag of ['New', 'Sale', 'Featured']"> <!-- Example tags -->
-          <label>
-            <input type="checkbox" [(ngModel)]="selectedTags[tag]" (ngModelChange)="applyFilters()">
-            {{ tag }}
-          </label>
+    <!-- Filter Sidebar (Desktop - Moved inside grid) -->
+    <div class="filter-wrapper desktop-only"> <!-- Hide on mobile -->
+      <aside class="filter-sidebar">
+        <h2>Filters</h2>
+        <!-- Price Filter Example -->
+        <div class="filter-group">
+          <h3>Price Range</h3>
+          <select [(ngModel)]="selectedPriceRange" (ngModelChange)="applyFilters()">
+            <option value="">All Prices</option>
+            <option value="0-20">$0 - $20</option>
+            <option value="20-50">$20 - $50</option>
+            <option value="50-100">$50 - $100</option>
+            <option value="100-Infinity">$100+</option>
+          </select>
         </div>
-      </div>
+        <!-- Tags Filter Example -->
+        <div class="filter-group">
+          <h3>Tags</h3>
+          <div *ngFor="let tag of ['New', 'Sale', 'Featured']">
+            <label>
+              <input type="checkbox" [(ngModel)]="selectedTags[tag]" (ngModelChange)="applyFilters()">
+              {{ tag }}
+            </label>
+          </div>
+        </div>
+        <!-- Add other filters -->
+        <button (click)="clearFilters()">Clear All Filters</button>
+      </aside>
+    </div>
 
-      <!-- Add other filters (color, size) similarly -->
-
-      <button (click)="clearFilters()">Clear All Filters</button>
-    </aside>
-
-    <!-- Main Content Area (Right) -->
+    <!-- Main Content Area (Now correctly placed in the second grid column) -->
     <main class="main-content">
       <!-- Sorting Options -->
       <div class="sorting-options">
-        <label for="sort">Sort by:</label>
-        <!-- Bind to public sortSubject.value -->
-        <select id="sort" [ngModel]="sortSubject.value" (ngModelChange)="onSortChange($event)">
-          <option value="newest">Newest</option>
-          <option value="price-asc">Price Low-High</option>
-          <option value="price-desc">Price High-Low</option>
-          <option value="best-selling">Best Selling</option> <!-- Assuming API supports this -->
-        </select>
+        <!-- Mobile Filter Trigger -->
+        <button #filterButton class="filter-button mobile-only" (click)="toggleMobileFilters()">Filters</button> <!-- Added click handler &amp; template ref -->
+        <!-- Desktop Sort Controls -->
+        <div class="sort-controls">
+          <label for="sort">Sort by:</label>
+          <select id="sort" [ngModel]="sortSubject.value" (ngModelChange)="onSortChange($event)">
+            <option value="newest">Newest</option>
+            <option value="price-asc">Price Low-High</option>
+            <option value="price-desc">Price High-Low</option>
+            <option value="name-asc">Name A-Z</option>
+          </select>
+        </div>
+
+        <!-- Mobile Filter Overlay - Moved inside sorting-options &amp; added template ref -->
+        <div #mobileFilterOverlay class="mobile-filter-overlay" *ngIf="isMobileFiltersVisible">
+          <aside class="filter-sidebar mobile-filters"> <!-- Re-use sidebar structure -->
+            <button class="close-filters" (click)="toggleMobileFilters()">X</button> <!-- Close button -->
+            <h2>Filters</h2>
+            <!-- Price Filter Example -->
+            <div class="filter-group">
+              <h3>Price Range</h3>
+              <select [(ngModel)]="selectedPriceRange" (ngModelChange)="applyFilters()"> <!-- Don't close on change -->
+                <option value="">All Prices</option>
+                <option value="0-20">$0 - $20</option>
+                <option value="20-50">$20 - $50</option>
+                <option value="50-100">$50 - $100</option>
+                <option value="100-Infinity">$100+</option>
+              </select>
+            </div>
+            <!-- Tags Filter Example -->
+            <div class="filter-group">
+              <h3>Tags</h3>
+              <div *ngFor="let tag of ['New', 'Sale', 'Featured']">
+                <label>
+                  <input type="checkbox" [(ngModel)]="selectedTags[tag]" (ngModelChange)="applyFilters()"> <!-- Don't close on checkbox change -->
+                  {{ tag }}
+                </label>
+              </div>
+            </div>
+            <!-- Add other filters -->
+            <button (click)="clearFilters(); toggleMobileFilters()">Clear All Filters</button> <!-- Close on clear -->
+            <button class="apply-filters-mobile" (click)="toggleMobileFilters()">Apply Filters</button> <!-- Explicit Apply/Close button -->
+          </aside>
+        </div>
       </div>
 
       <!-- Product Grid -->
-      <div class="product-grid-wrapper"> <!-- Added wrapper for loading/empty state -->
+      <div class="product-grid-wrapper">
         <ng-container *ngIf="products$ | async as products; else loadingProducts">
           <div class="product-grid" *ngIf="products.length > 0; else noProducts">
-            <app-product-card *ngFor="let product of products" [product]="product" [storeSlug]="currentStoreSlug$ | async"></app-product-card> <!-- Pass storeSlug -->
+            <app-product-card *ngFor="let product of products" [product]="product" [storeSlug]="currentStoreSlug$ | async" [categoryId]="category.id"></app-product-card>
           </div>
           <ng-template #noProducts>
             <p>No products found matching your criteria.</p>
@@ -75,9 +110,8 @@
 
 
       <!-- Pagination -->
-      <!-- Corrected *ngIf syntax -->
       <div class="pagination" *ngIf="{ total: totalProducts$ | async, page: page$ | async } as paginationData">
-         <ng-container *ngIf="paginationData.total !== null && paginationData.page !== null && paginationData.total > 0">
+         <ng-container *ngIf="paginationData.total !== null &amp;&amp; paginationData.page !== null &amp;&amp; paginationData.total > 0">
            <button (click)="onPageChange(paginationData.page - 1)" [disabled]="paginationData.page <= 1">Previous</button>
            <span>Page {{ paginationData.page }} of {{ calculateTotalPages(paginationData.total) }}</span>
            <button (click)="onPageChange(paginationData.page + 1)" [disabled]="paginationData.page >= calculateTotalPages(paginationData.total)">Next</button>
@@ -85,8 +119,10 @@
          </ng-container>
       </div>
     </main>
-  </div>
+
+  </div> <!-- End .category-content -->
 </div>
+
 
 <!-- Loading template for category -->
 <ng-template #loadingCategory><p>Loading category details...</p></ng-template>

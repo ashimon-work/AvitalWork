@@ -7,6 +7,17 @@
        [style.transform]="slidesTransform"
        [class.no-transition]="transitioning"> <!-- Add class to disable transition -->
 
+    <!-- Cloned Last Slide (for infinite loop backward) -->
+    <div class="slide" *ngIf="slides.length > 1">
+       <a *ngIf="slides[slides.length - 1].linkUrl && (currentStoreSlug | async); else noLinkCloneLast"
+         [routerLink]="['/', (currentStoreSlug | async), 'product', slides[slides.length - 1].linkUrl]">
+        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText + ' (Clone Last)'">
+      </a>
+      <ng-template #noLinkCloneLast>
+        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText + ' (Clone Last)'">
+      </ng-template>
+    </div>
+
     <!-- Original Slides -->
     <div class="slide"
          *ngFor="let slide of slides; let i = index; trackBy: trackByFn">
@@ -40,7 +51,7 @@
   <div class="carousel-indicators">
     <span *ngFor="let slide of slides; let i = index"
           class="indicator-dot"
-          [ngClass]="{'active': i === currentSlideIndex || (currentSlideIndex === slides.length && i === 0)}"
+          [ngClass]="{'active': (i === currentSlideIndex - 1) || (currentSlideIndex === 0 && i === slides.length - 1) || (currentSlideIndex === slides.length + 1 && i === 0)}"
           (click)="selectSlide(i)">
     </span>
   </div>

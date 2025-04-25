@@ -1,0 +1,16 @@
+.cart-notification {
+  position: fixed;
+  top: 15%; // Position within the top third of the viewport
+  left: 50%;
+  transform: translateX(-50%); // Center horizontally
+  background-color: rgba(224, 224, 224, 0.85); // Light gray background with 85% opacity
+  color: #000000; // Black text
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000; // Ensure it's above most other elements
+  font-size: 1rem;
+  text-align: center;
+  white-space: nowrap; // Keep text on a single line
+  transition: opacity 0.3s ease-in-out;
+}

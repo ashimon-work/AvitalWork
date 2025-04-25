@@ -1,14 +1,29 @@
-// Using global variables defined in src/styles.scss
+/* Using global variables defined in src/styles.scss */
 
 :host {
   display: block;
 }
 
+// Utility classes for responsive visibility
+.desktop-only {
+  display: block; // Or grid, flex, etc. depending on element
+  @media (max-width: 768px) {
+    display: none !important; // Hide on mobile
+  }
+}
+
+.mobile-only {
+  display: none !important; // Hide on desktop
+  @media (max-width: 768px) {
+    display: inline-block !important; // Or block, flex, etc. depending on element
+  }
+}
+
+
 .category-page-container {
-  // Use the global container for max-width and padding
   width: 100%;
   max-width: var(--container-max-width);
-  margin: var(--spacing-xl) auto; // Add vertical margin
+  margin: var(--spacing-xl) auto;
   padding: 0 var(--container-padding-x);
 }
 
@@ -39,27 +54,29 @@
   }
   p {
     color: var(--text-color-light);
-    max-width: 70ch; // Limit description width for readability
+    max-width: 70ch;
     margin: 0 auto;
   }
 }
 
 .category-content {
   display: grid;
-  grid-template-columns: 240px 1fr; // Fixed sidebar width, flexible main content
+  grid-template-columns: 240px 1fr; // Desktop layout
   gap: var(--spacing-xl);
 
-  @media (max-width: 768px) { // Stack on smaller screens
-    grid-template-columns: 1fr;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; // Mobile layout (single column)
   }
 }
 
+// Desktop Filter Sidebar Styles
 .filter-sidebar {
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-lg);
   background-color: var(--neutral-lightest);
-  align-self: start; // Prevent sidebar stretching vertically
+  align-self: start; // Keep aligned to top in grid cell
+  width: 240px; // Fixed width for desktop
 
   h2 {
     font-size: 1.4rem;
@@ -84,66 +101,94 @@
 
     input[type="checkbox"] {
       margin-right: var(--spacing-sm);
-      width: auto; // Override global input width: 100%
-      display: inline-block; // Align checkbox with label text
+      width: auto;
+      display: inline-block;
     }
   }
 
-  button { // Clear filters button
-    // Inherit base button styles implicitly or explicitly if needed
-    @extend button; // Extend the base button for padding, font, etc. if not inherited
+  button {
+    /* Inherit base button styles */
+    @extend button; // Assuming a global button style exists
     width: 100%;
     margin-top: var(--spacing-md);
-    // Apply secondary button styles directly:
     background-color: transparent;
     border-color: var(--primary-color);
     color: var(--primary-color);
 
     &:hover, &:focus {
-      background-color: rgba(52, 152, 219, 0.1); // Light primary background on hover
+      background-color: rgba(52, 152, 219, 0.1);
       opacity: 1;
-      color: var(--primary-color); // Ensure text color remains on hover
-      border-color: var(--primary-color); // Ensure border color remains on hover
+      color: var(--primary-color);
+      border-color: var(--primary-color);
     }
-    // color: var(--primary-color);
-    // &:hover { background-color: rgba(52, 152, 219, 0.1); }
   }
 }
 
+// Wrapper for desktop sidebar (now hidden on mobile via .desktop-only)
+.filter-wrapper {
+  // No specific styles needed here anymore unless for alignment
+}
+
 .main-content {
-  // Styles for main area
+  /* Styles for main area */
 }
 
 .sorting-options {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-end; // Default to right alignment (desktop)
   align-items: center;
   margin-bottom: var(--spacing-lg);
   gap: var(--spacing-sm);
 
-  label {
-    font-weight: var(--font-weight-medium);
+  @media (max-width: 768px) {
+    justify-content: space-between; // Space out button and sort on mobile
+    position: relative; // Needed for absolute positioning of the filter popover
   }
 
-  select {
-    width: auto; // Don't take full width
-    padding: var(--spacing-xs) var(--spacing-sm); // Smaller padding
+  .filter-button {
+    // Inherits .mobile-only styles for visibility
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background-color: transparent;
+    color: var(--text-color);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+    line-height: inherit;
+    height: auto;
+
+    &:hover {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+  }
+
+  .sort-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    label {
+      font-weight: var(--font-weight-medium);
+    }
+
+    select {
+      width: auto;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: var(--border-width) solid var(--border-color);
+      border-radius: var(--border-radius-sm);
+    }
   }
 }
 
 .product-grid-wrapper {
-  min-height: 300px; // Prevent layout collapse while loading
+  min-height: 300px;
 }
 
 .product-grid {
   display: grid;
   gap: var(--spacing-lg);
-  // Responsive grid columns - adjust as needed for this context
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); // Slightly smaller min size
-
-  // Example breakpoints (could differ from homepage)
-  // @media (min-width: 576px) { grid-template-columns: repeat(2, 1fr); }
-  // @media (min-width: 992px) { grid-template-columns: repeat(3, 1fr); }
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
 .pagination {
@@ -156,7 +201,6 @@
   border-top: var(--border-width) solid var(--border-color);
 
   button {
-    // Use base button styles
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 0.9rem;
 
@@ -172,7 +216,7 @@
     font-weight: var(--font-weight-medium);
   }
 
-  p { // Total products text
+  p {
     margin-left: var(--spacing-lg);
     font-size: 0.9rem;
     color: var(--text-color-light);
@@ -180,9 +224,141 @@
   }
 }
 
-// Loading/Empty states styling
-p { // Basic styling for loading/empty messages
+/* Loading/Empty states styling */
+p {
   text-align: center;
   padding: var(--spacing-xl);
   color: var(--text-color-light);
+}
+
+
+// Mobile Filter Popover Styles
+.mobile-filter-overlay {
+  position: absolute; // Position relative to .sorting-options
+  top: 100%; // Position below the sorting options container
+  left: 0; // Align with the left edge of the container
+  width: auto; // Let content determine width, or set a specific width
+  min-width: 250px; // Ensure a minimum usable width
+  max-width: calc(100% - var(--spacing-sm)); // Prevent overflow on very small screens
+  z-index: 1000; // Ensure it's above other content
+  background-color: var(--neutral-lightest); // Background for the popover
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow-md); // Standard dropdown shadow
+  padding: var(--spacing-lg); // Padding inside the popover
+  margin-top: var(--spacing-xs); // Small gap below the button
+  // Visibility is controlled by *ngIf="isMobileFiltersVisible" in the HTML
+}
+
+// Remove the backdrop entirely
+// .mobile-filter-backdrop { ... } // Removed
+
+.filter-sidebar.mobile-filters {
+  // Revert to standard vertical layout inside the popover
+  position: static;
+  z-index: auto;
+  width: 100%; // Fill the overlay popover
+  max-width: none;
+  height: auto;
+  background-color: transparent; // Popover has background
+  padding: 0; // Popover has padding
+  overflow-y: auto; // Allow scroll if content overflows popover height
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  align-self: auto;
+
+  // Restore vertical layout styles (similar to original desktop sidebar)
+  h2 {
+    display: block; // Show heading again
+    font-size: 1.2rem; // Slightly smaller for popover
+    margin-bottom: var(--spacing-md);
+    border-bottom: var(--border-width) solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+  }
+
+  .filter-group {
+    margin-bottom: var(--spacing-md); // Restore vertical spacing
+    flex: none; // Remove flex properties
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    select, label {
+      display: block; // Stack elements vertically
+      margin-bottom: var(--spacing-sm);
+      margin-right: 0;
+    }
+    select {
+       min-width: 0; // Remove min-width from flex layout
+       width: 100%; // Make select full width of popover
+    }
+    div {
+      display: block; // Stack tag labels vertically
+      gap: 0;
+      label { // Ensure labels within the div are block too
+        display: block;
+        margin-bottom: var(--spacing-sm);
+      }
+    }
+     input[type="checkbox"] { // Copied from desktop styles
+        margin-right: var(--spacing-sm);
+        width: auto;
+        display: inline-block;
+     }
+  }
+
+  // Restore button styles
+  button {
+    margin-top: var(--spacing-md);
+    width: 100%; // Make buttons full width
+    padding: var(--spacing-sm) var(--spacing-md); // Standard button padding
+    flex-shrink: 1; // Default shrink behavior
+  }
+  // Restore button order/specific styles
+  .clear-filters {
+     order: 0; // Default order
+  }
+  .apply-filters-mobile {
+     order: 0; // Default order
+     // Keep prominent style from previous attempt
+     @extend button;
+     background-color: var(--primary-color);
+     color: var(--button-text-color);
+     border: none;
+     &:hover { opacity: 0.9; }
+  }
+  .close-filters {
+    order: 0; // Default order
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    padding: 0;
+    color: var(--text-color-light);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--text-color);
+    }
+  }
+
+  // Style the explicit apply button for mobile
+  .apply-filters-mobile {
+    @extend button; // Use base button styles
+    width: 100%;
+    margin-top: var(--spacing-lg);
+    background-color: var(--primary-color); // Make it prominent
+    color: var(--button-text-color);
+    border: none;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
 }

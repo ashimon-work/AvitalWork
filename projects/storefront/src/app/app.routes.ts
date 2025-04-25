@@ -25,6 +25,9 @@ import { storeSlugGuard } from './core/guards/store-slug.guard'; // Import the g
 export const routes: Routes = [
   // Redirect root path to a default store or a store selection page (TBD)
   // For now, let's redirect to a default store slug for testing
+
+  // Redirect /default specifically to /awesome-gadgets
+  { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
   { path: '', redirectTo: '/default-store', pathMatch: 'full' }, // Redirect root to a default store slug
 
   // Explicit route for the generic 404 page

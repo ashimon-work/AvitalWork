@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Category, Product } from '@shared-types';
@@ -51,7 +51,11 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   // Properties to bind to filter inputs in the template
   selectedPriceRange: string = ''; // e.g., '0-20', '20-50'
   selectedTags: { [key: string]: boolean } = {}; // e.g., { 'New': true, 'Sale': false }
+  isMobileFiltersVisible: boolean = false; // State for mobile filter overlay
 
+  // Template references for click outside detection
+  @ViewChild('filterButton') filterButton!: ElementRef;
+  @ViewChild('mobileFilterOverlay') mobileFilterOverlay!: ElementRef;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -174,9 +178,9 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     this.pageSubject.next(1);
   }
 
-  onSortChange(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement;
-    this.sortSubject.next(selectElement.value);
+  onSortChange(newValue: string): void { // Changed parameter type from Event to string
+    // The newValue is passed directly from (ngModelChange)
+    this.sortSubject.next(newValue);
     this.pageSubject.next(1);
   }
 
@@ -228,5 +232,26 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
       return 1; // Or 0, depending on desired behavior for no items
     }
     return Math.ceil(totalItems / this.itemsPerPage);
+  }
+
+  toggleMobileFilters(): void {
+    this.isMobileFiltersVisible = !this.isMobileFiltersVisible;
+  }
+
+  // Listen for clicks anywhere in the document
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    // Check if the click target exists and the overlay is actually visible
+    if (!event.target || !this.isMobileFiltersVisible) {
+      return;
+    }
+
+    const clickedInsideButton = this.filterButton?.nativeElement?.contains(event.target);
+    const clickedInsideOverlay = this.mobileFilterOverlay?.nativeElement?.contains(event.target);
+
+    // If the click was outside both the button and the overlay, close the overlay
+    if (!clickedInsideButton && !clickedInsideOverlay) {
+      this.isMobileFiltersVisible = false;
+    }
   }
 }

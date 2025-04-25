@@ -2,13 +2,14 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Observable, switchMap, tap, map, combineLatest } from 'rxjs';
-import { Category, Product, ProductVariant, ProductVariantOption } from '@shared-types';
+import { Observable, switchMap, tap, map, of, filter, catchError, combineLatest } from 'rxjs';
+import { Product, Category, ProductVariant, ProductVariantOption } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { CartService } from '../../core/services/cart.service';
+import { StoreContextService } from '../../core/services/store-context.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { AuthService } from '../../core/services/auth.service';
-import { NotificationService } from '../../core/services/notification.service'; // Import NotificationService
+import { NotificationService } from '../../core/services/notification.service';
 import { ImageCarouselComponent } from '../../shared/components/image-carousel/image-carousel.component';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 
@@ -30,11 +31,15 @@ export class ProductPageComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private cartService = inject(CartService);
+  private storeContext = inject(StoreContextService);
   private wishlistService = inject(WishlistService);
   private authService = inject(AuthService);
-  private notificationService = inject(NotificationService); // Inject NotificationService
+  private notificationService = inject(NotificationService);
 
+  public currentStoreSlug$ = this.storeContext.currentStoreSlug$;
+  categoryId$: Observable<string | null>;
   product$: Observable<Product | null> | undefined;
+  category$: Observable<Category | null>;
   quantity: number = 1;
 
   // New properties for variant selection and display
@@ -67,11 +72,34 @@ export class ProductPageComponent implements OnInit {
   // Property to track if the current product is in the wishlist
   isInWishlist: boolean = false;
 
+  constructor(private activatedRoute: ActivatedRoute) {
+    this.categoryId$ = this.activatedRoute.queryParamMap.pipe(
+      map(params => params.get('categoryId'))
+    );
+    this.category$ = this.categoryId$.pipe(
+      filter((id): id is string => !!id), // Ensure categoryId is not null
+      switchMap(categoryId => this.apiService.getCategoryDetails(categoryId).pipe(
+        tap(category => {
+          if (!category) {
+            console.warn(`Category with ID ${categoryId} not found for breadcrumb.`);
+            // Don't redirect, maybe just don't show category in breadcrumb
+          }
+        }),
+        catchError((err: any) => { // Added type for err
+          console.error('Error fetching category details:', err);
+          return of(null); // Return null observable on error, breadcrumb can handle this
+        })
+      ))
+    );
+  }
+
   ngOnInit(): void {
+    // Fetch Product Details
     this.product$ = this.route.paramMap.pipe(
       map(params => params.get('id')),
+      filter((id): id is string => !!id), // Ensure id is not null/undefined
       tap(id => {
-        if (!id) {
+        if (!id) { // Double check, though filter should prevent this
           console.error('Product ID missing from route');
           this.router.navigate(['/']);
         }
@@ -207,11 +235,11 @@ export class ProductPageComponent implements OnInit {
 
     // Reset quantity if current quantity exceeds new stock level
     if (this.quantity > this.currentStock) {
-        this.quantity = this.currentStock > 0 ? 1 : 0;
+      this.quantity = this.currentStock > 0 ? 1 : 0;
     }
     // Ensure quantity is at least 1 if stock allows
     if (this.currentStock > 0 && this.quantity === 0) {
-        this.quantity = 1;
+      this.quantity = 1;
     }
   }
 
@@ -260,30 +288,30 @@ export class ProductPageComponent implements OnInit {
 
   // Method to handle quantity changes from input (optional, can use +/- buttons later)
   onQuantityChange(event: Event): void {
-      const inputElement = event.target as HTMLInputElement;
-      const newQuantity = parseInt(inputElement.value, 10);
-      if (!isNaN(newQuantity) && newQuantity >= 1 && newQuantity <= (this.currentStock || 0)) {
-          this.quantity = newQuantity;
-      } else {
-          // Optionally revert to previous valid quantity or show error
-          console.warn('Invalid quantity entered');
-          // Revert to current quantity state to prevent invalid input
-          inputElement.value = this.quantity.toString();
-      }
+    const inputElement = event.target as HTMLInputElement;
+    const newQuantity = parseInt(inputElement.value, 10);
+    if (!isNaN(newQuantity) && newQuantity >= 1 && newQuantity <= (this.currentStock || 0)) {
+      this.quantity = newQuantity;
+    } else {
+      // Optionally revert to previous valid quantity or show error
+      console.warn('Invalid quantity entered');
+      // Revert to current quantity state to prevent invalid input
+      inputElement.value = this.quantity.toString();
+    }
   }
 
   // Method to handle quantity increment
   incrementQuantity(): void {
-      if (this.quantity < (this.currentStock || 0)) {
-          this.quantity++;
-      }
+    if (this.quantity < (this.currentStock || 0)) {
+      this.quantity++;
+    }
   }
 
   // Method to handle quantity decrement
   decrementQuantity(): void {
-      if (this.quantity > 1) {
-          this.quantity--;
-      }
+    if (this.quantity > 1) {
+      this.quantity--;
+    }
   }
 
   // Method to handle adding/removing from wishlist

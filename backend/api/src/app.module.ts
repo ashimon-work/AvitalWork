@@ -11,6 +11,7 @@ import { CartModule } from './cart/cart.module';
 import { AccountModule } from './account/account.module';
 import { StoresModule } from './stores/stores.module';
 import { CarouselModule } from './carousel/carousel.module';
+import { NewsletterModule } from './newsletter/newsletter.module';
 import { NavigationModule } from './navigation/navigation.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { OrdersModule } from './orders/orders.module';
@@ -28,7 +29,6 @@ import { OrderItemEntity } from './orders/entities/order-item.entity';
 import { WishlistEntity } from './wishlist/entities/wishlist.entity';
 import { WishlistItemEntity } from './wishlist/entities/wishlist-item.entity';
 import { CarouselItem } from './carousel/entities/carousel.entity';
-
 
 @Module({
   imports: [
@@ -75,6 +75,7 @@ import { CarouselItem } from './carousel/entities/carousel.entity';
     AccountModule,
     StoresModule,
     CarouselModule,
+    NewsletterModule,
     NavigationModule,
     AddressesModule,
     OrdersModule,

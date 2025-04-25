@@ -17,7 +17,7 @@
 .header-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: var(--spacing-lg); // Space between logo, nav, right section
 
   // Apply container constraints
@@ -53,7 +53,7 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md); // Space between search and user actions
+  gap: var(--spacing-md);
   flex-shrink: 0;
   flex-wrap: wrap;
   justify-content: flex-end; /* Align items to the end of the container */
@@ -68,6 +68,7 @@
 .user-actions {
   display: flex;
   align-items: center;
+  margin-left: 0px;
   gap: var(--spacing-md); // Space between icons
 }
 
@@ -90,7 +91,7 @@
   }
 
   .material-icons {
-    font-size: 24px; // Standard icon size
+    font-size: 20px; // Reduced icon size
     vertical-align: middle;
   }
 }
@@ -100,7 +101,7 @@
   top: -5px; // Adjust position relative to the icon
   right: -8px; // Adjust position relative to the icon
   background-color: var(--error-color); // Use error/alert color for emphasis
-  color: white;
+  color: rgb(255, 255, 255);
   font-size: 11px;
   font-weight: var(--font-weight-medium);
   border-radius: 50%;
@@ -112,7 +113,8 @@
 
 // Hamburger Button Styles (Hidden on Desktop)
 .hamburger-button {
-  display: none; // Hidden by default
+  display: block; // Visible by default
+  margin-left: 0px; /* Push to the right */
   background: none;
   border: none;
   padding: var(--spacing-xs);
@@ -120,7 +122,7 @@
   color: var(--text-color);
 
   .material-icons {
-    font-size: 28px; // Larger icon for touch
+    font-size: 22px; // Larger icon for touch
     vertical-align: middle;
   }
 
@@ -161,29 +163,30 @@
 
   // Show hamburger button
   .hamburger-button {
-    display: block;
-    order: 3; // Place it after logo and user actions
+    display: block !important;
 
     .material-icons {
-      font-size: 18px; // Smaller menu icon
+      font-size: 15px; // Smaller menu icon
     }
   }
 
   // Keep user actions visible, adjust gap
   .header-right {
-    order: 2; // Place user actions before hamburger
+    /* order: 2; // Place user actions before hamburger */
     gap: var(--spacing-xs); // Further reduce gap between user actions and hamburger
     flex-wrap: nowrap;
     justify-content: flex-end; // Keep this alignment
+    flex-grow: 1; /* Allow it to take up available space */
 
     .action-icon .material-icons {
-      font-size: 18px;
+      font-size: 14px; // Further reduced mobile icon size
     }
 
     .user-actions {
       gap: var(--spacing-xxs); // Reduce gap even further
       font-size: 0.6rem; // Even smaller font size for all text
     }
+
     justify-content: flex-end;
 
     // Hide the desktop search bar specifically on mobile
@@ -211,38 +214,65 @@
       flex-direction: column;
       gap: var(--spacing-md);
     }
+  }
+}
 
-    // Ensure nav and search display correctly inside the menu
-    .navigation,
-    .search-bar {
-      display: block; // Show them inside the menu
-      width: 100%; // Take full width
-      max-width: none; // Remove previous max-width constraint on search
-      margin-bottom: var(--spacing-sm); // Add some spacing
-    }
+// Style the mobile menu container
+.mobile-menu-content {
+  display: none; // Hidden by default
+  position: absolute;
+  top: 100%; // Position below the header
+  left: 0;
+  right: 0;
+  background-color: var(--background-color);
+  border-top: var(--border-width) solid var(--border-color);
+  box-shadow: var(--box-shadow-md);
+  padding: var(--spacing-md);
+  z-index: 999; // Below header but above page content
 
-    // Adjust navigation styles for vertical layout if needed
-    .navigation {
-      // Example: If app-navigation uses flex row, change it
-      // ::ng-deep ul { flex-direction: column; align-items: flex-start; }
-      justify-content: flex-start; // Align items to the start
-    }
+  // Show when open
+  &.open {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
 
-    .action-link {
-      font-size: 0.85rem; // Smaller font size for mobile
-    }
+  // Ensure nav and search display correctly inside the menu
+  .navigation,
+  .search-bar {
+    display: block; // Show them inside the menu
+    width: 100%; // Take full width
+    max-width: none; // Remove previous max-width constraint on search
+    margin-bottom: var(--spacing-sm); // Add some spacing
+  }
 
-    .action-icon {
-      padding: var(--spacing-xxs); // Even smaller padding
-    }
+  // Adjust navigation styles for vertical layout if needed
+  .navigation {
+    // Example: If app-navigation uses flex row, change it
+    // ::ng-deep ul { flex-direction: column; align-items: flex-start; }
+    justify-content: flex-start; // Align items to the start
+  }
 
-    .user-actions {
-      gap: var(--spacing-xxs); // Reduce gap even further
-    }
+  .action-link {
+    font-size: 1.15rem;
+  }
 
-    .cart-count {
-      font-size: 0.7rem; // Reduce cart count font size
+  @media (min-width: 769px) {
+    .header-right .action-link {
+      font-size: 1.35rem;
     }
+  }
+
+  .action-icon {
+    padding: var(--spacing-xxs); // Even smaller padding
+  }
+
+  .user-actions {
+    gap: var(--spacing-xxs); // Reduce gap even further
+  }
+
+  .cart-count {
+    font-size: 0.7rem; // Reduce cart count font size
   }
 }
 

@@ -43,7 +43,7 @@
           </tbody>
         </table>
         <div class="cart-actions-lower">
-          <button class="continue-shopping-btn" [routerLink]="['/']">Continue Shopping</button>
+          <button class="continue-shopping-btn" (click)="goBack()">Continue Shopping</button>
           <button class="update-cart-btn" (click)="updateCart()">Update Cart</button> <!-- Might not be needed if quantity updates automatically -->
         </div>
       </div>
@@ -74,7 +74,7 @@
           <input type="text" id="promo" placeholder="Enter code">
           <button>Apply</button>
         </div>
-        <button class="checkout-btn" (click)="proceedToCheckout()">Proceed to Checkout</button>
+        <button class="checkout-btn bordered-button" (click)="proceedToCheckout()">Proceed to Checkout</button>
       </aside>
     </div>
   </ng-container>
