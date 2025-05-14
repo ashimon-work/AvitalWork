@@ -1,0 +1,151 @@
+<!-- Customer Details Modal -->
+<div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="customerDetailsModalLabel">Customer Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Loading Spinner -->
+        <div *ngIf="!customer" class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>Loading customer details...</p>
+        </div>
+
+        <!-- Customer Details Content -->
+        <div *ngIf="editableCustomer">
+          <h6>Personal Information</h6>
+          <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstName" [(ngModel)]="editableCustomer.firstName">
+          </div>
+          <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastName" [(ngModel)]="editableCustomer.lastName">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" [(ngModel)]="editableCustomer.email" disabled>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" class="form-control" id="phone" [(ngModel)]="editableCustomer.phone">
+          </div>
+          <p><strong>Account Status:</strong> {{ editableCustomer.accountStatus }}</p>
+          <p><strong>Registration Date:</strong> {{ editableCustomer.registrationDate | date }}</p>
+
+          <hr>
+
+          <h6>Address Book</h6>
+          <div *ngIf="editableCustomer.addresses && editableCustomer.addresses.length > 0">
+            <div *ngFor="let address of editableCustomer.addresses">
+              <p>{{ address.street1 }}, {{ address.city }}, {{ address.postalCode }}, {{ address.country }}</p>
+            </div>
+          </div>
+          <div *ngIf="!editableCustomer.addresses || editableCustomer.addresses.length === 0">
+            <p>No addresses found.</p>
+          </div>
+
+          <hr>
+          <h6>Order History</h6>
+          <div *ngIf="isLoadingOrders" class="text-center">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading orders...</span>
+            </div>
+            <p>Loading orders...</p>
+          </div>
+          <div *ngIf="!isLoadingOrders && customerOrders.length === 0">
+            <p>No orders found for this customer.</p>
+          </div>
+          <div *ngIf="!isLoadingOrders && customerOrders.length > 0" class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Items</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let order of customerOrders">
+                  <td>{{ order.orderNumber }}</td>
+                  <td>{{ order.createdAt | date:'short' }}</td>
+                  <td>{{ order.status }}</td>
+                  <td>{{ order.totalAmount | currency }}</td>
+                  <td>{{ order.items?.length || 0 }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <hr>
+          <hr>
+
+          <h6>Communication History</h6>
+          <!-- TODO: Implement Communication History -->
+          <p>Communication history goes here.</p>
+
+          <hr>
+
+          <h6>Notes</h6>
+          <div class="mb-3">
+            <h6>Notes</h6>
+            <div *ngIf="editableCustomer.notes && editableCustomer.notes.length > 0">
+              <!-- This requires @shared-types/User to have notes: Note[] (where Note has createdAt and content) -->
+              <!-- and backend to provide this structure. -->
+              <div *ngFor="let note of editableCustomer.notes">
+                <p><strong>{{ note.createdAt | date:'short' }}:</strong> {{ note.content }}</p>
+              </div>
+            </div>
+            <div *ngIf="!editableCustomer.notes || editableCustomer.notes.length === 0">
+              <p>No notes found.</p>
+            </div>
+            <hr>
+            <h6>Add New Note</h6>
+            <textarea class="form-control mb-2" rows="3" [(ngModel)]="newNoteContent"
+              placeholder="Enter internal note..."></textarea>
+            <button type="button" class="btn btn-primary btn-sm" (click)="addCustomerNote()"
+              [disabled]="isAddingNote || !newNoteContent.trim()">
+              <span *ngIf="isAddingNote" class="spinner-border spinner-border-sm" role="status"
+                aria-hidden="true"></span>
+              Add Note
+            </button>
+          </div>
+
+          <hr>
+
+          <h6>Direct Contact Options</h6>
+          <div class="mb-3">
+            <label for="emailSubject" class="form-label">Subject</label>
+            <input type="text" class="form-control" id="emailSubject" [(ngModel)]="emailSubject"
+              placeholder="Email Subject">
+          </div>
+          <div class="mb-3">
+            <label for="emailBody" class="form-label">Body</label>
+            <textarea class="form-control" id="emailBody" rows="5" [(ngModel)]="emailBody"
+              placeholder="Email Body"></textarea>
+          </div>
+          <button type="button" class="btn btn-primary" (click)="sendEmailToCustomer()"
+            [disabled]="isSendingEmail || !emailSubject.trim() || !emailBody.trim()">
+            <span *ngIf="isSendingEmail" class="spinner-border spinner-border-sm" role="status"
+              aria-hidden="true"></span>
+            Send Email
+          </button>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="saveCustomerChanges()" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -13,7 +13,7 @@
     <div *ngFor="let method of methods" class="payment-method-card">
       <div class="card-details">
         <!-- Basic representation - enhance with icons later -->
-        <span class="card-type">{{ method.cardType }}</span> ending in <span class="card-last4">{{ method.last4 }}</span>
+        <span class="card-type">{{ method.cardBrand }}</span> ending in <span class="card-last4">{{ method.last4 }}</span>
         <span class="card-expiry">Expires: {{ method.expiryMonth | number:'2.0' }}/{{ method.expiryYear }}</span>
         <span *ngIf="method.isDefault" class="badge bg-primary ms-2">Default</span>
       </div>

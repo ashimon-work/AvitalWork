@@ -1,10 +1,18 @@
-import { Controller, Get, Query, BadRequestException, Param, NotFoundException } from '@nestjs/common'; // Import Param, NotFoundException
+import { Controller, Get, Query, BadRequestException, Param, NotFoundException, UseGuards, Req } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { StoreEntity } from './entities/store.entity';
+import { StoreContextGuard } from '../core/guards/store-context.guard';
+import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
+import { AboutContentEntity } from './entities/about-content.entity';
+import { TestimonialEntity } from './entities/testimonial.entity';
 
-@Controller('stores')
+@UseGuards(StoreContextGuard)
+@Controller('store')
 export class StoresController {
   constructor(private readonly storesService: StoresService) {}
+
+  // Note: Search and findBySlug endpoints might need to be moved or adapted for storefront if they are used there.
+  // Keeping them here for now as they were in the original file.
 
   @Get('search')
   async searchStores(
@@ -32,5 +40,23 @@ export class StoresController {
     return store;
   }
 
-  // Add other store endpoints if needed later
+  @Get('about')
+  async getAboutContent(@Query('storeSlug') storeSlug: string): Promise<AboutContentEntity> {
+    if (!storeSlug) {
+        throw new BadRequestException('storeSlug query parameter is required.');
+    }
+    const aboutContent = await this.storesService.getAboutContentByStoreSlug(storeSlug);
+    if (!aboutContent) {
+      throw new NotFoundException(`About content for store slug "${storeSlug}" not found.`);
+    }
+    return aboutContent;
+  }
+
+  @Get('testimonials')
+  async getTestimonials(@Query('storeSlug') storeSlug: string): Promise<TestimonialEntity[]> {
+    if (!storeSlug) {
+        throw new BadRequestException('storeSlug query parameter is required.');
+    }
+    return this.storesService.getTestimonialsByStoreSlug(storeSlug);
+  }
 }

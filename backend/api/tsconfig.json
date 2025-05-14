@@ -13,6 +13,9 @@
     "paths": {
       "@shared-types": [
         "../../dist/shared-types" // Point to the built library in dist
+      ],
+      "src/*": [
+        "./src/*"
       ]
     },
     "incremental": true,

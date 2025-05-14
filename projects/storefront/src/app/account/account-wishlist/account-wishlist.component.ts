@@ -5,11 +5,12 @@ import { Observable, BehaviorSubject, switchMap, tap, map, shareReplay, of } fro
 import { Product } from '@shared-types'; // Import Product interface
 import { RouterModule } from '@angular/router'; // Import for product links
 import { CartService } from '../../core/services/cart.service'; // Import CartService
-
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-account-wishlist',
   standalone: true,
   imports: [CommonModule, RouterModule], // Add RouterModule
+  providers: [HttpClient],
   templateUrl: './account-wishlist.component.html',
   styleUrls: ['./account-wishlist.component.scss'] // Corrected property name
 })

@@ -21,14 +21,26 @@ export class ProductCardComponent {
 
   constructor(private cartService: CartService) {}
 
+  // Getter to check if the product is out of stock
+  get isOutOfStock(): boolean {
+    // Assuming Product interface has a 'stock' property.
+    // If product has variants, this might need to check the stock of the default variant
+    // or the sum of available variant stocks depending on desired behavior for the card.
+    return this.product && this.product.stock !== undefined && this.product.stock <= 0;
+  }
+
   onAddToCart(): void {
-    if (this.product) {
+    if (this.product && !this.isOutOfStock) {
       console.log('Adding to cart:', this.product.name);
-      // Call the service - handle potential errors/success feedback if needed
+      // Call the service to add the product (or its default variant) to the cart
+      // The CartService and backend should handle variant selection if applicable
       this.cartService.addItem(this.product).subscribe({
         next: () => console.log(`${this.product.name} added to cart via service`),
         error: (err) => console.error('Failed to add item via service:', err)
       });
+    } else if (this.isOutOfStock) {
+      console.warn('Cannot add out-of-stock product to cart:', this.product?.name);
+      // Optionally show a notification to the user
     } else {
       console.error('Product data is missing, cannot add to cart.');
     }

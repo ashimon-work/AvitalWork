@@ -18,12 +18,12 @@
           <tbody>
             <tr *ngFor="let item of cartState.items" class="cart-item">
               <td class="item-image">
-                <a [routerLink]="['/product', item.product.id]">
+                <a [routerLink]="['/', currentStoreSlug$ | async, 'product', item.product.id]">
                   <img [src]="item.product.imageUrls[0] || '/assets/images/placeholder.png'" [alt]="item.product.name">
                 </a>
               </td>
               <td class="item-details">
-                <a [routerLink]="['/product', item.product.id]" class="item-name">{{ item.product.name }}</a>
+                <a [routerLink]="['/', currentStoreSlug$ | async, 'product', item.product.id]" class="item-name">{{ item.product.name }}</a>
                 <!-- Display selected variants later if applicable -->
               </td>
               <td class="item-price">{{ item.product.price | currency }}</td>
@@ -31,7 +31,7 @@
                 <!-- Basic quantity input - enhance later -->
                 <input type="number"
                        [ngModel]="item.quantity"
-                       (ngModelChange)="updateQuantity(item, $event)"
+                       (ngModelChange)="updateQuantity(item, $event.toString())"
                        min="1"
                        step="1">
               </td>
@@ -64,19 +64,50 @@
           <span>(Calculated at checkout)</span>
         </div>
         <hr>
+        <!-- Promo Code Section -->
+        <div class="promo-code-section">
+          <label for="promo-code-input">Promo Code:</label>
+          <div class="promo-input-group">
+            <input type="text" id="promo-code-input" placeholder="Enter promo code" [(ngModel)]="promoCode">
+            <button (click)="applyPromoCode()" class="apply-promo-btn">Apply</button>
+          </div>
+          <div *ngIf="appliedPromoCodeDetails" class="promo-message"
+               [ngClass]="{ 'success': appliedPromoCodeDetails.discountAmount > 0, 'error': appliedPromoCodeDetails.discountAmount === 0 && appliedPromoCodeDetails.message }">
+            <p>{{ appliedPromoCodeDetails.message }}</p>
+          </div>
+        </div>
+
+        <div class="summary-row" *ngIf="appliedPromoCodeDetails && appliedPromoCodeDetails.discountAmount > 0">
+          <span>Discount ({{ appliedPromoCodeDetails.code }}):</span>
+          <span>- {{ appliedPromoCodeDetails.discountAmount | currency }}</span>
+        </div>
+        <hr *ngIf="appliedPromoCodeDetails && appliedPromoCodeDetails.discountAmount > 0">
+
         <div class="summary-row total">
           <span>Total:</span>
-          <!-- Calculate total later including shipping/taxes -->
-          <span>{{ calculateCartSubtotal(cartState.items) | currency }}</span>
-        </div>
-        <div class="promo-code">
-          <label for="promo">Promo Code:</label>
-          <input type="text" id="promo" placeholder="Enter code">
-          <button>Apply</button>
+          <span>{{ (calculateCartSubtotal(cartState.items) - (appliedPromoCodeDetails?.discountAmount || 0)) | currency }}</span>
         </div>
         <button class="checkout-btn bordered-button" (click)="proceedToCheckout()">Proceed to Checkout</button>
       </aside>
     </div>
+
+    <!-- Recently Viewed Products Section -->
+    <ng-container *ngIf="recentlyViewedProducts$ | async as recentlyViewed; else loadingRecentlyViewed">
+      <div *ngIf="recentlyViewed.length > 0" class="recently-viewed-section">
+        <h2>Recently Viewed Products</h2>
+        <div class="product-grid">
+          <app-product-card
+            *ngFor="let product of recentlyViewed"
+            [product]="product"
+            [storeSlug]="currentStoreSlug$ | async">
+          </app-product-card>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #loadingRecentlyViewed>
+      <!-- Optional: loading indicator for recently viewed -->
+    </ng-template>
+
   </ng-container>
 
   <ng-template #emptyCart>

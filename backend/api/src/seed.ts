@@ -4,17 +4,22 @@ import { CategoryEntity } from './categories/entities/category.entity';
 import { ProductEntity } from './products/entities/product.entity';
 import { StoreEntity } from './stores/entities/store.entity';
 import { CarouselItem } from './carousel/entities/carousel.entity';
-import { UserEntity } from './users/entities/user.entity'; // Import UserEntity
-import { AddressEntity } from './addresses/entities/address.entity'; // Import AddressEntity
-import { OrderEntity, OrderStatus, PaymentStatus } from './orders/entities/order.entity'; // Import OrderEntity and enums
-import { OrderItemEntity } from './orders/entities/order-item.entity'; // Import OrderItemEntity
-import { WishlistEntity } from './wishlist/entities/wishlist.entity'; // Import WishlistEntity
-import { WishlistItemEntity } from './wishlist/entities/wishlist-item.entity'; // Import WishlistItemEntity
-import { ProductVariantEntity } from './products/entities/product-variant.entity'; // Import ProductVariantEntity
+import { UserEntity } from './users/entities/user.entity';
+import { AddressEntity } from './addresses/entities/address.entity';
+import { OrderEntity, OrderStatus, PaymentStatus } from './orders/entities/order.entity';
+import { OrderItemEntity } from './orders/entities/order-item.entity';
+import { WishlistEntity } from './wishlist/entities/wishlist.entity';
+import { WishlistItemEntity } from './wishlist/entities/wishlist-item.entity';
+import { ProductVariantEntity } from './products/entities/product-variant.entity';
+import { ReviewEntity } from './reviews/entities/review.entity';
+import { FaqEntity } from './contact/entities/faq.entity';
+import { AboutContentEntity } from './stores/entities/about-content.entity';
+import { TestimonialEntity } from './stores/entities/testimonial.entity';
+import { PromoCodeEntity } from './promo-codes/entities/promo-code.entity'; // Added PromoCodeEntity
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, In, DataSource } from 'typeorm'; // Import In operator and DataSource
+import { Repository, In, DataSource } from 'typeorm';
 import { Logger } from '@nestjs/common';
-import * as bcrypt from 'bcrypt'; // Import bcrypt for password hashing
+import * as bcrypt from 'bcrypt';
 
 // --- Define Seed Data ---
 
@@ -46,7 +51,7 @@ const productData = [
   { sku: 'ELEC-005', name: 'Gaming Laptop', description: 'High-performance laptop for gaming enthusiasts.', price: 1299.00, imageUrls: ['https://picsum.photos/seed/ELEC-005a/500/500'], tags: ['New', 'Gaming'], stockLevel: 10, isActive: true, storeId: storeData[0].id },
 
   // Apparel (Store 2)
-  { sku: 'APPA-001', name: 'Classic Cotton T-Shirt', description: 'A comfortable and stylish everyday essential, available in multiple colors.', price: 24.99, imageUrls: ['https://picsum.photos/seed/APPA-001a/500/500', 'https://picsum.photos/seed/APPA-001b/500/500', 'https://picsum.photos/seed/APPA-001c/500/500'], tags: ['Best Seller', 'Featured', 'Basics'], stockLevel: 0, isActive: true, storeId: storeData[1].id, // Set base stock to 0 as variants manage stock
+  { sku: 'APPA-001', name: 'Classic Cotton T-Shirt', description: 'A comfortable and stylish everyday essential, available in multiple colors.', price: 24.99, imageUrls: ['https://picsum.photos/seed/APPA-001a/500/500', 'https://picsum.photos/seed/APPA-001b/500/500', 'https://picsum.photos/seed/APPA-001c/500/500'], tags: ['Best Seller', 'Featured', 'Basics'], stockLevel: 0, isActive: true, storeId: storeData[1].id,
     options: ['Size', 'Color'], // Define available options at the product level
     variants: [
       { sku: 'APPA-001-S-Red', options: [{ name: 'Size', value: 'S' }, { name: 'Color', value: 'Red' }], price: 24.99, stockLevel: 10, imageUrl: 'https://picsum.photos/seed/APPA-001-S-Red/500/500' },
@@ -174,6 +179,36 @@ let orderItemData: any[] = []; // Will populate after fetching products
 let wishlistData: any[] = []; // Will populate after fetching products
 let wishlistItemData: any[] = []; // Will populate after fetching products
 
+// --- About Content Data ---
+// --- About Content Data ---
+const aboutContentData = [
+  { storeId: storeData[0].id, title: 'About Awesome Gadgets & Goods', content: 'We are passionate about bringing you the latest and greatest gadgets and unique home goods.', imageUrl: 'https://picsum.photos/seed/about-awesome/800/400' },
+  { storeId: storeData[1].id, title: 'About Fashion & Fun Zone', content: 'Discover the latest fashion trends and fun items for the whole family.', imageUrl: 'https://picsum.photos/seed/about-fashion/800/400' },
+];
+
+// --- Testimonial Data ---
+const testimonialData = [
+  { storeId: storeData[0].id, author: 'Alice W.', quote: 'Amazing selection of gadgets! Found exactly what I was looking for.', date: new Date('2024-05-01'), rating: 5 },
+  { storeId: storeData[0].id, author: 'Bob F.', quote: 'Fast shipping and great customer service. Highly recommend!', date: new Date('2024-04-15'), rating: 4 },
+  { storeId: storeData[1].id, author: 'Charlie M.', quote: 'Love the trendy clothes and fun toys for my kids.', date: new Date('2024-05-10'), rating: 5 },
+];
+// --- FAQ Data ---
+const faqData = [
+  { storeId: storeData[0].id, question: 'What is your return policy?', answer: 'We offer a 30-day return policy on most items.' },
+  { storeId: storeData[0].id, question: 'How long does shipping take?', answer: 'Standard shipping usually takes 3-5 business days.' },
+  { storeId: storeData[1].id, question: 'Do you offer international shipping?', answer: 'Yes, we ship to select international destinations.' },
+];
+
+// --- Review Data (Placeholder - needs product and user IDs) ---
+let reviewData: any[] = []; // Will populate after fetching products and users
+
+// --- Promo Code Data ---
+const promoCodeData: Partial<PromoCodeEntity>[] = [
+  { code: 'SUMMER20', discountType: 'percentage', discountValue: 20, isActive: true, validTo: new Date('2025-08-31') },
+  { code: 'SAVE10', discountType: 'fixed', discountValue: 10, isActive: true, minCartValue: 50 },
+  { code: 'STORE1SPECIFIC', discountType: 'percentage', discountValue: 15, isActive: true, storeId: storeData[0].id },
+  { code: 'EXPIREDCODE', discountType: 'fixed', discountValue: 5, isActive: false, validTo: new Date('2024-01-01') },
+];
 
 async function bootstrap() {
   const logger = new Logger('Seed');
@@ -183,11 +218,11 @@ async function bootstrap() {
   const appContext = await NestFactory.createApplicationContext(AppModule);
 
   // Get repository instances using DataSource
-  const dataSource = appContext.get(DataSource); // Get the DataSource instance
+  const dataSource = appContext.get(DataSource);
   const storeRepository = dataSource.getRepository(StoreEntity);
   const categoryRepository = dataSource.getRepository(CategoryEntity);
   const productRepository = dataSource.getRepository(ProductEntity);
-  const productVariantRepository = dataSource.getRepository(ProductVariantEntity); // Get variant repository from DataSource
+  const productVariantRepository = dataSource.getRepository(ProductVariantEntity);
   const userRepository = dataSource.getRepository(UserEntity);
   const addressRepository = dataSource.getRepository(AddressEntity);
   const orderRepository = dataSource.getRepository(OrderEntity);
@@ -195,21 +230,32 @@ async function bootstrap() {
   const wishlistRepository = dataSource.getRepository(WishlistEntity);
   const wishlistItemRepository = dataSource.getRepository(WishlistItemEntity);
   const carouselRepository = dataSource.getRepository(CarouselItem);
+  const reviewRepository = dataSource.getRepository(ReviewEntity);
+  const faqRepository = dataSource.getRepository(FaqEntity);
+  const aboutContentRepository = dataSource.getRepository(AboutContentEntity);
+  const testimonialRepository = dataSource.getRepository(TestimonialEntity);
+  const promoCodeRepository = dataSource.getRepository(PromoCodeEntity); // Added promoCodeRepository
+
 
   try {
     // --- Clear existing data (order matters due to foreign keys) ---
     logger.log('Clearing existing data...');
-    await orderItemRepository.delete({}); // Delete order items first
-    await orderRepository.delete({}); // Then delete orders
-    await wishlistItemRepository.delete({}); // Delete wishlist items
-    await wishlistRepository.delete({}); // Then delete wishlists
-    await addressRepository.delete({}); // Delete addresses
-    await productVariantRepository.delete({}); // Delete product variants
-    await productRepository.delete({}); // Delete products
-    await categoryRepository.delete({}); // Delete categories
-    await carouselRepository.delete({}); // Delete carousel items
-    await storeRepository.delete({}); // Delete stores
-    await userRepository.delete({}); // Delete users
+    await reviewRepository.delete({});
+    await orderItemRepository.delete({});
+    await orderRepository.delete({});
+    await wishlistItemRepository.delete({});
+    await wishlistRepository.delete({});
+    await addressRepository.delete({});
+    await promoCodeRepository.delete({}); // Clear promo codes
+    await productVariantRepository.delete({});
+    await productRepository.delete({});
+    await categoryRepository.delete({});
+    await carouselRepository.delete({});
+    await faqRepository.delete({});
+    await aboutContentRepository.delete({});
+    await testimonialRepository.delete({});
+    await storeRepository.delete({});
+    await userRepository.delete({});
     logger.log('Existing data cleared.');
 
     // --- Seed Stores ---
@@ -221,7 +267,7 @@ async function bootstrap() {
 
     // --- Seed Categories ---
     logger.log('Seeding categories...');
-    const categoryUpsertResult = await categoryRepository.upsert(categoryData, ['id']); // Upsert based on ID
+    const categoryUpsertResult = await categoryRepository.upsert(categoryData, ['id']);
     logger.log(`Categories seeded/updated: ${categoryUpsertResult.raw?.length || categoryUpsertResult.generatedMaps?.length || 'N/A (check upsert result)'}`);
     const categoryCount = await categoryRepository.count();
     logger.log(`Total categories in DB after seeding: ${categoryCount}`);
@@ -237,18 +283,18 @@ async function bootstrap() {
         return productEntity;
     });
 
-    await productRepository.save(productsToSave); // Save products and cascade save variants
-    const productCount = await productRepository.count(); // Count products after upsert
-    const variantCount = await productVariantRepository.count(); // Count variants
+    await productRepository.save(productsToSave);
+    const productCount = await productRepository.count();
+    const variantCount = await productVariantRepository.count();
     logger.log(`Total products in DB after seeding: ${productCount}`);
     logger.log(`Total variants in DB after seeding: ${variantCount}`);
 
 
-    // Fetch some products to use in orders/wishlists (ensure variants are loaded if needed)
-    const productsStore1 = await productRepository.find({ where: { storeId: storeData[0].id }, take: 3, relations: ['variants'] });
-    const productsStore2 = await productRepository.find({ where: { storeId: storeData[1].id }, take: 3, relations: ['variants'] });
-    if (productsStore1.length < 2 || productsStore2.length < 1) {
-        throw new Error('Not enough products found in stores to seed orders/wishlists.');
+    // Fetch some products to use in orders/wishlists/reviews (ensure variants are loaded if needed)
+    const productsStore1 = await productRepository.find({ where: { storeId: storeData[0].id }, take: 5, relations: ['variants'] }); // Fetch more products for reviews
+    const productsStore2 = await productRepository.find({ where: { storeId: storeData[1].id }, take: 5, relations: ['variants'] }); // Fetch more products for reviews
+    if (productsStore1.length < 3 || productsStore2.length < 3) { // Adjusted check
+        throw new Error('Not enough products found in stores to seed orders/wishlists/reviews.');
     }
 
 
@@ -293,21 +339,21 @@ async function bootstrap() {
 
     // --- Generate User Hash and Prepare User Data ---
     logger.log('Preparing user data...');
-    const userPasswordHash = await bcrypt.hash(userPassword, saltRounds); // Hash password inside async function
-    userData = baseUserData.map(user => ({ ...user, passwordHash: userPasswordHash })); // Now create final userData
+    const userPasswordHash = await bcrypt.hash(userPassword, saltRounds);
+    userData = baseUserData.map(user => ({ ...user, passwordHash: userPasswordHash }));
 
     // --- Seed Users ---
     logger.log('Seeding users...');
-    await userRepository.upsert(userData, ['id']); // Upsert the final userData
+    await userRepository.upsert(userData, ['id']);
     const userCount = await userRepository.count();
     logger.log(`Total users in DB after seeding: ${userCount}`);
 
     // --- Clear Dependent Data First ---
     logger.log('Clearing existing orders, wishlists, and addresses for seeded users...');
     // Delete orders first, as they depend on addresses
-    await orderRepository.delete({ user: { id: In(userData.map(u => u.id)) } }); // Cascade should delete items
+    await orderRepository.delete({ user: { id: In(userData.map(u => u.id)) } });
     // Delete wishlists
-    await wishlistRepository.delete({ user: { id: In(userData.map(u => u.id)) } }); // Cascade should delete items
+    await wishlistRepository.delete({ user: { id: In(userData.map(u => u.id)) } });
     // Now delete addresses
     await addressRepository.delete({ user: { id: In(userData.map(u => u.id)) } });
 
@@ -328,11 +374,11 @@ async function bootstrap() {
         const order1Product2 = productsStore1[1];
         const order1Subtotal = (order1Product1.price * 1) + (order1Product2.price * 2);
         const order1Shipping = 5.99;
-        const order1Tax = order1Subtotal * 0.08; // Example tax rate
+        const order1Tax = order1Subtotal * 0.08;
         const order1Total = order1Subtotal + order1Shipping + order1Tax;
 
         const order1 = orderRepository.create({
-            orderReference: `ORD-${Date.now()}-001`, // Simple unique ref
+            orderReference: `ORD-${Date.now()}-001`,
             user: { id: userData[0].id },
             store: { id: storeData[0].id },
             status: OrderStatus.COMPLETED,
@@ -359,8 +405,70 @@ async function bootstrap() {
                 }),
             ]
         });
-        await orderRepository.save(order1);
-        logger.log(`Created sample order ${order1.orderReference}`);
+
+        const order2Product1 = productsStore1[2];
+        const order2Subtotal = order2Product1.price * 1;
+        const order2Shipping = 0;
+        const order2Tax = order2Subtotal * 0.08;
+        const order2Total = order2Subtotal + order2Shipping + order2Tax;
+
+        const order2 = orderRepository.create({
+            orderReference: `ORD-${Date.now()}-002`,
+            user: { id: userData[0].id },
+            store: { id: storeData[0].id },
+            orderDate: new Date(Date.now() - 86400000 * 5),
+            status: OrderStatus.SHIPPED,
+            paymentStatus: PaymentStatus.PAID,
+            subtotal: order2Subtotal,
+            shippingCost: order2Shipping,
+            taxAmount: order2Tax,
+            totalAmount: order2Total,
+            shippingAddress: johnsDefaultAddress,
+            shippingMethod: 'Free Shipping',
+            trackingNumber: 'TRACK-ABC-XYZ',
+            items: [
+                orderItemRepository.create({
+                    product: { id: order2Product1.id },
+                    quantity: 1,
+                    pricePerUnit: order2Product1.price,
+                    productName: order2Product1.name,
+                }),
+            ]
+        });
+
+        const order3Product1 = productsStore2[0]; // Product from store 2
+        const order3Subtotal = order3Product1.price * 3;
+        const order3Shipping = 7.50;
+        const order3Tax = order3Subtotal * 0.08;
+        const order3Total = order3Subtotal + order3Shipping + order3Tax;
+
+        const order3 = orderRepository.create({
+            orderReference: `ORD-${Date.now()}-003`,
+            user: { id: userData[1].id },
+            store: { id: storeData[1].id },
+            orderDate: new Date(Date.now() - 86400000 * 10),
+            status: OrderStatus.PROCESSING,
+            paymentStatus: PaymentStatus.PAID,
+            subtotal: order3Subtotal,
+            shippingCost: order3Shipping,
+            taxAmount: order3Tax,
+            totalAmount: order3Total,
+            shippingAddress: addressEntities.find(a => a.user?.id === userData[1].id),
+            shippingMethod: 'Express Shipping',
+            trackingNumber: 'EXP-123-456',
+            items: [
+                orderItemRepository.create({
+                    product: { id: order3Product1.id },
+                    quantity: 3,
+                    pricePerUnit: order3Product1.price,
+                    productName: order3Product1.name,
+                }),
+            ]
+        });
+
+        await orderRepository.save([order1, order2, order3]);
+        logger.log(`Created sample orders: ${order1.orderReference}, ${order2.orderReference}, ${order3.orderReference}`);
+
     } else {
         logger.warn('Skipping order seeding as default address for John Doe was not found.');
     }
@@ -371,11 +479,11 @@ async function bootstrap() {
     logger.log('Seeding wishlists...');
     // Deletion moved above address seeding
 
-    const wishlist1Product1 = productsStore2[0]; // Use a product from store 2
+    const wishlist1Product1 = productsStore2[0];
 
     const wishlist1 = wishlistRepository.create({
-        user: { id: userData[1].id }, // Jane Smith
-        store: { id: storeData[1].id }, // Fashion & Fun Zone
+        user: { id: userData[1].id },
+        store: { id: storeData[1].id },
         items: [
             wishlistItemRepository.create({ product: { id: wishlist1Product1.id } })
         ]
@@ -384,6 +492,69 @@ async function bootstrap() {
     logger.log(`Created sample wishlist for user ${userData[1].id} in store ${storeData[1].id}`);
     const wishlistCount = await wishlistRepository.count();
     logger.log(`Total wishlists in DB after seeding: ${wishlistCount}`);
+
+    // --- Seed About Content ---
+    logger.log('Seeding about content...');
+    const aboutContentEntities = aboutContentRepository.create(aboutContentData);
+    await aboutContentRepository.save(aboutContentEntities);
+    const aboutContentCount = await aboutContentRepository.count();
+    logger.log(`Total about content entries in DB after seeding: ${aboutContentCount}`);
+
+    // --- Seed Testimonials ---
+    logger.log('Seeding testimonials...');
+    const testimonialEntities = testimonialRepository.create(testimonialData);
+    await testimonialRepository.save(testimonialEntities);
+    const testimonialCount = await testimonialRepository.count();
+    logger.log(`Total testimonials in DB after seeding: ${testimonialCount}`);
+
+    // --- Seed FAQ ---
+    logger.log('Seeding FAQ...');
+    const faqEntities = faqRepository.create(faqData);
+    await faqRepository.save(faqEntities);
+    const faqCount = await faqRepository.count();
+    logger.log(`Total FAQ entries in DB after seeding: ${faqCount}`);
+
+    // --- Seed Reviews ---
+    logger.log('Seeding reviews...');
+    // Get some products and users to associate with reviews
+    const productToReview1 = productsStore1[0]; // Product from store 1
+    const productToReview2 = productsStore2[1]; // Product from store 2
+    const userReviewer1 = userData[0]; // John Doe
+    const userReviewer2 = userData[1]; // Jane Smith
+
+    const reviewEntities = reviewRepository.create([
+        {
+            product: { id: productToReview1.id },
+            user: { id: userReviewer1.id },
+            store: { id: storeData[0].id },
+            rating: 5,
+            comment: 'Excellent product! Highly recommend.',
+        },
+        {
+            product: { id: productToReview1.id },
+            user: { id: userReviewer2.id },
+            store: { id: storeData[0].id },
+            rating: 4,
+            comment: 'Very good, but shipping was a bit slow.',
+        },
+        {
+            product: { id: productToReview2.id },
+            user: { id: userReviewer1.id },
+            store: { id: storeData[1].id },
+            rating: 5,
+            comment: 'Fantastic quality and fit!',
+        },
+    ]);
+    await reviewRepository.save(reviewEntities);
+    const reviewCount = await reviewRepository.count();
+    logger.log(`Total reviews in DB after seeding: ${reviewCount}`);
+
+    // --- Seed Promo Codes ---
+    logger.log('Seeding promo codes...');
+    const promoCodeEntities = promoCodeRepository.create(promoCodeData);
+    await promoCodeRepository.save(promoCodeEntities);
+    const promoCodeCount = await promoCodeRepository.count();
+    logger.log(`Total promo codes in DB after seeding: ${promoCodeCount}`);
 
 
     logger.log('Database seeding completed successfully.');

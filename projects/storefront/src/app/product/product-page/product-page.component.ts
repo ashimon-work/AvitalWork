@@ -10,6 +10,7 @@ import { StoreContextService } from '../../core/services/store-context.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
 import { ImageCarouselComponent } from '../../shared/components/image-carousel/image-carousel.component';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 
@@ -35,6 +36,7 @@ export class ProductPageComponent implements OnInit {
   private wishlistService = inject(WishlistService);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
+  private recentlyViewedService = inject(RecentlyViewedService); // Added injection
 
   public currentStoreSlug$ = this.storeContext.currentStoreSlug$;
   categoryId$: Observable<string | null>;
@@ -43,7 +45,7 @@ export class ProductPageComponent implements OnInit {
   quantity: number = 1;
 
   // New properties for variant selection and display
-  availableOptions: { name: string, values: string[] }[] = [];
+  availableOptions: { name: string, values: { value: string, disabled: boolean }[] }[] = [];
   selectedOptions: { [key: string]: string } = {};
   selectedVariant: ProductVariant | null = null;
   currentPrice: number | undefined;
@@ -124,6 +126,9 @@ export class ProductPageComponent implements OnInit {
               this.reviews = reviews;
               this.calculateAverageRating(); // Calculate average rating after fetching reviews
               this.relatedProducts = relatedProducts;
+              if (product.id) { // Add product to recently viewed
+                this.recentlyViewedService.addProduct(product.id);
+              }
 
               // Fetch category details for breadcrumbs if categoryIds exist
               if (product.categoryIds && product.categoryIds.length > 0) {
@@ -182,24 +187,26 @@ export class ProductPageComponent implements OnInit {
     if (product.options && product.options.length > 0 && product.variants && product.variants.length > 0) {
       // Build available options structure
       this.availableOptions = product.options.map(optionName => {
-        const values = new Set<string>();
+        const valueSet = new Set<string>();
         product.variants!.forEach(variant => {
           const option = variant.options.find(opt => opt.name === optionName);
           if (option) {
-            values.add(option.value);
+            valueSet.add(option.value);
           }
         });
         // Sort values alphabetically for consistent display
-        const sortedValues = Array.from(values).sort();
+        const sortedValues = Array.from(valueSet).sort().map(val => ({ value: val, disabled: false }));
         // Select the first value of each option by default
         if (sortedValues.length > 0) {
-          this.selectedOptions[optionName] = sortedValues[0];
+          this.selectedOptions[optionName] = sortedValues[0].value;
         }
         return { name: optionName, values: sortedValues };
       });
 
       // Set the initial selected variant based on default selections
       this.updateSelectedVariant(product);
+      // After selectedOptions are set, update availability based on stock
+      this.updateAvailableOptionsWithStock(product);
 
     } else {
       // No variants, use base product data
@@ -251,8 +258,44 @@ export class ProductPageComponent implements OnInit {
     this.product$?.subscribe(product => {
       if (product) {
         this.updateSelectedVariant(product);
+        this.updateAvailableOptionsWithStock(product);
       }
     }).unsubscribe();
+  }
+
+  private updateAvailableOptionsWithStock(product: Product): void {
+    if (!product.variants || product.variants.length === 0 || !this.availableOptions) {
+      return; // No variants or options to update
+    }
+
+    this.availableOptions.forEach(optionType => {
+      optionType.values.forEach(optionValue => {
+        // Assume not disabled initially for this check
+        let isValueDisabled = true;
+
+        // Create a temporary selection state including the current option value being tested
+        const tempSelectedOptions = { ...this.selectedOptions };
+        tempSelectedOptions[optionType.name] = optionValue.value;
+
+        // Check if any variant matches this temporary selection and is in stock
+        for (const variant of product.variants!) {
+          let matchesAllTempOptions = true;
+          for (const selectedKey in tempSelectedOptions) {
+            const variantOption = variant.options.find(opt => opt.name === selectedKey);
+            if (!variantOption || variantOption.value !== tempSelectedOptions[selectedKey]) {
+              matchesAllTempOptions = false;
+              break;
+            }
+          }
+
+          if (matchesAllTempOptions && variant.stockLevel > 0) {
+            isValueDisabled = false; // Found an in-stock variant for this combination
+            break;
+          }
+        }
+        optionValue.disabled = isValueDisabled;
+      });
+    });
   }
 
   // Method to handle adding to cart

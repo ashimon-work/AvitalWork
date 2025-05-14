@@ -1,0 +1,35 @@
+# Stage 1: Build the Angular application
+FROM node:20-alpine as builder
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the shared-types library
+RUN npx ng build shared-types
+
+# Build the store-management application
+RUN npx ng build store-management --configuration production
+
+# Stage 2: Serve the application with Nginx
+FROM nginx:stable-alpine as server
+
+# Copy the built application files from the builder stage
+RUN mkdir /app/store-management-build
+COPY --from=builder /app/dist/store-management/browser /app/store-management-build
+
+# Copy the custom Nginx configuration
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]

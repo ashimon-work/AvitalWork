@@ -1,0 +1,81 @@
+<div class="order-confirmation-container">
+  <h1>Order Confirmation</h1>
+
+  <div *ngIf="isLoadingOrder">Loading order details...</div>
+
+  <div *ngIf="!isLoadingOrder && (order$ | async) as order" class="order-details-section">
+    <div class="success-message">
+      <!-- TODO: Add a success icon -->
+      <h2>Thank you for your order!</h2>
+      <p>Your order has been placed successfully.</p>
+      <p>An email confirmation has been sent to your inbox.</p>
+    </div>
+
+    <div class="order-summary-details">
+      <h3>Order Summary</h3>
+      <p><strong>Order Reference:</strong> {{ order.orderReference }}</p>
+      <p><strong>Order Number:</strong> {{ order.orderNumber }}</p>
+      <p><strong>Order Date:</strong> {{ order.createdAt | date }}</p> <!-- Assuming createdAt is a date string -->
+      <p><strong>Estimated Delivery:</strong> <!-- TODO: Add estimated delivery date logic --> TBD</p>
+
+      <div class="order-items">
+        <h4>Items Ordered:</h4>
+        <ul>
+          <li *ngFor="let item of order.items">
+            {{ item.productName }} x {{ item.quantity }} - {{ item.price | currency }} each
+          </li>
+        </ul>
+      </div>
+
+      <div class="order-totals">
+        <p><strong>Subtotal:</strong> {{ order.subtotal | currency }}</p>
+        <p><strong>Shipping:</strong> {{ order.shippingCost | currency }}</p>
+        <p><strong>Tax:</strong> {{ order.taxAmount | currency }}</p>
+        <p><strong>Total:</strong> {{ order.totalAmount | currency }}</p>
+      </div>
+    </div>
+
+    <div class="shipping-payment-details">
+      <h3 *ngIf="order.shippingAddress">Shipping Details</h3>
+      <div *ngIf="order.shippingAddress">
+        <p>{{ order.shippingAddress.fullName }}</p>
+        <p>{{ order.shippingAddress.address1 }}</p>
+        <p *ngIf="order.shippingAddress.address2">{{ order.shippingAddress.address2 }}</p>
+        <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.zipCode }}</p> <!-- Assuming zipCode is used -->
+        <p>{{ order.shippingAddress.country }}</p>
+        <p><strong>Shipping Method:</strong> {{ order.shippingMethod }}</p> <!-- Assuming shippingMethod is a string name -->
+      </div>
+
+      <h3>Payment Details</h3>
+      <p><strong>Payment Method:</strong> {{ order.paymentStatus }}</p> <!-- Assuming paymentStatus indicates method or status -->
+      <!-- TODO: Display actual payment method used (e.g., Visa ending in 1234) if available in Order object -->
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button (click)="continueShopping()">Continue Shopping</button>
+      <button (click)="goToMyAccount()">My Account</button>
+      <!-- TODO: Add Print/Download Invoice button -->
+    </div>
+  </div>
+
+  <div *ngIf="!isLoadingOrder && !orderId">
+    <p>Order details could not be loaded. Please check your account for recent orders.</p>
+    <button (click)="goToMyAccount()">Go to My Account</button>
+  </div>
+
+
+  <!-- Recommended Products -->
+  <div class="recommended-products-section">
+    <h3>Recommended Products</h3>
+    <div *ngIf="isLoadingRecommended">Loading recommendations...</div>
+    <div *ngIf="!isLoadingRecommended && (recommendedProducts$ | async) as recommendedProducts" class="product-grid">
+      <!-- TODO: Implement a proper product grid/carousel for recommended products -->
+      <div *ngFor="let product of recommendedProducts">
+        <!-- Using product-card component -->
+        <app-product-card [product]="product" [storeSlug]="storeSlug"></app-product-card>
+      </div>
+      <div *ngIf="recommendedProducts.length === 0">No recommendations available.</div>
+    </div>
+  </div>
+</div>

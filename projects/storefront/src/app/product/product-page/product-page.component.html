@@ -48,7 +48,9 @@
         <div *ngFor="let option of availableOptions" class="variant-option">
           <label>{{ option.name }}:</label>
           <select [(ngModel)]="selectedOptions[option.name]" (change)="onOptionChange(option.name, $event)">
-            <option *ngFor="let value of option.values" [value]="value">{{ value }}</option>
+            <option *ngFor="let optValue of option.values" [value]="optValue.value" [disabled]="optValue.disabled">
+              {{ optValue.value }}
+            </option>
           </select>
         </div>
       </div>

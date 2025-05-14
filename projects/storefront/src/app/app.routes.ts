@@ -10,7 +10,9 @@ import { ShippingPolicyPageComponent } from './shipping-policy/shipping-policy-p
 import { ReturnPolicyPageComponent } from './return-policy/return-policy-page/return-policy-page.component';
 import { RegistrationPageComponent } from './registration-page/registration-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
-import { NotFoundPageComponent } from './core/components/not-found-page/not-found-page.component'; // Import NotFoundPageComponent
+import { NotFoundPageComponent } from './core/components/not-found-page/not-found-page.component';
+import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
+import { OrderConfirmationPageComponent } from './order-confirmation/order-confirmation-page/order-confirmation-page.component';
 // Import Account section components
 import { AccountOverviewComponent } from './account/account-overview/account-overview.component';
 import { AccountOrdersComponent } from './account/account-orders/account-orders.component';
@@ -19,9 +21,11 @@ import { AccountPaymentMethodsComponent } from './account/account-payment-method
 import { AccountPersonalInfoComponent } from './account/account-personal-info/account-personal-info.component';
 import { AccountWishlistComponent } from './account/account-wishlist/account-wishlist.component';
 import { AccountChangePasswordComponent } from './account/account-change-password/account-change-password.component';
+import { AccountOrderDetailComponent } from './account/account-order-detail/account-order-detail.component'; // Import Order Detail
 // Import Auth Guard
 import { authGuard } from './core/guards/auth.guard';
-import { storeSlugGuard } from './core/guards/store-slug.guard'; // Import the guard
+import { storeSlugGuard } from './core/guards/store-slug.guard';
+
 export const routes: Routes = [
   // Redirect root path to a default store or a store selection page (TBD)
   // For now, let's redirect to a default store slug for testing
@@ -58,7 +62,7 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./product/product.module').then((m) => m.ProductModule),
       },
-  // Routes for the newly generated standalone components
+      // Routes for the newly generated standalone components
       {
         path: 'shop', // e.g., /awesome-gadgets/shop
         component: ShopPageComponent
@@ -79,6 +83,7 @@ export const routes: Routes = [
           { path: '', redirectTo: 'overview', pathMatch: 'full' },
           { path: 'overview', component: AccountOverviewComponent },
           { path: 'orders', component: AccountOrdersComponent },
+          { path: 'orders/:orderId', component: AccountOrderDetailComponent }, // Route for order detail
           { path: 'addresses', component: AccountAddressesComponent },
           { path: 'payment-methods', component: AccountPaymentMethodsComponent },
           { path: 'personal-info', component: AccountPersonalInfoComponent },
@@ -87,10 +92,18 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'checkout', // e.g., /awesome-gadgets/checkout
+        component: CheckoutPageComponent
+      },
+      {
+        path: 'order-confirmation', // e.g., /awesome-gadgets/order-confirmation
+        component: OrderConfirmationPageComponent
+      },
+      {
         path: 'cart', // e.g., /awesome-gadgets/cart
         component: CartPageComponent
       },
-  // Routes for footer links
+      // Routes for footer links
       // Footer links - these might need to be store-specific too
       {
         path: 'faq', // e.g., /awesome-gadgets/faq
@@ -104,7 +117,7 @@ export const routes: Routes = [
         path: 'returns', // e.g., /awesome-gadgets/returns
         component: ReturnPolicyPageComponent
       },
-  // Auth Routes
+      // Auth Routes
       // Auth routes - these are likely global, not store-specific, so keep outside :storeSlug
       // Or maybe they should be under store? TBD. For now, keep them separate.
       // {

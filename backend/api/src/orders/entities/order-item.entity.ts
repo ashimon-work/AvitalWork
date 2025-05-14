@@ -21,6 +21,9 @@ export class OrderItemEntity {
   @Column() // Store productId directly
   productId: string;
 
+  @Column({ type: 'uuid', nullable: true }) // Store variantId directly if applicable
+  variantId?: string;
+
   @Column()
   quantity: number;
 
@@ -32,6 +35,6 @@ export class OrderItemEntity {
   productName: string; // Snapshot of product name
 
   // Optional: Store selected variant details if applicable
-  @Column({ type: 'jsonb', nullable: true })
-  variantDetails?: Record<string, any>; // e.g., { "size": "L", "color": "Blue" }
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  variantDetails?: string; // e.g., "Size: L, Color: Blue" or just "Large"
 }

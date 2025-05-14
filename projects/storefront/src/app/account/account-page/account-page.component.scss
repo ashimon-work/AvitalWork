@@ -1,29 +1,30 @@
-@import '../../../styles/_variables.scss'; // Import SCSS variables first
+@use "sass:color";
+@use '../../../styles/variables' as variables; // Import SCSS variables first
 
 // Define a breakpoint for mobile styles
 $mobile-breakpoint: 768px;
 
 :host {
   display: block; // Ensure the host element takes up space
-  padding: $spacing-lg $container-padding-x; // Use SCSS vars
+  padding: variables.$spacing-lg variables.$container-padding-x; // Use SCSS vars
 }
 
 .account-container {
   display: flex;
-  gap: $spacing-xl; // Use SCSS var
-  max-width: $container-max-width; // Use SCSS var
+  gap: variables.$spacing-xl; // Use SCSS var
+  max-width: variables.$container-max-width; // Use SCSS var
   margin: 0 auto;
 }
 
 .account-sidebar {
   flex: 0 0 250px; // Fixed width for sidebar (adjust as needed)
-  border-right: 1px solid $border-color; // Use SCSS var
-  padding-right: $spacing-xl; // Use SCSS var
+  border-right: 1px solid variables.$border-color; // Use SCSS var
+  padding-right: variables.$spacing-xl; // Use SCSS var
 
   h2 {
     font-size: 1.5rem;
-    margin-bottom: $spacing-lg; // Use SCSS var
-    color: $text-color; // Use SCSS var
+    margin-bottom: variables.$spacing-lg; // Use SCSS var
+    color: variables.$text-color; // Use SCSS var
   }
 
   .account-nav {
@@ -33,25 +34,25 @@ $mobile-breakpoint: 768px;
       margin: 0;
 
       li {
-        margin-bottom: $spacing-sm; // Use SCSS var
+        margin-bottom: variables.$spacing-sm; // Use SCSS var
 
         a {
           display: block;
-          padding: $spacing-sm $spacing-md; // Use SCSS vars
-          color: rgb(67, 66, 66); // Use SCSS var
+          padding: variables.$spacing-sm variables.$spacing-md; // Use SCSS vars
+          color: variables.$text-color; // Use SCSS var
           text-decoration: none;
-          border-radius: $border-radius-sm; // Use SCSS var
+          border-radius: variables.$border-radius-sm; // Use SCSS var
           transition: background-color 0.2s ease, color 0.2s ease;
 
           &:hover {
-            background-color: $neutral-light; // Use SCSS var
-            color: $primary-color; // Use SCSS var
+            background-color: variables.$neutral-light; // Use SCSS var
+            color: variables.$primary-color; // Use SCSS var
           }
 
           &.active-link { // Style for the active route
-            background-color: $primary-color-light; // Use SCSS var
-            color: $primary-color; // Use SCSS var
-            font-weight: $font-weight-medium; // Use SCSS var
+            background-color: variables.$primary-color-light; // Use SCSS var
+            color: variables.$primary-color; // Use SCSS var
+            font-weight: variables.$font-weight-medium; // Use SCSS var
           }
         }
       }
@@ -59,7 +60,7 @@ $mobile-breakpoint: 768px;
   }
 
   .logout-btn {
-    margin-top: $spacing-xl; // Use SCSS var
+    margin-top: variables.$spacing-xl; // Use SCSS var
     width: 100%;
     // Inherit button styles or add specific ones
   }
@@ -67,7 +68,7 @@ $mobile-breakpoint: 768px;
 
 .account-content {
   flex: 1; // Takes up remaining space
-  padding: $spacing-sm 0 $spacing-sm $spacing-md; // Use SCSS vars
+  padding: variables.$spacing-sm 0 variables.$spacing-sm variables.$spacing-md; // Use SCSS vars
 }
 
 // --- Mobile Menu Styles ---
@@ -79,7 +80,7 @@ $mobile-breakpoint: 768px;
   left: 0;
   transform: translateY(-50%); // Vertically center at 33%
   z-index: 1050; // Above overlay and content, below sidebar
-  background-color: $primary-color; // Or choose a suitable color
+  background-color: variables.$primary-color; // Or choose a suitable color
   border: none;
   padding: 12px 8px 12px 5px; // Reduce right padding to make it narrower
   cursor: pointer;
@@ -96,7 +97,7 @@ $mobile-breakpoint: 768px;
   }
 
   &:hover .hamburger-icon {
-    background-color: $neutral-light; // Slight hover effect
+    background-color: variables.$neutral-light; // Slight hover effect
   }
 }
 
@@ -158,13 +159,13 @@ $mobile-breakpoint: 768px;
     flex: none; // Remove flex sizing
     width: 100%; // Take full width of the wrapper
     border-right: none; // Remove border on mobile
-    padding: $spacing-xl $spacing-lg; // Adjust padding for mobile view
+    padding: variables.$spacing-xl variables.$spacing-lg; // Adjust padding for mobile view
     height: 100%; // Ensure it fills the wrapper
     display: flex;
     flex-direction: column; // Stack items vertically
 
     h2 {
-      margin-top: $spacing-lg; // Add some top margin
+      margin-top: variables.$spacing-lg; // Add some top margin
     }
 
     .account-nav {
@@ -173,12 +174,12 @@ $mobile-breakpoint: 768px;
 
     .logout-btn {
       margin-top: auto; // Push logout button to the bottom
-      margin-bottom: $spacing-lg;
+      margin-bottom: variables.$spacing-lg;
     }
   }
 
   .account-content {
-    padding: $spacing-lg; // Adjust padding for mobile
+    padding: variables.$spacing-lg; // Adjust padding for mobile
     width: 100%; // Ensure content takes full width
   }
 }

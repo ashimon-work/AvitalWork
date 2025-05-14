@@ -1,0 +1,118 @@
+/* Styles for Management Not Found Page */
+
+.management-not-found-container {
+  padding: 20px;
+  text-align: center;
+
+  h1 {
+    font-size: 2.5em;
+    color: #dc3545; /* Red color for error emphasis */
+    margin-bottom: 15px;
+  }
+
+  p {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #555;
+  }
+
+  code {
+    background-color: #f8f9fa;
+    padding: 2px 5px;
+    border-radius: 4px;
+    color: #c7254e;
+  }
+
+  .actions {
+    margin-top: 25px;
+    margin-bottom: 30px;
+
+    .btn {
+      margin: 0 8px;
+      padding: 10px 20px;
+      font-size: 1em;
+    }
+
+    .btn-secondary { // Go Back
+      // Standard secondary button style
+    }
+    .btn-primary { // Go to Dashboard
+      // Standard primary button style
+    }
+    .btn-info { // Contact Support
+      // Standard info button style
+    }
+    .btn-warning { // Report Broken Link / Cancel
+      // Standard warning button style
+    }
+  }
+
+  .report-form-container {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    text-align: left;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+
+    h2 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      textarea.form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        min-height: 80px;
+        box-sizing: border-box; /* Ensures padding doesn't add to width */
+      }
+    }
+
+    .btn-danger { // Submit Report
+      // Standard danger button style
+    }
+  }
+
+  .alert {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 4px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+
+    &.alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border-color: #c3e6cb;
+    }
+
+    &.alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border-color: #f5c6cb;
+    }
+  }
+
+  .additional-info {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #777;
+  }
+}

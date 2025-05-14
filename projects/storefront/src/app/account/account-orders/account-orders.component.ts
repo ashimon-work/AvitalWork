@@ -54,10 +54,11 @@ export class AccountOrdersComponent implements OnInit {
     // Add checks to prevent going out of bounds if needed, though UI should handle disabling
     this.currentPage$.next(page);
   }
-
-  // Optional: Method to view order details (could navigate to a separate detail page)
-  viewOrderDetails(orderId: string): void {
-    console.log('Navigate to order details for:', orderId);
-    // Example: this.router.navigate(['/account/orders', orderId]);
-  }
 }
+
+// viewOrderDetails method is no longer needed as navigation is handled by routerLink
+// viewOrderDetails(orderId: string): void {
+//   console.log('Navigate to order details for:', orderId);
+//   // Example: this.router.navigate(['/account/orders', orderId]);
+// }
+

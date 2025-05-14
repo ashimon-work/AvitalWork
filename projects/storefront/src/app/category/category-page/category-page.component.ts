@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Category, Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
-import { StoreContextService } from '../../core/services/store-context.service'; // Import StoreContextService
+import { StoreContextService } from '../../core/services/store-context.service';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { Observable, switchMap, tap, map, BehaviorSubject, combineLatest, Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, RouterLink, Router, Params } from '@angular/router';
@@ -12,7 +12,8 @@ interface Filters {
   price_min?: number;
   price_max?: number;
   tags?: string[];
-  // Add other potential filter properties here (e.g., color, size)
+  colors?: string[];
+  sizes?: string[];
 }
 
 @Component({
@@ -51,7 +52,13 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   // Properties to bind to filter inputs in the template
   selectedPriceRange: string = ''; // e.g., '0-20', '20-50'
   selectedTags: { [key: string]: boolean } = {}; // e.g., { 'New': true, 'Sale': false }
+  selectedColors: { [key: string]: boolean } = {};
+  selectedSizes: { [key: string]: boolean } = {};
   isMobileFiltersVisible: boolean = false; // State for mobile filter overlay
+
+  // Placeholder available options for filters
+  availableColors: string[] = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Purple', 'Orange', 'Pink', 'Brown', 'Gray'];
+  availableSizes: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   // Template references for click outside detection
   @ViewChild('filterButton') filterButton!: ElementRef;
@@ -127,6 +134,8 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     if (queryParams['price_min']) initialFilters.price_min = +queryParams['price_min'];
     if (queryParams['price_max']) initialFilters.price_max = +queryParams['price_max'];
     if (queryParams['tags']) initialFilters.tags = queryParams['tags'].split(',');
+    if (queryParams['colors']) initialFilters.colors = queryParams['colors'].split(',');
+    if (queryParams['sizes']) initialFilters.sizes = queryParams['sizes'].split(',');
 
     // Initialize local state for filter inputs based on query params
     this.selectedPriceRange = this.determinePriceRangeString(initialFilters.price_min, initialFilters.price_max);
@@ -134,7 +143,14 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
       acc[tag] = true;
       return acc;
     }, {} as { [key: string]: boolean });
-
+    this.selectedColors = (initialFilters.colors || []).reduce((acc, color) => {
+      acc[color] = true;
+      return acc;
+    }, {} as { [key: string]: boolean });
+    this.selectedSizes = (initialFilters.sizes || []).reduce((acc, size) => {
+      acc[size] = true;
+      return acc;
+    }, {} as { [key: string]: boolean });
 
     this.filtersSubject.next(initialFilters);
     this.sortSubject.next(queryParams['sort'] || 'newest');
@@ -166,6 +182,18 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
       newFilters.tags = activeTags;
     }
 
+    // Colors Logic
+    const activeColors = Object.keys(this.selectedColors).filter(color => this.selectedColors[color]);
+    if (activeColors.length > 0) {
+      newFilters.colors = activeColors;
+    }
+
+    // Sizes Logic
+    const activeSizes = Object.keys(this.selectedSizes).filter(size => this.selectedSizes[size]);
+    if (activeSizes.length > 0) {
+      newFilters.sizes = activeSizes;
+    }
+
     this.filtersSubject.next(newFilters);
     this.pageSubject.next(1); // Reset page on filter change
   }
@@ -174,6 +202,8 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   clearFilters(): void {
     this.selectedPriceRange = '';
     this.selectedTags = {};
+    this.selectedColors = {};
+    this.selectedSizes = {};
     this.filtersSubject.next({});
     this.pageSubject.next(1);
   }
@@ -193,6 +223,8 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     if (filters.price_min !== undefined) apiParams.price_min = filters.price_min;
     if (filters.price_max !== undefined) apiParams.price_max = filters.price_max;
     if (filters.tags && filters.tags.length > 0) apiParams.tags = filters.tags.join(',');
+    if (filters.colors && filters.colors.length > 0) apiParams.colors = filters.colors.join(',');
+    if (filters.sizes && filters.sizes.length > 0) apiParams.sizes = filters.sizes.join(',');
     return apiParams;
   }
 
@@ -216,6 +248,12 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     }
     if (currentFilters.tags && currentFilters.tags.length > 0) {
       queryParams['tags'] = currentFilters.tags.join(',');
+    }
+    if (currentFilters.colors && currentFilters.colors.length > 0) {
+      queryParams['colors'] = currentFilters.colors.join(',');
+    }
+    if (currentFilters.sizes && currentFilters.sizes.length > 0) {
+      queryParams['sizes'] = currentFilters.sizes.join(',');
     }
 
     this.router.navigate([], {

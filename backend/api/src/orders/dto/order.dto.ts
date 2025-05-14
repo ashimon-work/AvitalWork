@@ -1,5 +1,5 @@
 import { OrderStatus, PaymentStatus } from '../entities/order.entity';
-import { AddressEntity } from '../../addresses/entities/address.entity'; // Use entity directly for now
+import { AddressEntity } from '../../addresses/entities/address.entity';
 import { OrderItemDto } from './order-item.dto';
 
 export class OrderDto {
@@ -11,11 +11,19 @@ export class OrderDto {
   subtotal: number;
   shippingCost: number;
   taxAmount: number;
-  shippingAddress: AddressEntity; // Include full address details
+  shippingAddress: AddressEntity;
   shippingMethod?: string;
   paymentStatus: PaymentStatus;
   trackingNumber?: string;
-  items: OrderItemDto[]; // Use OrderItemDto
+  items: OrderItemDto[];
   updatedAt: Date;
-  // Exclude user, store details unless specifically needed in this context
+  notes: string[];
+  user?: OrderUserDto;
+}
+
+export interface OrderUserDto {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
 }

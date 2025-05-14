@@ -1,0 +1,109 @@
+.order-detail-container {
+  font-family: 'Arial', sans-serif; // Example font
+}
+
+.page-title {
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+  color: #333;
+}
+
+.loading-indicator p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 0.375rem; // Bootstrap's default
+}
+
+.card-header {
+  background-color: #f8f9fa; // Light grey background
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e0e0e0;
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+}
+
+.card-body {
+  padding: 1.25rem;
+  h4 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: #444;
+  }
+  p {
+    margin-bottom: 0.5rem;
+    color: #555;
+    strong {
+      color: #333;
+    }
+  }
+}
+
+.badge {
+  font-size: 0.9em;
+  padding: 0.4em 0.7em;
+  vertical-align: middle;
+}
+
+.table {
+  margin-bottom: 0; // Remove default bottom margin if inside card-body
+  th {
+    font-weight: 500;
+    color: #495057;
+    background-color: #e9ecef; // Slightly darker header for table
+  }
+  td {
+    vertical-align: middle;
+  }
+  .img-thumbnail {
+    border: 1px solid #dee2e6;
+    padding: 0.2rem;
+  }
+  a {
+    color: #007bff;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.list-group-item {
+  border-color: #e0e0e0;
+  padding: 0.75rem 1.25rem;
+  span {
+    color: #333;
+  }
+  &.fw-bold span {
+    font-weight: 600;
+  }
+}
+
+.alert-warning {
+  color: #856404;
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+}
+
+// Responsive adjustments if needed
+@media (max-width: 768px) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    h2 {
+      margin-bottom: 0.5rem;
+    }
+    .btn-outline-secondary {
+      margin-top: 0.5rem;
+    }
+  }
+  .col-md-6 {
+    margin-bottom: 1rem; // Add space between columns on smaller screens
+  }
+}

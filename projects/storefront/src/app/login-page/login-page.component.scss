@@ -1,24 +1,25 @@
-@import '../../styles/_variables.scss';
+@use "sass:color";
+@use '../../styles/variables' as variables;
 
 .login-container {
   max-width: 450px;
   margin: 4rem auto;
   padding: 2rem;
-  border: 1px solid $border-color;
-  border-radius: $border-radius-md;
-  background-color: $white;
-  box-shadow: $box-shadow-sm;
+  border: 1px solid variables.$border-color;
+  border-radius: variables.$border-radius-md;
+  background-color: variables.$white;
+  box-shadow: variables.$box-shadow-sm;
 
   h2 {
     text-align: center;
     margin-bottom: 0.5rem;
-    color: $primary-color;
+    color: variables.$primary-color;
   }
 
   p {
     text-align: center;
     margin-bottom: 2rem;
-    color: $text-muted;
+    color: variables.$text-muted;
   }
 
   .form-group {
@@ -28,7 +29,7 @@
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 500;
-      color: $text-color;
+      color: variables.$text-color;
     }
 
     // Specific styling for password input group
@@ -50,13 +51,13 @@
           transform: translateY(-50%);
           background: none;
           border: none;
-          color: $text-muted;
+          color: variables.$text-muted;
           cursor: pointer;
           padding: 0.25rem 0.5rem;
           font-size: 0.9em;
 
           &:hover {
-            color: $primary-color;
+            color: variables.$primary-color;
           }
         }
       }
@@ -68,27 +69,27 @@
     input[type="text"] {
       width: 100%;
       padding: 0.75rem 1rem;
-      border: 1px solid $border-color;
-      border-radius: $border-radius-sm;
+      border: 1px solid variables.$border-color;
+      border-radius: variables.$border-radius-sm;
       font-size: 1rem;
       transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
       &:focus {
-        border-color: $primary-color-light;
+        border-color: variables.$primary-color-light;
         outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(variables.$primary-color, 0.25);
       }
 
       &.is-invalid {
-        border-color: $error-color;
+        border-color: variables.$error-color;
         &:focus {
-          box-shadow: 0 0 0 0.2rem rgba($error-color, 0.25);
+          box-shadow: 0 0 0 0.2rem rgba(variables.$error-color, 0.25);
         }
       }
     }
 
     .invalid-feedback {
-      color: $error-color;
+      color: variables.$error-color;
       font-size: 0.875em;
       margin-top: 0.25rem;
     }
@@ -108,14 +109,14 @@
       .form-check-label {
         margin-bottom: 0;
         font-weight: normal;
-        color: $text-muted;
+        color: variables.$text-muted;
         cursor: pointer;
         user-select: none;
       }
 
       .forgot-password-link {
         font-size: 0.9rem;
-        color: $primary-color;
+        color: variables.$primary-color;
         text-decoration: none;
         &:hover {
           text-decoration: underline;
@@ -125,11 +126,11 @@
   }
 
   .error-message {
-    color: $error-color;
-    background-color: rgba($error-color, 0.1);
-    border: 1px solid rgba($error-color, 0.2);
+    color: variables.$error-color;
+    background-color: rgba(variables.$error-color, 0.1);
+    border: 1px solid rgba(variables.$error-color, 0.2);
     padding: 0.75rem 1rem;
-    border-radius: $border-radius-sm;
+    border-radius: variables.$border-radius-sm;
     margin-bottom: 1.5rem;
     text-align: center;
     font-size: 0.9rem;
@@ -140,21 +141,21 @@
     padding: 0.8rem 1rem;
     font-size: 1rem;
     font-weight: 600;
-    background-color: $primary-color;
-    border-color: $primary-color;
-    color: $white;
-    border-radius: $border-radius-sm;
+    background-color: variables.$primary-color;
+    border-color: variables.$primary-color;
+    color: variables.$white;
+    border-radius: variables.$border-radius-sm;
     cursor: pointer;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 
     &:hover {
-      background-color: darken($primary-color, 10%);
-      border-color: darken($primary-color, 10%);
+      background-color: color.adjust(variables.$primary-color, $lightness: -10%);
+      border-color: color.adjust(variables.$primary-color, $lightness: -10%);
     }
 
     &:disabled {
-      background-color: lighten($primary-color, 20%);
-      border-color: lighten($primary-color, 20%);
+      background-color: color.adjust(variables.$primary-color, $lightness: 20%);
+      border-color: color.adjust(variables.$primary-color, $lightness: 20%);
       cursor: not-allowed;
       opacity: 0.65;
     }
@@ -163,11 +164,11 @@
   .register-link {
     text-align: center;
     margin-top: 1.5rem;
-    color: $text-muted;
+    color: variables.$text-muted;
     font-size: 0.9rem;
 
     a {
-      color: $primary-color;
+      color: variables.$primary-color;
       font-weight: 500;
       text-decoration: none;
       &:hover {

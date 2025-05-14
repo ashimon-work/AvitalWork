@@ -1,0 +1,168 @@
+<!-- Dashboard Page -->
+<div class="dashboard-container" *ngIf="dashboardData">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="store-logo-placeholder">{{ dashboardData.storeName }}</div>
+    <nav class="dashboard-nav">
+      <ul>
+        <li><a [routerLink]="['../dashboard']">Dashboard</a></li>
+        <li><a [routerLink]="['../products']">Products</a></li>
+        <li><a [routerLink]="['../orders']">Orders</a></li>
+        <li><a [routerLink]="['../customers']">Customers</a></li>
+        <li><a [routerLink]="['../settings']">Settings</a></li>
+      </ul>
+    </nav>
+    <div class="manager-info">
+      <span class="manager-name">{{ dashboardData.managerName }}</span>
+      <div class="notifications-icon" (click)="toggleNotificationsList()">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" *ngIf="unreadNotificationCount > 0">{{ unreadNotificationCount }}</span>
+        <!-- Notification List Dropdown -->
+        <div class="notifications-dropdown" *ngIf="showNotificationsList">
+          <div class="notifications-header">
+            <h3>Notifications</h3>
+            <button class="mark-all-read-btn" (click)="markAllNotificationsAsRead()" *ngIf="hasUnreadNotifications">Mark all as read</button>
+          </div>
+          <ul *ngIf="notifications.length > 0; else noNotifications" class="notifications-list">
+            <li *ngFor="let notification of notifications"
+                [ngClass]="{
+                  'notification-unread': !notification.isRead,
+                  'notification-read': notification.isRead,
+                  'severity-info': notification.severity === 'INFO' || notification.severity === 'info',
+                  'severity-warning': notification.severity === 'WARNING' || notification.severity === 'warning',
+                  'severity-error': notification.severity === 'ERROR' || notification.severity === 'error',
+                  'severity-success': notification.severity === 'SUCCESS' || notification.severity === 'success'
+                }">
+              <div class="notification-content">
+                <strong class="notification-title">{{ notification.title }}</strong>
+                <p class="notification-message">{{ notification.message }}</p>
+                <small class="notification-timestamp">{{ notification.createdAt | date:'short' }}</small>
+                <a *ngIf="notification.link" [href]="notification.link" target="_blank" class="notification-link">View Details</a>
+              </div>
+              <div class="notification-actions">
+                <button title="Mark as read" class="action-btn" *ngIf="!notification.isRead" (click)="markNotificationAsRead(notification.id)">
+                  <i class="fas fa-check"></i>
+                </button>
+                <button title="Delete" class="action-btn delete-btn" (click)="deleteNotification(notification.id)">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </li>
+          </ul>
+          <ng-template #noNotifications>
+            <p class="no-notifications-message">No new notifications.</p>
+          </ng-template>
+          <div class="dropdown-footer" *ngIf="notifications.length > 0">
+            <button class="clear-all-btn" (click)="clearAllNotifications()">Clear All Notifications</button>
+            <!-- TODO: Add "View All Notifications" link if a dedicated page exists -->
+          </div>
+        </div>
+      </div>
+      <button class="logout-button">Logout</button>
+    </div>
+  </header>
+
+  <h1>Store Dashboard</h1>
+
+  <!-- Performance Snapshot Cards -->
+  <section class="performance-cards">
+    <div class="card">
+      <h3>Total Sales</h3>
+      <p>${{ dashboardData.totalSales | number:'1.2-2' }} <span class="trend-indicator" [ngClass]="{'positive': dashboardData.totalSalesTrend >= 0, 'negative': dashboardData.totalSalesTrend < 0}">({{ dashboardData.totalSalesTrend > 0 ? '+' : '' }}{{ dashboardData.totalSalesTrend }}%)</span></p>
+    </div>
+    <div class="card">
+      <h3>Orders Today</h3>
+      <p>{{ dashboardData.ordersToday }} <span class="trend-indicator" [ngClass]="{'positive': dashboardData.ordersTodayTrend >= 0, 'negative': dashboardData.ordersTodayTrend < 0}">({{ dashboardData.ordersTodayTrend > 0 ? '+' : '' }}{{ dashboardData.ordersTodayTrend }}%)</span></p>
+    </div>
+    <div class="card">
+      <h3>Low Stock Items</h3>
+      <p>{{ dashboardData.lowStockItems }} <span class="alert-indicator" [ngClass]="{'warning': dashboardData.lowStockAlertLevel === 'yellow', 'danger': dashboardData.lowStockAlertLevel === 'red'}">({{ dashboardData.lowStockAlertLevel }})</span></p>
+    </div>
+  </section>
+
+  <!-- Sales Chart -->
+  <section class="sales-chart" style="max-height: 400px;">
+    <h2>Sales Chart</h2>
+    <div class="chart-controls">
+      <select (change)="onTimePeriodChange($event)">
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+        <option value="all">All Time</option>
+      </select>
+      <label>
+        <input type="checkbox" (change)="onCompareChange($event)"> Compare to Previous Period
+      </label>
+    </div>
+    <!-- Chart component will go here -->
+    <canvas baseChart
+      [data]="salesChartData"
+      [options]="salesChartOptions"
+      [type]="salesChartType">
+    </canvas>
+  </section>
+
+  <!-- Recent Orders Table -->
+  <section class="recent-orders">
+    <h2>Recent Orders</h2>
+    <table>
+      <thead>
+        <tr>
+          <th (click)="onSortChange('id')">Order ID <span class="sort-indicator" *ngIf="sortColumn === 'id'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="onSortChange('customer')">Customer <span class="sort-indicator" *ngIf="sortColumn === 'customer'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="onSortChange('date')">Date <span class="sort-indicator" *ngIf="sortColumn === 'date'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="onSortChange('total')">Total <span class="sort-indicator" *ngIf="sortColumn === 'total'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="onSortChange('status')">Status <span class="sort-indicator" *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of recentOrders">
+          <td>{{ order.id }}</td>
+          <td>{{ order.customer }}</td>
+          <td>{{ order.date }}</td>
+          <td>${{ order.total | number:'1.2-2' }}</td>
+          <td [ngClass]="{
+            'status-processing': order.status === 'Processing',
+            'status-pending': order.status === 'Pending',
+            'status-shipped': order.status === 'Shipped',
+            'status-completed': order.status === 'Completed',
+            'status-cancelled': order.status === 'Cancelled'
+          }">{{ order.status }}</td> <!-- Color-coded status -->
+          <td><button (click)="viewOrder(order.id)">View</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+    </div>
+    <!-- Orders Count Summary -->
+    <div class="orders-count-summary" *ngIf="totalOrders > 0">
+      <p>Showing {{ startIndex + 1 }} to {{ endIndex + 1 }} of {{ totalOrders }} orders</p>
+    </div>
+  </section>
+
+  <!-- Inventory Alerts -->
+  <section class="inventory-alerts-placeholder">
+    <h2>Inventory Alerts</h2>
+    <ul>
+      <li *ngFor="let alert of inventoryAlerts">{{ alert.message }}</li>
+    </ul>
+  </section>
+
+  <!-- Quick Action Buttons -->
+  <section class="quick-actions">
+    <button class="quick-action-button" [routerLink]="['../products']">Add New Product</button>
+    <button class="quick-action-button" [routerLink]="['../orders']">View All Orders</button>
+    <button class="quick-action-button" [routerLink]="['../settings']">Update Settings</button>
+  </section>
+
+  <!-- Store Health Score -->
+  <section class="store-health-placeholder">
+    <h2>Store Health Score</h2>
+    <p>{{ dashboardData.storeHealthScore }}%</p>
+  </section>
+</div>

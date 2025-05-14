@@ -1,0 +1,46 @@
+<div class="management-not-found-container">
+  <h1>404 - Page Not Found</h1>
+  <p>Oops! The management page you are looking for does not exist or may have been moved.</p>
+  <p>Current URL: <code>{{ currentUrl }}</code></p>
+
+  <div class="actions">
+    <button (click)="goBack()" class="btn btn-secondary">Go Back</button>
+    <button (click)="goToDashboard()" class="btn btn-primary">Go to Dashboard</button>
+    <a href="mailto:support@example.com?subject=Store%20Management%20Issue" class="btn btn-info">Contact Support</a>
+    <button (click)="toggleReportForm()" class="btn btn-warning">
+      {{ showReportForm ? 'Cancel Report' : 'Report Broken Link' }}
+    </button>
+  </div>
+
+  <div *ngIf="showReportForm" class="report-form-container">
+    <h2>Report Broken Link</h2>
+    <p>
+      Help us fix this by reporting the broken link: <strong>{{ currentUrl }}</strong>
+    </p>
+    <form (ngSubmit)="submitReport()">
+      <div class="form-group">
+        <label for="reportComment">Optional Comment (e.g., what you expected to see):</label>
+        <textarea id="reportComment"
+                  [(ngModel)]="reportComment"
+                  name="reportComment"
+                  rows="3"
+                  maxlength="500"
+                  class="form-control"></textarea>
+      </div>
+      <button type="submit" class="btn btn-danger">Submit Report</button>
+    </form>
+  </div>
+
+  <div *ngIf="reportStatus === 'success'" class="alert alert-success mt-3">
+    Thank you! The broken link has been successfully reported.
+  </div>
+
+  <div *ngIf="reportStatus === 'error'" class="alert alert-danger mt-3">
+    <strong>Error:</strong> {{ errorMessage }}
+  </div>
+
+  <!-- Placeholder for styling or additional info -->
+  <div class="additional-info mt-4">
+    <p>If you believe this is an error, please try again or contact support.</p>
+  </div>
+</div>

@@ -6,7 +6,7 @@ export class OrderItemDto {
   productName: string; // Snapshot name
   quantity: number;
   pricePerUnit: number;
-  variantDetails?: Record<string, any>;
+  variantDetails?: string; // Changed from Record<string, any>
   // Maybe add product image URL if needed
   product?: Partial<ProductEntity>; // Include partial product details like image if needed
 }

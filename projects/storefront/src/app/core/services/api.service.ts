@@ -1,21 +1,21 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { switchMap, take, catchError, tap, filter, map } from 'rxjs/operators'; // Add map
-import { Category, Product, Address, Order, User } from '@shared-types'; // Add User type
+import { switchMap, take, catchError, tap, filter, map } from 'rxjs/operators';
+import { Category, Product, Address, Order, User } from '@shared-types';
 import { CarouselSlide } from '../../home/components/carousel/carousel.component';
 import { StoreContextService } from './store-context.service';
 // Define Wishlist types locally if not in shared-types
 // Based on backend DTOs
 export interface WishlistItemDto {
-  id: string; // Wishlist Item ID
+  id: string;
   productId: string;
   addedAt: Date;
-  product: Partial<Product>; // Use shared Product type
+  product: Partial<Product>;
 }
 
 export interface WishlistDto {
-  id: string; // Wishlist ID
+  id: string;
   userId: string;
   storeId: string;
   items: WishlistItemDto[];
@@ -23,15 +23,17 @@ export interface WishlistDto {
   updatedAt: Date;
 }
 // Define Address type locally if not in shared-types
-export interface AddressDto { // Based on backend DTOs
-  id?: string;
+export interface AddressDto {
+  id: string;
   fullName: string;
-  street1: string;
-  street2?: string;
+  address1: string;
+  address2?: string;
   city: string;
-  state: string;
-  postalCode: string;
+  state?: string;
+  zipCode: string;
   country: string;
+  street: string;
+  postalCode: string;
   phoneNumber?: string;
   isDefaultShipping?: boolean;
   isDefaultBilling?: boolean;
@@ -45,13 +47,14 @@ export interface OrderItemDto {
   productId: string;
   productName: string;
   quantity: number;
-  pricePerUnit: number;
+  price: number;
   variantDetails?: Record<string, any>;
   product?: Partial<Product>; // Use shared Product type
 }
 
 export interface OrderDto {
   id: string;
+  orderNumber: string; // Added missing property
   orderReference: string;
   orderDate: Date;
   status: string; // Use string or specific enum type
@@ -64,12 +67,13 @@ export interface OrderDto {
   paymentStatus: string; // Use string or specific enum type
   trackingNumber?: string;
   items: OrderItemDto[];
+  createdAt: string; // Added missing property (assuming ISO date string)
   updatedAt: Date;
 }
 
 export interface PaginatedOrders {
-    orders: OrderDto[];
-    total: number;
+  orders: OrderDto[];
+  total: number;
 }
 
 // DTO for updating personal info
@@ -89,11 +93,84 @@ export interface ChangePasswordDto {
 // DTO for representing a saved payment method (minimal info)
 export interface PaymentMethodDto {
   id: string; // Backend ID for the saved method representation
-  cardType: string; // e.g., 'Visa', 'Mastercard'
-  last4: string; // Last 4 digits
-  expiryMonth: number;
-  expiryYear: number;
-  isDefault?: boolean; // Optional: if backend supports a default flag
+  type: string; // From backend: 'card', 'paypal' etc. (corresponds to PaymentMethodEntity.type)
+  cardBrand?: string; // e.g., 'Visa', 'Mastercard' (corresponds to PaymentMethodEntity.cardBrand)
+  last4?: string; // Last 4 digits
+  expiryMonth?: number;
+  expiryYear?: number;
+  isDefault?: boolean;
+  billingAddress?: AddressDto; // Include the billing address object
+  // paymentGatewayToken?: string; // Usually not sent to frontend unless for specific re-use cases
+  // metadata?: Record<string, any>; // If needed by frontend
+}
+
+// --- Payment Method DTOs for Frontend ---
+export interface CreatePaymentMethodPayload {
+  type: string; // e.g., 'card'
+  paymentGatewayToken: string; // Token from payment provider (e.g., Stripe, Braintree)
+  billingAddressId: string;
+  isDefault?: boolean;
+  // Potentially card brand, last4, expiry if your gateway returns them upon tokenization
+  // and you want to display them immediately without another fetch.
+  // cardBrand?: string;
+  // last4?: string;
+  // expiryMonth?: number;
+  // expiryYear?: number;
+}
+
+export interface UpdatePaymentMethodPayload {
+  billingAddressId?: string;
+  isDefault?: boolean;
+  // Other fields like cardholderName if applicable and updatable directly
+  // (usually for non-tokenized details, which is rare and not recommended)
+}
+// --- Shipping Method DTO ---
+export interface ShippingMethod {
+  id: string;
+  name: string;
+  description?: string;
+  cost: number;
+  estimatedDeliveryDays?: number;
+  // Add any other relevant fields from your backend
+}
+// --- Account Overview DTO ---
+export interface AccountOverviewDto {
+  profile: Omit<User, 'passwordHash' | 'roles' | 'addresses' | 'wishlists' | 'loginHistory' | 'notes' | 'paymentMethods'>; // Use a more specific UserProfileDto if available
+  recentOrders: OrderDto[];
+  addresses: AddressDto[];
+  // paymentMethods: PaymentMethodDto[]; // Add if backend includes this
+}
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface AboutContent {
+  title?: string;
+  body: string;
+  imageUrl?: string;
+}
+
+export interface Testimonial {
+  author: string;
+  quote: string;
+  date?: string;
+  rating?: number;
+}
+
+// --- Newsletter Types ---
+export interface SubscribeNewsletterPayload {
+  email: string;
+  source?: string;
+}
+
+export interface NewsletterSubscriptionDto {
+  id: string;
+  email: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  source?: string;
 }
 @Injectable({
   providedIn: 'root',
@@ -169,6 +246,26 @@ export class ApiService {
     );
   }
 
+  getProductsByIds(storeSlug: string | null, productIds: string[]): Observable<Product[]> {
+    let params = new HttpParams();
+    if (storeSlug) {
+      params = params.set('storeSlug', storeSlug);
+    }
+    if (productIds && productIds.length > 0) {
+      params = params.set('ids', productIds.join(','));
+    } else {
+      return of([]); // No IDs, return empty array
+    }
+    // Assuming the endpoint is /api/products/by-ids or /api/products?ids=...
+    // Using /api/products with 'ids' query param for now
+    return this.http.get<Product[]>(`${this.apiUrl}/products`, { params }).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error fetching products by IDs:', error);
+        return of([]);
+      })
+    );
+  }
+
   // Method for product search
   searchProducts(query: string): Observable<Product[]> {
     return this.storeContext.currentStoreSlug$.pipe(
@@ -204,8 +301,8 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/cart/add`, payload);
   }
 
-  subscribeNewsletter(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/newsletter/subscribe`, { email });
+  subscribeNewsletter(payload: SubscribeNewsletterPayload): Observable<NewsletterSubscriptionDto> {
+    return this.http.post<NewsletterSubscriptionDto>(`${this.apiUrl}/newsletter/subscribe`, payload);
   }
 
   getCart(): Observable<any> {
@@ -329,6 +426,36 @@ export class ApiService {
       catchError(error => {
         console.warn(`[ApiService] Store slug "${slug}" is invalid or API error:`, error.status);
         return of(false); // If request fails (e.g., 404), slug is invalid
+      })
+    );
+  }
+
+  // --- Contact Page Methods ---
+
+  getFaqs(storeSlug: string | null): Observable<FaqItem[]> {
+    let params = new HttpParams();
+    if (storeSlug) {
+      params = params.set('storeSlug', storeSlug);
+    }
+    const url = `${this.apiUrl}/faq`;
+    console.log(`[ApiService] Fetching FAQs from: ${url} with params:`, params.toString());
+    return this.http.get<FaqItem[]>(url, { params }).pipe(
+      tap(response => console.log('[ApiService] FAQs response:', response)),
+      catchError(error => {
+        console.error('[ApiService] Error fetching FAQs:', error);
+        return of([]); // Return empty array on error
+      })
+    );
+  }
+
+  submitContactForm(storeSlug: string | null, formData: { name: string; email: string; subject: string; message: string; }): Observable<any> {
+    const payload = { ...formData, storeSlug };
+    const url = `${this.apiUrl}/contact`;
+    console.log(`[ApiService] Submitting contact form to: ${url} with payload:`, payload);
+    return this.http.post<any>(url, payload).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error submitting contact form:', error);
+        return throwError(() => error); // Re-throw error for component handling
       })
     );
   }
@@ -488,6 +615,36 @@ export class ApiService {
     );
   }
 
+  // --- Account Overview Method ---
+  getAccountOverview(): Observable<AccountOverviewDto | null> {
+    const url = `${this.apiUrl}/account/overview`;
+    // StoreContextGuard on the backend handles storeSlug implicitly if this endpoint is store-specific
+    // If not store-specific, no storeSlug param is needed here.
+    // Assuming it requires store context based on backend controller.
+    return this.storeContext.currentStoreSlug$.pipe(
+      take(1),
+      filter(storeSlug => { // Ensure storeSlug is available before making the call
+        if (!storeSlug) {
+          console.warn('[ApiService] Store slug not available for getAccountOverview. Overview might be limited or fail if store-specific.');
+          // Depending on backend, you might allow the call or throw an error/return null.
+          // For now, let's proceed, backend might handle it or it's not strictly store-specific.
+        }
+        return true; // Continue the stream
+      }),
+      switchMap(storeSlug => {
+        let params = new HttpParams();
+        if (storeSlug) { // Add storeSlug if available and backend expects it
+          params = params.set('storeSlug', storeSlug);
+        }
+        return this.http.get<AccountOverviewDto>(url, { params });
+      }),
+      catchError(error => {
+        console.error('[ApiService] Error fetching account overview:', error);
+        return of(null);
+      })
+    );
+  }
+
   // --- Account Payment Methods Methods ---
 
   getUserPaymentMethods(): Observable<PaymentMethodDto[]> {
@@ -510,6 +667,26 @@ export class ApiService {
       catchError(error => {
         console.error(`[ApiService] Error deleting payment method ${paymentMethodId}:`, error);
         return throwError(() => error); // Re-throw for component handling
+      })
+    );
+  }
+
+  addUserPaymentMethod(payload: CreatePaymentMethodPayload): Observable<PaymentMethodDto> {
+    const url = `${this.apiUrl}/account/payment-methods`;
+    return this.http.post<PaymentMethodDto>(url, payload).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error adding user payment method:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateUserPaymentMethod(methodId: string, payload: UpdatePaymentMethodPayload): Observable<PaymentMethodDto> {
+    const url = `${this.apiUrl}/account/payment-methods/${methodId}`;
+    return this.http.patch<PaymentMethodDto>(url, payload).pipe(
+      catchError(error => {
+        console.error(`[ApiService] Error updating payment method ${methodId}:`, error);
+        return throwError(() => error);
       })
     );
   }
@@ -546,6 +723,113 @@ export class ApiService {
     return this.http.get<Product[]>(url).pipe(
       catchError(error => {
         console.error(`[ApiService] Error fetching related products for ${productId}:`, error);
+        return of([]); // Return empty array on error
+      })
+    );
+  }
+
+  getRecommendedProducts(orderId: string, storeSlug: string | null): Observable<Product[]> {
+    let params = new HttpParams().set('based_on', orderId);
+    if (storeSlug) {
+      params = params.set('storeSlug', storeSlug);
+    }
+    // Assuming the endpoint is /api/products/recommended
+    const url = `${this.apiUrl}/products/recommended`;
+    return this.http.get<Product[]>(url, { params }).pipe(
+      catchError(error => {
+        console.error(`[ApiService] Error fetching recommended products for order ${orderId}:`, error);
+        return of([]); // Return empty array on error
+      })
+    );
+  }
+
+  applyPromoCodeToCart(storeSlug: string | null, promoCode: string): Observable<any> {
+    const payload: { promoCode: string, storeSlug?: string } = { promoCode };
+    if (storeSlug) {
+      payload.storeSlug = storeSlug;
+    }
+    return this.http.post(`${this.apiUrl}/cart/promo`, payload).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error applying promo code:', error);
+        return throwError(() => error); // Re-throw for component handling
+      })
+    );
+  }
+
+  // --- Checkout Methods ---
+
+  getShippingMethods(storeSlug: string): Observable<ShippingMethod[]> {
+    const url = `${this.apiUrl}/shipping/methods`;
+    let params = new HttpParams();
+    if (storeSlug) {
+      params = params.set('storeSlug', storeSlug);
+    }
+    return this.http.get<ShippingMethod[]>(url, { params }).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error fetching shipping methods:', error);
+        return of([]); // Return empty array on error
+      })
+    );
+  }
+
+  getTaxEstimate(storeSlug: string, cartItems: { productId: string, quantity: number }[], shippingAddress: any /* TODO: Define proper Address type for payload */): Observable<{ taxAmount: number }> {
+    const url = `${this.apiUrl}/tax/estimate`;
+    // Backend might expect cart items and address in body or params.
+    // Assuming POST with payload for now as tax calculation can be complex.
+    const payload = {
+      cartItems,
+      shippingAddress,
+      storeSlug // Pass storeSlug in payload if backend expects it for multi-store tax rules
+    };
+    // No HttpParams needed if all data is in payload for POST
+    return this.http.post<{ taxAmount: number }>(url, payload).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error fetching tax estimate:', error);
+        return of({ taxAmount: 0 }); // Return 0 tax on error or handle differently
+      })
+    );
+  }
+
+  placeOrder(orderData: any): Observable<any> { // TODO: Define proper types for orderData and response
+    const url = `${this.apiUrl}/orders`;
+    return this.http.post<any>(url, orderData).pipe(
+      catchError(error => {
+        console.error('[ApiService] Error placing order:', error);
+        return throwError(() => error); // Re-throw for component handling
+      })
+    );
+  }
+
+
+  // --- About Page Methods ---
+
+  getStoreAboutContent(storeSlug: string | null): Observable<AboutContent | null> {
+    let params = new HttpParams();
+    if (storeSlug) {
+      params = params.set('storeSlug', storeSlug);
+    }
+    const url = `${this.apiUrl}/store/about`;
+    console.log(`[ApiService] Fetching store about content from: ${url} with params:`, params.toString());
+    return this.http.get<AboutContent>(url, { params }).pipe(
+      tap(response => console.log('[ApiService] Store about content response:', response)),
+      catchError(error => {
+        console.error('[ApiService] Error fetching store about content:', error);
+        return of(null); // Return null on error
+      })
+    );
+  }
+
+  getStoreTestimonials(storeSlug: string | null): Observable<Testimonial[]> {
+    let params = new HttpParams();
+    if (storeSlug) {
+      params = params.set('storeSlug', storeSlug);
+    }
+    const url = `${this.apiUrl}/store/testimonials`;
+    console.log(`[ApiService] Fetching store testimonials from: ${url} with params:`, params.toString());
+    return this.http.get<Testimonial[]>(url, { params }).pipe(
+      tap(response => console.log('[ApiService] Store testimonials response:', response)),
+      catchError(error => {
+        console.error('[ApiService] Error fetching store testimonials:', error);
         return of([]); // Return empty array on error
       })
     );

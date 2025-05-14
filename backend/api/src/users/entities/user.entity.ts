@@ -6,13 +6,16 @@ import {
   UpdateDateColumn,
   OneToMany, // Import OneToMany
 } from 'typeorm';
-import { User as IUser, Address } from '@shared-types'; // Import shared interface
-import { AddressEntity } from '../../addresses/entities/address.entity'; // Import AddressEntity
-import { OrderEntity } from '../../orders/entities/order.entity'; // Import OrderEntity
-import { WishlistEntity } from '../../wishlist/entities/wishlist.entity'; // Import WishlistEntity
+import { User as IUser, Address, Note } from '@shared-types'; // Import Note
+import { AddressEntity } from '../../addresses/entities/address.entity';
+import { OrderEntity } from '../../orders/entities/order.entity';
+import { WishlistEntity } from '../../wishlist/entities/wishlist.entity';
+import { LoginHistoryEntity } from '../../login-history/entities/login-history.entity';
+import { PaymentMethodEntity } from '../../payment-methods/entities/payment-method.entity';
+import { NotificationPreferencesDto } from '../dto/notification-preferences.dto';
 
 @Entity('users') // Define table name
-export class UserEntity implements Omit<IUser, 'roles'> { // Remove 'addresses' from Omit
+export class UserEntity implements Omit<IUser, 'roles'> {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -40,6 +43,18 @@ export class UserEntity implements Omit<IUser, 'roles'> { // Remove 'addresses' 
   // @Column('jsonb', { nullable: true })
   // defaultShippingAddress?: Address;
 
+  @Column({ nullable: true })
+  twoFactorSecret?: string;
+
+  @Column({ default: false })
+  isTwoFactorEnabled: boolean;
+
+  @Column({ nullable: true })
+  profilePictureUrl?: string;
+
+  @Column('jsonb', { nullable: true, default: {} })
+  notificationPreferences?: NotificationPreferencesDto;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -56,4 +71,13 @@ export class UserEntity implements Omit<IUser, 'roles'> { // Remove 'addresses' 
 
   @OneToMany(() => WishlistEntity, (wishlist) => wishlist.user)
   wishlists: WishlistEntity[]; // A user can have multiple wishlists (one per store)
+
+  @OneToMany(() => LoginHistoryEntity, (loginHistory) => loginHistory.user)
+  loginHistory: LoginHistoryEntity[];
+
+  @OneToMany(() => PaymentMethodEntity, paymentMethod => paymentMethod.user)
+  paymentMethods: PaymentMethodEntity[];
+
+  @Column('jsonb', { nullable: true, default: [] }) // Changed to jsonb and added default
+  notes: Note[]; // Changed to Note[]
 }

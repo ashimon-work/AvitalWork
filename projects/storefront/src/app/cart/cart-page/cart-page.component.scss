@@ -1,4 +1,5 @@
-@import '../../../styles/_variables.scss'; // Correct path relative to src/app
+@use "sass:color";
+@use '../../../styles/variables' as variables; // Correct path relative to src/app
 
 :host {
   display: block;
@@ -6,20 +7,20 @@
 
 .cart-page-container {
   width: 100%;
-  max-width: var(--container-max-width);
-  margin: var(--spacing-xl) auto;
-  padding: 0 var(--container-padding-x);
+  max-width: variables.$container-max-width;
+  margin: variables.$spacing-xl auto;
+  padding: 0 variables.$container-padding-x;
 
   h1 {
     text-align: center;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: variables.$spacing-xl;
   }
 }
 
 .cart-layout {
   display: grid;
   grid-template-columns: 2fr 1fr; // Adjust ratio as needed
-  gap: var(--spacing-xl);
+  gap: variables.$spacing-xl;
 
   @media (max-width: 992px) { // Stack on smaller screens
     grid-template-columns: 1fr;
@@ -33,15 +34,15 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: variables.$spacing-lg;
 
     thead {
-      border-bottom: 2px solid var(--border-color);
+      border-bottom: 2px solid variables.$border-color;
       th {
         text-align: left;
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-weight: var(--font-weight-medium);
-        color: var(--text-color-light);
+        padding: variables.$spacing-sm variables.$spacing-md;
+        font-weight: variables.$font-weight-medium;
+        color: variables.$text-color-light;
         font-size: 0.9rem;
         text-transform: uppercase;
       }
@@ -49,9 +50,9 @@
 
     tbody {
       tr.cart-item {
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid variables.$border-color;
         td {
-          padding: var(--spacing-md);
+          padding: variables.$spacing-md;
           vertical-align: middle;
         }
       }
@@ -64,18 +65,18 @@
       display: block;
       width: 100%;
       height: auto;
-      border: 1px solid var(--neutral-light);
-      border-radius: var(--border-radius-sm);
+      border: 1px solid variables.$neutral-light;
+      border-radius: variables.$border-radius-sm;
     }
   }
 
   .item-details {
     .item-name {
-      font-weight: var(--font-weight-medium);
-      color: var(--text-color);
+      font-weight: variables.$font-weight-medium;
+      color: variables.$text-color;
       text-decoration: none;
       &:hover {
-        color: var(--primary-color);
+        color: variables.$primary-color;
       }
     }
     // Add styles for variant display later
@@ -83,14 +84,14 @@
 
   .item-price,
   .item-subtotal {
-    font-weight: var(--font-weight-medium);
+    font-weight: variables.$font-weight-medium;
   }
 
   .item-quantity {
     input[type="number"] {
       width: 60px; // Smaller input
       text-align: center;
-      padding: var(--spacing-xs);
+      padding: variables.$spacing-xs;
     }
   }
 
@@ -100,7 +101,7 @@
     button {
       background: none;
       border: none;
-      color: var(--error-color);
+      color: variables.$error-color;
       font-size: 1.5rem;
       cursor: pointer;
       padding: 0;
@@ -115,17 +116,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: var(--spacing-lg);
+    margin-top: variables.$spacing-lg;
 
     .continue-shopping-btn {
       // Use secondary style
       // Apply secondary button styles using SCSS variables
-      color: $primary-color;
+      color: variables.$primary-color;
       background-color: transparent;
-      border-color: $primary-color;
+      border-color: variables.$primary-color;
 
       &:hover, &:focus {
-        background-color: rgba($primary-color, 0.1); // Use SCSS var in rgba()
+        background-color: rgba(variables.$primary-color, 0.1); // Use SCSS var in rgba()
         opacity: 1; // Keep opacity for focus state consistency if needed
       }
     }
@@ -138,48 +139,48 @@
 
 // --- Order Summary Section ---
 .order-summary-section {
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
-  background-color: var(--neutral-lightest);
+  border: 1px solid variables.$border-color;
+  border-radius: variables.$border-radius-lg;
+  padding: variables.$spacing-lg;
+  background-color: variables.$neutral-lightest;
   align-self: start; // Prevent stretching
 
   h2 {
     font-size: 1.4rem;
-    margin-bottom: var(--spacing-lg);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--spacing-md);
+    margin-bottom: variables.$spacing-lg;
+    border-bottom: 1px solid variables.$border-color;
+    padding-bottom: variables.$spacing-md;
   }
 
   .summary-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: variables.$spacing-sm;
     font-size: 1rem;
 
     span:last-child {
-      font-weight: var(--font-weight-medium);
+      font-weight: variables.$font-weight-medium;
     }
 
     &.total {
       font-size: 1.2rem;
-      font-weight: var(--font-weight-bold);
-      margin-top: var(--spacing-md);
-      padding-top: var(--spacing-md);
-      border-top: 1px solid var(--border-color);
+      font-weight: variables.$font-weight-bold;
+      margin-top: variables.$spacing-md;
+      padding-top: variables.$spacing-md;
+      border-top: 1px solid variables.$border-color;
     }
   }
 
   hr {
     border: none;
-    border-top: 1px dashed var(--border-color);
-    margin: var(--spacing-md) 0;
+    border-top: 1px dashed variables.$border-color;
+    margin: variables.$spacing-md 0;
   }
 
   .promo-code {
-    margin-top: var(--spacing-lg);
+    margin-top: variables.$spacing-lg;
     display: flex;
-    gap: var(--spacing-sm);
+    gap: variables.$spacing-sm;
     label { display: none; } // Hide label visually if needed
     input[type="text"] {
       flex-grow: 1;
@@ -188,12 +189,12 @@
       flex-shrink: 0;
       // Use secondary style
       // Apply secondary button styles using SCSS variables
-      color: $primary-color;
+      color: variables.$primary-color;
       background-color: transparent;
-      border-color: $primary-color;
+      border-color: variables.$primary-color;
 
       &:hover, &:focus {
-        background-color: rgba($primary-color, 0.1); // Use SCSS var in rgba()
+        background-color: rgba(variables.$primary-color, 0.1); // Use SCSS var in rgba()
         opacity: 1; // Keep opacity for focus state consistency if needed
       }
     }
@@ -201,23 +202,23 @@
 
   .checkout-btn {
     width: 100%;
-    margin-top: var(--spacing-lg);
-    padding: var(--spacing-md);
+    margin-top: variables.$spacing-lg;
+    padding: variables.$spacing-md;
     font-size: 1.1rem;
-    background-color: var(--success-color); // Green for checkout
-    border-color: var(--success-color);
+    background-color: variables.$success-color; // Green for checkout
+    border-color: variables.$success-color;
     &:hover {
       opacity: 0.85;
     }
   }
 
   &.bordered-button {
-    border: 1px solid var(--primary-color);
+    border: 1px solid variables.$primary-color;
     background-color: transparent;
-    color: var(--primary-color);
+    color: variables.$primary-color;
 
     &:hover {
-      background-color: rgba(var(--primary-color-rgb), 0.1);
+      background-color: rgba(variables.$primary-color, 0.1);
     }
   }
 }
@@ -229,13 +230,13 @@
       thead {
         th {
           font-size: 0.8rem;
-          padding: var(--spacing-xs) var(--spacing-sm);
+          padding: variables.$spacing-xs variables.$spacing-sm;
         }
       }
       tbody {
         tr.cart-item {
           td {
-            padding: var(--spacing-sm);
+            padding: variables.$spacing-sm;
             font-size: 0.9rem;
           }
         }
@@ -244,12 +245,12 @@
   }
 
   .order-summary-section {
-    padding: var(--spacing-md);
+    padding: variables.$spacing-md;
 
     h2 {
       font-size: 1.2rem;
-      margin-bottom: var(--spacing-md);
-      padding-bottom: var(--spacing-sm);
+      margin-bottom: variables.$spacing-md;
+      padding-bottom: variables.$spacing-sm;
     }
 
     .summary-row {
@@ -261,15 +262,15 @@
 // --- Empty Cart ---
 .empty-cart-message {
   text-align: center;
-  padding: var(--spacing-xxl) 0;
-  border: 1px dashed var(--border-color);
-  border-radius: var(--border-radius-md);
-  background-color: var(--neutral-lightest);
+  padding: variables.$spacing-xxl 0;
+  border: 1px dashed variables.$border-color;
+  border-radius: variables.$border-radius-md;
+  background-color: variables.$neutral-lightest;
 
   p {
     font-size: 1.2rem;
-    color: var(--text-color-light);
-    margin-bottom: var(--spacing-lg);
+    color: variables.$text-color-light;
+    margin-bottom: variables.$spacing-lg;
   }
   button {
     // Use primary button style
@@ -279,6 +280,6 @@
 // Loading state
 p {
   text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--text-color-light);
+  padding: variables.$spacing-xl;
+  color: variables.$text-color-light;
 }

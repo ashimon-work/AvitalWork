@@ -1,1 +1,41 @@
-<p>about-page works!</p>
+<div class="about-page-container">
+  <h1>About Us</h1>
+
+  <!-- About Content Section -->
+  <section class="about-content-section" *ngIf="aboutContent$ | async as content; else loadingAbout">
+    <div *ngIf="content">
+      <h2 *ngIf="content.title">{{ content.title }}</h2>
+      <img *ngIf="content.imageUrl" [src]="content.imageUrl" alt="About us image" class="about-image">
+      <p [innerHTML]="content.body"></p>
+    </div>
+    <ng-template #noAboutContent>
+      <p>Information about this store is not yet available.</p>
+    </ng-template>
+  </section>
+  <ng-template #loadingAbout>
+    <p>Loading store information...</p>
+  </ng-template>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section">
+    <h2>What Our Customers Say</h2>
+    <div *ngIf="testimonials$ | async as testimonials; else loadingTestimonials">
+      <div *ngIf="testimonials && testimonials.length > 0; else noTestimonials" class="testimonials-grid">
+        <div *ngFor="let testimonial of testimonials" class="testimonial-card">
+          <p class="testimonial-quote">"{{ testimonial.quote }}"</p>
+          <p class="testimonial-author">- {{ testimonial.author }}</p>
+          <p *ngIf="testimonial.date" class="testimonial-date">{{ testimonial.date | date:'mediumDate' }}</p>
+          <div *ngIf="testimonial.rating" class="testimonial-rating">
+            Rating: {{ testimonial.rating }} / 5
+          </div>
+        </div>
+      </div>
+      <ng-template #noTestimonials>
+        <p>No testimonials available yet.</p>
+      </ng-template>
+    </div>
+    <ng-template #loadingTestimonials>
+      <p>Loading testimonials...</p>
+    </ng-template>
+  </section>
+</div>

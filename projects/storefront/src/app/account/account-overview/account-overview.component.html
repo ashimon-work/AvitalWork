@@ -1,24 +1,92 @@
-<!-- Use async pipe to subscribe to currentUser$ -->
-<div *ngIf="currentUser$ | async as user">
-  <h3>Welcome back, {{ user.firstName }}!</h3>
-  <p>This is your account overview. More details coming soon.</p>
+<div class="account-overview-container">
+  <h2 class="page-title">Account Overview</h2>
 
-  <!-- Placeholder sections based on plan -->
-  <div class="overview-section">
-    <h4>Recent Orders</h4>
-    <p>No recent orders found.</p> <!-- Replace with actual data later -->
-    <!-- <a routerLink="../orders">View all orders</a> -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Loading account details...</p>
+    <!-- You can add a spinner or more elaborate loading animation here -->
   </div>
 
-  <div class="overview-section">
-    <h4>Default Address</h4>
-    <p>No default address set.</p> <!-- Replace with actual data later -->
-     <!-- <a routerLink="../addresses">Manage addresses</a> -->
+  <div *ngIf="accountOverview$ | async as overview; else noOverviewData">
+    <div class="welcome-message" *ngIf="overview.profile">
+      <h3>Welcome back, {{ overview.profile.firstName }}!</h3>
+    </div>
+
+    <!-- Profile Completeness -->
+    <div class="overview-section profile-completeness-section card">
+      <div class="card-header">
+        <h4>Profile Completeness</h4>
+      </div>
+      <div class="card-body">
+        <p>Your profile is {{ profileCompleteness }}% complete.</p>
+        <div class="progress-bar-container">
+          <div class="progress-bar" [style.width.%]="profileCompleteness">
+            {{ profileCompleteness }}%
+          </div>
+        </div>
+        <a routerLink="../personal-info" class="btn btn-sm btn-outline-primary mt-2">Complete Your Profile</a>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="overview-section recent-orders-section card">
+      <div class="card-header">
+        <h4>Recent Orders</h4>
+        <a routerLink="../orders" class="btn btn-sm btn-link">View All Orders</a>
+      </div>
+      <div class="card-body">
+        <ul *ngIf="overview.recentOrders && overview.recentOrders.length > 0; else noRecentOrders" class="list-group list-group-flush">
+          <li *ngFor="let order of overview.recentOrders" class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                Order #{{ order.orderNumber }} - {{ order.orderDate | date:'mediumDate' }}
+                <span class="badge" [ngClass]="{
+                  'bg-success': order.status === 'Completed' || order.status === 'Shipped',
+                  'bg-warning text-dark': order.status === 'Processing' || order.status === 'Pending',
+                  'bg-danger': order.status === 'Cancelled' || order.status === 'Refunded',
+                  'bg-secondary': order.status !== 'Completed' && order.status !== 'Shipped' && order.status !== 'Processing' && order.status !== 'Pending' && order.status !== 'Cancelled' && order.status !== 'Refunded'
+                }">{{ order.status }}</span>
+              </div>
+              <div>
+                <span>Total: {{ order.totalAmount | currency }}</span>
+                <a [routerLink]="['../orders', order.id]" class="btn btn-sm btn-outline-secondary ms-2">View Details</a>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <ng-template #noRecentOrders>
+          <p>No recent orders found.</p>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Default Address -->
+    <div class="overview-section default-address-section card">
+      <div class="card-header">
+        <h4>Default Shipping Address</h4>
+        <a routerLink="../addresses" class="btn btn-sm btn-link">Manage Addresses</a>
+      </div>
+      <div class="card-body">
+        <p>{{ getDefaultShippingAddress(overview) }}</p>
+      </div>
+    </div>
+
+    <!-- Quick Links/Actions -->
+    <div class="overview-section quick-links-section card">
+        <div class="card-header">
+            <h4>Quick Actions</h4>
+        </div>
+        <div class="card-body">
+            <a routerLink="../personal-info" class="btn btn-primary me-2">Update Personal Info</a>
+            <a routerLink="../payment-methods" class="btn btn-primary me-2">Manage Payment Methods</a>
+            <a routerLink="../change-password" class="btn btn-primary">Change Password</a>
+        </div>
+    </div>
+
   </div>
 
-</div>
-
-<!-- Optional: Show loading or alternative message if user data isn't available yet -->
-<div *ngIf="!(currentUser$ | async)">
-  <p>Loading account details...</p>
+  <ng-template #noOverviewData>
+    <div *ngIf="!isLoading">
+      <p>Could not load account overview data. Please try again later or contact support.</p>
+    </div>
+  </ng-template>
 </div>

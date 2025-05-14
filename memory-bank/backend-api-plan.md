@@ -130,3 +130,4 @@ This plan outlines the necessary NestJS backend API endpoints to support the Sto
 *   **Product Page Extras:** `GET /api/products/:id/reviews`, `POST /api/wishlist/add`, `POST /api/reviews`. (Requires `ReviewsService`, `WishlistService`).
 *   **Cart Extras:** `POST /api/cart/promo`. (Requires `CartService`, `PromoCodeService`?).
 *   **Auth Extras:** `POST /api/auth/forgot-password`, `GET /api/auth/social/{provider}`. (Requires `AuthService`).
+*   **Order Management:** `GET /api/manager/orders` (Filtering by status, date range, search term implemented in service). `GET /api/manager/orders/{id}`. `PATCH /api/manager/orders/{id}`. `POST /api/manager/orders/{id}/notes`. `POST /api/manager/orders/{id}/email`. `POST /api/manager/orders/{id}/shipping`. `GET /api/manager/orders/{id}/packing-slip`. `GET /api/manager/orders/export`.

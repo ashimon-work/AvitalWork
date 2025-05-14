@@ -54,8 +54,4 @@ export class CreateProductDto {
   @Type(() => ProductVariantDto)
   variants?: ProductVariantDto[];
 
-  @IsString()
-  @IsUUID() // Assuming storeId is a UUID
-  @IsNotEmpty()
-  storeId: string;
 }

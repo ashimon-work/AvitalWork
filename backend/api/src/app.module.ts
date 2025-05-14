@@ -16,6 +16,9 @@ import { NavigationModule } from './navigation/navigation.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { OrdersModule } from './orders/orders.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { PromoCodesModule } from './promo-codes/promo-codes.module';
+import { ContactModule } from './contact/contact.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 // Import all entities used in the seed script
 import { StoreEntity } from './stores/entities/store.entity';
@@ -29,6 +32,10 @@ import { OrderItemEntity } from './orders/entities/order-item.entity';
 import { WishlistEntity } from './wishlist/entities/wishlist.entity';
 import { WishlistItemEntity } from './wishlist/entities/wishlist-item.entity';
 import { CarouselItem } from './carousel/entities/carousel.entity';
+import { ManagerModule } from './manager/manager.module';
+import { ManagerController } from './manager/manager.controller';
+import { ManagerService } from './manager/manager.service';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -80,8 +87,13 @@ import { CarouselItem } from './carousel/entities/carousel.entity';
     AddressesModule,
     OrdersModule,
     WishlistModule,
+    ManagerModule,
+    SettingsModule,
+    PromoCodesModule,
+    ContactModule,
+    NotificationsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ManagerController],
+  providers: [AppService, ManagerService],
 })
 export class AppModule {}

@@ -1,0 +1,138 @@
+<!-- Order Management Page -->
+<div class="order-management-container">
+  <h1>Order Management</h1>
+
+  <!-- Action Bar -->
+  <div class="action-bar d-flex justify-content-between align-items-center mb-3">
+    <div class="status-filters">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedStatus === ''" (click)="onStatusFilterChange('')">All</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedStatus === 'pending'"
+            (click)="onStatusFilterChange('pending')">Pending</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedStatus === 'processing'"
+            (click)="onStatusFilterChange('processing')">Processing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedStatus === 'shipped'"
+            (click)="onStatusFilterChange('shipped')">Shipped</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedStatus === 'completed'"
+            (click)="onStatusFilterChange('completed')">Completed</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedStatus === 'cancelled'"
+            (click)="onStatusFilterChange('cancelled')">Cancelled</a>
+        </li>
+      </ul>
+    </div>
+    <div class="date-range-search d-flex align-items-center">
+      <select class="form-select me-2" [(ngModel)]="selectedDateRange" (ngModelChange)="onDateRangeChange($event)">
+        <option value="">All Dates</option>
+        <option value="today">Today</option>
+        <option value="yesterday">Yesterday</option>
+        <option value="last7days">Last 7 Days</option>
+        <option value="last30days">Last 30 Days</option>
+        <option value="thisMonth">This Month</option>
+        <option value="lastMonth">Last Month</option>
+        <!-- <option value="custom">Custom Range</option> TODO: Implement custom range picker -->
+      </select>
+      <!-- Placeholder for custom date range picker if 'custom' is selected -->
+      <!-- <div *ngIf="selectedDateRange === 'custom'" class="d-flex">
+        <input type="date" class="form-control me-1" placeholder="Start Date" [(ngModel)]="customStartDate" (ngModelChange)="onCustomDateChange()">
+        <input type="date" class="form-control" placeholder="End Date" [(ngModel)]="customEndDate" (ngModelChange)="onCustomDateChange()">
+      </div> -->
+      <input type="text" class="form-control me-2" placeholder="Search orders" [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchTermChange(searchTerm)">
+      <button class="btn btn-secondary" (click)="exportOrders()" [disabled]="isExporting">
+        <span *ngIf="isExporting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+        {{ isExporting ? 'Exporting...' : 'Export' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading orders...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger my-4" role="alert">
+    Error loading orders: {{ error.message }}
+  </div>
+
+  <!-- Orders Table -->
+  <div *ngIf="!isLoading && !error" class="orders-table-container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th (click)="sortOrders('orderNumber')"
+            [class.sorted-asc]="sortColumn === 'orderNumber' && sortDirection === 'asc'"
+            [class.sorted-desc]="sortColumn === 'orderNumber' && sortDirection === 'desc'">Order ID <span
+              *ngIf="sortColumn === 'orderNumber'" class="sort-indicator">{{ sortDirection === 'asc' ? '▲' : '▼'
+              }}</span></th>
+          <th (click)="sortOrders('createdAt')"
+            [class.sorted-asc]="sortColumn === 'createdAt' && sortDirection === 'asc'"
+            [class.sorted-desc]="sortColumn === 'createdAt' && sortDirection === 'desc'">Date/Time <span
+              *ngIf="sortColumn === 'createdAt'" class="sort-indicator">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th (click)="sortOrders('totalAmount')"
+            [class.sorted-asc]="sortColumn === 'totalAmount' && sortDirection === 'asc'"
+            [class.sorted-desc]="sortColumn === 'totalAmount' && sortDirection === 'desc'">Total <span
+              *ngIf="sortColumn === 'totalAmount'" class="sort-indicator">{{ sortDirection === 'asc' ? '▲' : '▼'
+              }}</span></th>
+          <th (click)="sortOrders('status')" [class.sorted-asc]="sortColumn === 'status' && sortDirection === 'asc'"
+            [class.sorted-desc]="sortColumn === 'status' && sortDirection === 'desc'">Status <span
+              *ngIf="sortColumn === 'status'" class="sort-indicator">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="orders.length === 0">
+          <td colspan="7" class="text-center">No orders found.</td>
+        </tr>
+        <tr *ngFor="let order of orders">
+          <td>{{ order.orderNumber }}</td>
+          <td>{{ order.createdAt | date: 'short' }}</td>
+          <td>{{ order.customer?.firstName }} {{ order.customer?.lastName }}</td>
+          <td>{{ order.items?.length || 0 }}</td>
+          <td>{{ order.totalAmount | currency }}</td>
+          <td>{{ order.status }}</td>
+          <td>
+            <button class="btn btn-sm btn-info me-1" (click)="openOrderDetailsModal(order)">View</button>
+            <button class="btn btn-sm btn-secondary" disabled>Update Status</button> <!-- Out of scope -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div *ngIf="!isLoading && !error && totalOrders > 0"
+    class="pagination-controls d-flex justify-content-between align-items-center mt-3">
+    <div class="orders-count-summary">
+      <p>{{ paginationSummaryText }}</p>
+    </div>
+    <div>
+      <button class="btn btn-secondary me-1" [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button class="btn btn-secondary ms-1" [disabled]="currentPage === totalPages"
+        (click)="onPageChange(currentPage + 1)">Next</button>
+    </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <app-order-details-modal [order]="selectedOrder" *ngIf="selectedOrder"></app-order-details-modal>
+</div>

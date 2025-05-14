@@ -33,7 +33,7 @@ RUN npx ng build storefront --configuration production --source-map
 FROM nginx:stable-alpine
 
 # Copy built Angular app contents from builder stage's browser output directory to Nginx html directory
-COPY --from=builder /usr/src/app/dist/storefront/browser /usr/share/nginx/html
+COPY --from=builder /usr/src/app/dist/storefront/browser /app/storefront-build
 
 # Copy the custom Nginx configuration (Optional if always mounted via compose)
 # COPY docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf

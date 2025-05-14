@@ -30,8 +30,8 @@ export class AccountAddressesComponent implements OnInit {
     // Initialize the form
     this.addressForm = this.fb.group({
       fullName: ['', [Validators.required, Validators.maxLength(100)]],
-      street1: ['', [Validators.required, Validators.maxLength(255)]],
-      street2: ['', [Validators.maxLength(255)]],
+      street: ['', [Validators.required, Validators.maxLength(255)]], // Changed from street1
+      apartmentOrSuite: ['', [Validators.maxLength(255)]], // Changed from street2
       city: ['', [Validators.required, Validators.maxLength(100)]],
       // state: ['', [Validators.required, Validators.maxLength(100)]], // Removed state
       postalCode: ['', [Validators.required, Validators.maxLength(20)]],
@@ -163,7 +163,8 @@ export class AccountAddressesComponent implements OnInit {
 
   // Helper getters for template validation
   get fullName() { return this.addressForm.get('fullName'); }
-  get street1() { return this.addressForm.get('street1'); }
+  get street() { return this.addressForm.get('street'); } // Changed from street1
+  get apartmentOrSuite() { return this.addressForm.get('apartmentOrSuite'); } // Changed from street2
   get city() { return this.addressForm.get('city'); }
   // get state() { return this.addressForm.get('state'); } // Removed state getter
   get postalCode() { return this.addressForm.get('postalCode'); }

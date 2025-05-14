@@ -122,10 +122,20 @@ graph TD
 ## 7. Development Environment Pattern (Docker Compose - Development)
 
 *   **Files:** Uses `docker-compose.dev.yml`.
-*   **Services:** `db`, `api` (runs `npm run start:dev`), `frontend` (runs `ng serve storefront`).
-*   **Volumes:** Mounts source code (`.:/usr/src/app`) for hot-reloading. Uses named volumes for `node_modules` and DB data.
-*   **Networking:** Services communicate via Docker's default network.
-*   **Proxy:** Relies on Angular's `proxy.conf.json` for API calls from `ng serve`.
+*   **Services:** `db`, `api` (runs `npm run start:dev`), `frontend` (runs `ng serve storefront`), `store-management-frontend-dev` (builds and serves static files).
+*   **Volumes:** Mounts source code (`.:/usr/src/app`) for hot-reloading (where applicable). Uses named volumes for `node_modules`, DB data, and frontend build output.
+    *   `store_management_build`: Named volume used to persist the build output of the `store-management-frontend-dev` service.
+*   **Networking:** Uses two custom bridge networks, `internal_network` and `web_network`, for explicit service communication control.
+    *   `db`: Connected to `internal_network`.
+    *   `api`: Connected to `internal_network` and `web_network`.
+    *   `frontend`: Connected to `web_network`.
+    *   `store-management-frontend-dev`: Connected to `web_network`.
+    *   `nginx`: Connected to `web_network`.
+*   **Nginx Configuration (`docker/nginx/nginx.conf`):**
+    *   Configured to serve the Storefront application for `localhost` and `smartyapp.co.il`. In development, this proxies to the `frontend` service running `ng serve`.
+    *   Configured to serve the Store Management application for `manager.localhost` and `manager.smartyapp.co.il`. In development, this serves static files from the `store_management_build` named volume mounted at `/app/store-management-build`.
+    *   Proxies `/api/` requests to the `api` service.
+*   **Build Process (Store Management Dev):** The `store-management-frontend-dev` service's command is modified to run `npx ng build store-management` to generate the build output into the `store_management_build` named volume, and then keeps the container running.
 
 ## 8. Development Workflow Pattern
 
@@ -145,4 +155,4 @@ graph TD
     *   API call errors (e.g., `409 Conflict` for existing email) are caught, and specific error messages are displayed to the user. `form.setErrors` can be used to mark specific fields as invalid based on API response.
 *   **UI Feedback:** Submit button disabled (`[disabled]="isSubmitting"`) during API call. Success/error messages displayed using `*ngIf`.
 
-*(Pattern definition updated as of 4/2/2025 reflecting store-specific implementation)*
+*(Pattern definition updated as of 4/26/2025 reflecting development environment network and volume configuration)*

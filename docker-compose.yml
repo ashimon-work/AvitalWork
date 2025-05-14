@@ -35,17 +35,18 @@ services:
       - internal_network
       - web_network # Connect to the network Nginx is on
 
-  # Frontend Service (Nginx serving Angular build)
+  # Storefront Frontend Service (Nginx serving Angular build)
+  # Nginx service serving both frontends based on hostname
   frontend:
-    container_name: magic_store_frontend_prod
+    container_name: magic_store_nginx_prod
     build:
       context: . # Build context is the monorepo root
-      dockerfile: projects/storefront/Dockerfile.prod # We will create this Dockerfile
+      dockerfile: docker/nginx/Dockerfile.prod # Use the multi-stage Nginx Dockerfile
     ports:
       - "80:80" # Expose Nginx port 80 to the host
     volumes:
       # Mount the custom Nginx configuration
-      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro # Mount to the main nginx.conf path
     depends_on:
       - api # Ensure API is ready before frontend tries to proxy to it
     restart: unless-stopped

@@ -1,43 +1,73 @@
-import { Address } from './user.interface'; // Assuming Address is in user.interface.ts
-
-export interface OrderItem {
-  productId: string; // Or number
-  productName: string; // Denormalized for display
-  variantInfo?: string; // e.g., "Size: L, Color: Blue"
-  quantity: number;
-  unitPrice: number; // Price at the time of order
-  itemSubtotal: number;
-}
-
-export type OrderStatus =
-  | 'pending'
-  | 'processing'
-  | 'shipped'
-  | 'completed'
-  | 'cancelled'
-  | 'failed';
-
-export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
-
 export interface Order {
-  id: string; // Or number
-  orderReference: string; // User-friendly reference number
-  userId: string; // ID of the customer
-  items: OrderItem[];
+  id: string;
+  orderNumber: string;
+  orderReference: string;
+  status: string;
+  totalAmount: number;
   subtotal: number;
   shippingCost: number;
-  taxes: number;
-  discountAmount?: number;
-  promoCode?: string;
-  total: number;
-  shippingAddress: Address;
-  billingAddress?: Address; // Optional, if different from shipping
-  shippingMethod: string;
-  paymentMethod: string; // e.g., "Credit Card ending in 1234"
-  paymentStatus: PaymentStatus;
-  orderStatus: OrderStatus;
+  taxAmount: number;
+  createdAt: string;
+  fulfilledAt?: Date;
+  // Add other relevant order properties based on backend API
+  // Example: customer details, shipping address, order items
+  customer?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+  };
+  shippingAddress?: {
+    id: string;
+    fullName: string;
+    address1: string;
+    address2?: string;
+    city: string;
+    state?: string;
+    postalCode: string;
+    country: string;
+    street: string;
+    zipCode: string;
+  };
+  items?: OrderItem[];
+  notes?: OrderNote[];
+  paymentMethod?: string;
+  transactionId?: string;
+  paymentStatus?: string;
+  shippingMethod?: string;
   trackingNumber?: string;
-  notes?: string; // Internal notes
-  createdAt: Date;
-  updatedAt: Date;
+}
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  // Add other relevant order item properties
+}
+
+export interface OrderNote {
+  id: string;
+  note: string;
+  createdAt: string;
+  createdBy: string; // e.g., 'manager' or user ID
+}
+
+
+export interface OrderListResponse {
+  orders: Order[];
+  totalCount: number;
+}
+
+export interface OrderQueryParams {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
+  status?: string; // e.g., 'pending', 'processing', 'shipped', 'cancelled'
+  startDate?: string; // ISO date string
+  endDate?: string; // ISO date string
+  search?: string; // Search term for order number, customer name, etc.
 }

@@ -1,13 +1,14 @@
+@use "sass:color";
 // _variables.scss
 
 // Color Palette (Modern & Minimalist)
 $primary-color: #3498db; // A clean blue
-$primary-color-light: lighten($primary-color, 15%);
-$primary-color-dark: darken($primary-color, 15%);
+$primary-color-light: color.adjust($primary-color, $lightness: 15%);
+$primary-color-dark: color.adjust($primary-color, $lightness: -15%);
 
 $secondary-color: #95a5a6; // Optional secondary color (e.g., a muted gray)
-$secondary-color-light: lighten($secondary-color, 15%);
-$secondary-color-dark: darken($secondary-color, 15%);
+$secondary-color-light: color.adjust($secondary-color, $lightness: 15%);
+$secondary-color-dark: color.adjust($secondary-color, $lightness: -15%);
 
 $success-color: #2ecc71; // Green for success/checkout
 $error-color: #e74c3c; // Red for errors/danger

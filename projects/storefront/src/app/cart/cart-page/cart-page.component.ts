@@ -1,32 +1,58 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule, Location } from '@angular/common'; // For async pipe, ngIf, ngFor, Location
-import { RouterModule } from '@angular/router'; // For routerLink
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { Observable } from 'rxjs';
-import { CartService, CartState, CartItem } from '../../core/services/cart.service'; // Import service and interfaces
-import { StoreContextService } from '../../core/services/store-context.service'; // Import StoreContextService
-import { Product } from '@shared-types'; // Import Product type if needed
+import { Component, inject, OnInit } from '@angular/core'; // Added OnInit
+import { CommonModule, Location } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Observable, firstValueFrom, take, of, switchMap, map } from 'rxjs'; // Added of, switchMap, map
+import { CartService, CartState, CartItem } from '../../core/services/cart.service';
+import { StoreContextService } from '../../core/services/store-context.service';
+import { ApiService } from '../../core/services/api.service';
+import { RecentlyViewedService } from '../../core/services/recently-viewed.service'; // Added import
+import { Product } from '@shared-types';
+import { ProductCardComponent } from '../../shared/components/product-card/product-card.component'; // Added import
 
 @Component({
   selector: 'app-cart-page',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule, // For "Continue Shopping" link
-    FormsModule   // Add FormsModule for ngModel
+    RouterModule,
+    FormsModule,
+    ProductCardComponent // Added to imports
   ],
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss'
 })
-export class CartPageComponent {
+export class CartPageComponent implements OnInit { // Implemented OnInit
   private cartService = inject(CartService);
   private storeContextService = inject(StoreContextService);
   private location = inject(Location);
+  private router = inject(Router);
+  private apiService = inject(ApiService);
+  private recentlyViewedService = inject(RecentlyViewedService); // Added injection
+
+  promoCode: string = '';
+  appliedPromoCodeDetails: { code: string, discountAmount: number, message?: string } | null = null;
 
   // Expose the cart state observable directly to the template
-  cartState$: Observable<CartState> = this.cartService.cartState$;
+  cartState$: Observable<CartState | null> = this.cartService.cartState$;
   // Expose the store slug observable
   currentStoreSlug$: Observable<string | null> = this.storeContextService.currentStoreSlug$;
+  recentlyViewedProducts$: Observable<Product[]> = of([]); // Added property
+
+  ngOnInit(): void {
+    const productIds = this.recentlyViewedService.getRecentlyViewedProductIds();
+    if (productIds.length > 0) {
+      this.recentlyViewedProducts$ = this.currentStoreSlug$.pipe(
+        take(1),
+        switchMap(storeSlug => {
+          if (storeSlug) {
+            return this.apiService.getProductsByIds(storeSlug, productIds);
+          }
+          return of([]); // No store slug, return empty
+        })
+      );
+    }
+  }
 
   // Method to calculate item subtotal
   calculateItemSubtotal(item: CartItem): number {
@@ -87,11 +113,68 @@ export class CartPageComponent {
     // Potentially useful if batching updates or recalculating totals explicitly
   }
 
+  applyPromoCode(): void {
+    if (!this.promoCode.trim()) {
+      this.appliedPromoCodeDetails = {
+        code: '',
+        discountAmount: 0,
+        message: 'Please enter a promo code.'
+      };
+      return;
+    }
+
+    this.storeContextService.currentStoreSlug$.pipe(take(1)).subscribe(storeSlug => {
+      if (!storeSlug) {
+        console.error('Store slug is not available. Cannot apply promo code.');
+        this.appliedPromoCodeDetails = {
+          code: this.promoCode,
+          discountAmount: 0,
+          message: 'Error: Store context not found.'
+        };
+        return;
+      }
+
+      this.apiService.applyPromoCodeToCart(storeSlug, this.promoCode).subscribe({
+        next: (response) => {
+          // Assuming API response: { success: boolean, code: string, discountAmount: number, message?: string, newTotal?: number }
+          if (response && response.success) {
+            this.appliedPromoCodeDetails = {
+              code: response.code,
+              discountAmount: response.discountAmount,
+              message: response.message || `Promo code "${response.code}" applied successfully! You saved ${response.discountAmount}.`
+            };
+            this.promoCode = ''; // Clear input on success
+          } else {
+            this.appliedPromoCodeDetails = {
+              code: this.promoCode,
+              discountAmount: 0,
+              message: response.message || 'Invalid or expired promo code.'
+            };
+          }
+        },
+        error: (err) => {
+          console.error('Error applying promo code:', err);
+          this.appliedPromoCodeDetails = {
+            code: this.promoCode,
+            discountAmount: 0,
+            message: 'Invalid or expired promo code. Please try again.' // More generic error for UI
+          };
+        }
+      });
+    });
+  }
+
   // Placeholder method for "Proceed to Checkout" button
-  proceedToCheckout(): void {
+  async proceedToCheckout(): Promise<void> {
     console.log('Proceeding to checkout...');
-    // TODO: Implement navigation to checkout route
-    // this.router.navigate(['/checkout']);
+    const storeSlug = await firstValueFrom(this.storeContextService.currentStoreSlug$);
+    if (storeSlug) {
+      this.router.navigate(['/', storeSlug, 'checkout']);
+    } else {
+      console.error('Store slug is not available. Cannot navigate to checkout.');
+      // Optionally, navigate to a generic error page or home
+      this.router.navigate(['/']);
+    }
   }
 
   // Method to navigate back

@@ -1,0 +1,441 @@
+/* Styles for Product Management Page */
+.product-management-container {
+  padding: 20px;
+  background-color: #f8f9fa; /* Light grey background */
+  font-family: 'Roboto', sans-serif; /* Example font */
+  color: #343A40; /* Dark grey text */
+
+  h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #343A40;
+  }
+
+  .action-bar {
+    background-color: #ffffff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 10px; /* Spacing between items */
+
+    .add-product-button {
+      background-color: #28A745; /* Primary Accent Green */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #218838;
+      }
+    }
+
+    .bulk-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px; /* Spacing between select and button */
+    }
+
+    .search-filter {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      gap: 10px; /* Spacing between filter elements */
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
+
+      .form-control,
+      .form-select {
+        max-width: 200px; /* Adjust as needed */
+        padding: 10px 12px; /* Increased padding */
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 16px; /* Increased font size */
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: #28A745; /* Primary Accent Green on focus */
+          box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); /* Subtle green shadow on focus */
+        }
+      }
+    }
+
+    .toggle-filters-button {
+      padding: 10px 15px; /* Adjusted padding */
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      background-color: #ffffff;
+      color: #555;
+      font-size: 14px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+
+      &:hover {
+        background-color: #f8f9fa;
+        color: #343A40;
+      }
+    }
+  }
+
+  .product-table-container {
+    overflow-x: auto; /* Add horizontal scroll for smaller screens */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px; /* Add padding around the table */
+
+    table {
+      width: 100%; /* Use 100% width */
+      border-collapse: collapse;
+      min-width: 800px; /* Ensure table is wide enough */
+
+      thead {
+        th {
+          background-color: #f8f9fa;
+          font-size: 14px;
+          font-weight: bold;
+          color: #555;
+          cursor: pointer; /* Indicate sortable columns */
+          white-space: nowrap; /* Prevent wrapping in headers */
+          padding: 12px;
+          border-bottom: 1px solid #dee2e6;
+          text-align: left;
+
+          &:hover {
+            background-color: #e9ecef;
+          }
+        }
+      }
+
+      tbody {
+        td {
+          padding: 12px;
+          border-bottom: 1px solid #dee2e6;
+          font-size: 14px;
+          color: #343A40;
+        }
+
+        tr:last-child td {
+          border-bottom: none; /* Remove border for the last row */
+        }
+      }
+
+
+      .product-thumbnail {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+
+      .stock-level {
+        font-weight: bold;
+        // Color coding will be handled in component logic or a pipe
+        &.low { color: #ffc107; } /* Warning Yellow */
+        &.out-of-stock { color: #dc3545; } /* Danger Red */
+        &.in-stock { color: #28a745; } /* Success Green */
+      }
+
+      .status-indicator {
+        font-weight: bold;
+        // Color coding will be handled in component logic or a pipe
+        &.active { color: #28a745; } /* Success Green */
+        &.inactive { color: #6c757d; } /* Secondary Grey */
+      }
+
+      .actions {
+        white-space: nowrap; /* Prevent buttons from wrapping */
+        button {
+          margin-right: 5px; /* Spacing between action buttons */
+          padding: 5px 10px;
+          font-size: 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+
+          &.btn-info {
+            background-color: #17a2b8; /* Cyan */
+            color: white;
+            border: none;
+            &:hover { background-color: #138496; }
+          }
+          &.btn-secondary {
+            background-color: #6c757d; /* Secondary grey */
+            color: white;
+            border: none;
+            &:hover { background-color: #5a6268; }
+          }
+          &.btn-danger {
+            background-color: #dc3545; /* Danger Red */
+            color: white;
+            border: none;
+            &:hover { background-color: #c82333; }
+          }
+        }
+      }
+    }
+  }
+
+  .pagination-controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+
+    .product-count-summary {
+      margin: 0; /* Remove default margin */
+      color: #555;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+      gap: 10px; /* Spacing between elements */
+
+      button {
+        padding: 5px 10px;
+        background-color: #e9ecef;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        &:hover:not(:disabled) {
+          background-color: #dee2e6;
+        }
+      }
+
+      span {
+        color: #555;
+      }
+    }
+  }
+
+
+  .advanced-filter-sidebar-placeholder {
+    border: 1px dashed #ccc;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+    color: #999;
+    background-color: #ffffff; /* Add background */
+    border-radius: 8px;
+  }
+
+  /* Modal Styles */
+  .modal-dialog {
+    max-width: 90%; /* Adjust modal width */
+  }
+
+  .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 15px 20px;
+    h5 {
+      color: #343A40;
+      font-size: 20px;
+    }
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .nav-tabs {
+    margin-bottom: 0; /* Remove bottom margin from tabs */
+    border-bottom: none; /* Remove default border */
+
+    .nav-item {
+      .nav-link {
+        border: 1px solid transparent;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+        color: #555;
+        transition: color 0.3s ease, border-color 0.3s ease;
+        margin-bottom: -1px; /* Overlap with tab-content border */
+        padding: 10px 15px; /* Adjusted padding */
+        font-size: 14px;
+
+        &.active {
+          color: #343A40;
+          background-color: #ffffff;
+          border-color: #dee2e6 #dee2e6 #ffffff; /* Active tab border */
+          font-weight: bold;
+        }
+
+        &:hover:not(.active) {
+          border-color: #e9ecef #e9ecef #dee2e6;
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    border: 1px solid #dee2e6;
+    border-top: none; /* Remove top border as tabs provide it */
+    padding: 20px;
+    border-radius: 0 0 0.25rem 0.25rem;
+    background-color: #ffffff;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: #343A40;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block; /* Ensure labels are block elements */
+  }
+
+  .form-group {
+    margin-bottom: 15px; /* Consistent spacing between form groups */
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Vertically align items */
+    
+    .form-label {
+      flex: 0 0 150px; /* Example fixed width for labels */
+      margin-right: 15px; /* Spacing between label and input */
+      margin-bottom: 0; /* Remove bottom margin in flex container */
+    }
+
+    .form-control, .form-select {
+      flex-grow: 1; /* Allow inputs to take remaining space */
+    }
+
+    // Adjust for textareas which should not be flex items
+    textarea.form-control {
+      display: block; /* Override flex behavior */
+      width: 100%; /* Ensure textarea takes full width */
+      flex-grow: 0; /* Prevent textarea from growing in flex container */
+    }
+  }
+
+
+  .form-control,
+  .form-select {
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #28A745; /* Primary Accent Green on focus */
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); /* Subtle green shadow on focus */
+    }
+  }
+
+  .image-preview-area {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Spacing between image previews */
+  }
+
+  .variant-types-area {
+    border: 1px solid #dee2e6; /* Solid border */
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    background-color: #f8f9fa; /* Light background */
+
+    .input-group {
+      margin-bottom: 10px; /* Spacing between variant type inputs */
+      align-items: center; /* Vertically align items in input group */
+
+      .form-control {
+        flex-grow: 1; /* Allow inputs to grow */
+      }
+
+      .btn-outline-danger {
+        border: 1px solid #dc3545; /* Danger Red border */
+        color: #dc3545; /* Danger Red text */
+        background-color: transparent;
+        padding: 8px 12px; /* Adjusted padding */
+        font-size: 14px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+
+        &:hover {
+          background-color: #dc3545;
+          color: white;
+        }
+      }
+    }
+
+    .btn-secondary.btn-sm {
+      background-color: #6c757d; /* Secondary grey */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 15px; /* Adjusted padding */
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #5a6268;
+      }
+    }
+  }
+
+  .variant-matrix-generator-placeholder {
+    border: 1px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    background-color: #ffffff; /* Add background */
+    border-radius: 8px;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; /* Spacing between buttons */
+
+    .btn-primary {
+      background-color: #28A745; /* Primary Accent Green */
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #218838;
+      }
+    }
+
+    .btn-secondary {
+      background-color: #6c757d; /* Secondary grey */
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #5a6268;
+      }
+    }
+  }
+}

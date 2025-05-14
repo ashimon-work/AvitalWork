@@ -1,0 +1,384 @@
+<!-- Product Management Page -->
+<div class="product-management-container d-flex">
+  <!-- Advanced Filter Sidebar -->
+  <aside class="advanced-filter-sidebar" [class.open]="showAdvancedFilters">
+    <h4>Advanced Filters</h4>
+    <button class="btn-close close-sidebar-btn" aria-label="Close" (click)="toggleAdvancedFilters()"></button>
+    <div class="mb-3">
+      <label for="filterCategory" class="form-label">Category</label>
+      <select class="form-select" id="filterCategory" [(ngModel)]="selectedCategory" (change)="onCategoryChange($event)">
+        <option value="">All Categories</option>
+        <!-- TODO: Dynamically load categories from backend -->
+        <option value="electronics">Electronics</option>
+        <option value="books">Books</option>
+        <option value="clothing">Clothing</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="filterStatus" class="form-label">Status</label>
+      <select class="form-select" id="filterStatus" [(ngModel)]="selectedStatus" (change)="onStatusChange($event)">
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="filterStockLevel" class="form-label">Stock Level</label>
+      <select class="form-select" id="filterStockLevel" [(ngModel)]="selectedStockLevel" (change)="onStockLevelChange($event)">
+        <option value="">All Stock Levels</option>
+        <option value="low">Low Stock</option>
+        <option value="in-stock">In Stock</option>
+        <option value="out-of-stock">Out of Stock</option>
+      </select>
+    </div>
+    <!-- TODO: Add more filters like price range, tags, date added etc. -->
+    <button class="btn btn-secondary w-100" (click)="applyAdvancedFilters()">Apply Filters</button>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="main-content flex-grow-1 p-3">
+    <h1>Product Management</h1>
+
+    <!-- Action Bar -->
+    <div class="action-bar d-flex justify-content-between align-items-center mb-3">
+      <div class="left-actions">
+        <button class="btn btn-primary add-product-button me-2" (click)="openAddProductModal()">Add Product</button>
+        <button class="btn btn-outline-secondary toggle-filters-button" (click)="toggleAdvancedFilters()">
+          <i class="fas fa-filter"></i> {{ showAdvancedFilters ? 'Hide' : 'Show' }} Filters
+        </button>
+      </div>
+      <div class="center-actions d-flex align-items-center">
+        <input type="text" class="form-control search-input me-2" placeholder="Search products..." [(ngModel)]="searchTerm"
+          (input)="onSearchTermChange($event)">
+      </div>
+      <div class="bulk-actions d-flex align-items-center">
+        <select class="form-select me-2" [(ngModel)]="selectedBulkAction" (change)="onBulkActionChange($event)">
+          <option value="">Bulk Actions</option>
+          <option value="delete">Delete Selected</option>
+          <option value="update-status">Update Status</option>
+          <!-- Other bulk actions will be implemented later -->
+        </select>
+        <button class="btn btn-success me-2" (click)="exportProducts()" [disabled]="isLoadingExport">
+          <span *ngIf="isLoadingExport" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Export
+        </button>
+        <!-- Hidden file input for import -->
+        <input type="file" id="productImportFile" style="display: none;" (change)="onFileSelected($event)"
+          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+        <!-- Button to trigger file selection -->
+        <button class="btn btn-info me-2" onclick="document.getElementById('productImportFile').click()">Select File for
+          Import</button>
+        <!-- Button to trigger import after file selection -->
+        <button class="btn btn-primary" (click)="importProducts()" [disabled]="!selectedFile || isLoadingImport">
+          <span *ngIf="isLoadingImport" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Import
+        </button>
+        <!-- Status selection dropdown, visible only when 'Update Status' is selected -->
+        <select class="form-select ms-2" *ngIf="selectedBulkAction === 'update-status'" [(ngModel)]="selectedBulkStatus"
+          (change)="onBulkStatusChange($event)">
+          <option value="">Select Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <button class="btn btn-secondary ms-2"
+          [disabled]="selectedProductIds.length === 0 || selectedBulkAction === '' || (selectedBulkAction === 'update-status' && selectedBulkStatus === '')"
+          (click)="applyBulkAction()">Apply</button>
+      </div>
+    </div>
+
+    <!-- Product Table -->
+    <div class="product-table-container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th><input type="checkbox" [(ngModel)]="selectAll" (change)="onSelectAllChange()"></th>
+          <th>Image</th>
+          <th (click)="sortProducts('name')">Name <span *ngIf="sortColumn === 'name'" class="sort-indicator">{{
+              sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="sortProducts('sku')">SKU <span *ngIf="sortColumn === 'sku'" class="sort-indicator">{{
+              sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="sortProducts('category')">Category <span *ngIf="sortColumn === 'category'"
+              class="sort-indicator">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="sortProducts('price')">Price <span *ngIf="sortColumn === 'price'" class="sort-indicator">{{
+              sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="sortProducts('stockQuantity')">Stock <span *ngIf="sortColumn === 'stockQuantity'"
+              class="sort-indicator">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="sortProducts('status')">Status <span *ngIf="sortColumn === 'status'" class="sort-indicator">{{
+              sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Product rows will be dynamically loaded -->
+        <tr *ngFor="let product of products">
+          <td><input type="checkbox" [checked]="selectedProductIds.includes(product.id)"
+              (change)="onProductSelected(product.id, $event)"></td>
+          <td><img
+              [src]="product.imageUrls && product.imageUrls.length > 0 ? product.imageUrls[0] : 'https://via.placeholder.com/50'"
+              alt="Product Image" class="product-thumbnail"></td> <!-- Use first product image or placeholder -->
+          <td>{{ product.name }}</td>
+          <td>{{ product.sku }}</td>
+          <td>{{ product.categoryIds && product.categoryIds.length > 0 ? product.categoryIds[0] : 'N/A' }}</td>
+          <!-- Display first category ID or N/A -->
+          <td>{{ product.price | currency }}</td> <!-- Assuming price is a number -->
+          <td class="stock-level">{{ product.stockLevel }}</td> <!-- Use stockLevel -->
+          <td class="status-indicator">{{ product.isActive ? 'Active' : 'Inactive' }}</td>
+          <!-- Display status based on isActive -->
+          <td>
+            <button class="btn btn-sm btn-info me-1" (click)="openEditProductModal(product)">Edit</button>
+            <button class="btn btn-sm btn-secondary me-1"
+              (click)="openDuplicateProductModal(product)">Duplicate</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteProduct(product)">Delete</button>
+          </td>
+        </tr>
+        <!-- Rows will be dynamically generated by *ngFor -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls Placeholder -->
+  <div class="pagination-controls d-flex justify-content-between align-items-center mt-3">
+    <div class="product-count-summary">
+      <p>Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ (currentPage - 1) * pageSize + (products.length) }} of {{
+        totalProducts }} products</p>
+    </div>
+    <div>
+      <button class="btn btn-secondary me-1" [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button class="btn btn-secondary ms-1" [disabled]="currentPage === totalPages"
+        (click)="onPageChange(currentPage + 1)">Next</button>
+    </div>
+  </div>
+
+  <!-- Product Count Summary Placeholder -->
+  <!-- Advanced Filter Sidebar Placeholder -->
+  <!-- This will be a separate component or a togglable section -->
+
+  <!-- Advanced Filter Sidebar Placeholder -->
+  <!-- Add/Edit Product Modal -->
+  <!-- The modal structure remains largely the same, focusing on functionality implementation in TS -->
+
+  <!-- Add/Edit Product Modal -->
+  <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addProductModalLabel">Add/Edit Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs" id="productTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="basic-info-tab" data-bs-toggle="tab" data-bs-target="#basic-info"
+                type="button" role="tab" aria-controls="basic-info" aria-selected="true">Basic Info</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="pricing-tab" data-bs-toggle="tab" data-bs-target="#pricing" type="button"
+                role="tab" aria-controls="pricing" aria-selected="false">Pricing</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory" type="button"
+                role="tab" aria-controls="inventory" aria-selected="false">Inventory</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" type="button"
+                role="tab" aria-controls="images" aria-selected="false">Images</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="variants-tab" data-bs-toggle="tab" data-bs-target="#variants" type="button"
+                role="tab" aria-controls="variants" aria-selected="false">Variants</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="seo-tab" data-bs-toggle="tab" data-bs-target="#seo" type="button" role="tab"
+                aria-controls="seo" aria-selected="false">SEO</button>
+            </li>
+          </ul>
+          <form #productForm="ngForm" (ngSubmit)="saveProduct()">
+            <div class="tab-content" id="productTabsContent">
+              <div class="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+                <div class="mb-3">
+                  <label for="productName" class="form-label">Product Name</label>
+                  <input type="text" class="form-control" id="productName" name="name"
+                    [(ngModel)]="productFormModel.name" required>
+                </div>
+                <div class="mb-3">
+                  <label for="productDescription" class="form-label">Description</label>
+                  <textarea class="form-control" id="productDescription" name="description"
+                    [(ngModel)]="productFormModel.description" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="productSKU" class="form-label">SKU</label>
+                  <input type="text" class="form-control" id="productSKU" name="sku" [(ngModel)]="productFormModel.sku">
+                </div>
+                <div class="mb-3">
+                  <label for="productCategory" class="form-label">Category</label>
+                  <select class="form-select" id="productCategory" name="category"
+                    [(ngModel)]="productFormModel.category" required>
+                    <option value="">Select Category</option>
+                    <!-- Category options will be dynamically loaded -->
+                  </select>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="pricing" role="tabpanel" aria-labelledby="pricing-tab">
+                <div class="mb-3">
+                  <label for="productPrice" class="form-label">Price</label>
+                  <input type="number" class="form-control" id="productPrice" name="price"
+                    [(ngModel)]="productFormModel.price" step="0.01" required>
+                </div>
+                <div class="mb-3">
+                  <label for="productSalePrice" class="form-label">Sale Price (Optional)</label>
+                  <input type="number" class="form-control" id="productSalePrice" name="salePrice"
+                    [(ngModel)]="productFormModel.salePrice" step="0.01">
+                </div>
+                <div class="mb-3">
+                  <label for="productTaxStatus" class="form-label">Tax Status</label>
+                  <select class="form-select" id="productTaxStatus" name="taxStatus"
+                    [(ngModel)]="productFormModel.taxStatus" required>
+                    <option value="taxable">Taxable</option>
+                    <option value="non-taxable">Non-Taxable</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
+                <div class="mb-3">
+                  <label for="productStockQuantity" class="form-label">Stock Quantity</label>
+                  <input type="number" class="form-control" id="productStockQuantity" name="stockQuantity"
+                    [(ngModel)]="productFormModel.stockQuantity" required min="0">
+                </div>
+                <div class="mb-3">
+                  <label for="productLowStockThreshold" class="form-label">Low Stock Threshold</label>
+                  <input type="number" class="form-control" id="productLowStockThreshold" name="lowStockThreshold"
+                    [(ngModel)]="productFormModel.lowStockThreshold" min="0">
+                </div>
+                <div class="mb-3">
+                  <label for="productStockStatus" class="form-label">Stock Status</label>
+                  <select class="form-select" id="productStockStatus" name="stockStatus"
+                    [(ngModel)]="productFormModel.stockStatus" required>
+                    <option value="in-stock">In Stock</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                  </select>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                <div class="mb-3">
+                  <label for="productImages" class="form-label">Product Images</label>
+                  <div class="image-upload-drop-zone border rounded p-3 text-center"
+                       (drop)="onImageDrop($event)"
+                       (dragover)="onDragOver($event)"
+                       (dragleave)="onDragLeave($event)"
+                       (click)="triggerImageFileInput()">
+                    <p>Drag and drop images here, or click to select files.</p>
+                    <input type="file" id="productImageInput" multiple accept="image/*" style="display: none;"
+                           (change)="onImageFileSelected($event)">
+                    <button type="button" class="btn btn-secondary mt-2">Select Files</button>
+                  </div>
+                </div>
+                <div class="image-preview-area row mt-3" *ngIf="imagePreviews.length > 0">
+                  <div *ngFor="let preview of imagePreviews; let i = index" class="col-md-3 mb-3 image-preview-item">
+                    <img [src]="preview" class="img-thumbnail" alt="Image preview">
+                    <button type="button" class="btn btn-sm btn-danger remove-preview-btn" (click)="removeImagePreview(i)">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <div *ngIf="imagePreviews.length === 0 && productFormModel.imageUrls?.length === 0" class="text-muted">
+                  No images uploaded yet.
+                </div>
+                 <!-- Display existing images if editing and no new previews -->
+                <div class="image-preview-area row mt-3" *ngIf="imagePreviews.length === 0 && productFormModel.imageUrls?.length > 0">
+                    <div *ngFor="let existingUrl of productFormModel.imageUrls; let i = index" class="col-md-3 mb-3 image-preview-item">
+                        <img [src]="existingUrl" class="img-thumbnail" alt="Existing image">
+                        <!-- Optionally, add a way to remove existing images -->
+                        <!-- <button type="button" class="btn btn-sm btn-danger remove-preview-btn" (click)="removeExistingImage(i)">
+                            <i class="fas fa-times"></i>
+                        </button> -->
+                    </div>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="variants" role="tabpanel" aria-labelledby="variants-tab">
+                <h5>Product Options</h5>
+                <p>Define options for your product (e.g., Size, Color). Each option can have multiple values (e.g., Small, Medium, Large for Size).</p>
+                <div class="option-types-area mb-3">
+                  <div *ngFor="let optionType of currentOptionTypes; let i = index" class="input-group mb-2">
+                    <input type="text" class="form-control" placeholder="Option Name (e.g., Size)" [(ngModel)]="optionType.name" name="optionName{{i}}" (ngModelChange)="onOptionTypeChange()">
+                    <input type="text" class="form-control" placeholder="Values (comma-separated, e.g., S,M,L)" [(ngModel)]="optionType.values" name="optionValues{{i}}" (ngModelChange)="onOptionTypeChange()">
+                    <button class="btn btn-outline-danger" type="button" (click)="removeOptionType(i)">Remove</button>
+                  </div>
+                  <button class="btn btn-secondary btn-sm me-2" type="button" (click)="addOptionType()">Add Option Type</button>
+                  <button class="btn btn-info btn-sm" type="button" (click)="generateVariants()">Generate Variants</button>
+                </div>
+
+                <h5 class="mt-4">Generated Variants</h5>
+                <p *ngIf="generatedVariants.length === 0 && currentOptionTypes.length > 0" class="text-muted">
+                  Click "Generate Variants" to create combinations based on the options above.
+                </p>
+                <p *ngIf="currentOptionTypes.length === 0" class="text-muted">
+                  Add option types above to generate variants.
+                </p>
+
+                <div *ngIf="generatedVariants.length > 0" class="table-responsive">
+                  <table class="table table-sm variant-table">
+                    <thead>
+                      <tr>
+                        <th *ngFor="let optionName of productFormModel.options">{{ optionName }}</th>
+                        <th>Price</th>
+                        <th>SKU</th>
+                        <th>Stock</th>
+                        <th>Image URL (Optional)</th>
+                        <!-- <th>Actions</th> -->
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let variant of generatedVariants; let i = index">
+                        <td *ngFor="let option of variant.options">{{ option.value }}</td>
+                        <td>
+                          <input type="number" class="form-control form-control-sm" [(ngModel)]="variant.price" name="variantPrice{{i}}" (change)="updateVariantDetail(i, 'price', $event)" placeholder="Variant Price">
+                        </td>
+                        <td>
+                          <input type="text" class="form-control form-control-sm" [(ngModel)]="variant.sku" name="variantSku{{i}}" (change)="updateVariantDetail(i, 'sku', $event)" placeholder="Variant SKU">
+                        </td>
+                        <td>
+                          <input type="number" class="form-control form-control-sm" [(ngModel)]="variant.stockLevel" name="variantStock{{i}}" (change)="updateVariantDetail(i, 'stockLevel', $event)" placeholder="Variant Stock">
+                        </td>
+                        <td>
+                          <input type="text" class="form-control form-control-sm" [(ngModel)]="variant.imageUrl" name="variantImageUrl{{i}}" (change)="updateVariantDetail(i, 'imageUrl', $event)" placeholder="Variant Image URL">
+                        </td>
+                        <!-- TODO: Add actions like delete individual variant if needed -->
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="seo" role="tabpanel" aria-labelledby="seo-tab">
+                <div class="mb-3">
+                  <label for="seoPageTitle" class="form-label">Page Title</label>
+                  <input type="text" class="form-control" id="seoPageTitle" name="seoPageTitle"
+                    [(ngModel)]="productFormModel.seoPageTitle" maxlength="60">
+                  <small class="form-text text-muted">Recommended length: 60 characters</small>
+                </div>
+                <div class="mb-3">
+                  <label for="seoMetaDescription" class="form-label">Meta Description</label>
+                  <textarea class="form-control" id="seoMetaDescription" name="seoMetaDescription"
+                    [(ngModel)]="productFormModel.seoMetaDescription" rows="3" maxlength="160"></textarea>
+                  <small class="form-text text-muted">Recommended length: 160 characters</small>
+                </div>
+                <div class="mb-3">
+                  <label for="seoUrlSlug" class="form-label">URL Slug</label>
+                  <input type="text" class="form-control" id="seoUrlSlug" name="urlSlug"
+                    [(ngModel)]="productFormModel.urlSlug">
+                  <small class="form-text text-muted">Automatically generated from product name, can be edited.</small>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                (click)="closeModal()">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

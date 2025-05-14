@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, provideAppInitializer, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { DOCUMENT } from '@angular/common';
@@ -23,12 +23,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideAppInitializer(initializeStoreContextFactory(inject(StoreContextService), inject(DOCUMENT))),
     StoreContextService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeStoreContextFactory,
-      deps: [StoreContextService, DOCUMENT],
-      multi: true,
-    },
   ],
 };

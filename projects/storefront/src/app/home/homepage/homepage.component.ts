@@ -1,3 +1,7 @@
+import { CommonModule } from '@angular/common';
+import { CarouselComponent } from '../components/carousel/carousel.component';
+import { CategoryCardComponent } from '../../shared/components/category-card/category-card.component';
+import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { Component, inject } from '@angular/core';
 import { startWith, tap, catchError, Observable, of } from 'rxjs'; // Import tap, catchError, of
 import { Category, Product } from '@shared-types';
@@ -6,6 +10,13 @@ import { StoreContextService } from '../../core/services/store-context.service';
 import { CarouselSlide } from '../components/carousel/carousel.component';
 @Component({
   selector: 'app-homepage',
+  standalone: true,
+  imports: [
+    CommonModule,
+    CarouselComponent,
+    CategoryCardComponent,
+    ProductCardComponent,
+  ],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.scss',
 })

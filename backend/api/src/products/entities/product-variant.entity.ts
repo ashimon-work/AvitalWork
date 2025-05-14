@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ProductEntity } from './product.entity';
-import { ProductVariantOption } from '@shared-types';
+import { ProductVariantOptionDto } from '../dto/product-variant-option.dto';
 @Entity('product_variants')
 @Index(['product', 'sku'], { unique: true }) // Ensure variant SKU is unique within a product
 export class ProductVariantEntity {
@@ -33,7 +33,7 @@ export class ProductVariantEntity {
   // Store the defining options as JSON
   // Example: [{ name: 'Color', value: 'Red' }, { name: 'Size', value: 'Large' }]
   @Column('jsonb')
-  options: ProductVariantOption[];
+  options: ProductVariantOptionDto[];
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
   price?: number; // Overrides product base price if set

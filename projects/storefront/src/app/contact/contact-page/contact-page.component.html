@@ -1,1 +1,81 @@
-<p>contact-page works!</p>
+<div class="contact-page-container">
+  <h1>Contact Us</h1>
+
+  <!-- Contact Form Section -->
+  <section class="contact-form-section">
+    <h2>Send Us a Message</h2>
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmitContactForm()" novalidate>
+      <div class="form-field">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" formControlName="name" placeholder="Your Full Name">
+        <div *ngIf="contactForm.get('name')?.invalid && (contactForm.get('name')?.dirty || contactForm.get('name')?.touched)" class="validation-error">
+          <span *ngIf="contactForm.get('name')?.errors?.['required']">Name is required.</span>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" formControlName="email" placeholder="your.email@example.com">
+        <div *ngIf="contactForm.get('email')?.invalid && (contactForm.get('email')?.dirty || contactForm.get('email')?.touched)" class="validation-error">
+          <span *ngIf="contactForm.get('email')?.errors?.['required']">Email is required.</span>
+          <span *ngIf="contactForm.get('email')?.errors?.['email']">Please enter a valid email address.</span>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" formControlName="subject" placeholder="Subject of your message">
+        <div *ngIf="contactForm.get('subject')?.invalid && (contactForm.get('subject')?.dirty || contactForm.get('subject')?.touched)" class="validation-error">
+          <span *ngIf="contactForm.get('subject')?.errors?.['required']">Subject is required.</span>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="message">Message:</label>
+        <textarea id="message" formControlName="message" rows="5" placeholder="Your message here..."></textarea>
+        <div *ngIf="contactForm.get('message')?.invalid && (contactForm.get('message')?.dirty || contactForm.get('message')?.touched)" class="validation-error">
+          <span *ngIf="contactForm.get('message')?.errors?.['required']">Message is required.</span>
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="contactForm.invalid" class="submit-button">Send Message</button>
+
+      <div *ngIf="submissionStatus" class="submission-status" [ngClass]="{'success': submissionStatus.success, 'error': !submissionStatus.success}">
+        {{ submissionStatus.message }}
+      </div>
+    </form>
+  </section>
+
+  <!-- Store Contact Information Section -->
+  <section class="store-info-section">
+    <h2>Our Contact Information</h2>
+    <div *ngIf="storeContactInfo">
+      <p><strong>Email:</strong> {{ storeContactInfo.email }}</p>
+      <p><strong>Phone:</strong> {{ storeContactInfo.phone }}</p>
+      <p><strong>Address:</strong> {{ storeContactInfo.address }}</p>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div *ngIf="faqs$ | async as faqs; else loadingFaqs">
+      <div *ngIf="faqs.length > 0; else noFaqs">
+        <ul class="faq-list">
+          <li *ngFor="let faq of faqs" class="faq-item">
+            <details>
+              <summary>{{ faq.question }}</summary>
+              <p>{{ faq.answer }}</p>
+            </details>
+          </li>
+        </ul>
+      </div>
+      <ng-template #noFaqs>
+        <p>No FAQs available at the moment.</p>
+      </ng-template>
+    </div>
+    <ng-template #loadingFaqs>
+      <p>Loading FAQs...</p>
+    </ng-template>
+  </section>
+</div>

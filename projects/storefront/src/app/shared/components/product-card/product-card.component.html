@@ -1,10 +1,11 @@
-<div class="product-card" *ngIf="product">
+<div class="product-card" *ngIf="product" [class.out-of-stock]="isOutOfStock">
   <!-- Make the link conditional, but display content regardless -->
   <a [routerLink]="storeSlug ? ['/', storeSlug, 'product', product.id] : null" [queryParams]="{ categoryId: categoryId }" class="product-link">
     <div class="product-image-container">
       <img [src]="product.imageUrls[0] || '/assets/images/placeholder.png'"
            [alt]="product.name"
            class="product-image">
+      <span *ngIf="isOutOfStock" class="out-of-stock-badge">Out of Stock</span>
     </div>
     <div class="product-info">
       <h3 class="product-name">{{ product.name }}</h3>
@@ -13,7 +14,7 @@
     </div>
   </a>
   <div class="product-actions">
-    <button class="add-to-cart-btn" (click)="onAddToCart()">Add to Cart</button>
+    <button class="add-to-cart-btn" (click)="onAddToCart()" [disabled]="isOutOfStock">Add to Cart</button>
     <!-- Optional: Add wishlist button -->
   </div>
 </div>

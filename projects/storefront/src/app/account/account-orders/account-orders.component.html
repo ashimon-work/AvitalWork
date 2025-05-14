@@ -18,16 +18,20 @@
       </thead>
       <tbody>
         <tr *ngFor="let order of orders">
-          <td>{{ order.orderReference }}</td>
+          <td>{{ order.orderNumber || order.orderReference }}</td> <!-- Use orderNumber if available -->
           <td>{{ order.orderDate | date:'medium' }}</td>
           <td>
-            <!-- Add styling based on status later -->
-            <span class="badge" [ngClass]="'status-' + order.status.toLowerCase()">{{ order.status | titlecase }}</span>
+            <span class="badge" [ngClass]="{
+              'bg-success': order.status === 'Completed' || order.status === 'Shipped',
+              'bg-warning text-dark': order.status === 'Processing' || order.status === 'Pending',
+              'bg-danger': order.status === 'Cancelled' || order.status === 'Refunded',
+              'bg-info text-dark': order.status === 'Partially Shipped',
+              'bg-secondary': !['Completed', 'Shipped', 'Processing', 'Pending', 'Cancelled', 'Refunded', 'Partially Shipped'].includes(order.status)
+            }">{{ order.status | titlecase }}</span>
           </td>
           <td>{{ order.totalAmount | currency }}</td>
           <td>
-            <!-- Link/Button to view details - implement detail view later -->
-            <button (click)="viewOrderDetails(order.id)" class="btn btn-sm btn-outline-primary">View Details</button>
+            <a [routerLink]="['/account/orders', order.id]" class="btn btn-sm btn-outline-primary">View Details</a>
           </td>
         </tr>
       </tbody>

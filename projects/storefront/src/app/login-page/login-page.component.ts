@@ -4,10 +4,13 @@ import { Router, RouterModule } from '@angular/router'; // Import RouterModule f
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../core/services/auth.service'; // Import AuthService
 
+import { HttpClient } from '@angular/common/http';
+
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule], // Import necessary modules
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  providers: [HttpClient],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss']
 })

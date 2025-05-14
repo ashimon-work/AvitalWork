@@ -15,8 +15,7 @@
     <div *ngFor="let address of addresses" class="address-card">
       <h4>{{ address.fullName }}</h4>
       <p>
-        {{ address.street1 }}<br>
-        <ng-container *ngIf="address.street2">{{ address.street2 }}<br></ng-container>
+        {{ address.street }}<br>
         {{ address.city }}, {{ address.postalCode }}<br> <!-- Removed state -->
         {{ address.country }}<br>
         <ng-container *ngIf="address.phoneNumber">Phone: {{ address.phoneNumber }}</ng-container>
@@ -58,21 +57,21 @@
       </div>
     </div>
 
-    <!-- Street 1 -->
+    <!-- Street -->
     <div class="form-group mb-3">
-      <label for="street1">Street Address 1</label>
-      <input type="text" id="street1" formControlName="street1" class="form-control"
-        [ngClass]="{ 'is-invalid': street1?.invalid && (street1?.dirty || street1?.touched) }">
-      <div *ngIf="street1?.invalid && (street1?.dirty || street1?.touched)" class="invalid-feedback">
-        <div *ngIf="street1?.errors?.['required']">Street address is required.</div>
-        <div *ngIf="street1?.errors?.['maxlength']">Street address cannot exceed 255 characters.</div>
+      <label for="street">Street Address</label>
+      <input type="text" id="street" formControlName="street" class="form-control"
+        [ngClass]="{ 'is-invalid': street?.invalid && (street?.dirty || street?.touched) }">
+      <div *ngIf="street?.invalid && (street?.dirty || street?.touched)" class="invalid-feedback">
+        <div *ngIf="street?.errors?.['required']">Street address is required.</div>
+        <div *ngIf="street?.errors?.['maxlength']">Street address cannot exceed 255 characters.</div>
       </div>
     </div>
 
-    <!-- Street 2 -->
+    <!-- Apartment/Suite (Optional) -->
     <div class="form-group mb-3">
-      <label for="street2">Street Address 2 (Optional)</label>
-      <input type="text" id="street2" formControlName="street2" class="form-control">
+      <label for="apartmentOrSuite">Apartment, suite, etc. (Optional)</label>
+      <input type="text" id="apartmentOrSuite" formControlName="apartmentOrSuite" class="form-control">
     </div>
 
     <!-- City -->

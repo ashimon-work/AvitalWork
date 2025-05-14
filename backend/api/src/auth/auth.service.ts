@@ -22,6 +22,16 @@ export class AuthService {
     return null;
   }
 
+  async validateManager(email: string, pass: string): Promise<Omit<UserEntity, 'passwordHash'> | null> {
+    const user = await this.usersService.findOneByEmail(email);
+    if (user && user.roles.includes('manager') && await bcrypt.compare(pass, user.passwordHash)) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { passwordHash, ...result } = user;
+      return result;
+    }
+    return null;
+  }
+
   async login(user: Omit<UserEntity, 'passwordHash'>) {
     const payload = { email: user.email, sub: user.id }; // Use 'sub' for user ID as per JWT standard
     return {

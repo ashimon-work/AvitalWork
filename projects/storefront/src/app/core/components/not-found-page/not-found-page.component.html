@@ -7,13 +7,28 @@
     <ng-container *ngIf="currentStoreSlug$ | async as slug; else storeSearchBlock">
       <!-- Product Search (within store context) -->
       <p>Try searching for products in this store:</p>
-      <form (ngSubmit)="onProductSearch()" class="search-input-group">
+      <form (ngSubmit)="onProductSearchSubmit()" class="search-input-group">
         <input type="search"
                placeholder="Search products..."
-               [(ngModel)]="searchQuery"
-               name="searchQueryProduct">
+               [(ngModel)]="productSearchInput"
+               (ngModelChange)="onProductSearchInputChange($event)"
+               name="productSearchInput"
+               autocomplete="off">
         <button type="submit">Search Products</button>
       </form>
+      <!-- Display Product Suggestions -->
+      <div class="product-suggestions" *ngIf="productSuggestions$ | async as suggestions">
+        <ul *ngIf="suggestions.length > 0">
+          <li *ngFor="let product of suggestions" (click)="selectProductSuggestion(product)">
+            {{ product.name }}
+            <!-- Optionally display price or other details -->
+            <span *ngIf="product.price" class="suggestion-price"> - ${{ product.price | number:'1.2-2' }}</span>
+          </li>
+        </ul>
+        <p *ngIf="suggestions.length === 0 && productSearchInput.length >= 2" class="no-suggestions">
+          No product suggestions found for "{{ productSearchInput }}".
+        </p>
+      </div>
     </ng-container>
 
     <ng-template #storeSearchBlock>
@@ -23,23 +38,23 @@
         <input type="search"
                placeholder="Search stores..."
                [(ngModel)]="searchQuery"
-               (ngModelChange)="onSearchQueryChange($event)"
-               name="searchQueryStore">
+               (ngModelChange)="onStoreSearchQueryChange($event)"
+               name="searchQueryStore"
+               autocomplete="off">
         <!-- Removed submit button as search is reactive -->
-        <!-- <button type="submit">Search Stores</button> -->
       </form>
       <!-- Display Store Search Results -->
       <div class="store-search-results" *ngIf="storeSearchResults$ | async as stores">
-         <ul *ngIf="stores.length > 0; else noStoresFound">
-           <li *ngFor="let store of stores">
-             <a [routerLink]="['/', store.slug]">{{ store.name }}</a>
-             <p *ngIf="store.description">{{ store.description }}</p>
-           </li>
-         </ul>
-         <ng-template #noStoresFound>
-           <p *ngIf="searchQuery.length >= 2">No stores found matching "{{ searchQuery }}".</p>
-         </ng-template>
-       </div>
+        <ul *ngIf="stores.length > 0; else noStoresFound">
+          <li *ngFor="let store of stores">
+            <a [routerLink]="['/', store.slug]">{{ store.name }}</a>
+            <p *ngIf="store.description">{{ store.description }}</p>
+          </li>
+        </ul>
+        <ng-template #noStoresFound>
+          <p *ngIf="searchQuery.length >= 2">No stores found matching "{{ searchQuery }}".</p>
+        </ng-template>
+      </div>
     </ng-template>
   </div>
 

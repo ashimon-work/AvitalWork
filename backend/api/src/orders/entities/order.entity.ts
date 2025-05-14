@@ -101,12 +101,24 @@ export class OrderEntity {
   shippingAddress: AddressEntity;
 
   // Optional: Store billing address separately if needed, or assume same as shipping/user default
-  // @ManyToOne(() => AddressEntity, { nullable: true, eager: true })
-  // @JoinColumn({ name: 'billingAddressId' })
-  // billingAddress: AddressEntity;
+  @ManyToOne(() => AddressEntity, { nullable: true, eager: true })
+  @JoinColumn({ name: 'billingAddressId' })
+  billingAddress: AddressEntity;
 
   @Column({ length: 100, nullable: true })
   shippingMethod?: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  promoCode?: string;
+
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    default: 0,
+    comment: 'Discount amount applied from promo code or other offers',
+  })
+  discountAmount: number;
 
   @Column({
     type: 'enum',
@@ -123,6 +135,12 @@ export class OrderEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  fulfilledAt?: Date;
+
+  @Column('text', { array: true, default: [] })
+  notes: string[];
 
   // TODO: Add promo code relation/details if needed
 }

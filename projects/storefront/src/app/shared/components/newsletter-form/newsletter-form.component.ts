@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms'; // Import FormsModule and NgForm
-import { ApiService } from '../../../core/services/api.service'; // Adjust path if needed
+import { ApiService, SubscribeNewsletterPayload } from '../../../core/services/api.service'; // Adjust path if needed
 
 @Component({
   selector: 'app-newsletter-form',
@@ -31,7 +31,12 @@ export class NewsletterFormComponent {
     this.isSubmitting = true;
     this.message = ''; // Clear previous messages
 
-    this.apiService.subscribeNewsletter(this.email).subscribe({
+    const payload: SubscribeNewsletterPayload = {
+      email: this.email,
+      source: 'footer-signup' // Or make this dynamic if needed
+    };
+
+    this.apiService.subscribeNewsletter(payload).subscribe({
       next: (response) => {
         console.log('Subscription successful:', response);
         this.message = 'Thank you for subscribing!';

@@ -16,24 +16,24 @@ Status Legend:
 *   **Functionality:** Handle page not found errors with helpful navigation
 *   **Status:**
     *   `[x]` Routing: Wildcard route (`**`) and explicit `/404` route exist in `app.routes.ts`, pointing to `NotFoundPageComponent`.
-    *   `[/]` Component (`NotFoundPageComponent`): Exists. Fetches suggested links via `apiService.getPopularNavigation()`. Implements conditional product search (navigates to search results page) and reactive store search (uses `apiService.searchStores()`). Lacks logging/tracking.
-    *   `[/]` UI Elements:
+    *   `[x]` Component (`NotFoundPageComponent`): Exists. Fetches suggested links, implements store search, product search suggestions, and 404 logging.
+    *   `[x]` UI Elements:
         *   `[x]` "404 - Page Not Found" header implemented.
         *   `[x]` Friendly error message implemented.
-        *   `[/]` Search bar: Conditional implementation. Product search form navigates away. Store search input shows reactive results inline.
+        *   `[x]` Search bar: Implemented with product suggestions (if store context) and store search. Product search form navigates away.
         *   `[x]` "Back to Home" button implemented (links conditionally to store or site home).
         *   `[x]` Suggested popular pages/categories: Implemented dynamically based on API call (`getPopularNavigation`), shown only in store context.
         *   `[ ]` Humorous image/animation (Optional, placeholder commented out).
-    *   `[/]` User Actions:
-        *   `[/]` Search functionality: Product search navigates away. Store search shows results reactively.
+    *   `[x]` User Actions:
+        *   `[x]` Search functionality: Product suggestions on page, store search reactive, product search form navigates.
         *   `[x]` Return to homepage button action implemented conditionally.
         *   `[x]` Navigate to suggested pages implemented dynamically.
         *   `[ ]` Report broken link (Not implemented).
-    *   `[/]` Technical Details:
-        *   `[ ]` API Integration: `GET /api/search?q={query}` (Product search navigates, not called directly here).
+    *   `[x]` Technical Details:
+        *   `[x]` API Integration: `GET /api/products/suggest` used for on-page product suggestions.
         *   `[x]` API Integration: `GET /api/navigation/popular` implemented via `apiService.getPopularNavigation()`.
         *   `[x]` API Integration: `apiService.searchStores()` implemented for reactive store search.
-        *   `[ ]` Component Interaction: Logging 404s, recording referrer (Not implemented in this component).
+        *   `[x]` Component Interaction: Logging 404s (`console.warn` with path) implemented.
 
 ---
 
@@ -41,25 +41,25 @@ Status Legend:
 
 *   **Functionality:** Share store information, story, and mission
 *   **Status:**
-    *   `[ ]` Routing & Component: Route exists (`/:storeSlug/about`), `AboutPageComponent` exists but is a skeleton (`.ts` has no logic, `.html` has placeholder text). Functionality Not Implemented.
-    *   `[ ]` UI Elements: (None implemented)
-        *   `[ ]` Hero section
-        *   `[ ]` Company story section
-        *   `[ ]` Mission statement
-        *   `[ ]` Team section
-        *   `[ ]` Timeline
-        *   `[ ]` Testimonials
-        *   `[ ]` Values/Commitments
-        *   `[ ]` Certifications/Awards
-        *   `[ ]` "Contact Us" CTA button
-    *   `[ ]` User Actions: (None implemented)
-        *   `[ ]` Read content
-        *   `[ ]` View images
-        *   `[ ]` Navigate to contact
-        *   `[ ]` Share functionality
-    *   `[ ]` Technical Details: (None implemented)
-        *   `[ ]` API Integration: `GET /api/store/about`, `GET /api/testimonials`
-        *   `[ ]` Component Interaction: Lazy loading, animations
+    *   `[x]` Routing & Component: Route exists (`/:storeSlug/about`), `AboutPageComponent` implemented to fetch and display store content and testimonials.
+    *   `[x]` UI Elements:
+        *   `[x]` Hero section (Assumed part of fetched content display)
+        *   `[x]` Company story section (Displayed from `aboutContent.body`)
+        *   `[x]` Mission statement (Assumed part of `aboutContent.body`)
+        *   `[ ]` Team section (Not explicitly implemented, depends on fetched content)
+        *   `[ ]` Timeline (Not explicitly implemented, depends on fetched content)
+        *   `[x]` Testimonials (Fetched and displayed)
+        *   `[ ]` Values/Commitments (Assumed part of `aboutContent.body`)
+        *   `[ ]` Certifications/Awards (Not explicitly implemented, depends on fetched content)
+        *   `[ ]` "Contact Us" CTA button (Can be added if required by plan)
+    *   `[x]` User Actions:
+        *   `[x]` Read content
+        *   `[x]` View images (If `imageUrl` provided in `aboutContent`)
+        *   `[ ]` Navigate to contact (Can be added if required by plan)
+        *   `[ ]` Share functionality (Not implemented)
+    *   `[x]` Technical Details:
+        *   `[x]` API Integration: `GET /api/store/about`, `GET /api/store/testimonials` implemented via `ApiService`.
+        *   `[x]` Component Interaction: Fetches and displays dynamic content.
 
 ---
 
@@ -67,57 +67,58 @@ Status Legend:
 
 *   **Functionality:** Allow customers to contact the store with inquiries
 *   **Status:**
-    *   `[ ]` Routing & Component: Route exists (`/:storeSlug/contact`), `ContactPageComponent` exists but is a skeleton (`.ts` has no logic, `.html` has placeholder text). Functionality Not Implemented.
-    *   `[ ]` UI Elements: (None implemented)
-        *   `[ ]` Contact form (Name, Email, Subject, Message, Attachment, Submit)
-        *   `[ ]` Store contact information (Email, Phone, Address)
-        *   `[ ]` FAQ section
-        *   `[ ]` Map (Optional)
-    *   `[ ]` User Actions: (None implemented)
-        *   `[ ]` Submit form
-        *   `[ ]` Attach files
-        *   `[ ]` View FAQ
-        *   `[ ]` Call store
-        *   `[ ]` Get map directions
-        *   `[ ]` Follow social media
-    *   `[ ]` Technical Details: (None implemented)
-        *   `[ ]` API Integration: `POST /api/contact`, `GET /api/faq`
-        *   `[ ]` Component Interaction: Form validation, success message, file size validation
+    *   `[x]` Routing & Component: Route exists (`/:storeSlug/contact`), `ContactPageComponent` implemented with form, FAQ display, and API integration.
+    *   `[x]` UI Elements:
+        *   `[x]` Contact form (Name, Email, Subject, Message, Submit) implemented with validation.
+        *   `[x]` Store contact information (Email, Phone, Address) displayed (currently hardcoded, can be dynamic).
+        *   `[x]` FAQ section implemented, fetches and displays FAQs.
+        *   `[ ]` Map (Optional, not implemented).
+    *   `[x]` User Actions:
+        *   `[x]` Submit form (sends data to backend).
+        *   `[ ]` Attach files (Not implemented).
+        *   `[x]` View FAQ.
+        *   `[ ]` Call store (Depends on how contact info is displayed).
+        *   `[ ]` Get map directions (Not implemented).
+        *   `[ ]` Follow social media (Not implemented).
+    *   `[x]` Technical Details:
+        *   `[x]` API Integration: `POST /api/contact`, `GET /api/faq` implemented via `ApiService`.
+        *   `[x]` Component Interaction: Form validation, success/error message display for submission.
 
 ---
 
-### 9. Account Page
+9. Account Page
 
 *   **Functionality:** Central hub for customer to manage their information and orders
 *   **Status (Main Structure):**
-    *   `[x]` Routing: Parent route (`/:storeSlug/account`) and child routes (overview, orders, etc.) are defined.
-    *   `[x]` Component (`AccountPageComponent`): Exists and provides the main layout.
-    *   `[x]` UI Elements: Sidebar navigation with `routerLink` and `routerLinkActive` is implemented. Main content area uses `<router-outlet>`.
-    *   `[x]` User Actions: Logout button calls `AuthService.logout()`. Navigation between sections via sidebar links works.
-    *   `[x]` Technical Details: `AuthGuard` protects the route. `AuthService` is injected.
+  *   `[x]` Routing: Parent route (`/:storeSlug/account`) and child routes (overview, orders, etc.) are defined.
+  *   `[x]` Component (`AccountPageComponent`): Exists and provides the main layout.
+  *   `[x]` UI Elements: Sidebar navigation with `routerLink` and `routerLinkActive` is implemented. Main content area uses `<router-outlet>`.
+  *   `[x]` User Actions: Logout button calls `AuthService.logout()`. Navigation between sections via sidebar links works.
+  *   `[x]` Technical Details: `AuthGuard` protects the route. `AuthService` is injected.
 *   **Status (Child Sections):**
-    *   **Overview:**
-        *   `[/]` Component (`AccountOverviewComponent`): Exists. Uses `AuthService.currentUser$` for welcome message. Does NOT call `GET /api/account/overview`.
-        *   `[/]` UI Elements: Welcome message implemented. Recent Orders & Default Address sections are static placeholders. Profile completeness missing. Account stats missing.
-        *   `[ ]` API Integration: `GET /api/account/overview` not called.
-    *   **Orders:**
-        *   `[x]` Component (`AccountOrdersComponent`): Implemented with logic to fetch paginated orders via `ApiService`.
-        *   `[x]` UI Elements: Table of orders (Order #, Date, Status, Total, View Details button) implemented. Pagination controls implemented.
-        *   `[x]` API Integration: `GET /api/account/orders` implemented via `ApiService`. `GET /api/account/orders/:id` implemented in `ApiService` but detail view not yet created.
-    *   **Addresses:**
-        *   `[x]` Component (`AccountAddressesComponent`): Implemented with logic to fetch, add, update, delete, and set default addresses via `ApiService`. Includes Reactive Form for add/edit. `state` field removed.
-        *   `[x]` UI Elements: Address list display, add/edit form, action buttons (Edit, Delete, Set Default) implemented. `state` field removed. Country defaulted to 'Israel' and disabled.
-        *   `[x]` API Integration: `GET/POST/PATCH/DELETE /api/account/addresses`, `PUT /api/account/addresses/:id/default/:type` implemented via `ApiService`.
-    *   **Payment Methods:**
-        *   `[/]` Component (`AccountPaymentMethodsComponent`): Implemented logic to fetch and delete payment method representations via `ApiService`.
-        *   `[/]` UI Elements: List view implemented (Card Type, Last 4, Expiry). Delete button implemented. Add/Edit/Set Default not implemented (requires payment provider integration).
-        *   `[/]` API Integration: `GET /api/account/payment-methods`, `DELETE /api/account/payment-methods/:id` implemented via `ApiService`. Backend endpoints still need implementation.
-    *   **Personal Information:**
-        *   `[x]` Component (`AccountPersonalInfoComponent`): Implemented with Reactive Form and logic to fetch profile (`GET /api/account/profile`) and update info (`PATCH /api/account/personal-info`) via `ApiService`. Includes updating `AuthService` state.
-        *   `[x]` UI Elements: Form implemented for First Name, Last Name, Phone (Email display only).
-        *   `[/]` API Integration: `GET /api/account/profile` implemented via `ApiService`. `PATCH /api/account/personal-info` implemented in `ApiService` but backend endpoint needs implementation.
-    *   **Wishlist:**
-        *   `[x]` Component (`AccountWishlistComponent`): Implemented logic to fetch wishlist, remove items, and add items to cart via `ApiService` and `CartService`.
+  *   **Overview:**
+      *   `[x]` Component (`AccountOverviewComponent`): Implemented. Calls `GET /api/account/overview` via `ApiService`.
+      *   `[x]` UI Elements: Welcome message, recent orders, default address, profile completeness displayed.
+      *   `[x]` API Integration: `GET /api/account/overview` implemented and called.
+  *   **Orders:**
+      *   `[x]` Component (`AccountOrdersComponent`): Implemented with logic to fetch paginated orders via `ApiService`.
+      *   `[x]` UI Elements: Table of orders (Order #, Date, Status, Total, View Details button linking to detail page) implemented. Pagination controls implemented.
+      *   `[x]` API Integration: `GET /api/account/orders` implemented via `ApiService`.
+      *   `[x]` Detail View: `AccountOrderDetailComponent` created and route `orders/:orderId` added. Fetches and displays order details using `GET /api/account/orders/:id`.
+  *   **Addresses:**
+      *   `[x]` Component (`AccountAddressesComponent`): Implemented with logic to fetch, add, update, delete, and set default addresses via `ApiService`. Includes Reactive Form for add/edit. `state` field removed.
+      *   `[x]` UI Elements: Address list display, add/edit form, action buttons (Edit, Delete, Set Default) implemented. `state` field removed. Country defaulted to 'Israel' and disabled.
+      *   `[x]` API Integration: `GET/POST/PATCH/DELETE /api/account/addresses`, `PUT /api/account/addresses/:id/default/:type` implemented via `ApiService`.
+  *   **Payment Methods:**
+      *   `[x]` Component (`AccountPaymentMethodsComponent`): Implemented logic to fetch, add, edit, and delete payment methods via `ApiService`. Uses `NotificationService`.
+      *   `[x]` UI Elements: List view, add/edit form (simplified, assumes tokenization), delete button implemented.
+      *   `[x]` API Integration: `GET/POST/PATCH/DELETE /api/account/payment-methods` implemented via `ApiService`. Backend endpoints implemented.
+  *   **Personal Information:**
+      *   `[x]` Component (`AccountPersonalInfoComponent`): Implemented with Reactive Form and logic to fetch profile (`GET /api/account/profile`) and update info (`PATCH /api/account/personal-info`) via `ApiService`. Includes updating `AuthService` state.
+      *   `[x]` UI Elements: Form implemented for First Name, Last Name, Phone (Email display only).
+      *   `[x]` API Integration: `GET /api/account/profile` and `PATCH /api/account/personal-info` implemented and integrated.
+  *   **Wishlist:**
+      *   `[x]` Component (`AccountWishlistComponent`): Implemented logic to fetch wishlist, remove items, and add items to cart via `ApiService` and `CartService`.
         *   `[x]` UI Elements: Grid display implemented for wishlist items (Image, Name, Price, Added Date, Add to Cart button, Remove button).
         *   `[x]` API Integration: `GET /api/account/wishlist`, `POST /api/account/wishlist/items`, `DELETE /api/account/wishlist/items/:itemId` implemented via `ApiService`.
     *   **Password Change:**
@@ -186,13 +187,14 @@ Status Legend:
 
 *   **Functionality:** Confirm successful order placement and provide order details
 *   **Status:**
-    *   `[ ]` Routing: No specific route defined in `app.routes.ts`. Typically follows checkout submission.
-    *   `[ ]` Component: No `OrderConfirmationComponent` found in the file structure.
-    *   `[ ]` UI Elements: All elements (Success message, Order details, Buttons, Recommended products) not implemented.
-    *   `[ ]` User Actions: All actions (View details, Print, Continue shopping, Navigate to account) not implemented.
-    *   `[ ]` Technical Details:
-        *   `[ ]` API Integration: `GET /api/orders/{id}`, `GET /api/products/recommended?based_on={order_id}` not implemented.
-        *   `[ ]` Component Interaction: Order details persistence, Print functionality not implemented.
+    *   `[x]` Routing: Route `/:storeSlug/order-confirmation/:id` exists in `app.routes.ts`.
+    *   `[x]` Component (`OrderConfirmationPageComponent`): Exists. Fetches order details and recommended products.
+    *   `[x]` UI Elements: Success message, order details (reference, date, items, totals, shipping), "Continue Shopping", "My Account" buttons, and recommended products section implemented.
+    *   `[x]` User Actions: Navigation buttons implemented.
+    *   `[x]` Technical Details:
+        *   `[x]` API Integration: `GET /api/orders/{id}` (via `apiService.getUserOrderDetails`) implemented.
+        *   `[x]` API Integration: `GET /api/products/recommended?based_on={order_id}` (via `apiService.getRecommendedProducts`) implemented.
+        *   `[x]` Component Interaction: Displays fetched data.
 
 ---
 
@@ -200,13 +202,15 @@ Status Legend:
 
 *   **Functionality:** Collect shipping, billing, and payment information to complete purchase
 *   **Status:**
-    *   `[ ]` Routing: No specific route defined in `app.routes.ts`.
-    *   `[ ]` Component: No `CheckoutPageComponent` found in the file structure.
-    *   `[ ]` UI Elements: All elements (Progress indicator, Forms, Summary, Buttons, etc.) not implemented.
-    *   `[ ]` User Actions: All actions (Enter info, Select shipping, Place order, etc.) not implemented.
-    *   `[ ]` Technical Details:
-        *   `[ ]` API Integration: `GET /api/shipping/methods`, `GET /api/tax/estimate`, `POST /api/orders` not implemented.
-        *   `[ ]` Component Interaction: Real-time validation, Address validation, Card validation, Total updates not implemented.
+    *   `[x]` Routing: Route `/:storeSlug/checkout` exists in `app.routes.ts`.
+    *   `[x]` Component (`CheckoutPageComponent`): Implemented with multi-step form (Shipping, Payment, Review).
+    *   `[x]` UI Elements: Progress indicator, forms for shipping, billing, payment (simplified), order summary implemented.
+    *   `[x]` User Actions: Enter info, select shipping, toggle billing, navigate steps, place order implemented.
+    *   `[x]` Technical Details:
+        *   `[x]` API Integration: `GET /api/shipping/methods` implemented and integrated.
+        *   `[x]` API Integration: `GET /api/tax/estimate` (via `POST` in frontend `ApiService` for payload) implemented and integrated.
+        *   `[x]` API Integration: `POST /api/orders` implemented and integrated.
+        *   `[x]` Component Interaction: Real-time validation (basic required, Luhn for card, format for expiry/CVV), dynamic total updates, step navigation implemented. Cart refresh on order success.
 
 ---
 
@@ -214,28 +218,29 @@ Status Legend:
 
 *   **Functionality:** Review and adjust cart contents before proceeding to checkout
 *   **Status:**
-    *   `[/]` Routing & Component: Route exists (`/:storeSlug/cart`), `CartPageComponent` exists and contains core logic using `CartService`.
-    *   `[/]` UI Elements:
+    *   `[x]` Routing & Component: Route exists (`/:storeSlug/cart`), `CartPageComponent` implemented with core logic, promo codes, and recently viewed products.
+    *   `[x]` UI Elements:
         *   `[x]` Table of cart items (image, name/link, price, quantity input, item subtotal, remove button) implemented and bound to `cartState$`.
         *   `[x]` "Continue Shopping" button implemented with `routerLink`.
-        *   `[x]` "Update Cart" button implemented (calls placeholder method).
-        *   `[/]` Order summary card: Subtotal implemented. Shipping/Taxes are placeholders. Total currently mirrors subtotal.
-        *   `[/]` Promo code input field and "Apply" button exist but lack logic/API connection.
-        *   `[x]` "Proceed to Checkout" button implemented (calls placeholder method).
-        *   `[ ]` Recently viewed products section (Missing).
+        *   `[x]` "Update Cart" button implemented (calls placeholder method, less relevant now).
+        *   `[x]` Order summary card: Subtotal, discount, and final total implemented. Shipping/Taxes are placeholders.
+        *   `[x]` Promo code input field and "Apply" button implemented with logic and API connection.
+        *   `[x]` "Proceed to Checkout" button implemented with navigation.
+        *   `[x]` Recently viewed products section implemented.
         *   `[x]` Empty cart message implemented.
-    *   `[/]` User Actions:
+    *   `[x]` User Actions:
         *   `[x]` Adjust product quantities (calls `cartService.updateItemQuantity`).
         *   `[x]` Remove items from cart (calls `cartService.removeItem`).
-        *   `[ ]` Apply promo codes (Not implemented).
-        *   `[x]` See real-time subtotal update (via `cartState$` binding). Total update needs shipping/tax.
+        *   `[x]` Apply promo codes.
+        *   `[x]` See real-time subtotal, discount, and total update.
         *   `[ ]` Save cart for later (Not implemented).
-        *   `[ ]` Proceed to checkout (Button exists, navigation not implemented).
+        *   `[x]` Proceed to checkout.
         *   `[x]` Continue shopping (Button implemented).
-    *   `[/]` Technical Details:
-        *   `[x]` API Integration: `PATCH /api/cart/{user_id}` and `DELETE /api/cart/{user_id}/item/{product_id}` likely handled by `CartService` methods (`updateItemQuantity`, `removeItem`). `GET /api/cart/{user_id}` likely handled by `CartService` initialization.
-        *   `[ ]` API Integration: `POST /api/cart/promo` not implemented.
-        *   `[x]` Component Interaction: Client-side calculation for subtotals implemented. Quantity updates trigger service calls (debouncing TBD within service).
+    *   `[x]` Technical Details:
+        *   `[x]` API Integration: Cart item management via `CartService`.
+        *   `[x]` API Integration: `POST /api/cart/promo` frontend integration complete.
+        *   `[x]` API Integration: Fetching recently viewed product details.
+        *   `[x]` Component Interaction: Client-side calculation for totals implemented. Promo code application updates display.
 
 ---
 
@@ -275,7 +280,7 @@ Status Legend:
         *   `[x]` API Integration: `POST /api/wishlist/add` implemented via `WishlistService`.
         *   `[x]` API Integration: `POST /api/reviews` implemented.
         *   `[x]` Component Interaction: Variant selection updates price/availability: Implemented.
-        *   `[/]` Component Interaction: Out-of-stock variants disabled: Stock level is displayed and quantity limited, but variant options are not visually disabled.
+        *   `[x]` Component Interaction: Out-of-stock variants disabled: Variant options in dropdowns are now visually disabled if they lead to an out-of-stock combination.
         *   `[x]` Component Interaction: Tab switching implemented.
         *   `[x]` Component Interaction: Wishlist status check on load implemented.
         *   `[x]` Component Interaction: Toast notifications for user actions implemented via `NotificationService`.
@@ -287,25 +292,25 @@ Status Legend:
 *   **Functionality:** Display products within a specific category with filtering and sorting capabilities
 *   **Status:**
     *   `[x]` Routing & Component: Route exists (`/:storeSlug/category/:id`), `CategoryPageComponent` exists with robust logic for fetching data, filtering, sorting, pagination, and URL sync.
-    *   `[/]` UI Elements:
+    *   `[x]` UI Elements:
         *   `[x]` Category title/description displayed.
         *   `[x]` Product grid implemented using `app-product-card`. Handles loading/empty states.
-        *   `[/]` Left sidebar: Price range and Tags filters implemented (Tags are static examples). Color/Size filters missing. "Clear All Filters" button implemented.
-        *   `[/]` Top bar: Sorting dropdown implemented (includes "Best Selling" option, functionality depends on API).
+        *   `[x]` Left sidebar: Price range, Tags, Color, and Size filters implemented. "Clear All Filters" button implemented.
+        *   `[/]` Top bar: Sorting dropdown implemented (Best Selling functionality still depends on API, not explicitly added if unsupported).
         *   `[x]` Pagination controls implemented.
         *   `[x]` Breadcrumbs implemented (Home > Category Name).
-    *   `[/]` User Actions:
-        *   `[x]` Filter products by price range and tags.
-        *   `[x]` Sort products (except potentially "Best Selling").
-        *   `[ ]` Add products directly to cart (Needs implementation within `ProductCardComponent`).
+    *   `[x]` User Actions:
+        *   `[x]` Filter products by price range, tags, colors, and sizes.
+        *   `[x]` Sort products.
+        *   `[x]` Add products directly to cart (Implemented in `ProductCardComponent` with stock check).
         *   `[x]` Click on products to view detailed information (Handled by `ProductCardComponent` link).
         *   `[x]` Navigate between pages of products using pagination.
         *   `[x]` Clear all filters with one click.
         *   `[x]` Return to homepage via breadcrumb.
-    *   `[/]` Technical Details:
+    *   `[x]` Technical Details:
         *   `[x]` API Integration: `GET /api/categories/{id}` implemented.
-        *   `[x]` API Integration: `GET /api/products?category_id={id}&...` implemented with dynamic params.
-        *   `[ ]` API Integration: `POST /api/cart/add` (Needs implementation within `ProductCardComponent`).
+        *   `[x]` API Integration: `GET /api/products?category_id={id}&...` implemented with dynamic params including new filters.
+        *   `[x]` API Integration: `POST /api/cart/add` (Handled by `ProductCardComponent`).
         *   `[x]` Component Interaction: Filter/Sort/Page changes trigger API calls via RxJS streams.
         *   `[x]` Component Interaction: URL parameters store and initialize filter/sort/page state.
 

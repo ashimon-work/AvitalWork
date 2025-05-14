@@ -13,7 +13,6 @@ import { ProductCardComponent } from '../shared/components/product-card/product-
 // import { NewsletterFormComponent } from '../shared/components/newsletter-form/newsletter-form.component'; // Assuming Newsletter is needed on homepage, though plan puts it in footer
 
 @NgModule({
-  declarations: [HomepageComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -21,6 +20,7 @@ import { ProductCardComponent } from '../shared/components/product-card/product-
     CarouselComponent,
     CategoryCardComponent,
     ProductCardComponent,
+    HomepageComponent,
     // SearchBarComponent, // Re-evaluate if needed directly here vs. header/footer
     // NewsletterFormComponent, // Re-evaluate if needed directly here vs. header/footer
   ],

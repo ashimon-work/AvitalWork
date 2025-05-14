@@ -1,10 +1,21 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AccountController } from './account.controller';
-import { AuthModule } from '../auth/auth.module'; // Import AuthModule if guards/strategies are needed here (often not directly)
+import { AuthModule } from '../auth/auth.module';
+import { StoresModule } from 'src/stores/stores.module';
+import { StoresService } from 'src/stores/stores.service';
+import { AddressesModule } from 'src/addresses/addresses.module';
+import { UsersModule } from 'src/users/users.module';
+import { OrdersModule } from 'src/orders/orders.module';
 
 @Module({
-  imports: [AuthModule], // Import AuthModule to ensure Passport/JWT setup is available application-wide
+  imports: [
+    AuthModule,
+    StoresModule,
+    UsersModule,
+    OrdersModule,
+    AddressesModule,
+  ],
   controllers: [AccountController],
-  providers: [], // Add services specific to account management later
+  providers: [StoresService, Logger],
 })
 export class AccountModule {}

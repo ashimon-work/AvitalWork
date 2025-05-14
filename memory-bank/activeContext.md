@@ -2,11 +2,13 @@
 
 ## 1. Current Focus
 
-*   **Backend API Implementation:** Implementing remaining endpoints for Storefront (Personal Info update, Payment Methods, etc.).
-*   **Frontend Implementation:** Styling and refining implemented Account sub-pages. Implementing remaining Storefront pages (Checkout, Order Confirmation, etc.).
-*   **Memory Bank Maintenance:** Updating documentation after Account page implementation.
+*   **Store Management Website Implementation:** Continuing implementation of pages and core functionality.
+*   **Storefront Website Refinement:** Addressing remaining Storefront items like full Checkout & Order Confirmation flow, and Account page refinements.
+*   **Global Marketplace Website:** Initial planning and development.
+*   **Memory Bank Maintenance:** Keeping documentation updated with ongoing progress.
 
 ## 2. Recent Changes & Debugging
+
 *   **(Previous Session) Production Deployment & Debugging:** Successfully configured Docker Compose, Dockerfiles, Nginx, database migrations, and seeding for the production environment. Resolved various build and runtime errors. Fixed featured products query.
 *   **Store Entity & Relationships (Backend):**
     *   Created `StoreEntity` with `id`, `name`, `slug`, etc. (`backend/api/src/stores/entities/store.entity.ts`).
@@ -75,7 +77,7 @@
     *   Updated `seed.ts` to include `CarouselItem` data and ran seed script successfully.
     *   Identified and removed misplaced `CarouselAddComponent` and `createCarouselImage` method from Storefront project (belongs in Store Management). Fixed resulting build error.
  *   **Storefront Page Review (Frontend):** Reviewed implementation status of all 12 Storefront pages against the plan, documented in `storefront-page-status.md`. (Status updated for Account page).
- *   **404 Page Implementation (Frontend):** Implemented basic 404 page component, routing, styling, "Back to Home" link (with store slug), and placeholder search/suggestions. Fixed root redirect loop.
+ *   **404 Page Implementation (Storefront Frontend):** Implemented basic 404 page component, routing, styling, "Back to Home" link (with store slug), and placeholder search/suggestions. Fixed root redirect loop.
  *   **Backend API Implementation (Account):**
      *   Created Entities: `AddressEntity`, `OrderEntity`, `OrderItemEntity`, `WishlistEntity`, `WishlistItemEntity`.
      *   Updated `UserEntity` with relations.
@@ -99,30 +101,62 @@
      *   Implemented components (.ts, .html) for `AccountAddressesComponent`, `AccountOrdersComponent`, `AccountWishlistComponent`, `AccountPersonalInfoComponent`, `AccountChangePasswordComponent`.
      *   Implemented basic `AccountPaymentMethodsComponent` (view/delete only).
      *   Fixed various template errors and service method signatures.
+ *   **Store Management Website - Page Creation:** Defined routes and created basic component files for Login, Dashboard, Product Management, Order Management, Customer Management, Settings, Profile, and a dedicated 404 page.
+ *   **Store Management Website - Login Page:** Partially implemented UI (logo placeholder, form structure, password toggle, forgot password link/modal placeholder). Implemented basic form handling and integrated with AuthService for login and forgot password API calls (placeholders). Added basic email validation to forgot password modal.
+ *   **Store Management Website - Dashboard Page:** Partially implemented UI (basic header with navigation links, performance cards, sales chart placeholder with controls, recent orders table with pagination/sorting/status placeholders, inventory alerts, quick action buttons with router links, store health score). Integrated with DashboardService for data fetching (API calls replaced placeholders). Added `CommonModule` and `RouterModule` imports. Added methods for quick action buttons and view order (logic placeholders). Fixed Router injection error by injecting `ActivatedRoute` for relative navigation. Integrated ng2-charts for sales chart, added event handlers for time period and comparison controls, connected "View" button in Recent Orders table to component method. **Implemented frontend pagination and sorting logic for Recent Orders table (properties, methods, getters).**
+ *   **Store Management Website - Product Management Page:** Partially implemented UI (basic action bar, product table, pagination, count summary placeholders).
+ *   **Store Management Website - 404 Page:** Created a dedicated component (`ManagementNotFoundPageComponent`) and updated routing to use it for unmatched paths under `/:storeSlug`. Implemented basic UI with "Back to Dashboard" button and quick links using router links.
+ *   **Store Management Website - Dashboard Service:** Updated `getRecentOrders` method to accept pagination and sorting parameters.
 
 ## 3. Next Steps (Immediate & Planned)
 
-1.  **Implement Backend Endpoints:**
-    *   `PATCH /api/account/personal-info`
-    *   `GET /api/account/payment-methods`
-    *   `DELETE /api/account/payment-methods/:id`
-    *   (Others from plan: Checkout, Order Confirmation, Contact, About, Reviews, etc.)
-2.  **Refine Frontend Account UI/UX:** Add styling, improve error handling, implement order details view.
-3.  **Continue Frontend Page Implementation:** Checkout flow, Order Confirmation, Contact, About pages.
-4.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update).
-6.  **Refactor Cart to Use Database:** Backend (Entities, Migration, Service Update).
+1.  **Storefront Website - Finalization:**
+    *   **Complete Checkout Flow (I.5):** Full implementation of UI, multi-step form logic, API integration for shipping, tax, and order placement.
+    *   **Implement Order Confirmation Page (I.6):** Display order summary, thank you message, links to account/continue shopping.
+    *   **Refine Frontend Account UI/UX (I.9):**
+        *   Implement full functionality for Payment Methods (Add/Edit, Set Default - requires backend).
+        *   Ensure `GET /api/account/overview` is called and data displayed.
+        *   Ensure `PATCH /api/account/personal-info` backend endpoint is fully implemented and integrated.
+        *   Add styling, improve error handling, implement order details view within Account Orders.
+    *   **Address any remaining UI/UX refinements** on already implemented pages.
+    *   **Implement remaining minor features** as per PAGE FUNCTIONALITY PLAN (e.g., Newsletter subscription logic if not fully done, social login if planned).
+
+2.  **Continue Store Management Website Implementation:**
+    *   Refine UI elements and implement user actions for Dashboard (notifications), Product Management, Order Management, Customer Management, Settings, and Profile pages.
+    *   Implement technical details (API integration, component interaction) for these pages.
+    *   Implement Advanced Filter Sidebar and Add/Edit Product Modal for Product Management.
+    *   Implement Order Details Modal for Order Management.
+    *   Implement Customer Details Modal for Customer Management.
+    *   Implement Settings forms and logic.
+    *   Implement Profile update and password change logic.
+    *   Implement Role-Based Access Control (RBAC).
+    *   Implement 404 page user actions (Contact support, Report broken link).
+    *   **Implement Backend WebSocket Gateway:** Add WebSocket functionality for real-time updates in the Store Management backend.
+    *   **Update Nginx configuration for WebSocket proxying:** Configure Nginx to correctly proxy WebSocket connections to the backend API.
+
+3.  **Implement Remaining Backend Endpoints (if any not covered by Storefront/Management tasks):**
+    *   `PATCH /api/account/personal-info` (Verify full implementation).
+    *   `GET /api/account/payment-methods`, `POST /api/account/payment-methods`, `DELETE /api/account/payment-methods/:id` (Implement full logic if not done).
+    *   Store Management API Endpoints (as per ongoing Store Management dev).
+    *   Marketplace API Endpoints (Aggregated Products, Categories, Stores, Search).
+
+4.  **Global Marketplace Website (IV):**
+    *   Begin core layout, navigation, and homepage implementation.
+
+*(Cart is already refactored to use the database. Search suggestions, popular navigation, Contact, About, Reviews for Product Page are largely addressed for Storefront.)*
 
 ## 4. Active Decisions & Considerations
 
 *   **Store Identification:** Using a URL slug (`/:storeSlug`) to identify the active store in the frontend.
 *   **Backend Filtering:** API endpoints use the `storeSlug` passed as a query parameter (`?storeSlug=...`) to filter database results via TypeORM relations (`where: { store: { slug: storeSlug } }`).
-*   **Frontend Context:** Using a dedicated Angular service (`StoreContextService`) to read the `storeSlug` from the route parameters and provide it as an observable. `ApiService` subscribes to this observable to add the slug to API requests.
-*   **Frontend Routing Structure:** Routes requiring store context (including auth pages like login/register) must be nested under the `/:storeSlug` parameter to ensure context is available and preserved during navigation/redirection. Guards redirecting to auth pages must construct the store-specific path. Service-based navigation (like in `AuthService`) must also construct store-specific paths, potentially by accessing route parameters.
+*   **Frontend Context:** Using a dedicated Angular service (`StoreContextService`) to read the `storeSlug` from the route parameters and provide it as an observable (`currentStoreSlug$`). `ApiService` subscribes to this observable to add the slug to API requests.
+*   **Frontend Routing Structure:** Routes requiring store context (including auth pages like login/register) must be nested under the `/:storeSlug` parameter to ensure context is available and preserved during navigation/redirection. Guards redirecting to auth pages must construct the store-specific path. Service-based navigation (like in `AuthService`) must also construct store-specific paths, potentially by accessing route parameters. Using `ActivatedRoute` for relative navigation within store context.
 *   **Migration Strategy:** When adding non-nullable foreign keys (`storeId`) to tables with existing data, the migration must first add the column as nullable, update existing rows with a default value (potentially inserting the default referenced entity first), and then alter the column to be non-nullable.
 *   **Production Environment:** (As before) Using Docker Compose with separate production Dockerfiles and Nginx reverse proxy. Environment variables managed via `.env` file on the server.
 *   **Image Placeholders:** (As before) Using `picsum.photos`.
 *   **Docker Caching:** (As before) Optimized Dockerfiles.
 *   **TypeORM CLI:** (As before) Using `process.env` in `data-source.ts` and running commands via `docker exec`.
+*   **WebSocket Implementation:** The backend WebSocket gateway is not yet implemented. Nginx configuration needs to be updated to proxy WebSocket connections when the backend is ready.
 
 ## 5. Learnings & Insights
 
@@ -144,5 +178,6 @@
 *   **TypeORM Relations in Queries:** Use the relation property name (e.g., `user: { id: userId }`) in `where` clauses for repository methods like `find`, `findOne`, `update`, `delete` when querying based on a relation's ID, not the raw foreign key column name.
 *   **Database Constraints:** Foreign key constraints dictate the order of operations (e.g., delete dependent records before deleting the referenced record).
 *   **Angular Template Access:** Component properties accessed in the template must be public. Global objects like `Math` are not directly accessible; calculations should be done in the component or via pipes/helper methods. Event bindings (`(click)`) cannot directly use complex expressions involving async pipes or non-null assertions.
+*   **Angular Router `relativeTo`:** When using `router.navigate` with a relative path within a parameterized route (like `/:storeSlug`), inject `ActivatedRoute` and use it for the `relativeTo` option instead of trying to derive it from `router.routerState.snapshot`.
 
-*(As of 4/10/2025 - Implemented backend structure and frontend components for Account sub-pages: Addresses, Orders, Wishlist, Personal Info, Password Change. Removed 'state' field from addresses. Next step: Implement remaining backend endpoints for Account page.)*
+*(As of 5/13/2025 - Completed significant Storefront page implementations (Category, Product, Cart, Contact, About, 404) and resolved associated backend placeholder logic. Order creation flow verified. Memory bank updated.)*

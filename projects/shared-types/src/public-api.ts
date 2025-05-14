@@ -10,3 +10,4 @@ export * from './lib/product.interface';
 export * from './lib/user.interface';
 export * from './lib/order.interface';
 export * from './lib/category.interface';
+export * from './lib/note.interface';
