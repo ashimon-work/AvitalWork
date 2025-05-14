@@ -17,7 +17,7 @@ export class AccountOverviewComponent implements OnInit {
   private apiService = inject(ApiService);
   private notificationService = inject(NotificationService);
 
-  accountOverview$: Observable<AccountOverviewDto | null> = of(null); // Initialize here
+  accountOverview$: Observable<AccountOverviewDto | null> = of(null);
   isLoading = false;
 
   // Example: Calculate profile completeness (simplified)
@@ -60,7 +60,7 @@ export class AccountOverviewComponent implements OnInit {
     }
     const defaultShipping = overview.addresses.find(addr => addr.isDefaultShipping);
     return defaultShipping
-      ? `${defaultShipping.address1}, ${defaultShipping.city}, ${defaultShipping.zipCode}`
+      ? `${defaultShipping.street1}, ${defaultShipping.city}, ${defaultShipping.postalCode}`
       : 'No default shipping address set.';
   }
 }

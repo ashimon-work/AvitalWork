@@ -7,7 +7,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '/api/manager'; // Base URL for manager API
+  private apiUrl = '/api/auth/manager'; // Updated Base URL for manager login
   private readonly TOKEN_KEY = 'manager_auth_token';
   private currentUserSubject = new BehaviorSubject<any | null>(null); // Can be typed better
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -22,7 +22,7 @@ export class AuthService {
       // or make an API call to /api/manager/profile
       // For now, we'll assume the token means a user is logged in.
       // A more robust solution would involve verifying the token with the backend.
-      this.currentUserSubject.next({ token }); // Simplified user object
+      this.currentUserSubject.next({ token });
     } else {
       console.log('AuthService constructor: No token found in localStorage on init.');
     }
@@ -30,14 +30,14 @@ export class AuthService {
 
   login(credentials: any): Observable<any> {
     console.log('AuthService: Attempting login with', credentials);
-    return this.http.post<{ accessToken: string, user: any }>(`${this.apiUrl}/login`, credentials).pipe(
+    return this.http.post<{ access_token: string, user?: any }>(`${this.apiUrl}/login`, credentials).pipe( // Corrected type to access_token, user is optional. This will now correctly hit /api/auth/manager/login
       tap(response => {
-        if (response && response.accessToken) {
-          console.log('AuthService login: Login successful, token received:', response.accessToken);
-          localStorage.setItem(this.TOKEN_KEY, response.accessToken);
-          this.currentUserSubject.next(response.user || { token: response.accessToken }); // Store user or simplified object
+        if (response && response.access_token) { // Corrected property access to access_token
+          console.log('AuthService login: Login successful, token received:', response.access_token);
+          localStorage.setItem(this.TOKEN_KEY, response.access_token); // Use corrected property
+          this.currentUserSubject.next(response.user || { token: response.access_token }); // Store user or simplified object
         } else {
-          console.warn('AuthService login: Login response did not contain an accessToken.', response);
+          console.warn('AuthService login: Login response did not contain an access_token.', response);
         }
       }, error => {
         console.error('AuthService login: Login failed.', error);
@@ -47,6 +47,11 @@ export class AuthService {
 
   forgotPassword(email: string): Observable<any> {
     console.log('AuthService: Requesting password reset for', email);
+    // Note: forgot-password might need its own controller or to be moved to AuthController if it's manager-specific
+    // For now, assuming it might be a general auth feature or needs adjustment.
+    // If it's manager-specific and should remain separate from general user forgot-password,
+    // it might need to be /api/auth/manager/forgot-password or stay in ManagerController (without JwtAuthGuard).
+    // Let's assume for now it's intended to be /api/auth/manager/forgot-password
     return this.http.post(`${this.apiUrl}/forgot-password`, { email });
   }
 

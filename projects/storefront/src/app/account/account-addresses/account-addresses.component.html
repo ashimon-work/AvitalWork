@@ -15,7 +15,8 @@
     <div *ngFor="let address of addresses" class="address-card">
       <h4>{{ address.fullName }}</h4>
       <p>
-        {{ address.street }}<br>
+        {{ address.street1 }}<br>
+        <ng-container *ngIf="address.street2">{{ address.street2 }}<br></ng-container> <!-- Added street2 display -->
         {{ address.city }}, {{ address.postalCode }}<br> <!-- Removed state -->
         {{ address.country }}<br>
         <ng-container *ngIf="address.phoneNumber">Phone: {{ address.phoneNumber }}</ng-container>
@@ -59,21 +60,25 @@
 
     <!-- Street -->
     <div class="form-group mb-3">
-      <label for="street">Street Address</label>
-      <input type="text" id="street" formControlName="street" class="form-control"
-        [ngClass]="{ 'is-invalid': street?.invalid && (street?.dirty || street?.touched) }">
-      <div *ngIf="street?.invalid && (street?.dirty || street?.touched)" class="invalid-feedback">
-        <div *ngIf="street?.errors?.['required']">Street address is required.</div>
-        <div *ngIf="street?.errors?.['maxlength']">Street address cannot exceed 255 characters.</div>
+      <label for="street1">Street Address</label>
+      <input type="text" id="street1" formControlName="street1" class="form-control"
+        [ngClass]="{ 'is-invalid': street1?.invalid && (street1?.dirty || street1?.touched) }">
+      <div *ngIf="street1?.invalid && (street1?.dirty || street1?.touched)" class="invalid-feedback">
+        <div *ngIf="street1?.errors?.['required']">Street address is required.</div>
+        <div *ngIf="street1?.errors?.['maxlength']">Street address cannot exceed 255 characters.</div>
       </div>
     </div>
-
+  
     <!-- Apartment/Suite (Optional) -->
     <div class="form-group mb-3">
-      <label for="apartmentOrSuite">Apartment, suite, etc. (Optional)</label>
-      <input type="text" id="apartmentOrSuite" formControlName="apartmentOrSuite" class="form-control">
-    </div>
-
+      <label for="street2">Apartment, suite, etc. (Optional)</label>
+        <input type="text" id="street2" formControlName="street2" class="form-control"
+          [ngClass]="{ 'is-invalid': street2?.invalid && (street2?.dirty || street2?.touched) }">
+        <div *ngIf="street2?.invalid && (street2?.dirty || street2?.touched)" class="invalid-feedback">
+          <!-- Add validation messages for street2 if any are defined in the component -->
+          <div *ngIf="street2?.errors?.['maxlength']">Apartment/suite cannot exceed 255 characters.</div>
+        </div>
+      </div>
     <!-- City -->
     <div class="form-group mb-3">
       <label for="city">City</label>
@@ -112,7 +117,7 @@
     <!-- Country (Now defaulted and disabled) -->
     <div class="form-group mb-3">
       <label for="country">Country</label>
-      <input type="text" id="country" formControlName="country" class="form-control" readonly>
+      <input type="text" id="country" formControlName="country" class="form-control" [disabled]="true">
       <!-- Removed validation display as it's disabled -->
       <!-- <div *ngIf="country?.invalid && (country?.dirty || country?.touched)" class="invalid-feedback">
         <div *ngIf="country?.errors?.['required']">Country is required.</div> -->

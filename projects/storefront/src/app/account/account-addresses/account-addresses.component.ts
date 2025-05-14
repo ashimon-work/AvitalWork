@@ -30,13 +30,12 @@ export class AccountAddressesComponent implements OnInit {
     // Initialize the form
     this.addressForm = this.fb.group({
       fullName: ['', [Validators.required, Validators.maxLength(100)]],
-      street: ['', [Validators.required, Validators.maxLength(255)]],
-      apartmentOrSuite: ['', [Validators.maxLength(255)]],
+      street1: ['', [Validators.required, Validators.maxLength(255)]],
+      street2: ['', [Validators.maxLength(255)]],
       city: ['', [Validators.required, Validators.maxLength(100)]],
-      // state: ['', [Validators.required, Validators.maxLength(100)]], // Removed state
       postalCode: ['', [Validators.required, Validators.maxLength(20)]],
-      country: [{ value: 'Israel', disabled: true }, [Validators.required, Validators.maxLength(100)]], // Default to Israel and disable
-      phoneNumber: ['', [Validators.maxLength(20)]], // Add pattern later if needed
+      country: [{ value: 'Israel', disabled: true }, [Validators.required, Validators.maxLength(100)]],
+      phoneNumber: ['', [Validators.maxLength(20)]],
       // Default flags are handled by separate actions, not usually part of add/edit form directly
       // isDefaultShipping: [false],
       // isDefaultBilling: [false]
@@ -73,7 +72,8 @@ export class AccountAddressesComponent implements OnInit {
     this.clearMessages();
     this.isEditing = false;
     this.selectedAddressId = null;
-    this.addressForm.reset(); // Clear form values
+    this.addressForm.reset();
+    this.addressForm.get('country')?.setValue('Israel');
     this.showForm = true;
   }
 
@@ -103,7 +103,7 @@ export class AccountAddressesComponent implements OnInit {
 
     this.isLoading = true;
     this.cdr.detectChanges();
-    const addressData = this.addressForm.value;
+    const addressData = this.addressForm.getRawValue(); // Use getRawValue() to include disabled controls
 
     let saveObservable: Observable<AddressDto>;
 
@@ -178,8 +178,8 @@ export class AccountAddressesComponent implements OnInit {
 
   // Helper getters for template validation
   get fullName() { return this.addressForm.get('fullName'); }
-  get street() { return this.addressForm.get('street'); } // Changed from street1
-  get apartmentOrSuite() { return this.addressForm.get('apartmentOrSuite'); } // Changed from street2
+  get street1() { return this.addressForm.get('street1'); } // Renamed from street
+  get street2() { return this.addressForm.get('street2'); } // Renamed from apartmentOrSuite
   get city() { return this.addressForm.get('city'); }
   // get state() { return this.addressForm.get('state'); } // Removed state getter
   get postalCode() { return this.addressForm.get('postalCode'); }

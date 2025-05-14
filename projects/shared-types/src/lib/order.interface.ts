@@ -21,14 +21,11 @@ export interface Order {
   shippingAddress?: {
     id: string;
     fullName: string;
-    address1: string;
-    address2?: string;
+    street1: string;
+    street2?: string;
     city: string;
-    state?: string;
     postalCode: string;
     country: string;
-    street: string;
-    zipCode: string;
   };
   items?: OrderItem[];
   notes?: OrderNote[];

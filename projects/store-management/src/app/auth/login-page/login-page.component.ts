@@ -18,8 +18,8 @@ export class LoginPageComponent {
   passwordVisible: boolean = false;
   loginError: string | null = null;
 
-  isForgotPasswordModalVisible: boolean = false; // Control modal visibility
-  resetEmail!: string; // Bind to modal email input
+  isForgotPasswordModalVisible: boolean = false;
+  resetEmail!: string;
 
   constructor(
     private authService: AuthService,
@@ -39,7 +39,7 @@ export class LoginPageComponent {
         console.log('Login successful:', response);
         // Store the JWT (assuming the response contains an access_token property)
         if (response && response.access_token) {
-          localStorage.setItem('manager_access_token', response.access_token);
+          localStorage.setItem('manager_auth_token', response.access_token);
           console.log('JWT stored in local storage.');
 
           // Get the store slug from the current route

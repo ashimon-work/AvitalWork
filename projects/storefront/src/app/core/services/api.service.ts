@@ -27,14 +27,12 @@ export interface WishlistDto {
 export interface AddressDto {
   id: string;
   fullName: string;
-  address1: string;
-  address2?: string;
+  street1: string; // Renamed from street, removed address1
+  street2?: string; // Added, removed address2
   city: string;
-  state?: string;
-  zipCode: string;
+  // state?: string; // Removed state
+  postalCode: string; // Kept, removed zipCode
   country: string;
-  street: string;
-  postalCode: string;
   phoneNumber?: string;
   isDefaultShipping?: boolean;
   isDefaultBilling?: boolean;
