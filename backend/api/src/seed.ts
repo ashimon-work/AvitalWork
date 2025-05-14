@@ -44,14 +44,14 @@ const categoryData = [
 // Assign products to stores based on their category
 const productData = [
   // Electronics (Store 1)
-  { sku: 'ELEC-001', name: 'Wireless Noise-Cancelling Headphones', description: 'Experience immersive sound with these premium headphones.', price: 199.99, imageUrls: ['https://picsum.photos/seed/ELEC-001a/500/500', 'https://picsum.photos/seed/ELEC-001b/500/500', 'https://picsum.photos/seed/ELEC-001c/500/500'], tags: ['New', 'Featured', 'Audio'], stockLevel: 50, isActive: true, storeId: storeData[0].id },
-  { sku: 'ELEC-002', name: 'Smartwatch Series 8', description: 'Stay connected and track your fitness goals effortlessly.', price: 349.00, imageUrls: ['https://picsum.photos/seed/ELEC-002a/500/500', 'https://picsum.photos/seed/ELEC-002b/500/500'], tags: ['New', 'Featured', 'Wearable'], stockLevel: 25, isActive: true, storeId: storeData[0].id },
-  { sku: 'ELEC-003', name: 'Portable Bluetooth Speaker', description: 'Compact speaker with powerful sound quality for music on the go.', price: 49.99, imageUrls: ['https://picsum.photos/seed/ELEC-003a/500/500'], tags: ['Sale', 'Featured', 'Audio'], stockLevel: 40, isActive: true, storeId: storeData[0].id },
-  { sku: 'ELEC-004', name: '4K Ultra HD Smart TV', description: 'Stunning picture quality with smart features.', price: 799.99, imageUrls: ['https://picsum.photos/seed/ELEC-004a/500/500', 'https://picsum.photos/seed/ELEC-004b/500/500', 'https://picsum.photos/seed/ELEC-004c/500/500', 'https://picsum.photos/seed/ELEC-004d/500/500'], tags: ['Featured', 'Home Entertainment'], stockLevel: 15, isActive: true, storeId: storeData[0].id },
-  { sku: 'ELEC-005', name: 'Gaming Laptop', description: 'High-performance laptop for gaming enthusiasts.', price: 1299.00, imageUrls: ['https://picsum.photos/seed/ELEC-005a/500/500'], tags: ['New', 'Gaming'], stockLevel: 10, isActive: true, storeId: storeData[0].id },
+  { sku: 'ELEC-001', name: 'Wireless Noise-Cancelling Headphones', description: 'Experience immersive sound with these premium headphones.', price: 199.99, imageUrls: ['https://picsum.photos/seed/ELEC-001a/500/500', 'https://picsum.photos/seed/ELEC-001b/500/500', 'https://picsum.photos/seed/ELEC-001c/500/500'], tags: ['New', 'Featured', 'Audio'], stockLevel: 50, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[0].id] },
+  { sku: 'ELEC-002', name: 'Smartwatch Series 8', description: 'Stay connected and track your fitness goals effortlessly.', price: 349.00, imageUrls: ['https://picsum.photos/seed/ELEC-002a/500/500', 'https://picsum.photos/seed/ELEC-002b/500/500'], tags: ['New', 'Featured', 'Wearable'], stockLevel: 25, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[0].id] },
+  { sku: 'ELEC-003', name: 'Portable Bluetooth Speaker', description: 'Compact speaker with powerful sound quality for music on the go.', price: 49.99, imageUrls: ['https://picsum.photos/seed/ELEC-003a/500/500'], tags: ['Sale', 'Featured', 'Audio'], stockLevel: 40, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[0].id] },
+  { sku: 'ELEC-004', name: '4K Ultra HD Smart TV', description: 'Stunning picture quality with smart features.', price: 799.99, imageUrls: ['https://picsum.photos/seed/ELEC-004a/500/500', 'https://picsum.photos/seed/ELEC-004b/500/500', 'https://picsum.photos/seed/ELEC-004c/500/500', 'https://picsum.photos/seed/ELEC-004d/500/500'], tags: ['Featured', 'Home Entertainment'], stockLevel: 15, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[0].id] },
+  { sku: 'ELEC-005', name: 'Gaming Laptop', description: 'High-performance laptop for gaming enthusiasts.', price: 1299.00, imageUrls: ['https://picsum.photos/seed/ELEC-005a/500/500'], tags: ['New', 'Gaming'], stockLevel: 10, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[0].id] },
 
   // Apparel (Store 2)
-  { sku: 'APPA-001', name: 'Classic Cotton T-Shirt', description: 'A comfortable and stylish everyday essential, available in multiple colors.', price: 24.99, imageUrls: ['https://picsum.photos/seed/APPA-001a/500/500', 'https://picsum.photos/seed/APPA-001b/500/500', 'https://picsum.photos/seed/APPA-001c/500/500'], tags: ['Best Seller', 'Featured', 'Basics'], stockLevel: 0, isActive: true, storeId: storeData[1].id,
+  { sku: 'APPA-001', name: 'Classic Cotton T-Shirt', description: 'A comfortable and stylish everyday essential, available in multiple colors.', price: 24.99, imageUrls: ['https://picsum.photos/seed/APPA-001a/500/500', 'https://picsum.photos/seed/APPA-001b/500/500', 'https://picsum.photos/seed/APPA-001c/500/500'], tags: ['Best Seller', 'Featured', 'Basics'], stockLevel: 0, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[4].id],
     options: ['Size', 'Color'], // Define available options at the product level
     variants: [
       { sku: 'APPA-001-S-Red', options: [{ name: 'Size', value: 'S' }, { name: 'Color', value: 'Red' }], price: 24.99, stockLevel: 10, imageUrl: 'https://picsum.photos/seed/APPA-001-S-Red/500/500' },
@@ -68,7 +68,7 @@ const productData = [
       { sku: 'APPA-001-XL-Green', options: [{ name: 'Size', value: 'XL' }, { name: 'Color', value: 'Green' }], price: 24.99, stockLevel: 4 },
     ]
   },
-  { sku: 'APPA-002', name: 'Slim Fit Denim Jeans', description: 'Classic slim fit denim jeans for a modern look.', price: 59.99, imageUrls: ['https://picsum.photos/seed/APPA-002a/500/500', 'https://picsum.photos/seed/APPA-002b/500/500'], tags: ['Menswear'], stockLevel: 0, isActive: true, storeId: storeData[1].id,
+  { sku: 'APPA-002', name: 'Slim Fit Denim Jeans', description: 'Classic slim fit denim jeans for a modern look.', price: 59.99, imageUrls: ['https://picsum.photos/seed/APPA-002a/500/500', 'https://picsum.photos/seed/APPA-002b/500/500'], tags: ['Menswear'], stockLevel: 0, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[4].id],
     options: ['Waist', 'Inseam'],
     variants: [
       { sku: 'APPA-002-30-30', options: [{ name: 'Waist', value: '30' }, { name: 'Inseam', value: '30' }], price: 59.99, stockLevel: 10 },
@@ -81,7 +81,7 @@ const productData = [
       { sku: 'APPA-002-36-34', options: [{ name: 'Waist', value: '36' }, { name: 'Inseam', value: '34' }], price: 59.99, stockLevel: 7 },
     ]
   },
-  { sku: 'APPA-003', name: 'Lightweight Hoodie', description: 'Perfect for layering or cool evenings.', price: 45.00, imageUrls: ['https://picsum.photos/seed/APPA-003a/500/500'], tags: ['New', 'Casual'], stockLevel: 0, isActive: true, storeId: storeData[1].id,
+  { sku: 'APPA-003', name: 'Lightweight Hoodie', description: 'Perfect for layering or cool evenings.', price: 45.00, imageUrls: ['https://picsum.photos/seed/APPA-003a/500/500'], tags: ['New', 'Casual'], stockLevel: 0, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[4].id],
     options: ['Size', 'Color'],
     variants: [
       { sku: 'APPA-003-S-Grey', options: [{ name: 'Size', value: 'S' }, { name: 'Color', value: 'Grey' }], price: 45.00, stockLevel: 10 },
@@ -92,7 +92,7 @@ const productData = [
       { sku: 'APPA-003-L-Black', options: [{ name: 'Size', value: 'L' }, { name: 'Color', value: 'Black' }], price: 45.00, stockLevel: 15 },
     ]
   },
-  { sku: 'APPA-004', name: 'Summer Dress', description: 'Flowy and comfortable dress for warm weather.', price: 65.00, imageUrls: ['https://picsum.photos/seed/APPA-004a/500/500', 'https://picsum.photos/seed/APPA-004b/500/500'], tags: ['Womenswear', 'Sale'], stockLevel: 0, isActive: true, storeId: storeData[1].id,
+  { sku: 'APPA-004', name: 'Summer Dress', description: 'Flowy and comfortable dress for warm weather.', price: 65.00, imageUrls: ['https://picsum.photos/seed/APPA-004a/500/500', 'https://picsum.photos/seed/APPA-004b/500/500'], tags: ['Womenswear', 'Sale'], stockLevel: 0, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[4].id],
     options: ['Size', 'Color'],
     variants: [
       { sku: 'APPA-004-XS-Floral', options: [{ name: 'Size', value: 'XS' }, { name: 'Color', value: 'Floral' }], price: 65.00, stockLevel: 10 },
@@ -104,7 +104,7 @@ const productData = [
       { sku: 'APPA-004-L-Yellow', options: [{ name: 'Size', value: 'L' }, { name: 'Color', value: 'Yellow' }], price: 65.00, stockLevel: 15 },
     ]
   },
-  { sku: 'APPA-005', name: 'Running Sneakers', description: 'Lightweight and supportive sneakers for your runs.', price: 89.99, imageUrls: ['https://picsum.photos/seed/APPA-005a/500/500', 'https://picsum.photos/seed/APPA-005b/500/500', 'https://picsum.photos/seed/APPA-005c/500/500'], tags: ['Footwear', 'Sports'], stockLevel: 0, isActive: true, storeId: storeData[1].id,
+  { sku: 'APPA-005', name: 'Running Sneakers', description: 'Lightweight and supportive sneakers for your runs.', price: 89.99, imageUrls: ['https://picsum.photos/seed/APPA-005a/500/500', 'https://picsum.photos/seed/APPA-005b/500/500', 'https://picsum.photos/seed/APPA-005c/500/500'], tags: ['Footwear', 'Sports'], stockLevel: 0, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[4].id, categoryData[5].id], // Assign to both Apparel and Sports
     options: ['Size (US)', 'Color'],
     variants: [
       { sku: 'APPA-005-8-Blue', options: [{ name: 'Size (US)', value: '8' }, { name: 'Color', value: 'Blue' }], price: 89.99, stockLevel: 10 },
@@ -119,29 +119,29 @@ const productData = [
   },
 
   // Home Goods (Store 1)
-  { sku: 'HOME-001', name: 'Ceramic Coffee Mug Set (4)', description: 'Start your day right with this durable set of mugs.', price: 39.99, imageUrls: ['https://picsum.photos/seed/HOME-001a/500/500'], tags: ['Kitchen', 'Gift Idea'], stockLevel: 80, isActive: true, storeId: storeData[0].id },
-  { sku: 'HOME-002', name: 'Luxury Scented Candle', description: 'Relaxing lavender and vanilla scented candle in a glass jar.', price: 22.50, imageUrls: ['https://picsum.photos/seed/HOME-002a/500/500', 'https://picsum.photos/seed/HOME-002b/500/500'], tags: ['New', 'Home Decor'], stockLevel: 70, isActive: true, storeId: storeData[0].id },
-  { sku: 'HOME-003', name: 'Plush Throw Blanket', description: 'Soft and cozy blanket for your sofa or bed.', price: 49.99, imageUrls: ['https://picsum.photos/seed/HOME-003a/500/500'], tags: ['Comfort', 'Home Decor'], stockLevel: 60, isActive: true, storeId: storeData[0].id },
-  { sku: 'HOME-004', name: 'Stainless Steel Cookware Set', description: 'Durable 10-piece cookware set for your kitchen.', price: 149.99, imageUrls: ['https://picsum.photos/seed/HOME-004a/500/500', 'https://picsum.photos/seed/HOME-004b/500/500', 'https://picsum.photos/seed/HOME-004c/500/500'], tags: ['Kitchen', 'Featured'], stockLevel: 20, isActive: true, storeId: storeData[0].id },
-  { sku: 'HOME-005', name: 'Wall Art Print', description: 'Abstract art print to enhance your living space.', price: 75.00, imageUrls: ['https://picsum.photos/seed/HOME-005a/500/500'], tags: ['Home Decor'], stockLevel: 35, isActive: true, storeId: storeData[0].id },
+  { sku: 'HOME-001', name: 'Ceramic Coffee Mug Set (4)', description: 'Start your day right with this durable set of mugs.', price: 39.99, imageUrls: ['https://picsum.photos/seed/HOME-001a/500/500'], tags: ['Kitchen', 'Gift Idea'], stockLevel: 80, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[1].id] },
+  { sku: 'HOME-002', name: 'Luxury Scented Candle', description: 'Relaxing lavender and vanilla scented candle in a glass jar.', price: 22.50, imageUrls: ['https://picsum.photos/seed/HOME-002a/500/500', 'https://picsum.photos/seed/HOME-002b/500/500'], tags: ['New', 'Home Decor'], stockLevel: 70, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[1].id] },
+  { sku: 'HOME-003', name: 'Plush Throw Blanket', description: 'Soft and cozy blanket for your sofa or bed.', price: 49.99, imageUrls: ['https://picsum.photos/seed/HOME-003a/500/500'], tags: ['Comfort', 'Home Decor'], stockLevel: 60, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[1].id] },
+  { sku: 'HOME-004', name: 'Stainless Steel Cookware Set', description: 'Durable 10-piece cookware set for your kitchen.', price: 149.99, imageUrls: ['https://picsum.photos/seed/HOME-004a/500/500', 'https://picsum.photos/seed/HOME-004b/500/500', 'https://picsum.photos/seed/HOME-004c/500/500'], tags: ['Kitchen', 'Featured'], stockLevel: 20, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[1].id] },
+  { sku: 'HOME-005', name: 'Wall Art Print', description: 'Abstract art print to enhance your living space.', price: 75.00, imageUrls: ['https://picsum.photos/seed/HOME-005a/500/500'], tags: ['Home Decor'], stockLevel: 35, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[1].id] },
 
   // Books (Store 1)
-  { sku: 'BOOK-001', name: 'The Midnight Library', description: 'A captivating novel about choices and regrets.', price: 15.99, imageUrls: ['https://picsum.photos/seed/BOOK-001a/500/500'], tags: ['Featured', 'Fiction', 'Best Seller'], stockLevel: 30, isActive: true, storeId: storeData[0].id },
-  { sku: 'BOOK-002', name: 'Astrophysics for People in a Hurry', description: 'A concise and accessible guide to the cosmos.', price: 12.99, imageUrls: ['https://picsum.photos/seed/BOOK-002a/500/500'], tags: ['Non-Fiction', 'Science'], stockLevel: 45, isActive: true, storeId: storeData[0].id },
-  { sku: 'BOOK-003', name: 'Cookbook: Simple Recipes', description: 'Easy and delicious recipes for everyday cooking.', price: 25.00, imageUrls: ['https://picsum.photos/seed/BOOK-003a/500/500'], tags: ['Cooking', 'Gift Idea'], stockLevel: 50, isActive: true, storeId: storeData[0].id },
-  { sku: 'BOOK-004', name: 'Children\'s Picture Book', description: 'A beautifully illustrated story for young readers.', price: 9.99, imageUrls: ['https://picsum.photos/seed/BOOK-004a/500/500'], tags: ['Children', 'Illustrated'], stockLevel: 100, isActive: true, storeId: storeData[0].id },
+  { sku: 'BOOK-001', name: 'The Midnight Library', description: 'A captivating novel about choices and regrets.', price: 15.99, imageUrls: ['https://picsum.photos/seed/BOOK-001a/500/500'], tags: ['Featured', 'Fiction', 'Best Seller'], stockLevel: 30, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[2].id] },
+  { sku: 'BOOK-002', name: 'Astrophysics for People in a Hurry', description: 'A concise and accessible guide to the cosmos.', price: 12.99, imageUrls: ['https://picsum.photos/seed/BOOK-002a/500/500'], tags: ['Non-Fiction', 'Science'], stockLevel: 45, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[2].id] },
+  { sku: 'BOOK-003', name: 'Cookbook: Simple Recipes', description: 'Easy and delicious recipes for everyday cooking.', price: 25.00, imageUrls: ['https://picsum.photos/seed/BOOK-003a/500/500'], tags: ['Cooking', 'Gift Idea'], stockLevel: 50, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[2].id] },
+  { sku: 'BOOK-004', name: 'Children\'s Picture Book', description: 'A beautifully illustrated story for young readers.', price: 9.99, imageUrls: ['https://picsum.photos/seed/BOOK-004a/500/500'], tags: ['Children', 'Illustrated'], stockLevel: 100, isActive: true, storeId: storeData[0].id, categoryIds: [categoryData[2].id] },
 
   // Sports & Outdoors (Store 2)
-  { sku: 'SPRT-001', name: 'Premium Yoga Mat', description: 'Extra thick, comfortable, and non-slip yoga mat.', price: 34.99, imageUrls: ['https://picsum.photos/seed/SPRT-001a/500/500', 'https://picsum.photos/seed/SPRT-001b/500/500'], tags: ['Best Seller', 'Featured', 'Fitness'], stockLevel: 90, isActive: true, storeId: storeData[1].id },
-  { sku: 'SPRT-002', name: 'Hiking Backpack (40L)', description: 'Durable and spacious backpack for day hikes or travel.', price: 79.99, imageUrls: ['https://picsum.photos/seed/SPRT-002a/500/500', 'https://picsum.photos/seed/SPRT-002b/500/500', 'https://picsum.photos/seed/SPRT-002c/500/500'], tags: ['Hiking', 'Travel', 'New'], stockLevel: 40, isActive: true, storeId: storeData[1].id },
-  { sku: 'SPRT-003', name: 'Resistance Band Set', description: 'Versatile resistance bands for home workouts.', price: 19.99, imageUrls: ['https://picsum.photos/seed/SPRT-003a/500/500'], tags: ['Fitness', 'Workout'], stockLevel: 110, isActive: true, storeId: storeData[1].id },
-  { sku: 'SPRT-004', name: 'Insulated Water Bottle', description: 'Keeps drinks cold for 24 hours or hot for 12.', price: 24.99, imageUrls: ['https://picsum.photos/seed/SPRT-004a/500/500', 'https://picsum.photos/seed/SPRT-004b/500/500'], tags: ['Hydration', 'Outdoor'], stockLevel: 150, isActive: true, storeId: storeData[1].id },
+  { sku: 'SPRT-001', name: 'Premium Yoga Mat', description: 'Extra thick, comfortable, and non-slip yoga mat.', price: 34.99, imageUrls: ['https://picsum.photos/seed/SPRT-001a/500/500', 'https://picsum.photos/seed/SPRT-001b/500/500'], tags: ['Best Seller', 'Featured', 'Fitness'], stockLevel: 90, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[5].id] },
+  { sku: 'SPRT-002', name: 'Hiking Backpack (40L)', description: 'Durable and spacious backpack for day hikes or travel.', price: 79.99, imageUrls: ['https://picsum.photos/seed/SPRT-002a/500/500', 'https://picsum.photos/seed/SPRT-002b/500/500', 'https://picsum.photos/seed/SPRT-002c/500/500'], tags: ['Hiking', 'Travel', 'New'], stockLevel: 40, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[5].id] },
+  { sku: 'SPRT-003', name: 'Resistance Band Set', description: 'Versatile resistance bands for home workouts.', price: 19.99, imageUrls: ['https://picsum.photos/seed/SPRT-003a/500/500'], tags: ['Fitness', 'Workout'], stockLevel: 110, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[5].id] },
+  { sku: 'SPRT-004', name: 'Insulated Water Bottle', description: 'Keeps drinks cold for 24 hours or hot for 12.', price: 24.99, imageUrls: ['https://picsum.photos/seed/SPRT-004a/500/500', 'https://picsum.photos/seed/SPRT-004b/500/500'], tags: ['Hydration', 'Outdoor'], stockLevel: 150, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[5].id] },
 
   // Toys & Games (Store 2)
-  { sku: 'TOY-001', name: 'Wooden Building Blocks Set (100pcs)', description: 'Classic wooden building blocks for creative and educational play.', price: 45.99, imageUrls: ['https://picsum.photos/seed/TOY-001a/500/500'], tags: ['Educational', 'Kids'], stockLevel: 150, isActive: true, storeId: storeData[1].id },
-  { sku: 'TOY-002', name: 'Strategy Board Game', description: 'Engaging board game for family game night.', price: 39.99, imageUrls: ['https://picsum.photos/seed/TOY-002a/500/500', 'https://picsum.photos/seed/TOY-002b/500/500'], tags: ['Family Fun', 'Strategy'], stockLevel: 60, isActive: true, storeId: storeData[1].id },
-  { sku: 'TOY-003', name: 'Plush Teddy Bear', description: 'Soft and cuddly teddy bear companion.', price: 19.99, imageUrls: ['https://picsum.photos/seed/TOY-003a/500/500'], tags: ['Gift Idea', 'Kids'], stockLevel: 95, isActive: true, storeId: storeData[1].id },
-  { sku: 'TOY-004', name: 'Remote Control Car', description: 'Fast and fun remote control car for indoor/outdoor play.', price: 29.99, imageUrls: ['https://picsum.photos/seed/TOY-004a/500/500', 'https://picsum.photos/seed/TOY-004b/500/500'], tags: ['Outdoor', 'Kids', 'Sale'], stockLevel: 70, isActive: true, storeId: storeData[1].id },
+  { sku: 'TOY-001', name: 'Wooden Building Blocks Set (100pcs)', description: 'Classic wooden building blocks for creative and educational play.', price: 45.99, imageUrls: ['https://picsum.photos/seed/TOY-001a/500/500'], tags: ['Educational', 'Kids'], stockLevel: 150, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[6].id] },
+  { sku: 'TOY-002', name: 'Strategy Board Game', description: 'Engaging board game for family game night.', price: 39.99, imageUrls: ['https://picsum.photos/seed/TOY-002a/500/500', 'https://picsum.photos/seed/TOY-002b/500/500'], tags: ['Family Fun', 'Strategy'], stockLevel: 60, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[6].id] },
+  { sku: 'TOY-003', name: 'Plush Teddy Bear', description: 'Soft and cuddly teddy bear companion.', price: 19.99, imageUrls: ['https://picsum.photos/seed/TOY-003a/500/500'], tags: ['Gift Idea', 'Kids'], stockLevel: 95, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[6].id] },
+  { sku: 'TOY-004', name: 'Remote Control Car', description: 'Fast and fun remote control car for indoor/outdoor play.', price: 29.99, imageUrls: ['https://picsum.photos/seed/TOY-004a/500/500', 'https://picsum.photos/seed/TOY-004b/500/500'], tags: ['Outdoor', 'Kids', 'Sale'], stockLevel: 70, isActive: true, storeId: storeData[1].id, categoryIds: [categoryData[6].id] },
 ];
 
 // Define which product SKUs are used in the carousel for easier lookup
@@ -165,10 +165,10 @@ const baseUserData = [
 // --- Address Data ---
 const addressData = [
   // John Doe Addresses
-  { userId: baseUserData[0].id, fullName: 'John Doe', street1: '123 Main St', city: 'Anytown', postalCode: '90210', country: 'USA', isDefaultShipping: true, isDefaultBilling: true }, // Removed state: 'CA'
-  { userId: baseUserData[0].id, fullName: 'John Doe Work', street1: '456 Business Ave', street2: 'Suite 100', city: 'Workville', postalCode: '90211', country: 'USA' }, // Removed state: 'CA'
+  { userId: baseUserData[0].id, fullName: 'John Doe', street1: '123 Main St', city: 'Anytown', postalCode: '90210', country: 'USA', isDefaultShipping: true, isDefaultBilling: true },
+  { userId: baseUserData[0].id, fullName: 'John Doe Work', street1: '456 Business Ave', street2: 'Suite 100', city: 'Workville', postalCode: '90211', country: 'USA' },
   // Jane Smith Address
-  { userId: baseUserData[1].id, fullName: 'Jane Smith', street1: '789 Lake Rd', city: 'Laketown', postalCode: '10001', country: 'USA', isDefaultShipping: true, isDefaultBilling: true }, // Removed state: 'NY'
+  { userId: baseUserData[1].id, fullName: 'Jane Smith', street1: '789 Lake Rd', city: 'Laketown', postalCode: '10001', country: 'USA', isDefaultShipping: true, isDefaultBilling: true },
 ];
 
 // --- Order Data (Placeholder - needs product IDs) ---
@@ -234,7 +234,7 @@ async function bootstrap() {
   const faqRepository = dataSource.getRepository(FaqEntity);
   const aboutContentRepository = dataSource.getRepository(AboutContentEntity);
   const testimonialRepository = dataSource.getRepository(TestimonialEntity);
-  const promoCodeRepository = dataSource.getRepository(PromoCodeEntity); // Added promoCodeRepository
+  const promoCodeRepository = dataSource.getRepository(PromoCodeEntity);
 
 
   try {
@@ -246,7 +246,7 @@ async function bootstrap() {
     await wishlistItemRepository.delete({});
     await wishlistRepository.delete({});
     await addressRepository.delete({});
-    await promoCodeRepository.delete({}); // Clear promo codes
+    await promoCodeRepository.delete({});
     await productVariantRepository.delete({});
     await productRepository.delete({});
     await categoryRepository.delete({});
@@ -275,13 +275,21 @@ async function bootstrap() {
 
     // --- Seed Products and Variants ---
     logger.log('Seeding products and variants...');
-    const productsToSave = productData.map(product => {
-        const productEntity = productRepository.create(product);
-        if (product.variants && product.variants.length > 0) {
-            productEntity.variants = product.variants.map(variant => productVariantRepository.create(variant));
-        }
-        return productEntity;
-    });
+    const productsToSave: ProductEntity[] = [];
+    for (const product of productData) {
+      const { categoryIds, variants: variantData, ...productDetails } = product as any; // Renamed variants to avoid conflict
+      const productEntityInstance = productRepository.create(productDetails as Partial<ProductEntity>); // Create a single entity
+
+      if (categoryIds && categoryIds.length > 0) {
+        const categories = await categoryRepository.findBy({ id: In(categoryIds) });
+        productEntityInstance.categories = categories; // Assign to the single entity instance
+      }
+
+      if (variantData && variantData.length > 0) {
+        productEntityInstance.variants = variantData.map(variant => productVariantRepository.create(variant as Partial<ProductVariantEntity>)); // Assign to the single entity instance
+      }
+      productsToSave.push(productEntityInstance); // Push the single entity instance
+    }
 
     await productRepository.save(productsToSave);
     const productCount = await productRepository.count();

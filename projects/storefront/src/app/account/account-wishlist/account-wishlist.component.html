@@ -1,7 +1,7 @@
 <h3>My Wishlist</h3>
 
 <!-- Loading Indicator -->
-<div *ngIf="isLoading && !(items$ | async)" class="loading-indicator">Loading wishlist...</div>
+<div *ngIf="isLoading" class="loading-indicator">Loading wishlist...</div>
 
 <!-- Success/Error Messages -->
 <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>

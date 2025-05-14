@@ -46,7 +46,9 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
         take(1),
         switchMap(storeSlug => {
           if (storeSlug) {
-            return this.apiService.getProductsByIds(storeSlug, productIds);
+            // storeSlug is no longer passed as an argument here,
+            // ApiService.getProductsByIds will get it from StoreContextService
+            return this.apiService.getProductsByIds(productIds);
           }
           return of([]); // No store slug, return empty
         })

@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { Observable, combineLatest, switchMap, tap, catchError, of } from 'rxjs';
-import { Order, Product } from '@shared-types'; // Assuming Order and Product types are in shared-types
-import { ProductCardComponent } from '../../shared/components/product-card/product-card.component'; // Assuming product-card is in shared
+import { Order, Product } from '@shared-types';
+import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 
 @Component({
   selector: 'app-order-confirmation-page',
@@ -53,8 +53,7 @@ export class OrderConfirmationPageComponent implements OnInit {
       );
 
       this.isLoadingRecommended = true;
-      // Use the new getRecommendedProducts method
-      this.recommendedProducts$ = this.apiService.getRecommendedProducts(this.orderId, this.storeSlug).pipe(
+      this.recommendedProducts$ = this.apiService.getRecommendedProducts(this.orderId).pipe(
         tap(() => this.isLoadingRecommended = false),
         catchError(error => {
           console.error('Error fetching recommended products:', error);

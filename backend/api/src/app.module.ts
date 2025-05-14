@@ -19,6 +19,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { PromoCodesModule } from './promo-codes/promo-codes.module';
 import { ContactModule } from './contact/contact.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ReviewsModule } from './reviews/reviews.module'; // Import ReviewsModule
 
 // Import all entities used in the seed script
 import { StoreEntity } from './stores/entities/store.entity';
@@ -92,6 +93,7 @@ import { SettingsModule } from './settings/settings.module';
     PromoCodesModule,
     ContactModule,
     NotificationsModule,
+    ReviewsModule, // Add ReviewsModule to imports
   ],
   controllers: [AppController, ManagerController],
   providers: [AppService, ManagerService],

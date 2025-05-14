@@ -1,7 +1,7 @@
 <h3>My Orders</h3>
 
 <!-- Loading Indicator -->
-<div *ngIf="isLoading && !(orders$ | async)" class="loading-indicator">Loading orders...</div>
+<div *ngIf="isLoading" class="loading-indicator">Loading orders...</div>
 
 <!-- Order List -->
 <ng-container *ngIf="(orders$ | async) as orders">

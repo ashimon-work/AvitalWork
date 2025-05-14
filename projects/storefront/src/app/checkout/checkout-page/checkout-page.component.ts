@@ -138,14 +138,14 @@ export class CheckoutPageComponent implements OnInit {
           return this.apiService.getTaxEstimate(storeSlug, taxCartItems, shippingAddress).pipe(
             tap(taxResponse => {
               this.taxEstimate$.next(taxResponse.taxAmount);
-              this.updateOrderTotal(cart.subtotal, currentSelectedMethod?.cost || 0, taxResponse.taxAmount);
+              this.updateOrderTotal(cart.subtotal ?? 0, currentSelectedMethod?.cost || 0, taxResponse.taxAmount);
             }),
             // catchError inside getTaxEstimate handles individual errors, returning 0 tax
           );
         } else {
           // If no storeSlug, shippingAddress, or items, calculate total without tax
           this.taxEstimate$.next(0);
-          this.updateOrderTotal(cart.subtotal, currentSelectedMethod?.cost || 0, 0);
+          this.updateOrderTotal(cart.subtotal ?? 0, currentSelectedMethod?.cost || 0, 0);
           return of(null); // Indicate no tax call was made
         }
       })

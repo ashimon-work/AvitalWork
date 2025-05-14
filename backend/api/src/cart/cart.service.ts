@@ -33,17 +33,24 @@ export class CartService {
     private promoCodesService: PromoCodesService,
   ) { }
 
-  async addItem(userId: string, storeSlug: string, addToCartDto: AddToCartDto): Promise<CartEntity | null> {
+  async addItem(storeSlug: string, addToCartDto: AddToCartDto, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
     const { productId, quantity } = addToCartDto;
-    this.logger.log(`Attempting to add item: ${productId}, Quantity: ${quantity} for user ${userId} in store ${storeSlug}`);
+    this.logger.log(`Attempting to add item: ${productId}, Quantity: ${quantity} for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
 
     if (!productId || quantity == null || quantity < 1) {
       throw new BadRequestException('Invalid product ID or quantity.');
     }
 
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user) {
-      throw new NotFoundException('User not found.');
+    if (!userId && !guestCartId) {
+      throw new BadRequestException('Either userId or guestCartId must be provided.');
+    }
+
+    let user: UserEntity | null = null;
+    if (userId) {
+      user = await this.userRepository.findOneBy({ id: userId });
+      if (!user) {
+        throw new NotFoundException('User not found.');
+      }
     }
 
     const store = await this.storeRepository.findOneBy({ slug: storeSlug });
@@ -56,16 +63,36 @@ export class CartService {
       throw new NotFoundException(`Product with ID ${productId} not found in store ${storeSlug}.`);
     }
 
-    // Find or create the user's cart for this store
-    let cart = await this.cartRepository.findOne({
-      where: { user: { id: userId }, store: { id: store.id } },
-      relations: ['items', 'items.product'],
-    });
+    let cart: CartEntity | null = null;
+    const relations = ['items', 'items.product', 'user', 'store'];
+
+    if (userId) {
+      cart = await this.cartRepository.findOne({
+        where: { user: { id: userId }, store: { id: store.id } },
+        relations,
+      });
+      if (!cart) {
+        cart = this.cartRepository.create({ user: user || undefined, store, items: [] }); // Use user if available, else undefined
+        await this.cartRepository.save(cart);
+        this.logger.log(`Created new cart ${cart.id} for user ${userId} in store ${storeSlug}.`);
+      }
+    } else if (guestCartId) {
+      cart = await this.cartRepository.findOne({
+        where: { guestCartId, store: { id: store.id } },
+        relations, // user will be null here
+      });
+      if (!cart) {
+        // If the frontend sent a guestCartId, it expects us to use it or create a cart with it.
+        cart = this.cartRepository.create({ guestCartId, store, items: [], user: undefined }); // Explicitly undefined user for guest
+        await this.cartRepository.save(cart);
+        this.logger.log(`Created new cart ${cart.id} for guestCartId ${guestCartId} in store ${storeSlug}.`);
+      }
+    }
 
     if (!cart) {
-      cart = this.cartRepository.create({ user, store, items: [] });
-      await this.cartRepository.save(cart);
-      this.logger.log(`Created new cart for user ${userId} in store ${storeSlug}.`);
+      // This case should ideally not be reached if logic above is correct
+      this.logger.error(`Cart could not be found or created for user ${userId}/guest ${guestCartId}`);
+      throw new NotFoundException('Cart could not be established.');
     }
 
     // Check if the item already exists in the cart
@@ -88,44 +115,82 @@ export class CartService {
 
     // Reload the cart to ensure relations are updated
     cart = await this.cartRepository.findOne({
-      where: { id: cart.id },
-      relations: ['items', 'items.product'],
-    });
-
-    return cart; // Return the updated cart entity
-  }
-
-  async getCart(userId: string, storeSlug: string): Promise<CartEntity | null> {
-    this.logger.log(`Getting cart for user ${userId} in store ${storeSlug}`);
-
-    const store = await this.storeRepository.findOneBy({ slug: storeSlug });
-    if (!store) {
-      throw new NotFoundException('Store not found.');
-    }
-
-    const cart = await this.cartRepository.findOne({
-      where: { user: { id: userId }, store: { id: store.id } },
-      relations: ['items', 'items.product'],
+      where: { id: cart.id }, // Use the cart.id obtained above
+      relations, // Use the same comprehensive relations
     });
 
     return cart;
   }
 
-  async updateItemQuantity(userId: string, storeSlug: string, productId: string, quantity: number): Promise<CartEntity | null> {
-    this.logger.log(`Attempting to update quantity for ${productId} to ${quantity} for user ${userId} in store ${storeSlug}`);
+  async getCart(storeSlug: string, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
+    this.logger.log(`Getting cart for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+
+    const store = await this.storeRepository.findOneBy({ slug: storeSlug });
+    if (!store) {
+      this.logger.warn(`Store not found with slug: ${storeSlug}`);
+      throw new NotFoundException('Store not found.');
+    }
+
+    let cart: CartEntity | null = null;
+    const relations = ['items', 'items.product', 'user', 'store'];
+
+
+    if (userId) {
+      cart = await this.cartRepository.findOne({
+        where: { user: { id: userId }, store: { id: store.id } },
+        relations: relations,
+      });
+      if (cart) this.logger.log(`Found cart ${cart.id} for user ${userId}`);
+    } else if (guestCartId) {
+      cart = await this.cartRepository.findOne({
+        where: { guestCartId, store: { id: store.id } },
+        relations: relations, // user will be null here if it's a guest cart
+      });
+      if (cart) this.logger.log(`Found cart ${cart.id} for guestCartId ${guestCartId}`);
+    }
+
+    // If no cart is found for a guest, and a guestCartId was provided,
+    // it implies the guestCartId is invalid or the cart was cleared.
+    // If no cart is found for a guest and NO guestCartId was provided,
+    // the controller/frontend might decide to generate a new guestCartId.
+    // For now, this service will return null if no cart is actively found.
+    // A more advanced implementation might create a new guest cart here if guestCartId is new.
+
+    if (!cart) {
+      this.logger.log(`No cart found for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+    }
+    return cart;
+  }
+
+  async updateItemQuantity(storeSlug: string, productId: string, quantity: number, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
+    this.logger.log(`Attempting to update quantity for ${productId} to ${quantity} for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+
+    if (!userId && !guestCartId) {
+      throw new BadRequestException('Either userId or guestCartId must be provided for updateItemQuantity.');
+    }
 
     const store = await this.storeRepository.findOneBy({ slug: storeSlug });
     if (!store) {
       throw new NotFoundException('Store not found.');
     }
 
-    const cart = await this.cartRepository.findOne({
-      where: { user: { id: userId }, store: { id: store.id } },
-      relations: ['items', 'items.product'],
-    });
+    let cart: CartEntity | null = null;
+    const relations = ['items', 'items.product', 'user', 'store'];
+
+    if (userId) {
+      cart = await this.cartRepository.findOne({
+        where: { user: { id: userId }, store: { id: store.id } },
+        relations,
+      });
+    } else if (guestCartId) {
+      cart = await this.cartRepository.findOne({
+        where: { guestCartId, store: { id: store.id } },
+        relations,
+      });
+    }
 
     if (!cart) {
-      throw new NotFoundException('Cart not found for this user and store.');
+      throw new NotFoundException(`Cart not found for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}.`);
     }
 
     const existingItem = cart.items.find(item => item.product.id === productId);
@@ -155,21 +220,35 @@ export class CartService {
     return updatedCart;
   }
 
-  async removeItem(userId: string, storeSlug: string, productId: string): Promise<CartEntity | null> {
-    this.logger.log(`Attempting to remove item ${productId} for user ${userId} in store ${storeSlug}`);
+  async removeItem(storeSlug: string, productId: string, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
+    this.logger.log(`Attempting to remove item ${productId} for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+
+    if (!userId && !guestCartId) {
+      throw new BadRequestException('Either userId or guestCartId must be provided for removeItem.');
+    }
 
     const store = await this.storeRepository.findOneBy({ slug: storeSlug });
     if (!store) {
       throw new NotFoundException('Store not found.');
     }
 
-    const cart = await this.cartRepository.findOne({
-      where: { user: { id: userId }, store: { id: store.id } },
-      relations: ['items', 'items.product'],
-    });
+    let cart: CartEntity | null = null;
+    const relations = ['items', 'items.product', 'user', 'store'];
+
+    if (userId) {
+      cart = await this.cartRepository.findOne({
+        where: { user: { id: userId }, store: { id: store.id } },
+        relations,
+      });
+    } else if (guestCartId) {
+      cart = await this.cartRepository.findOne({
+        where: { guestCartId, store: { id: store.id } },
+        relations,
+      });
+    }
 
     if (!cart) {
-      throw new NotFoundException('Cart not found for this user and store.');
+      throw new NotFoundException(`Cart not found for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}.`);
     }
 
     const existingItem = cart.items.find(item => item.product.id === productId);
@@ -195,22 +274,27 @@ export class CartService {
 
 
   async applyPromoCode(
-    userId: string,
+    userId: string | undefined, // Can be undefined for guest
     applyPromoCodeDto: ApplyPromoCodeDto,
-    contextStoreSlug?: string, // storeSlug from the guard context
+    contextStoreSlug?: string,
+    guestCartId?: string, // Added for guest cart promo application
   ): Promise<CartEntity | { error: string; message: string }> {
-    this.logger.log(`Attempting to apply promo code "${applyPromoCodeDto.promoCode}" for user ${userId}. DTO storeSlug: ${applyPromoCodeDto.storeSlug}, Context storeSlug: ${contextStoreSlug}`);
+    this.logger.log(`Attempting to apply promo code "${applyPromoCodeDto.promoCode}" for user ${userId || 'guest'} (guestId: ${guestCartId}). DTO storeSlug: ${applyPromoCodeDto.storeSlug}, Context storeSlug: ${contextStoreSlug}`);
 
-    // Determine the effective storeSlug to use for fetching the cart and promo validation
     const effectiveStoreSlug = applyPromoCodeDto.storeSlug || contextStoreSlug;
     if (!effectiveStoreSlug) {
-      this.logger.warn(`No store context available for applying promo code for user ${userId}`);
+      this.logger.warn(`No store context available for applying promo code for user ${userId || 'guest'}`);
       return { error: 'STORE_CONTEXT_MISSING', message: 'Store context is required to apply a promo code.' };
     }
 
-    const cart = await this.getCart(userId, effectiveStoreSlug);
+    if (!userId && !guestCartId) {
+      throw new BadRequestException('Either userId or guestCartId must be provided for applyPromoCode.');
+    }
+
+    // Use the modified getCart which handles userId or guestCartId
+    const cart = await this.getCart(effectiveStoreSlug, userId, guestCartId);
     if (!cart) {
-      this.logger.warn(`Cart not found for user ${userId} in store ${effectiveStoreSlug}`);
+      this.logger.warn(`Cart not found for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${effectiveStoreSlug}`);
       return { error: 'CART_NOT_FOUND', message: 'Cart not found.' };
     }
 
@@ -310,5 +394,71 @@ export class CartService {
     } else {
       this.logger.log(`No cart found for user ${userId} in store ${storeId} to clear.`);
     }
+  }
+
+  async mergeCarts(userId: string, storeId: string, guestCartId: string): Promise<CartEntity | null> {
+    this.logger.log(`Attempting to merge guest cart ${guestCartId} into user ${userId}'s cart for store ${storeId}`);
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      this.logger.error(`mergeCarts: User ${userId} not found.`);
+      throw new NotFoundException('User not found.');
+    }
+
+    const store = await this.storeRepository.findOneBy({ id: storeId });
+    if (!store) {
+      this.logger.error(`mergeCarts: Store ${storeId} not found.`);
+      throw new NotFoundException('Store not found.');
+    }
+
+    const guestCart = await this.cartRepository.findOne({
+      where: { guestCartId, store: { id: storeId } },
+      relations: ['items', 'items.product', 'store'], // Load guest cart items and their products
+    });
+
+    // Ensure user has a cart, or create one.
+    // We can leverage parts of the addItem logic or getCart to establish the user's cart.
+    let userCart = await this.cartRepository.findOne({
+      where: { user: { id: userId }, store: { id: storeId } },
+      relations: ['items', 'items.product', 'user', 'store'],
+    });
+
+    if (!userCart) {
+      userCart = this.cartRepository.create({ user, store, items: [] });
+      await this.cartRepository.save(userCart);
+      this.logger.log(`mergeCarts: Created new cart ${userCart.id} for user ${userId} in store ${storeId}.`);
+    }
+
+    if (guestCart && guestCart.items && guestCart.items.length > 0) {
+      this.logger.log(`mergeCarts: Guest cart ${guestCart.id} has ${guestCart.items.length} items to merge.`);
+      for (const guestItem of guestCart.items) {
+        if (!guestItem.product) {
+          this.logger.warn(`mergeCarts: Guest item ${guestItem.id} is missing product data. Skipping.`);
+          continue;
+        }
+        // Use the existing addItem logic to handle adding/updating quantity in user's cart
+        // The addItem method will find/create userCart and add/update item quantity.
+        // We pass userId directly, so addItem knows it's for the user, not a guest.
+        // The storeSlug is needed by addItem.
+        this.logger.log(`mergeCarts: Merging item ${guestItem.product.id} (qty: ${guestItem.quantity}) from guest cart ${guestCart.id} to user ${userId}'s cart.`);
+        await this.addItem(store.slug, { productId: guestItem.product.id, quantity: guestItem.quantity }, userId, undefined);
+      }
+
+      // After merging, delete the guest cart and its items
+      this.logger.log(`mergeCarts: Deleting guest cart ${guestCart.id} and its items.`);
+      await this.cartItemRepository.remove(guestCart.items);
+      await this.cartRepository.remove(guestCart);
+      this.logger.log(`mergeCarts: Guest cart ${guestCart.id} deleted.`);
+    } else {
+      this.logger.log(`mergeCarts: No guest cart found with ID ${guestCartId} for store ${storeId}, or guest cart is empty. Nothing to merge.`);
+    }
+
+    // Reload the user's cart to get the final state with all relations
+    const finalUserCart = await this.cartRepository.findOne({
+      where: { id: userCart.id },
+      relations: ['items', 'items.product', 'user', 'store'],
+    });
+
+    return finalUserCart;
   }
 }

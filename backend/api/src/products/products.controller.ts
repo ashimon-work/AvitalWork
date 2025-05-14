@@ -1,17 +1,16 @@
-import { Controller, Get, Param, NotFoundException, Query, UseGuards, Req, BadRequestException } from '@nestjs/common'; // Added UseGuards, Req, BadRequestException
+import { Controller, Get, Param, NotFoundException, Query, UseGuards, Req, BadRequestException } from '@nestjs/common';
 import { ProductsService, FindAllProductsParams } from './products.service';
-import { ProductEntity } from './entities/product.entity'; // Uncommented import
-import { ProductDto } from './dto/product.dto'; // Import ProductDto
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Import JwtAuthGuard
-import { StoreContextGuard } from '../core/guards/store-context.guard'; // Import StoreContextGuard
-import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface'; // Import AuthenticatedRequest
+import { ProductEntity } from './entities/product.entity';
+import { ProductDto } from './dto/product.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { StoreContextGuard } from '../core/guards/store-context.guard';
+import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
 
-@UseGuards(JwtAuthGuard, StoreContextGuard) // Protect all routes in this controller
-@Controller('products') // Base path for storefront products endpoints
+@UseGuards(StoreContextGuard)
+@Controller('stores/:storeSlug/products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
-  // Helper method to map ProductEntity to ProductDto
   private mapProductEntityToDto(product: ProductEntity): ProductDto {
     const productDto: ProductDto = {
       id: product.id,
@@ -20,103 +19,103 @@ export class ProductsController {
       description: product.description,
       price: product.price,
       imageUrls: product.imageUrls,
-      categoryIds: product.categories ? product.categories.map(cat => cat.id) : [], // Map CategoryEntity[] to string[]
+      categoryIds: product.categories ? product.categories.map(cat => cat.id) : [],
       tags: product.tags,
       stockLevel: product.stockLevel,
       isActive: product.isActive,
       options: product.options,
-      variants: product.variants ? product.variants.map(variant => ({ // Map ProductVariantEntity[] to ProductVariantDto[]
+      variants: product.variants ? product.variants.map(variant => ({
         id: variant.id,
         sku: variant.sku,
-        options: variant.options, // Assuming options are already in the correct format
+        options: variant.options,
         price: variant.price,
         stockLevel: variant.stockLevel,
         imageUrl: variant.imageUrl,
       })) : [],
-      // Add timestamps if needed in DTO
-      // createdAt: product.createdAt,
-      // updatedAt: product.updatedAt,
     };
     return productDto;
   }
 
   @Get('featured')
-  async getFeaturedProducts(@Req() req: AuthenticatedRequest): Promise<ProductDto[]> { // Use AuthenticatedRequest to get storeSlug
-    const storeSlug = req.storeSlug;
-    if (!storeSlug) {
-      throw new BadRequestException('Store context is missing.');
-    }
+  async getFeaturedProducts(@Req() req: AuthenticatedRequest): Promise<ProductDto[]> {
+    const storeSlug: string = req.params.storeSlug; // storeSlug from path, validated by guard
+    // No need for: if (!storeSlug) throw new BadRequestException('Store context is missing.');
     const products = await this.productsService.getFeaturedProducts(storeSlug);
-    return products.map(product => this.mapProductEntityToDto(product)); // Map entities to DTOs
+    return products.map(product => this.mapProductEntityToDto(product));
   }
 
-  // Handle GET /products with query parameters for filtering, sorting, pagination
+  // Handle GET /stores/:storeSlug/products with query parameters
   @Get()
-  async findAll(@Req() req: AuthenticatedRequest, @Query() queryParams: FindAllProductsParams): Promise<{ products: ProductDto[], total: number }> { // Use AuthenticatedRequest and Query
-    const storeSlug = req.storeSlug;
-    if (!storeSlug) {
-      throw new BadRequestException('Store context is missing.');
-    }
-    // Add storeSlug to queryParams for service filtering
+  async findAll(@Req() req: AuthenticatedRequest, @Query() queryParams: FindAllProductsParams): Promise<{ products: ProductDto[], total: number }> {
+    const storeSlug: string = req.params.storeSlug; // storeSlug from path
+    // Add storeSlug to queryParams for service filtering, service expects it this way
     queryParams.storeSlug = storeSlug;
     const { products, total } = await this.productsService.findAll(queryParams);
     return {
-      products: products.map(product => this.mapProductEntityToDto(product)), // Map entities to DTOs
+      products: products.map(product => this.mapProductEntityToDto(product)),
       total,
     };
   }
 
-  @Get('suggest') // Handle GET /products/suggest
+  @Get('suggest') // Handle GET /stores/:storeSlug/products/suggest
   async getSuggestions(
-    @Req() req: AuthenticatedRequest, // Use AuthenticatedRequest
+    @Req() req: AuthenticatedRequest,
     @Query('q') query: string,
-    @Query('limit') limit?: string // Query params are strings
-  ): Promise<ProductDto[]> { // Corrected return type to DTO
-    const storeSlug = req.storeSlug;
-    if (!storeSlug) {
-      throw new BadRequestException('Store context is missing.');
-    }
+    @Query('limit') limit?: string
+  ): Promise<ProductDto[]> {
+    const storeSlug: string = req.params.storeSlug; // storeSlug from path
     if (!query) {
-      return []; // Return empty if no query provided
+      return [];
     }
-    const suggestionLimit = limit ? parseInt(limit, 10) : 5; // Default limit to 5
+    const suggestionLimit = limit ? parseInt(limit, 10) : 5;
     const products = await this.productsService.getSearchSuggestions(query, storeSlug, suggestionLimit);
-    return products.map(product => this.mapProductEntityToDto(product)); // Map entities to DTOs
+    return products.map(product => this.mapProductEntityToDto(product));
   }
 
-  @Get(':id') // Handle GET /products/:id
-  async findOne(@Req() req: AuthenticatedRequest, @Param('id') id: string): Promise<ProductDto | null> { // Use AuthenticatedRequest and Param
-    const storeSlug = req.storeSlug;
-    if (!storeSlug) {
-      throw new BadRequestException('Store context is missing.');
-    }
-    const product = await this.productsService.findOne(id, storeSlug); // Pass storeSlug to service
+  // Note: The ':id' for findOne will be relative to '/stores/:storeSlug/products/'
+  // So the full path will be '/stores/:storeSlug/products/:id'
+  @Get(':id')
+  async findOne(@Req() req: AuthenticatedRequest, @Param('id') id: string): Promise<ProductDto | null> {
+    const storeSlug: string = req.params.storeSlug; // storeSlug from path
+    const product = await this.productsService.findOne(id, storeSlug);
     if (!product) {
-      throw new NotFoundException(`Product with ID ${id} not found`);
+      throw new NotFoundException(`Product with ID ${id} not found in store ${storeSlug}`);
     }
-    return this.mapProductEntityToDto(product); // Map entity to DTO
+    return this.mapProductEntityToDto(product);
   }
 
-  @Get('recommended') // Endpoint: GET /api/products/recommended
+  // Endpoint: GET /api/stores/:storeSlug/products/recommended
+  @Get('recommended')
   async getRecommendedProducts(
     @Req() req: AuthenticatedRequest,
     @Query('based_on') orderId?: string,
   ): Promise<ProductDto[]> {
-    const storeSlug = req.storeSlug;
-    if (!storeSlug) {
-      throw new BadRequestException('Store context is missing.');
-    }
+    const storeSlug: string = req.params.storeSlug;
 
     let recommendedProducts: ProductEntity[];
 
     if (orderId) {
-      // Get recommendations based on order ID
       recommendedProducts = await this.productsService.findRecommendedByOrderId(orderId, storeSlug);
     } else {
-      // Get general recommendations (e.g., featured products)
       recommendedProducts = await this.productsService.getFeaturedProducts(storeSlug);
     }
 
-    return recommendedProducts.map(product => this.mapProductEntityToDto(product)); // Map entities to DTOs
+    return recommendedProducts.map(product => this.mapProductEntityToDto(product));
+  }
+
+  @Get(':id/related') // Endpoint: GET /api/stores/:storeSlug/products/:id/related
+  async getRelatedProductsController(
+    @Param('id') productId: string,
+    @Param('storeSlug') storeSlug: string, // storeSlug is already part of the path due to controller decorator
+  ): Promise<ProductDto[]> {
+    // Assuming a service method like findRelatedByProductId exists or will be created
+    // The storeSlug from the path is passed to the service method for context.
+    const relatedProducts = await this.productsService.findRelatedByProductId(productId, storeSlug);
+    if (!relatedProducts || relatedProducts.length === 0) {
+      // It's common to return an empty array if no related products are found,
+      // rather than a 404, unless the product itself doesn't exist (which findOne would handle).
+      return [];
+    }
+    return relatedProducts.map(product => this.mapProductEntityToDto(product));
   }
 }

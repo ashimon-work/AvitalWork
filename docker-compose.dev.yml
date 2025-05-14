@@ -8,6 +8,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password} # Use a default password for dev
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data # Use a separate volume for dev data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-magic_store_dev}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
     networks:
       - internal_network
@@ -30,7 +35,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:-SOME_DEFAULT_DEV_SECRET}
     command: sh -c "cd backend/api && npm install && npm run start:dev"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - internal_network

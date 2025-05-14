@@ -6,14 +6,15 @@ import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.i
 import { AboutContentEntity } from './entities/about-content.entity';
 import { TestimonialEntity } from './entities/testimonial.entity';
 
-@UseGuards(StoreContextGuard)
-@Controller('store')
+@Controller('store') // StoreContextGuard removed from controller level
 export class StoresController {
   constructor(private readonly storesService: StoresService) {}
 
   // Note: Search and findBySlug endpoints might need to be moved or adapted for storefront if they are used there.
   // Keeping them here for now as they were in the original file.
 
+  // This endpoint should likely not be guarded by StoreContextGuard at controller level,
+  // as it's for general store searching.
   @Get('search')
   async searchStores(
     @Query('q') query: string,

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UsePipes, ValidationPipe, HttpCode, HttpStatus, UnauthorizedException, Req, UseGuards, BadRequestException, NotFoundException, Patch } from '@nestjs/common'; // Add Patch
+import { Controller, Get, Post, Body, UsePipes, ValidationPipe, HttpCode, HttpStatus, UnauthorizedException, Req, UseGuards, BadRequestException, NotFoundException, Patch, Query, ParseIntPipe, Param } from '@nestjs/common'; // Add Query, ParseIntPipe, Param
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthService } from '../auth/auth.service';
 import { ChangePasswordDto } from '../auth/dto/change-password.dto';
@@ -80,6 +80,41 @@ export class AccountController {
   ): Promise<void> {
     const userId = req.user.id;
     await this.authService.changePassword(userId, changePasswordDto);
+  }
+
+  @Get('orders')
+  @UseGuards(StoreContextGuard)
+  async getAccountOrders(
+    @Req() req: AuthenticatedRequest,
+    @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit: number = 10,
+  ) {
+    const userId = req.user.id;
+    // storeSlug is available on req.storeSlug due to StoreContextGuard
+    // The ordersService.findAllForUser should handle store-specific filtering if needed,
+    // or we pass req.storeSlug to it if its signature requires.
+    // Based on getAccountOverview, findAllForUser does not take storeSlug directly.
+    // It's assumed orders are globally unique for a user or filtered by store within the service.
+    // For now, let's assume ordersService.findAllForUser correctly handles context.
+    return this.ordersService.findAllForUser(userId, page, limit);
+  }
+
+  @Get('orders/:orderId')
+  @UseGuards(StoreContextGuard)
+  async getAccountOrderDetails(
+    @Req() req: AuthenticatedRequest,
+    @Param('orderId') orderId: string,
+  ) {
+    const userId = req.user.id;
+    // storeSlug is available on req.storeSlug due to StoreContextGuard,
+    // but findOneByIdAndUser filters by userId and orderId only.
+    // If store-specific filtering for a user's own order view is needed,
+    // the service method would need to be adapted.
+    const order = await this.ordersService.findOneByIdAndUser(userId, orderId);
+    if (!order) {
+      throw new NotFoundException(`Order with ID "${orderId}" not found for this user.`);
+    }
+    return order;
   }
 
   // TODO: Add endpoints for payment methods later

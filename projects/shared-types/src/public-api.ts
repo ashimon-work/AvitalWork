@@ -11,3 +11,5 @@ export * from './lib/user.interface';
 export * from './lib/order.interface';
 export * from './lib/category.interface';
 export * from './lib/note.interface';
+export * from './lib/cart.interface';
+export * from './lib/store.interface';

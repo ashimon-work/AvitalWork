@@ -26,7 +26,7 @@ export class ProductCardComponent {
     // Assuming Product interface has a 'stock' property.
     // If product has variants, this might need to check the stock of the default variant
     // or the sum of available variant stocks depending on desired behavior for the card.
-    return this.product && this.product.stock !== undefined && this.product.stock <= 0;
+    return this.product && this.product.stockLevel !== undefined && this.product.stockLevel <= 0;
   }
 
   onAddToCart(): void {

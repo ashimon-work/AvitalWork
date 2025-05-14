@@ -7,7 +7,8 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  Column, // Import Column
+  Column,
+  Index,
 } from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
 import { StoreEntity } from '../../stores/entities/store.entity';
@@ -18,9 +19,13 @@ export class CartEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @Column({ type: 'uuid', nullable: true, unique: true })
+  @Index()
+  guestCartId?: string;
+
+  @OneToOne(() => UserEntity, { onDelete: 'CASCADE', nullable: true })
   @JoinColumn()
-  user: UserEntity;
+  user?: UserEntity;
 
   @ManyToOne(() => StoreEntity, { onDelete: 'CASCADE' })
   store: StoreEntity;

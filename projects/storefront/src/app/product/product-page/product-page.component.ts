@@ -289,7 +289,7 @@ export class ProductPageComponent implements OnInit {
           }
 
           if (matchesAllTempOptions && variant.stockLevel > 0) {
-            isValueDisabled = false; // Found an in-stock variant for this combination
+            isValueDisabled = false;
             break;
           }
         }
@@ -322,7 +322,7 @@ export class ProductPageComponent implements OnInit {
         this.notificationService.showSuccess(`${this.quantity} x ${product.name} added to cart.`);
         // TODO: Add button state change (e.g., temporarily disable or show added state)
       },
-      error: (err: any) => { // Add type annotation for error
+      error: (err: any) => {
         console.error('Failed to add item via service:', err);
         this.notificationService.showError('Failed to add item to cart. Please try again.');
       }
@@ -372,7 +372,7 @@ export class ProductPageComponent implements OnInit {
           this.isInWishlist = false;
           this.notificationService.showInfo(`${product.name} removed from wishlist.`);
         },
-        error: (err: any) => { // Add type annotation for error
+        error: (err: any) => {
           console.error('Failed to remove item from wishlist:', err);
           this.notificationService.showError('Failed to remove item from wishlist. Please try again.');
         }
@@ -385,7 +385,7 @@ export class ProductPageComponent implements OnInit {
           this.isInWishlist = true;
           this.notificationService.showSuccess(`${product.name} added to wishlist.`);
         },
-        error: (err: any) => { // Add type annotation for error
+        error: (err: any) => {
           console.error('Failed to add item to wishlist:', err);
           this.notificationService.showError('Failed to add item to wishlist. Please try again.');
         }
@@ -437,7 +437,7 @@ export class ProductPageComponent implements OnInit {
         this.newReviewRating = 0;
         this.newReviewComment = '';
       },
-      error: (err: any) => { // Add type annotation for error
+      error: (err: any) => {
         console.error('Failed to submit review:', err);
         this.reviewSubmissionError = 'Failed to submit review. Please try again.';
         this.notificationService.showError('Failed to submit review. Please try again.');
@@ -451,13 +451,13 @@ export class ProductPageComponent implements OnInit {
     this.apiService.getProductReviews(productId).subscribe({
       next: (reviews) => {
         this.reviews = reviews;
-        this.calculateAverageRating(); // Calculate average rating after fetching reviews
+        this.calculateAverageRating();
         console.log(`Fetched ${reviews.length} reviews for product ${productId}`);
       },
       error: (err) => {
         console.error(`Failed to fetch reviews for product ${productId}:`, err);
         this.reviews = [];
-        this.calculateAverageRating(); // Recalculate average rating (will be 0)
+        this.calculateAverageRating();
       }
     });
   }
@@ -469,14 +469,18 @@ export class ProductPageComponent implements OnInit {
 
   // Method to check if the current product is in the user's wishlist
   private checkIfInWishlist(productId: string): void {
-    this.wishlistService.getWishlist().subscribe({
-      next: (wishlist: Product[]) => { // Add type annotation for wishlist
-        this.isInWishlist = wishlist.some((item: Product) => item.id === productId); // Add type annotation for item and corrected to iterate over wishlist array and check item.id
+    this.wishlistService.refreshWishlist().subscribe({
+      next: (wishlistDto) => {
+        if (wishlistDto && wishlistDto.items) {
+          this.isInWishlist = wishlistDto.items.some(item => item.productId === productId);
+        } else {
+          this.isInWishlist = false;
+        }
         console.log(`Product ${productId} is in wishlist: ${this.isInWishlist}`);
       },
-      error: (err: any) => { // Add type annotation for error
+      error: (err: any) => {
         console.error('Failed to fetch wishlist to check product status:', err);
-        this.isInWishlist = false; // Assume not in wishlist on error
+        this.isInWishlist = false;
       }
     });
   }

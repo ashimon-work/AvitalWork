@@ -9,6 +9,7 @@ export interface AuthenticatedRequest extends Request {
     // email: string;
     // roles: string[];
   };
-  // Assuming StoreContextGuard adds storeSlug to the request
+  // StoreContextGuard adds storeId and storeSlug to the request
+  storeId?: string;
   storeSlug?: string;
 }

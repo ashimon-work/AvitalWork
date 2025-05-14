@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, ILike, MoreThanOrEqual, LessThanOrEqual, In, FindOptionsOrder, Between } from 'typeorm';
+import { Repository, FindOptionsWhere, ILike, MoreThanOrEqual, LessThanOrEqual, In, FindOptionsOrder, Between, Not } from 'typeorm';
 import { ProductVariantEntity } from './entities/product-variant.entity';
 import { ProductEntity } from './entities/product.entity';
 import { CategoryEntity } from '../categories/entities/category.entity';
@@ -207,7 +207,7 @@ export class ProductsService {
       order,
       take: limit,
       skip: skip,
-      relations: ['store'],
+      relations: ['store', 'categories'],
     });
 
     return { products: results, total };
@@ -460,5 +460,30 @@ export class ProductsService {
     }
 
     return { created: createdCount, updated: updatedCount, failed: failedCount, errors };
+  }
+
+  async findRelatedByProductId(productId: string, storeSlug: string): Promise<ProductEntity[]> {
+    this.logger.log(`Finding related products for productId: ${productId} in store: ${storeSlug}`);
+    // Placeholder implementation:
+    // Actual logic could involve finding products in the same category, with similar tags,
+    // or based on collaborative filtering, etc.
+    // For now, let's return a few other products from the same store, excluding the product itself.
+    const store = await this.storeRepository.findOneBy({ slug: storeSlug });
+    if (!store) {
+      this.logger.warn(`Store with slug ${storeSlug} not found when finding related products.`);
+      return [];
+    }
+
+    const products = await this.productsRepository.find({
+      where: {
+        store: { id: store.id },
+        isActive: true,
+        id: Not(productId)
+      },
+      take: 5, // Limit to 5 related products
+      relations: ['store', 'categories', 'variants'],
+    });
+    // Filter out the original product if it was somehow included
+    return products.filter(p => p.id !== productId);
   }
 }

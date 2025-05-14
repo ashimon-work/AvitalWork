@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, tap, catchError, throwError, map, first, S
 import { Product } from '@shared-types';
 import { Cart, CartItem } from 'projects/shared-types/src/lib/cart.interface';
 import { ApiService } from './api.service';
+import { AuthService } from './auth.service'; // For login/logout events
 // Removed incorrect NestJS Logger import
 
 export { type CartItem, type Cart as CartState } from 'projects/shared-types/src/lib/cart.interface';
@@ -25,29 +26,81 @@ export { type CartItem, type Cart as CartState } from 'projects/shared-types/src
 export class CartService {
   // Removed NestJS logger instance
   // Use BehaviorSubject to hold and emit cart state, using Cart interface from shared-types
-  private cartStateSubject = new BehaviorSubject<Cart | null>(null); // Initialize with null or an empty Cart object
+  private cartStateSubject = new BehaviorSubject<Cart | null>(null);
   cartState$ = this.cartStateSubject.asObservable();
 
-  // Subject to signal when an item is successfully added
   private itemAddedSource = new Subject<void>();
   itemAdded$ = this.itemAddedSource.asObservable();
 
-  constructor(private apiService: ApiService) {
-    this.loadInitialCart();
+  private readonly GUEST_CART_ID_KEY = 'guestCartId';
+  private guestCartId: string | null = null;
+
+  constructor(
+    private apiService: ApiService,
+    private authService: AuthService // Inject AuthService
+  ) {
+    this.guestCartId = localStorage.getItem(this.GUEST_CART_ID_KEY);
+    this.loadInitialCart(this.guestCartId);
+
+    // Listen to authentication changes
+    this.authService.currentUser$.subscribe(user => {
+      if (user) { // User logged in
+        console.log('User logged in, attempting to merge cart.');
+        this.mergeAndLoadUserCart();
+      } else { // User logged out
+        console.log('User logged out, clearing user cart and loading guest cart.');
+        this.clearUserCartAndLoadGuestCart();
+      }
+    });
   }
 
-  public loadInitialCart(): void {
-    this.apiService.getCart().pipe(
-      first(), // Take the first emission
-      tap((response: Cart | null) => { // Explicitly type the response
-        // Assuming response is the full Cart object or null
-        this._updateStateFromBackendCart(response);
-        console.log('Initial cart loaded'); // Replaced logger
+  private mergeAndLoadUserCart(): void {
+    const localGuestCartId = localStorage.getItem(this.GUEST_CART_ID_KEY);
+    if (localGuestCartId) {
+      this.apiService.mergeCart(localGuestCartId).pipe(
+        tap(() => {
+          console.log('Guest cart merged successfully.');
+          this.clearLocalGuestCartId();
+          this.loadInitialCart(); // Load the now-merged user cart
+        }),
+        catchError(err => {
+          console.error('Error merging cart:', err);
+          this.clearLocalGuestCartId(); // Clear local guest ID even if merge fails to avoid issues
+          this.loadInitialCart(); // Attempt to load user cart anyway
+          return throwError(() => new Error('Failed to merge cart'));
+        })
+      ).subscribe();
+    } else {
+      this.loadInitialCart(); // No guest cart to merge, just load user cart
+    }
+  }
+
+  private clearUserCartAndLoadGuestCart(): void {
+    this.cartStateSubject.next(null); // Clear current cart state
+    // Potentially load a new or existing guest cart.
+    // If a guestCartId was persisted from a previous guest session, use it.
+    this.guestCartId = localStorage.getItem(this.GUEST_CART_ID_KEY);
+    this.loadInitialCart(this.guestCartId);
+  }
+
+
+  public loadInitialCart(guestId?: string | null): void {
+    console.log(`CartService: Loading initial cart. Guest ID: ${guestId}`);
+    // ApiService.getCart will need to be updated to send guestId as a header
+    this.apiService.getCart(guestId).pipe(
+      first(),
+      tap((response: Cart | any) => { // Use 'any' for now due to potential new guest cart structure
+        if (response && response.guestCartId && !localStorage.getItem(this.GUEST_CART_ID_KEY)) {
+          console.log(`CartService: New guest cart ID received from backend: ${response.guestCartId}. Storing it.`);
+          localStorage.setItem(this.GUEST_CART_ID_KEY, response.guestCartId);
+          this.guestCartId = response.guestCartId;
+        }
+        this._updateStateFromBackendCart(response as Cart | null);
+        console.log('Initial cart loaded/updated');
       }),
       catchError(error => {
-        console.error('Error loading initial cart:', error); // Replaced logger
-        // Initialize with null or an empty Cart object on error
-        this.cartStateSubject.next(null); // Or { id: '', items: [], subtotal: 0 }
+        console.error('Error loading initial cart:', error);
+        this.cartStateSubject.next(null);
         return throwError(() => new Error('Failed to load cart'));
       })
     ).subscribe();
@@ -61,46 +114,47 @@ export class CartService {
   // Add item to cart
   addItem(product: Product, quantity: number = 1): Observable<any> {
     const payload = { productId: product.id, quantity };
-    console.log(`CartService: Adding item ${payload.productId} qty ${payload.quantity}`); // Replaced logger
+    console.log(`CartService: Adding item ${payload.productId} qty ${payload.quantity}. Guest ID: ${this.guestCartId}`);
 
-    return this.apiService.addToCart(payload).pipe(
-      tap((response: Cart) => { // Assuming response is the updated Cart object
-        // Assuming response is the full updated Cart object
+    // ApiService.addToCart will need to be updated to send guestId as a header if user not logged in
+    return this.apiService.addToCart(payload, this.guestCartId).pipe(
+      tap((response: Cart) => {
         this._updateStateFromBackendCart(response);
-        console.log(`Item added successfully. New state updated.`); // Replaced logger
-        this.itemAddedSource.next(); // Signal that item was added
+        console.log(`Item added successfully. New state updated.`);
+        this.itemAddedSource.next();
       }),
       catchError(error => {
-        console.error('Error adding item to cart:', error); // Replaced logger
-        // TODO: Add user-facing error handling
+        console.error('Error adding item to cart:', error);
         return throwError(() => new Error('Failed to add item to cart'));
       })
     );
   }
 
   updateItemQuantity(productId: string, quantity: number): Observable<any> {
-     console.log(`CartService: Updating item ${productId} qty ${quantity}`); // Replaced logger
-     return this.apiService.updateCartItemQuantity(productId, quantity).pipe(
-       tap((response: Cart) => { // Assuming response is the updated Cart object
+     console.log(`CartService: Updating item ${productId} qty ${quantity}. Guest ID: ${this.guestCartId}`);
+     // ApiService.updateCartItemQuantity will need to be updated
+     return this.apiService.updateCartItemQuantity(productId, quantity, this.guestCartId).pipe(
+       tap((response: Cart) => {
          this._updateStateFromBackendCart(response);
-           console.log(`Item quantity updated successfully.`); // Replaced logger
+           console.log(`Item quantity updated successfully.`);
        }),
        catchError(error => {
-         console.error('Error updating item quantity:', error); // Replaced logger
+         console.error('Error updating item quantity:', error);
          return throwError(() => new Error('Failed to update item quantity'));
        })
      );
    }
 
    removeItem(productId: string): Observable<any> {
-     console.log(`CartService: Removing item ${productId}`); // Replaced logger
-     return this.apiService.removeCartItem(productId).pipe(
-       tap((response: Cart) => { // Assuming response is the updated Cart object
+     console.log(`CartService: Removing item ${productId}. Guest ID: ${this.guestCartId}`);
+     // ApiService.removeCartItem will need to be updated
+     return this.apiService.removeCartItem(productId, this.guestCartId).pipe(
+       tap((response: Cart) => {
          this._updateStateFromBackendCart(response);
-           console.log(`Item removed successfully.`); // Replaced logger
+           console.log(`Item removed successfully.`);
        }),
        catchError(error => {
-         console.error('Error removing item from cart:', error); // Replaced logger
+         console.error('Error removing item from cart:', error);
          return throwError(() => new Error('Failed to remove item from cart'));
        })
      );
@@ -115,5 +169,11 @@ export class CartService {
   // Method to get the current cart state synchronously
   getCurrentCart(): Cart | null {
     return this.cartStateSubject.getValue();
+  }
+
+  private clearLocalGuestCartId(): void {
+    localStorage.removeItem(this.GUEST_CART_ID_KEY);
+    this.guestCartId = null;
+    console.log('Local guest cart ID cleared.');
   }
 }

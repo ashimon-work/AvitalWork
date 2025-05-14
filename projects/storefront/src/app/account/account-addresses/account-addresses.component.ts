@@ -1,21 +1,21 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService, AddressDto } from '../../core/services/api.service'; // Import ApiService and AddressDto
+import { ApiService, AddressDto } from '../../core/services/api.service';
 import { Observable, BehaviorSubject, switchMap, tap } from 'rxjs';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms'; // Import Reactive Forms
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-account-addresses',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule], // Add ReactiveFormsModule
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './account-addresses.component.html',
-  styleUrls: ['./account-addresses.component.scss'] // Corrected property name
+  styleUrls: ['./account-addresses.component.scss']
 })
 export class AccountAddressesComponent implements OnInit {
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
 
-  private refreshAddresses$ = new BehaviorSubject<void>(undefined); // Trigger to refresh list
+  private refreshAddresses$ = new BehaviorSubject<void>(undefined);
   addresses$: Observable<AddressDto[]>;
 
   showForm = false;
@@ -26,12 +26,12 @@ export class AccountAddressesComponent implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
     // Initialize the form
     this.addressForm = this.fb.group({
       fullName: ['', [Validators.required, Validators.maxLength(100)]],
-      street: ['', [Validators.required, Validators.maxLength(255)]], // Changed from street1
-      apartmentOrSuite: ['', [Validators.maxLength(255)]], // Changed from street2
+      street: ['', [Validators.required, Validators.maxLength(255)]],
+      apartmentOrSuite: ['', [Validators.maxLength(255)]],
       city: ['', [Validators.required, Validators.maxLength(100)]],
       // state: ['', [Validators.required, Validators.maxLength(100)]], // Removed state
       postalCode: ['', [Validators.required, Validators.maxLength(20)]],
@@ -44,9 +44,15 @@ export class AccountAddressesComponent implements OnInit {
 
     // Initialize the addresses observable
     this.addresses$ = this.refreshAddresses$.pipe(
-      tap(() => this.isLoading = true),
+      tap(() => {
+        this.isLoading = true;
+        this.cdr.detectChanges();
+      }),
       switchMap(() => this.apiService.getUserAddresses()),
-      tap(() => this.isLoading = false)
+      tap(() => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      })
     );
   }
 
@@ -96,6 +102,7 @@ export class AccountAddressesComponent implements OnInit {
     }
 
     this.isLoading = true;
+    this.cdr.detectChanges();
     const addressData = this.addressForm.value;
 
     let saveObservable: Observable<AddressDto>;
@@ -111,12 +118,14 @@ export class AccountAddressesComponent implements OnInit {
     saveObservable.subscribe({
       next: () => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         this.successMessage = `Address successfully ${this.isEditing ? 'updated' : 'added'}.`;
         this.closeForm();
         this.refreshList();
       },
       error: (err) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         this.errorMessage = err.error?.message || `Failed to ${this.isEditing ? 'update' : 'add'} address. Please try again.`;
         console.error('Error saving address:', err);
       }
@@ -128,14 +137,17 @@ export class AccountAddressesComponent implements OnInit {
     this.clearMessages();
     if (confirm('Are you sure you want to delete this address?')) {
       this.isLoading = true;
+      this.cdr.detectChanges();
       this.apiService.deleteUserAddress(addressId).subscribe({
         next: () => {
           this.isLoading = false;
+          this.cdr.detectChanges();
           this.successMessage = 'Address deleted successfully.';
           this.refreshList();
         },
         error: (err) => {
           this.isLoading = false;
+          this.cdr.detectChanges();
           this.errorMessage = err.error?.message || 'Failed to delete address. Please try again.';
           console.error('Error deleting address:', err);
         }
@@ -147,14 +159,17 @@ export class AccountAddressesComponent implements OnInit {
     if (!addressId) return;
     this.clearMessages();
     this.isLoading = true;
+    this.cdr.detectChanges();
     this.apiService.setDefaultUserAddress(addressId, type).subscribe({
       next: () => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         this.successMessage = `Address set as default ${type} successfully.`;
         this.refreshList(); // Refresh to show updated default status
       },
       error: (err) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         this.errorMessage = err.error?.message || `Failed to set default ${type} address. Please try again.`;
         console.error(`Error setting default ${type} address:`, err);
       }
