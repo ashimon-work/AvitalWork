@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common'; // Add NotFoundException
+import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UserEntity } from '../users/entities/user.entity'; // Use the actual entity class name
-import { ChangePasswordDto } from './dto/change-password.dto'; // Import DTO
+import { UserEntity } from '../users/entities/user.entity';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,10 +13,10 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, pass: string): Promise<Omit<UserEntity, 'passwordHash'> | null> {
-    const user = await this.usersService.findOneByEmail(email); // findOneByEmail should return UserEntity | null
-    if (user && await bcrypt.compare(pass, user.passwordHash)) {
+    const user = await this.usersService.findOneByEmail(email);
+    if (user && await bcrypt.compare(pass.trim(), user.passwordHash)) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { passwordHash, ...result } = user; // Use passwordHash and remove it
+      const { passwordHash, ...result } = user;
       return result;
     }
     return null;
@@ -24,7 +24,7 @@ export class AuthService {
 
   async validateManager(email: string, pass: string): Promise<Omit<UserEntity, 'passwordHash'> | null> {
     const user = await this.usersService.findOneByEmail(email);
-    if (user && user.roles.includes('manager') && await bcrypt.compare(pass, user.passwordHash)) {
+    if (user && user.roles.includes('manager') && await bcrypt.compare(pass.trim(), user.passwordHash)) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...result } = user;
       return result;
@@ -64,5 +64,29 @@ export class AuthService {
 
     // Update user password via UsersService
     await this.usersService.updatePassword(userId, newPasswordHash); // Need updatePassword in UsersService
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const user = await this.usersService.findOneByEmail(email);
+    if (!user) {
+      // It's generally better not to reveal if an email exists or not for security reasons
+      // during password reset. So, we can return a generic success message regardless.
+      // However, for internal logic, knowing if the user exists is important.
+      // For this exercise, we'll proceed as if we'd send an email if the user exists.
+      console.warn(`Password reset requested for non-existent email: ${email}`);
+      // throw new NotFoundException('User with this email does not exist.');
+      // To prevent email enumeration, always return a success-like message.
+      return { message: 'If an account with this email exists, a password reset link has been sent.' };
+    }
+
+    // In a real application:
+    // 1. Generate a unique, secure password reset token.
+    // 2. Store this token with an expiration date, associated with the user.
+    // 3. Send an email to the user with a link containing this token.
+    //    e.g., https://your-app.com/reset-password?token=THE_SECURE_TOKEN
+    // For now, we'll just log and return a success message.
+    console.log(`Simulating password reset email sent to ${email} for user ID ${user.id}`);
+
+    return { message: 'If an account with this email exists, a password reset link has been sent.' };
   }
 }

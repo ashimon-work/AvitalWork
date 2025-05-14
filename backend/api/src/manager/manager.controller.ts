@@ -445,17 +445,6 @@ export class ManagerController {
     return this.ordersService.requestShippingLabelForManager(storeSlug, orderId);
   }
 
-  @Post('login')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  @HttpCode(HttpStatus.OK)
-  async login(@Body() loginManagerDto: LoginManagerDto) {
-    const user = await this.authService.validateManager(loginManagerDto.email, loginManagerDto.password);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return this.authService.login(user);
-  }
-
   @Get(':storeSlug/orders/export')
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
   @HttpCode(HttpStatus.OK)

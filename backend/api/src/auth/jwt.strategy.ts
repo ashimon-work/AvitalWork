@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/users.service'; // Import UsersService if needed for validation
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -17,8 +17,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false, // Ensure expired tokens are rejected
-      secretOrKey: jwtSecret, // Pass the validated secret
+      ignoreExpiration: false,
+      secretOrKey: jwtSecret,
     });
   }
 
@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // It then invokes our validate() method passing the decoded JSON as its single parameter.
   async validate(payload: { sub: string; email: string }) {
     // We could fetch the full user entity here if needed for more complex validation/roles
-    const user = await this.usersService.findOneById(payload.sub); // Use findOneById
+    const user = await this.usersService.findOneById(payload.sub);
     if (!user) {
       throw new UnauthorizedException();
     }
@@ -34,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // We return the user ID and email (or the full user object if needed downstream).
     // This return value becomes req.user in guarded routes.
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { passwordHash, ...result } = user; // Exclude password hash
-    return result; // Or return { userId: payload.sub, email: payload.email }; if full user not needed
+    const { passwordHash, ...result } = user;
+    return result;
   }
 }

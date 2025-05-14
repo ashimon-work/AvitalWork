@@ -34,7 +34,6 @@ export class CreateAddressDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  country: string;
 
   @IsString()
   @IsOptional()

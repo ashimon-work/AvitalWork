@@ -159,6 +159,7 @@ const userPassword = 'password123'; // Simple password for seeding
 const baseUserData = [
   { id: 'a1b2c3d4-e5f6-7777-8888-9999aaaaabbb', email: 'john.doe@example.com', firstName: 'John', lastName: 'Doe', roles: ['customer'] as ('customer' | 'manager' | 'admin')[] }, // Use valid UUID
   { id: 'b1c2d3e4-f5a6-8888-9999-aaaaabbbbccc', email: 'jane.smith@example.com', firstName: 'Jane', lastName: 'Smith', roles: ['customer'] as ('customer' | 'manager' | 'admin')[] }, // Use valid UUID
+  { id: 'c1d2e3f4-a5b6-9999-aaaa-bbbbccccdddd', email: 'A@A.com', firstName: 'Admin', lastName: 'User', roles: ['manager', 'customer'] as ('customer' | 'manager' | 'admin')[] }, // Manager User
 ];
 
 
@@ -277,18 +278,18 @@ async function bootstrap() {
     logger.log('Seeding products and variants...');
     const productsToSave: ProductEntity[] = [];
     for (const product of productData) {
-      const { categoryIds, variants: variantData, ...productDetails } = product as any; // Renamed variants to avoid conflict
-      const productEntityInstance = productRepository.create(productDetails as Partial<ProductEntity>); // Create a single entity
+      const { categoryIds, variants: variantData, ...productDetails } = product as any;
+      const productEntityInstance = productRepository.create(productDetails as Partial<ProductEntity>);
 
       if (categoryIds && categoryIds.length > 0) {
         const categories = await categoryRepository.findBy({ id: In(categoryIds) });
-        productEntityInstance.categories = categories; // Assign to the single entity instance
+        productEntityInstance.categories = categories;
       }
 
       if (variantData && variantData.length > 0) {
-        productEntityInstance.variants = variantData.map(variant => productVariantRepository.create(variant as Partial<ProductVariantEntity>)); // Assign to the single entity instance
+        productEntityInstance.variants = variantData.map(variant => productVariantRepository.create(variant as Partial<ProductVariantEntity>));
       }
-      productsToSave.push(productEntityInstance); // Push the single entity instance
+      productsToSave.push(productEntityInstance);
     }
 
     await productRepository.save(productsToSave);
