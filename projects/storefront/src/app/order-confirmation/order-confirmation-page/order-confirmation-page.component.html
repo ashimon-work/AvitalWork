@@ -39,10 +39,9 @@
       <h3 *ngIf="order.shippingAddress">Shipping Details</h3>
       <div *ngIf="order.shippingAddress">
         <p>{{ order.shippingAddress.fullName }}</p>
-        <p>{{ order.shippingAddress.address1 }}</p>
-        <p *ngIf="order.shippingAddress.address2">{{ order.shippingAddress.address2 }}</p>
-        <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.zipCode }}</p> <!-- Assuming zipCode is used -->
-        <p>{{ order.shippingAddress.country }}</p>
+        <p>{{ order.shippingAddress.street1 }}</p>
+        <p *ngIf="order.shippingAddress.street2">{{ order.shippingAddress.street2 }}</p>
+        <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.country }} {{ order.shippingAddress.postalCode }}</p> <!-- Assuming zipCode is used -->
         <p><strong>Shipping Method:</strong> {{ order.shippingMethod }}</p> <!-- Assuming shippingMethod is a string name -->
       </div>
 

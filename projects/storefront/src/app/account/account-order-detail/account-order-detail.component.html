@@ -28,10 +28,9 @@
           <div class="col-md-6" *ngIf="order.shippingAddress">
             <h4>Shipping Address</h4>
             <p>{{ order.shippingAddress.fullName }}</p>
-            <p>{{ order.shippingAddress.address1 }}</p>
-            <p *ngIf="order.shippingAddress.address2">{{ order.shippingAddress.address2 }}</p>
-            <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} {{ order.shippingAddress.zipCode }}</p>
-            <p>{{ order.shippingAddress.country }}</p>
+            <p>{{ order.shippingAddress.street1 }}</p>
+            <p *ngIf="order.shippingAddress.street2">{{ order.shippingAddress.street2 }}</p>
+            <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.country }} {{ order.shippingAddress.postalCode }}</p>
             <p *ngIf="order.shippingAddress.phoneNumber">Phone: {{ order.shippingAddress.phoneNumber }}</p>
           </div>
         </div>

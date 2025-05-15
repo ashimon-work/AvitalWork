@@ -54,8 +54,8 @@
 
           <!-- Shipping Information -->
           <h6>Shipping Information</h6>
-          <p><strong>Address:</strong> {{ order.shippingAddress?.street }}, {{ order.shippingAddress?.city }}, {{
-            order.shippingAddress?.state }} {{ order.shippingAddress?.zipCode }}, {{ order.shippingAddress?.country }}
+          <p><strong>Address:</strong> {{ order.shippingAddress?.street1 }}, {{ order.shippingAddress?.city }}, {{
+            order.shippingAddress?.postalCode }}, {{ order.shippingAddress?.country }}
           </p>
           <p><strong>Method:</strong> {{ order.shippingMethod }}</p>
           <p><strong>Tracking Number:</strong> {{ order.trackingNumber }}</p>
