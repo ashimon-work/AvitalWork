@@ -331,6 +331,39 @@
           }
         }
       }
+    },
+    "shared-i18n": {
+      "projectType": "library",
+      "root": "projects/shared-i18n",
+      "sourceRoot": "projects/shared-i18n/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/shared-i18n/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/shared-i18n/tsconfig.lib.json"
+            },
+            "development": {
+              "tsConfig": "projects/shared-i18n/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/shared-i18n/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
     }
   }
 }

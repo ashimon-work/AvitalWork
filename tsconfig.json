@@ -18,12 +18,15 @@
     "experimentalDecorators": true,
     "moduleResolution": "bundler",
     "paths": {
-      "shared-types": [ // Keep for Angular builds
+      "shared-types": [
         "dist/shared-types/shared-types", // Adjust path based on ng-packagr output if needed
         "dist/shared-types"
       ],
-      "@shared-types": [ // Add alias for direct source access
+      "@shared-types": [
         "projects/shared-types/src/public-api.ts"
+      ],
+      "@shared/i18n": [
+        "dist/shared-i18n"
       ]
     },
     "importHelpers": true,
