@@ -91,9 +91,9 @@ class FeaturedData {
 
   factory FeaturedData.fromJson(Map<String, dynamic> json) {
     return FeaturedData(
-      products: (json['products'] as List).map((i) => Product.fromJson(i)).toList(),
-      categories: (json['categories'] as List).map((i) => Category.fromJson(i)).toList(),
-      stores: (json['stores'] as List).map((i) => Store.fromJson(i)).toList(),
+      products: (json['featuredProducts'] as List).map((i) => Product.fromJson(i)).toList(),
+      categories: (json['featuredCategories'] as List).map((i) => Category.fromJson(i)).toList(),
+      stores: (json['featuredStores'] as List).map((i) => Store.fromJson(i)).toList(),
     );
   }
 }
