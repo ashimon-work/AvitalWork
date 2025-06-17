@@ -15,7 +15,6 @@ class Product {
   final bool isActive;
   final bool isFeaturedInMarketplace;
   final Store store;
-  final String storeId;
 
   Product({
     required this.id,
@@ -31,7 +30,6 @@ class Product {
     required this.isActive,
     required this.isFeaturedInMarketplace,
     required this.store,
-    required this.storeId,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -51,7 +49,6 @@ class Product {
       isActive: json['isActive'],
       isFeaturedInMarketplace: json['isFeaturedInMarketplace'],
       store: Store.fromJson(json['store']),
-      storeId: json['storeId'],
     );
   }
 
