@@ -98,7 +98,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       onPressed: () {
                         final productData = snapshot.data!;
                         final product = Product.fromJson(productData);
-                        _cartService.addToCart(widget.storeSlug, product);
+                        _cartService.addToCart(widget.storeSlug, product, 1);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Product added to cart!'),

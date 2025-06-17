@@ -24,7 +24,7 @@ class AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> {
 
   Future<void> _initializeWebView() async {
     final authService = Provider.of<AuthService>(context, listen: false);
-    final userId = await authService.getUserId(); // Assuming you have a method to get the user ID
+    final userId = await authService.getUserId();
 
     final iframeUrl = 'https://direct.tranzila.com/YOUR_TERMINAL/iframenew.php?'
         'sum=1&' // Tokenization usually requires a small amount
