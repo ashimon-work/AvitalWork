@@ -25,7 +25,7 @@ export class CartController {
 
   @Post('add')
   @UseGuards(StoreContextGuard) // JwtAuthGuard is optional here, handled by checking req.user
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   async addItemToCart(
     @Req() req: AuthenticatedRequest,
     @Body() addToCartDto: AddToCartDto,
