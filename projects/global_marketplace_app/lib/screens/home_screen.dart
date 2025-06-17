@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:global_marketplace_app/models/home_data.dart';
 import 'package:global_marketplace_app/services/api_service.dart';
-import 'package:global_marketplace_app/widgets/product_card.dart';
 import 'package:global_marketplace_app/models/product.dart';
+import 'package:global_marketplace_app/screens/store_screen.dart';
+import 'package:global_marketplace_app/widgets/product_grid.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -168,37 +169,24 @@ class HomeScreenState extends State<HomeScreen> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
-          final products = snapshot.data!.featuredProducts.map((p) {
-            return Product(
-              id: p.id,
-              sku: p.sku,
-              name: p.name,
-              description: p.description,
-              price: p.price,
-              imageUrls: p.imageUrls,
-              categories: p.categories,
-              tags: p.tags,
-              stockLevel: p.stockLevel,
-              isActive: true,
-              isFeaturedInMarketplace: true,
-              store: p.store,
-            );
-          }).toList();
+          final products = snapshot.data!.featuredProducts
+              .map((p) => Product(
+                    id: p.id,
+                    sku: p.sku,
+                    name: p.name,
+                    description: p.description,
+                    price: p.price,
+                    imageUrls: p.imageUrls,
+                    categories: p.categories,
+                    tags: p.tags,
+                    stockLevel: p.stockLevel,
+                    isActive: true,
+                    isFeaturedInMarketplace: true,
+                    store: p.store,
+                  ))
+              .toList();
 
-          return GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16.0,
-              mainAxisSpacing: 16.0,
-              childAspectRatio: 0.75,
-            ),
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              return ProductCard(product: products[index]);
-            },
-          );
+          return ProductGrid(products: products);
         } else {
           return const Center(child: Text('No products available'));
         }
@@ -207,35 +195,58 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTopStores() {
-    // Placeholder data
-    final stores = [
-      {'name': 'Artisan Creations', 'logo': 'assets/logos/artisan_creations.png'},
-      {'name': 'Handmade Wonders', 'logo': 'assets/logos/handmade_wonders.png'},
-      {'name': 'Craft Corner', 'logo': 'assets/logos/craft_corner.png'},
-      {'name': 'The Design Studio', 'logo': 'assets/logos/design_studio.png'},
-    ];
-
-    return SizedBox(
-      height: 120,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: stores.length,
-        itemBuilder: (context, index) {
-          return Column(
-            children: [
-              CircleAvatar(
-                radius: 40,
-                // Placeholder for store logo
-                backgroundColor: Colors.grey[300],
-                child: const Icon(Icons.store, size: 40, color: Colors.grey),
-              ),
-              const SizedBox(height: 8),
-              Text(stores[index]['name']!, style: const TextStyle(fontFamily: 'Lato')),
-            ],
+    return FutureBuilder<HomeData>(
+      future: _homeDataFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final stores = snapshot.data!.featuredStores;
+          return SizedBox(
+            height: 120,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: stores.length,
+              itemBuilder: (context, index) {
+                final store = stores[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            StoreScreen(storeSlug: store.id),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage: store.logoUrl != null
+                            ? NetworkImage(store.logoUrl!)
+                            : null,
+                        child: store.logoUrl == null
+                            ? const Icon(Icons.store,
+                                size: 40, color: Colors.grey)
+                            : null,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(store.name,
+                          style: const TextStyle(fontFamily: 'Lato')),
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(width: 16),
+            ),
           );
-        },
-        separatorBuilder: (context, index) => const SizedBox(width: 16),
-      ),
+        } else {
+          return const Center(child: Text('No stores available'));
+        }
+      },
     );
   }
 }

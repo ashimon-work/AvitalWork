@@ -35,4 +35,27 @@ export class MarketplaceService {
       featuredStores,
     };
   }
+
+  async getStorePageData(slug: string) {
+    const store = await this.storeRepository.findOne({ where: { slug } });
+    if (!store) {
+      return null;
+    }
+
+    const featuredProducts = await this.productRepository.find({
+      where: { store: { id: store.id }, isFeaturedInMarketplace: true },
+      relations: ['store', 'categories'],
+    });
+
+    const products = await this.productRepository.find({
+      where: { store: { id: store.id } },
+      relations: ['store', 'categories'],
+    });
+
+    return {
+      store,
+      featuredProducts,
+      products,
+    };
+  }
 }
