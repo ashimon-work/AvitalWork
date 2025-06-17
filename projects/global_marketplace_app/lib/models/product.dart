@@ -6,7 +6,7 @@ class Product {
   final String sku;
   final String name;
   final String description;
-  final String price;
+  final double price;
   final List<String> imageUrls;
   final List<Category> categories;
   final List<String> tags;
@@ -38,7 +38,7 @@ class Product {
       sku: json['sku'],
       name: json['name'],
       description: json['description'],
-      price: json['price'],
+      price: (json['price'] as num).toDouble(),
       imageUrls: List<String>.from(json['imageUrls']),
       categories: (json['categories'] as List? ?? [])
           .map((i) => Category.fromJson(i))
