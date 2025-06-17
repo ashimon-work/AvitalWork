@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
+import '../models/cart_item.dart';
 import './auth_service.dart';
 
 class CartService {
@@ -13,11 +14,11 @@ class CartService {
 
   CartService._internal();
 
-  final Map<String, List<Product>> _carts = {};
+  final Map<String, List<CartItem>> _carts = {};
 
-  Map<String, List<Product>> get carts => _carts;
+  Map<String, List<CartItem>> get carts => _carts;
 
-  Future<void> addToCart(String storeSlug, Product product) async {
+  Future<void> addToCart(String storeSlug, Product product, int quantity) async {
     final url = Uri.parse('https://smartyapp.co.il/api/stores/$storeSlug/cart/add');
     final token = await _authService.getToken();
     
@@ -31,7 +32,7 @@ class CartService {
       headers: headers,
       body: jsonEncode({
         'productId': product.id,
-        'quantity': 1,
+        'quantity': quantity,
       }),
     );
 
@@ -39,7 +40,7 @@ class CartService {
       final cartData = jsonDecode(response.body);
       final List<dynamic> items = cartData['items'];
       _carts[storeSlug] =
-          items.map((data) => Product.fromJson(data['product'])).toList();
+          items.map((data) => CartItem.fromJson(data)).toList();
     } else {
       throw Exception('Failed to add to cart');
     }
@@ -48,7 +49,6 @@ class CartService {
   Future<void> refreshCarts() async {
     final token = await _authService.getToken();
     if (token == null) {
-      // Handle guest cart if necessary, for now, we clear it.
       _carts.clear();
       return;
     }
@@ -67,12 +67,20 @@ class CartService {
       _carts.clear();
       for (var cartData in cartsData) {
         final storeSlug = cartData['store']['slug'];
-        final List<dynamic> productData = cartData['products'];
+        final List<dynamic> itemsData = cartData['items'];
         _carts[storeSlug] =
-            productData.map((data) => Product.fromJson(data)).toList();
+            itemsData.map((data) => CartItem.fromJson(data)).toList();
       }
     } else {
       throw Exception('Failed to fetch user carts');
     }
+  }
+
+  List<CartItem> getCartItemsForStore(String storeSlug) {
+    return _carts[storeSlug] ?? [];
+  }
+
+  void clearCartForStore(String storeSlug) {
+    _carts.remove(storeSlug);
   }
 }
