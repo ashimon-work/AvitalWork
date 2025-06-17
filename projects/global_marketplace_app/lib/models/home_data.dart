@@ -49,11 +49,13 @@ class FeaturedCategory {
 class FeaturedStore {
   final String id;
   final String name;
+  final String slug;
   final String? logoUrl;
 
   FeaturedStore({
     required this.id,
     required this.name,
+    required this.slug,
     this.logoUrl,
   });
 
@@ -61,6 +63,7 @@ class FeaturedStore {
     return FeaturedStore(
       id: json['id'],
       name: json['name'],
+      slug: json['slug'],
       logoUrl: json['logoUrl'],
     );
   }

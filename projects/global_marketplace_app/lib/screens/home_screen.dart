@@ -217,7 +217,7 @@ class HomeScreenState extends State<HomeScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            StoreScreen(storeSlug: store.id),
+                            StoreScreen(storeSlug: store.slug),
                       ),
                     );
                   },
