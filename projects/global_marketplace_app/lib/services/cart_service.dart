@@ -34,4 +34,31 @@ class CartService {
       throw Exception('Failed to add to cart');
     }
   }
+
+  Future<void> fetchUserCarts() async {
+    // TODO: get the real token
+    const token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjYxYjg5ODQ1ZTU2MjgxNTcyN2U4MmUiLCJpYXQiOjE3MTc4Mjc0NTIsImV4cCI6MTcxNzg1NjI1Mn0.eQ3t5e4p4EE2FUfPz_1nMg8u_2kXy-v2i_pG-6-yGgA';
+    final url = Uri.parse('https://smartyapp.co.il/api/account/carts');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> cartsData = jsonDecode(response.body);
+      _carts.clear();
+      for (var cartData in cartsData) {
+        final storeSlug = cartData['store']['slug'];
+        final List<dynamic> productData = cartData['products'];
+        _carts[storeSlug] =
+            productData.map((data) => Product.fromJson(data)).toList();
+      }
+    } else {
+      throw Exception('Failed to fetch user carts');
+    }
+  }
 }

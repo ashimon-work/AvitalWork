@@ -1,24 +1,48 @@
 import 'package:flutter/material.dart';
 import '../services/cart_service.dart';
 
-class ShoppingCartScreen extends StatelessWidget {
-  final CartService cartService = CartService();
+class ShoppingCartScreen extends StatefulWidget {
+  const ShoppingCartScreen({super.key});
 
-  ShoppingCartScreen({super.key});
+  @override
+  State<ShoppingCartScreen> createState() => _ShoppingCartScreenState();
+}
+
+class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
+  final CartService cartService = CartService();
+  late Future<void> _fetchCartsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCartsFuture = cartService.fetchUserCarts();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final cart = cartService.carts;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping Cart'),
       ),
-      body: cart.isEmpty
-          ? const Center(
-              child: Text('Your cart is empty.'),
-            )
-          : ListView.builder(
+      body: FutureBuilder<void>(
+        future: _fetchCartsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return const Center(
+              child: Text('Failed to load cart. Please try again later.'),
+            );
+          } else {
+            final cart = cartService.carts;
+            if (cart.isEmpty) {
+              return const Center(
+                child: Text('Your cart is empty.'),
+              );
+            }
+            return ListView.builder(
               itemCount: cart.keys.length,
               itemBuilder: (context, index) {
                 final storeName = cart.keys.elementAt(index);
@@ -47,7 +71,10 @@ class ShoppingCartScreen extends StatelessWidget {
                   ],
                 );
               },
-            ),
+            );
+          }
+        },
+      ),
     );
   }
 }
