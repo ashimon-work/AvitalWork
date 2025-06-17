@@ -75,8 +75,9 @@ class CartProvider extends ChangeNotifier {
 
       if (response.statusCode == 201) {
         final List<dynamic> cartsData = jsonDecode(response.body);
-        print('API Response: $cartsData');
+        print('[CartProvider DEBUG] API Response on Add: ${response.body}');
         
+        print('[CartProvider DEBUG] State BEFORE update: ${_carts.keys.toList()} - Total Items: ${getTotalItemCount()}');
         _carts.clear();
         for (var cartData in cartsData) {
           final storeSlug = cartData['store']['slug'];
@@ -94,6 +95,7 @@ class CartProvider extends ChangeNotifier {
         // Debug: Print cart state after adding
         print('After adding: Total items = ${getTotalItemCount()}');
         print('All carts: ${_carts.keys.toList()}');
+        print('[CartProvider DEBUG] State AFTER update: ${_carts.keys.toList()} - Total Items: ${getTotalItemCount()}');
         
         notifyListeners();
       } else if (response.statusCode == 401) {

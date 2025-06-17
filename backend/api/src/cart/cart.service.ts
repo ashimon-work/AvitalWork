@@ -478,7 +478,7 @@ export class CartService {
 
     return this.cartRepository.find({
       where: whereCondition,
-      relations: ['store', 'items', 'items.product'],
+      relations: ['store', 'items', 'items.product', 'items.product.store'],
     });
   }
 }
