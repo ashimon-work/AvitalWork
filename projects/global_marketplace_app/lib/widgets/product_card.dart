@@ -25,29 +25,53 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              product.firstImageUrl,
-              fit: BoxFit.cover,
-              height: 150,
-              width: double.infinity,
+            AspectRatio(
+              aspectRatio: 1,
+              child: Image.network(
+                product.firstImageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                // Placeholder for loading and error states
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                  return const Center(child: Icon(Icons.broken_image));
+                },
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    product.store.name,
+                    style: Theme.of(context).textTheme.bodySmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text('\$${product.price}'),
-                  const SizedBox(height: 4),
                   Text(
-                    'from ${product.store.name}',
-                    style: const TextStyle(color: Colors.grey),
+                    product.name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$${product.price.toStringAsFixed(2)}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
