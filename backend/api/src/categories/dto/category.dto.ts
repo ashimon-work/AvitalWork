@@ -16,4 +16,11 @@ export class CategoryDto {
   @IsString()
   @IsOptional()
   imageUrl?: string;
+
+  constructor(data: Partial<CategoryDto>) {
+    this.id = data.id || '';
+    this.name = data.name || '';
+    this.description = data.description;
+    this.imageUrl = data.imageUrl;
+  }
 }

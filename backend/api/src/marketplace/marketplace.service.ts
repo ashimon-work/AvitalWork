@@ -19,9 +19,11 @@ export class MarketplaceService {
   async getHomePageData() {
     const featuredProducts = await this.productRepository.find({
       where: { isFeaturedInMarketplace: true },
+      relations: ['store', 'categories'],
     });
     const featuredCategories = await this.categoryRepository.find({
       where: { isFeaturedInMarketplace: true },
+      relations: ['store'],
     });
     const featuredStores = await this.storeRepository.find({
       where: { isFeaturedInMarketplace: true },

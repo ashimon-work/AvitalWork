@@ -135,10 +135,10 @@ export class ProductPageComponent implements OnInit {
                 this.recentlyViewedService.addProduct(product.id);
               }
 
-              // Fetch category details for breadcrumbs if categoryIds exist
-              if (product.categoryIds && product.categoryIds.length > 0) {
+              // Fetch category details for breadcrumbs if categories exist
+              if (product.categories && product.categories.length > 0) {
                 // Fetch details for the first category ID
-                this.apiService.getCategoryDetails(product.categoryIds[0]).subscribe({
+                this.apiService.getCategoryDetails(product.categories[0].id).subscribe({
                   next: (category) => {
                     this.productCategory = category;
                     console.log('Fetched product category for breadcrumbs:', category?.name);

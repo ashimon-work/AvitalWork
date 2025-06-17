@@ -1,4 +1,6 @@
 // Represents a specific option combination for a variant
+import { CategoryDto } from "backend/api/src/categories/dto/category.dto";
+
 // e.g., { name: 'Color', value: 'Red' } or { name: 'Size', value: 'Large' }
 export interface ProductVariantOption {
   name: string;
@@ -24,7 +26,7 @@ export interface Product {
   price: number; // Base price (can be overridden by variants)
   // imageUrl?: string; // Replaced by imageUrls
   imageUrls: string[]; // Array of image URLs. First image is typically the primary one.
-  categoryIds: string[]; // IDs of categories it belongs to
+  categories: CategoryDto[]; // IDs of categories it belongs to
   tags?: string[]; // e.g., 'New', 'Sale'
   stockLevel: number; // Base stock level (relevant if product is sold without variants or as a fallback)
   isActive: boolean;

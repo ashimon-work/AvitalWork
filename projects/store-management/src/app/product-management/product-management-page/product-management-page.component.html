@@ -117,7 +117,7 @@
               [alt]="tKeys.SM_PRODUCT_MGMT_PAGE_PRODUCT_IMAGE_ALT | translate" class="product-thumbnail"></td> <!-- Use first product image or placeholder -->
           <td>{{ product.name }}</td>
           <td>{{ product.sku }}</td>
-          <td>{{ product.categoryIds && product.categoryIds.length > 0 ? product.categoryIds[0] : (tKeys.SM_PRODUCT_MGMT_PAGE_TABLE_DATA_NA | translate) }}</td>
+          <td>{{ product.categories && product.categories.length > 0 ? product.categories[0].id : (tKeys.SM_PRODUCT_MGMT_PAGE_TABLE_DATA_NA | translate) }}</td>
           <!-- Display first category ID or N/A -->
           <td>{{ product.price | currency }}</td> <!-- Assuming price is a number -->
           <td class="stock-level">{{ product.stockLevel }}</td> <!-- Use stockLevel -->
