@@ -15,7 +15,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchCartsFuture = cartService.fetchUserCarts();
+    _fetchCartsFuture = cartService.refreshCarts();
   }
 
   @override

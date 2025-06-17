@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
+import './auth_service.dart';
 
 class CartService {
   static final CartService _instance = CartService._internal();
+  final AuthService _authService = AuthService();
 
   factory CartService() {
     return _instance;
@@ -17,9 +19,16 @@ class CartService {
 
   Future<void> addToCart(String storeSlug, Product product) async {
     final url = Uri.parse('https://smartyapp.co.il/api/stores/$storeSlug/cart/add');
+    final token = await _authService.getToken();
+    
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: jsonEncode({
         'productId': product.id,
         'quantity': 1,
@@ -35,10 +44,14 @@ class CartService {
     }
   }
 
-  Future<void> fetchUserCarts() async {
-    // TODO: get the real token
-    const token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjYxYjg5ODQ1ZTU2MjgxNTcyN2U4MmUiLCJpYXQiOjE3MTc4Mjc0NTIsImV4cCI6MTcxNzg1NjI1Mn0.eQ3t5e4p4EE2FUfPz_1nMg8u_2kXy-v2i_pG-6-yGgA';
+  Future<void> refreshCarts() async {
+    final token = await _authService.getToken();
+    if (token == null) {
+      // Handle guest cart if necessary, for now, we clear it.
+      _carts.clear();
+      return;
+    }
+
     final url = Uri.parse('https://smartyapp.co.il/api/account/carts');
     final response = await http.get(
       url,

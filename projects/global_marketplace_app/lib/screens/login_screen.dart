@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:global_marketplace_app/services/auth_service.dart';
+import 'package:global_marketplace_app/services/cart_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final CartService _cartService = CartService();
 
   @override
   void dispose() {
@@ -29,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (success) {
         if (mounted) {
+          await _cartService.refreshCarts();
           Navigator.pop(context);
         }
       } else {

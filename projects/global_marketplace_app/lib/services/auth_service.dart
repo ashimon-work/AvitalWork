@@ -31,4 +31,8 @@ class AuthService {
       return false;
     }
   }
+
+  Future<String?> getToken() async {
+    return await _secureStorage.read(key: 'jwt_token');
+  }
 }
