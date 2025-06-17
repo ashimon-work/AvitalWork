@@ -3,18 +3,20 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router'; // Import RouterModule for routerLink
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../core/services/auth.service'; // Import AuthService
+import { T, TranslatePipe } from '@shared/i18n'; // Import T and TranslatePipe
 
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TranslatePipe], // Add TranslatePipe
   providers: [HttpClient],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss']
 })
 export class LoginPageComponent implements OnInit {
+  public tKeys = T; // Declare tKeys
   loginForm!: FormGroup; // Use definite assignment assertion
   isSubmitting = false;
   errorMessage: string | null = null;
@@ -50,7 +52,7 @@ export class LoginPageComponent implements OnInit {
         console.log('Login successful');
       },
       error: (error) => {
-        this.errorMessage = error.message || 'Login failed. Please check your credentials.';
+        this.errorMessage = error.message || this.tKeys.SF_LOGIN_PAGE_ERROR_FALLBACK;
         this.isSubmitting = false;
       },
       complete: () => {

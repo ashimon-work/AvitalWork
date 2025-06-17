@@ -1,364 +1,692 @@
-/* Using global variables defined in src/styles.scss */
+// Global variables (assuming they are available from src/styles.scss or similar)
+// e.g., --primary-color, --text-color, --background-color, --border-color,
+// --font-family-sans, --spacing-xs, --spacing-sm, --spacing-md, --spacing-lg, --spacing-xl,
+// --border-radius-md, --box-shadow-md, --container-max-width, --container-padding-x
 
 :host {
   display: block;
 }
 
-// Utility classes for responsive visibility
-.desktop-only {
-  display: block; // Or grid, flex, etc. depending on element
-  @media (max-width: 768px) {
-    display: none !important; // Hide on mobile
-  }
-}
-
+// Utility classes (similar to Tailwind)
 .mobile-only {
-  display: none !important; // Hide on desktop
+  display: none !important;
+  @media (max-width: 768px) { // Corresponds to lg breakpoint in Tailwind
+    display: block !important; // Or inline-block, flex, etc. as needed
+  }
+}
+
+.desktop-only {
+  display: block; // Or inline-block, flex, etc. as needed
   @media (max-width: 768px) {
-    display: inline-block !important; // Or block, flex, etc. depending on element
+    display: none !important;
+  }
+}
+
+// Animations (inspired by framer-motion in CategoryPage.tsx)
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-breadcrumb {
+  animation: slideInDown 0.3s ease-out forwards;
+}
+.animate-category-header {
+  animation: slideInUp 0.4s 0.1s ease-out forwards; // delay 0.1s
+}
+.animate-sidebar {
+  animation: slideInLeft 0.4s 0.2s ease-out forwards; // delay 0.2s
+}
+.animate-main-content {
+  animation: slideInRight 0.4s 0.3s ease-out forwards; // delay 0.3s
+}
+.animate-results-summary {
+  animation: fadeIn 0.3s 0.4s ease-out forwards; // delay 0.4s
+}
+.animate-product-grid {
+  animation: slideInUp 0.4s 0.5s ease-out forwards; // delay 0.5s
+}
+.animate-pagination {
+  animation: slideInUp 0.4s 0.6s ease-out forwards; // delay 0.6s
+}
+
+// Generic Icon Styling
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0; // For SVGs using fill
+  stroke: currentColor; // For SVGs using stroke
+  fill: currentColor; // For SVGs using fill
+  vertical-align: middle;
+  object-fit: contain; // Ensure aspect ratio is maintained
+
+  &.icon-sm {
+    width: 0.875em; // 14px if 1em = 16px
+    height: 0.875em;
+  }
+  &.icon-lg {
+    width: 1.25em; // 20px
+    height: 1.25em;
   }
 }
 
 
-.category-page-container {
+// Base page wrapper (mimics min-h-screen bg-background)
+.page-wrapper {
+  min-height: 100vh;
+  background-color: var(--background-color, #f9fafb); // Default fallback
   width: 100%;
-  max-width: var(--container-max-width);
-  margin: var(--spacing-xl) auto;
-  padding: 0 var(--container-padding-x);
+  font-family: var(--font-sans, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
 }
 
-.breadcrumbs {
-  margin-bottom: var(--spacing-md);
-  font-size: 0.9rem;
-  color: var(--text-color-light);
+// Content container (mimics container mx-auto px-4 py-6 lg:px-6 lg:py-8)
+.content-container {
+  max-width: var(--container-max-width, 1280px);
+  margin-left: auto;
+  margin-right: auto;
+  padding: var(--spacing-lg) var(--container-padding-x, 1rem); // py-6 px-4
 
-  a {
-    color: var(--text-color-light);
+  @media (min-width: 1024px) { // lg breakpoint
+    padding: var(--spacing-xl) var(--container-padding-x-lg, 1.5rem); // py-8 px-6
+  }
+}
+
+// Breadcrumb Navigation
+.breadcrumb-nav {
+  margin-bottom: var(--spacing-lg); // mb-6
+  font-size: 0.875rem; // text-sm
+  color: var(--text-color-muted, #6b7280);
+
+  .breadcrumb-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb-link {
+    color: inherit;
+    text-decoration: none;
     &:hover {
-      color: var(--primary-color);
+      color: var(--text-color, #111827); // hover:text-foreground
     }
   }
 
-  span {
-    font-weight: var(--font-weight-medium);
-    color: var(--text-color);
-  }
-}
-
-.category-header {
-  text-align: center;
-  margin-bottom: var(--spacing-xl);
-
-  h1 {
-    margin-bottom: var(--spacing-sm);
-  }
-  p {
-    color: var(--text-color-light);
-    max-width: 70ch;
-    margin: 0 auto;
-  }
-}
-
-.category-content {
-  display: grid;
-  grid-template-columns: 240px 1fr; // Desktop layout
-  gap: var(--spacing-xl);
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr; // Mobile layout (single column)
-  }
-}
-
-// Desktop Filter Sidebar Styles
-.filter-sidebar {
-  border: var(--border-width) solid var(--border-color);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-lg);
-  background-color: var(--neutral-lightest);
-  align-self: start; // Keep aligned to top in grid cell
-  width: 240px; // Fixed width for desktop
-
-  h2 {
-    font-size: 1.4rem;
-    margin-bottom: var(--spacing-lg);
-    border-bottom: var(--border-width) solid var(--border-color);
-    padding-bottom: var(--spacing-sm);
-  }
-
-  .filter-group {
-    margin-bottom: var(--spacing-lg);
-
-    h3 {
-      font-size: 1.1rem;
-      font-weight: var(--font-weight-medium);
-      margin-bottom: var(--spacing-md);
-    }
-
-    select, label {
-      display: block;
-      margin-bottom: var(--spacing-sm);
-    }
-
-    input[type="checkbox"] {
-      margin-right: var(--spacing-sm);
-      width: auto;
-      display: inline-block;
+  .breadcrumb-separator {
+    margin: 0 var(--spacing-xs); // mx-1, slightly tighter for an icon
+    .icon-breadcrumb-separator {
+      width: 16px; // Adjust size as needed
+      height: 16px;
+      color: var(--text-color-muted, #6b7280);
     }
   }
 
-  button {
-    /* Inherit base button styles */
-    @extend button; // Assuming a global button style exists
-    width: 100%;
-    margin-top: var(--spacing-md);
-    background-color: transparent;
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-
-    &:hover, &:focus {
-      background-color: rgba(52, 152, 219, 0.1);
-      opacity: 1;
-      color: var(--primary-color);
-      border-color: var(--primary-color);
-    }
+  .breadcrumb-page {
+    color: var(--text-color, #111827); // text-foreground
+    font-weight: var(--font-weight-medium, 500);
   }
 }
 
-// Wrapper for desktop sidebar (now hidden on mobile via .desktop-only)
-.filter-wrapper {
-  // No specific styles needed here anymore unless for alignment
+// Category Header
+.category-title-header {
+  margin-bottom: var(--spacing-xl); // mb-8 lg:mb-12 (use larger for consistency)
+  text-align: left; // Default, React component doesn't specify center
+
+  .category-name {
+    font-size: 1.875rem; // text-3xl
+    font-weight: var(--font-weight-bold, 700);
+    margin-bottom: var(--spacing-md); // mb-4
+    color: var(--text-color, #111827); // text-foreground
+
+    @media (min-width: 1024px) { // lg breakpoint
+      font-size: 2.25rem; // lg:text-4xl
+    }
+  }
+
+  .category-description {
+    font-size: 1.125rem; // text-lg
+    color: var(--text-color-muted, #6b7280); // text-muted-foreground
+    max-width: 65ch; // max-w-3xl
+    line-height: 1.75; // leading-relaxed
+  }
 }
 
-.main-content {
-  /* Styles for main area */
-}
-
-.sorting-options {
+// Main Content Area (Flex Layout)
+.main-content-area {
   display: flex;
-  justify-content: flex-end; // Default to right alignment (desktop)
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-  gap: var(--spacing-sm);
+  flex-direction: column;
+  gap: var(--spacing-lg); // gap-6
 
-  @media (max-width: 768px) {
-    justify-content: space-between; // Space out button and sort on mobile
-    position: relative; // Needed for absolute positioning of the filter popover
+  @media (min-width: 1024px) { // lg breakpoint
+    flex-direction: row;
+    gap: var(--spacing-xl); // lg:gap-8
+  }
+}
+
+// Filter Sidebar
+.filter-sidebar-wrapper {
+  width: 100%; // Full width on mobile
+  @media (min-width: 1024px) { // lg breakpoint
+    width: 280px; // Fixed width for desktop, similar to React's lg:w-1/4 or fixed
+    flex-shrink: 0; // lg:flex-shrink-0
   }
 
-  .filter-button {
-    // Inherits .mobile-only styles for visibility
-    border: var(--border-width) solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    background-color: transparent;
-    color: var(--text-color);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    cursor: pointer;
-    font-weight: var(--font-weight-medium);
-    line-height: inherit;
-    height: auto;
+  .filter-sidebar-content {
+    background-color: var(--surface-card, #ffffff); // Assuming a card-like background
+    padding: var(--spacing-md); // Reduced padding
+    border-radius: var(--border-radius-lg, 0.5rem); // Slightly larger radius like shadcn cards
+    border: 1px solid var(--border-color, #e5e7eb);
+    box-shadow: var(--box-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
 
-    &:hover {
-      color: var(--primary-color);
-      border-color: var(--primary-color);
+    .filters-title {
+      font-size: 1.25rem; // text-xl
+      font-weight: var(--font-weight-semibold, 600);
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .filter-group {
+      // margin-bottom: var(--spacing-lg); // Control spacing with toggle's border/padding
+
+      &:not(:last-of-type) { // Add margin to all but the last filter group
+         margin-bottom: var(--spacing-md);
+      }
+
+      .filter-group-title {
+        font-size: 0.875rem; // text-sm, common for shadcn accordion item trigger
+        font-weight: var(--font-weight-medium, 500); // Or semibold
+      }
+
+      .filter-group-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        background-color: transparent;
+        border: none;
+        border-bottom: 1px solid var(--border-color-subtle, #f0f0f0); // Subtle border like accordion item
+        padding: var(--spacing-sm) 0; // Adjusted padding
+        // margin-bottom: var(--spacing-sm); // Removed, spacing handled by border and group margin
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+          background-color: var(--surface-hover, #f9fafb);
+        }
+
+        .filter-group-title {
+          margin-bottom: 0; // Reset margin from original h3
+          color: var(--text-color, #111827);
+        }
+
+        .icon-chevron {
+          width: 16px; // Slightly smaller
+          height: 16px;
+          color: var(--text-color-muted, #6b7280); // Muted color for chevron
+          transition: transform 0.25s ease-in-out;
+
+          &.is-open {
+            transform: rotate(90deg);
+          }
+        }
+      }
+
+      .filter-group-content {
+        // padding-left: var(--spacing-xs); // Removed indent
+        padding-top: var(--spacing-sm);
+        padding-bottom: var(--spacing-sm); // Reduced bottom padding
+      }
+
+
+      .filter-select-wrapper {
+        position: relative;
+        width: 100%;
+
+        .filter-select {
+          width: 100%;
+          padding: var(--spacing-xs) var(--spacing-sm);
+          padding-right: var(--spacing-lg); // Make space for the arrow
+          border: 1px solid var(--border-color, #d1d5db);
+          border-radius: var(--border-radius-md, 0.375rem); // shadcn often uses 0.25rem or 0.375rem
+          background-color: var(--surface-input, #fff);
+          appearance: none; // Remove default system arrow
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          font-size: 0.875rem; // text-sm for select content
+          color: var(--text-color, #111827);
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+
+          &:focus {
+            border-color: var(--primary-color, #3b82f6);
+            box-shadow: 0 0 0 1px var(--primary-color, #3b82f6); // Focus ring
+            outline: none;
+          }
+        }
+
+        .icon-select-arrow {
+          position: absolute;
+          right: var(--spacing-sm);
+          top: 50%;
+          transform: translateY(-50%);
+          width: 16px;
+          height: 16px;
+          color: var(--text-color-muted, #6b7280);
+          pointer-events: none; // So it doesn't interfere with select click
+        }
+      }
+
+
+      .filter-checkbox-item {
+        // container for each checkbox item, if needed for spacing beyond label
+        margin-bottom: var(--spacing-xs); // Spacing between checkbox lines
+
+        label.custom-checkbox-label {
+          display: inline-flex; // Use inline-flex to align custom parts
+          align-items: center;
+          position: relative; // For positioning hidden input if needed, or just for structure
+          cursor: pointer;
+          font-size: 0.875rem;
+          color: var(--text-color-secondary, #374151);
+          padding: var(--spacing-xs) 0; // Vertical padding for click area
+
+          .native-checkbox-hidden {
+            opacity: 0; // Hide it completely
+            position: absolute; // Take out of layout flow
+            width: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            border: 0;
+          }
+
+          .custom-checkbox-display {
+            width: 1rem; // 16px
+            height: 1rem; // 16px
+            border: 1px solid var(--border-color-strong, #9ca3af);
+            border-radius: var(--border-radius-xs, 0.125rem); // shadcn uses 2px or 0.125rem
+            margin-right: var(--spacing-sm);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--surface-input, #fff); // Default for non-color swatch checkboxes
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+
+            // Specific to color swatches acting as checkboxes
+            &.color-swatch-checkbox {
+              // The background color is set inline via [style.backgroundColor]
+              // Ensure border is visible on light colors, especially white
+              &.is-white {
+                border-color: var(--border-color-strong, #9ca3af); // Ensure white swatch has a border
+              }
+            }
+
+            .custom-checkbox-checkmark {
+              width: 0.75rem; // 12px, slightly smaller than the box
+              height: 0.75rem;
+              color: var(--button-text-color, #fff); // Default checkmark color (for dark backgrounds)
+
+              &.checkmark-dark {
+                color: var(--text-color, #111827); // Dark checkmark for light backgrounds (e.g. white, yellow)
+              }
+            }
+          }
+          .custom-checkbox-text {
+             line-height: 1.2; // Ensure text aligns well with checkbox
+          }
+
+
+          // Checked state styling
+          .native-checkbox-hidden:checked + .custom-checkbox-display {
+            background-color: var(--primary-color, #3b82f6);
+            border-color: var(--primary-color, #3b82f6);
+          }
+
+          // Focus state styling (on the display part when input is focused)
+          .native-checkbox-hidden:focus + .custom-checkbox-display {
+            border-color: var(--primary-color, #3b82f6);
+            box-shadow: 0 0 0 2px var(--primary-color-lighttrans, rgba(59, 130, 246, 0.3)); // Example focus ring
+          }
+
+           // Hover state
+          &:hover .custom-checkbox-display {
+            border-color: var(--primary-color-dark, #2563eb); // Darken border on hover
+          }
+        }
+      }
+    }
+
+    .button-clear-filters {
+      width: 100%;
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: 0.875rem;
+      font-weight: var(--font-weight-medium);
+      color: var(--primary-color, #3b82f6);
+      background-color: transparent;
+      border: 1px solid var(--primary-color, #3b82f6);
+      border-radius: var(--border-radius-md);
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+
+      &:hover {
+        background-color: var(--primary-color-light, #eff6ff); // Light primary bg
+        color: var(--primary-color-dark, #2563eb);
+      }
     }
   }
+}
+
+// Main Product Listing Area
+.product-listing-area {
+  flex: 1; // Takes remaining space
+  min-width: 0; // Prevents overflow in flex containers
+}
+
+// Sort Bar & Mobile Filter Trigger
+.sort-bar-container {
+  display: flex;
+  justify-content: space-between; // Pushes sort to right, filter button to left on mobile
+  align-items: center;
+  margin-bottom: var(--spacing-lg); // mb-6
 
   .sort-controls {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
 
-    label {
-      font-weight: var(--font-weight-medium);
+    .sort-label {
+      font-size: 0.875rem; // text-sm
+      color: var(--text-color-muted, #6b7280);
     }
 
-    select {
-      width: auto;
+    .sort-select {
       padding: var(--spacing-xs) var(--spacing-sm);
-      border: var(--border-width) solid var(--border-color);
-      border-radius: var(--border-radius-sm);
-    }
-  }
-}
+      border: 1px solid var(--border-color, #d1d5db);
+      border-radius: var(--border-radius-md);
+      background-color: var(--surface-input, #fff);
+      min-width: 150px; // Ensure it's not too small
+      appearance: none; // Remove default system arrow
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: var(--spacing-lg); // Make space for the arrow
+      font-size: 0.875rem; // text-sm for select content
+      color: var(--text-color, #111827);
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
-.product-grid-wrapper {
-  min-height: 300px;
-}
-
-.product-grid {
-  display: grid;
-  gap: var(--spacing-lg);
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-xl);
-  padding-top: var(--spacing-lg);
-  border-top: var(--border-width) solid var(--border-color);
-
-  button {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.9rem;
-
-    &:disabled {
-      background-color: var(--neutral-light);
-      border-color: var(--neutral-light);
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-  }
-
-  span {
-    font-weight: var(--font-weight-medium);
-  }
-
-  p {
-    margin-left: var(--spacing-lg);
-    font-size: 0.9rem;
-    color: var(--text-color-light);
-    margin-bottom: 0;
-  }
-}
-
-/* Loading/Empty states styling */
-p {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--text-color-light);
-}
-
-
-// Mobile Filter Popover Styles
-.mobile-filter-overlay {
-  position: absolute; // Position relative to .sorting-options
-  top: 100%; // Position below the sorting options container
-  left: 0; // Align with the left edge of the container
-  width: auto; // Let content determine width, or set a specific width
-  min-width: 250px; // Ensure a minimum usable width
-  max-width: calc(100% - var(--spacing-sm)); // Prevent overflow on very small screens
-  z-index: 1000; // Ensure it's above other content
-  background-color: var(--neutral-lightest); // Background for the popover
-  border: var(--border-width) solid var(--border-color);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--box-shadow-md); // Standard dropdown shadow
-  padding: var(--spacing-lg); // Padding inside the popover
-  margin-top: var(--spacing-xs); // Small gap below the button
-  // Visibility is controlled by *ngIf="isMobileFiltersVisible" in the HTML
-}
-
-// Remove the backdrop entirely
-// .mobile-filter-backdrop { ... } // Removed
-
-.filter-sidebar.mobile-filters {
-  // Revert to standard vertical layout inside the popover
-  position: static;
-  z-index: auto;
-  width: 100%; // Fill the overlay popover
-  max-width: none;
-  height: auto;
-  background-color: transparent; // Popover has background
-  padding: 0; // Popover has padding
-  overflow-y: auto; // Allow scroll if content overflows popover height
-  box-shadow: none;
-  border: none;
-  border-radius: 0;
-  align-self: auto;
-
-  // Restore vertical layout styles (similar to original desktop sidebar)
-  h2 {
-    display: block; // Show heading again
-    font-size: 1.2rem; // Slightly smaller for popover
-    margin-bottom: var(--spacing-md);
-    border-bottom: var(--border-width) solid var(--border-color);
-    padding-bottom: var(--spacing-sm);
-  }
-
-  .filter-group {
-    margin-bottom: var(--spacing-md); // Restore vertical spacing
-    flex: none; // Remove flex properties
-
-    h3 {
-      font-size: 1rem;
-      margin-bottom: var(--spacing-sm);
-    }
-
-    select, label {
-      display: block; // Stack elements vertically
-      margin-bottom: var(--spacing-sm);
-      margin-right: 0;
-    }
-    select {
-       min-width: 0; // Remove min-width from flex layout
-       width: 100%; // Make select full width of popover
-    }
-    div {
-      display: block; // Stack tag labels vertically
-      gap: 0;
-      label { // Ensure labels within the div are block too
-        display: block;
-        margin-bottom: var(--spacing-sm);
+      &:focus {
+        border-color: var(--primary-color, #3b82f6);
+        box-shadow: 0 0 0 1px var(--primary-color, #3b82f6); // Focus ring
+        outline: none;
       }
     }
-     input[type="checkbox"] { // Copied from desktop styles
-        margin-right: var(--spacing-sm);
-        width: auto;
-        display: inline-block;
-     }
+    // Ensure the .filter-select-wrapper and .icon-select-arrow are applied here too if not already
+    // This is for the sort select, which is outside the .filter-sidebar-content
+    // So we need to duplicate or make .filter-select-wrapper global if used elsewhere.
+    // For now, assuming it's within .sort-controls, let's add a specific wrapper if needed.
+    // The HTML already has <div class="filter-select-wrapper"> for the sort select.
   }
 
-  // Restore button styles
-  button {
-    margin-top: var(--spacing-md);
-    width: 100%; // Make buttons full width
-    padding: var(--spacing-sm) var(--spacing-md); // Standard button padding
-    flex-shrink: 1; // Default shrink behavior
-  }
-  // Restore button order/specific styles
-  .clear-filters {
-     order: 0; // Default order
-  }
-  .apply-filters-mobile {
-     order: 0; // Default order
-     // Keep prominent style from previous attempt
-     @extend button;
-     background-color: var(--primary-color);
-     color: var(--button-text-color);
-     border: none;
-     &:hover { opacity: 0.9; }
-  }
-  .close-filters {
-    order: 0; // Default order
-    position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    background: none;
-    border: none;
-    font-size: 1.8rem;
-    line-height: 1;
-    padding: 0;
-    color: var(--text-color-light);
+  .button-mobile-filter {
+    // Uses .mobile-only for visibility
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--primary-color, #3b82f6);
+    background-color: var(--surface-card, #fff);
+    border: 1px solid var(--primary-color, #3b82f6);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
+    display: inline-flex; // To align icon and text
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    .icon-filter {
+      width: 18px;
+      height: 18px;
+      // color will be inherited (primary-color)
+    }
+  }
+}
+
+// Mobile Filter Overlay
+.mobile-filter-overlay {
+  position: fixed; // Full screen overlay
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); // Semi-transparent backdrop
+  z-index: 1000;
+  display: flex; // To center the content or position it
+  // Animation for appearance can be added here
+
+  .filter-sidebar-content.mobile-filters {
+    // Re-use desktop styles but adapt for mobile overlay context
+    width: 80%; // Or a fixed max-width like 300px
+    max-width: 320px;
+    height: 100%;
+    background-color: var(--surface-card, #ffffff);
+    padding: var(--spacing-lg);
+    overflow-y: auto; // Scrollable if content exceeds height
+    margin-left: auto; // Slide in from right, or center it
+    // Animation for slide-in
+    animation: slideInRight 0.3s ease-out forwards;
+
+
+    .mobile-filters-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+
+      .filters-title { // Already styled in .filter-sidebar-content
+        margin-bottom: 0;
+        border-bottom: none;
+      }
+
+      .button-close-mobile-filters {
+        background: none;
+        border: none;
+        // font-size: 1.5rem; // For &times; - replaced by icon
+        color: var(--text-color-muted, #6b7280);
+        cursor: pointer;
+        padding: var(--spacing-xs);
+        line-height: 1; // Ensure icon is centered if it has intrinsic padding
+
+        .icon-close {
+          width: 20px; // Adjust size as needed
+          height: 20px;
+        }
+      }
+    }
+    // Apply button specific to mobile overlay
+    .button-apply-filters-mobile {
+      width: 100%;
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: 0.875rem;
+      font-weight: var(--font-weight-medium);
+      color: var(--button-text-color, #fff);
+      background-color: var(--primary-color, #3b82f6);
+      border: 1px solid var(--primary-color, #3b82f6);
+      border-radius: var(--border-radius-md);
+      text-align: center;
+      cursor: pointer;
+      margin-top: var(--spacing-md);
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: var(--primary-color-dark, #2563eb);
+      }
+    }
+  }
+}
+
+
+// Results Summary
+.results-summary {
+  margin-bottom: var(--spacing-lg); // mb-6
+  p {
+    font-size: 0.875rem; // text-sm
+    color: var(--text-color-muted, #6b7280); // text-muted-foreground
+  }
+}
+
+// Product Grid
+.product-grid-container {
+  margin-bottom: var(--spacing-xl); // mb-8
+  min-height: 300px; // To prevent layout jump while loading
+
+  .product-grid {
+    display: grid;
+    gap: var(--spacing-lg); // gap-6 (Tailwind default is 1.5rem for gap-6)
+    // Responsive columns, similar to Tailwind's grid-cols-2 md:grid-cols-3 lg:grid-cols-4
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+
+    @media (min-width: 640px) { // sm
+      // grid-template-columns: repeat(2, 1fr); // Example: 2 columns for sm
+    }
+    @media (min-width: 768px) { // md
+      // grid-template-columns: repeat(3, 1fr); // Example: 3 columns for md
+    }
+    @media (min-width: 1024px) { // lg
+      // grid-template-columns: repeat(4, 1fr); // Example: 4 columns for lg
+      // The auto-fill with minmax is often more flexible
+    }
+  }
+}
+
+// Pagination
+.pagination-controls-wrapper {
+  // Styles for the wrapper if needed, e.g., border-top
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  margin-top: var(--spacing-xl); // Ensure it's after product grid margin
+
+  .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    .button-pagination {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 0.875rem;
+      font-weight: var(--font-weight-medium);
+      color: var(--text-color-secondary, #374151);
+      background-color: var(--surface-card, #fff);
+      border: 1px solid var(--border-color, #d1d5db);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+      display: inline-flex; // To align icon and text
+      align-items: center;
+      gap: var(--spacing-xs);
+
+      .icon-pagination-arrow {
+        width: 16px;
+        height: 16px;
+        // color will be inherited
+      }
+      .icon-prev {
+        // margin-right: var(--spacing-xs);
+      }
+      .icon-next {
+        // margin-left: var(--spacing-xs);
+      }
+
+
+      &:hover:not(:disabled) {
+        border-color: var(--primary-color, #3b82f6);
+        color: var(--primary-color, #3b82f6);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .pagination-info {
+      font-size: 0.875rem;
+      color: var(--text-color-muted, #6b7280);
+    }
+  }
+}
+
+// Loading and No Products Messages
+.loading-message,
+.no-products-message {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+  color: var(--text-color-muted, #6b7280);
+  font-size: 1rem;
+}
+
+// General button styling (if not globally defined)
+// This is a placeholder, assuming base button styles might exist.
+// If not, define more comprehensive button styles here or in a global file.
+.button {
+  display: inline-block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  border: 1px solid transparent; // Base border
+
+  // Example primary button style
+  &.button-primary {
+    background-color: var(--primary-color, #3b82f6);
+    color: var(--button-text-color, #fff); // Assuming a variable for text on primary bg
+    border-color: var(--primary-color, #3b82f6);
 
     &:hover {
-      color: var(--text-color);
+      background-color: var(--primary-color-dark, #2563eb); // Darken on hover
+      border-color: var(--primary-color-dark, #2563eb);
     }
   }
 
-  // Style the explicit apply button for mobile
-  .apply-filters-mobile {
-    @extend button; // Use base button styles
-    width: 100%;
-    margin-top: var(--spacing-lg);
-    background-color: var(--primary-color); // Make it prominent
-    color: var(--button-text-color);
-    border: none;
+  // Example secondary/outline button style
+  &.button-secondary {
+    background-color: transparent;
+    color: var(--primary-color, #3b82f6);
+    border-color: var(--primary-color, #3b82f6);
 
     &:hover {
-      opacity: 0.9;
+      background-color: var(--primary-color-light, #eff6ff); // Light primary bg
+      color: var(--primary-color-dark, #2563eb);
     }
   }
 }

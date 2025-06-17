@@ -5,11 +5,11 @@
     <div class="store-logo-placeholder">{{ dashboardData.storeName }}</div>
     <nav class="dashboard-nav">
       <ul>
-        <li><a [routerLink]="['../dashboard']">Dashboard</a></li>
-        <li><a [routerLink]="['../products']">Products</a></li>
-        <li><a [routerLink]="['../orders']">Orders</a></li>
-        <li><a [routerLink]="['../customers']">Customers</a></li>
-        <li><a [routerLink]="['../settings']">Settings</a></li>
+        <li><a [routerLink]="['../dashboard']">{{ tKeys.SM_DASHBOARD_PAGE_NAV_DASHBOARD | translate }}</a></li>
+        <li><a [routerLink]="['../products']">{{ tKeys.SM_DASHBOARD_PAGE_NAV_PRODUCTS | translate }}</a></li>
+        <li><a [routerLink]="['../orders']">{{ tKeys.SM_DASHBOARD_PAGE_NAV_ORDERS | translate }}</a></li>
+        <li><a [routerLink]="['../customers']">{{ tKeys.SM_DASHBOARD_PAGE_NAV_CUSTOMERS | translate }}</a></li>
+        <li><a [routerLink]="['../settings']">{{ tKeys.SM_DASHBOARD_PAGE_NAV_SETTINGS | translate }}</a></li>
       </ul>
     </nav>
     <div class="manager-info">
@@ -20,8 +20,8 @@
         <!-- Notification List Dropdown -->
         <div class="notifications-dropdown" *ngIf="showNotificationsList">
           <div class="notifications-header">
-            <h3>Notifications</h3>
-            <button class="mark-all-read-btn" (click)="markAllNotificationsAsRead()" *ngIf="hasUnreadNotifications">Mark all as read</button>
+            <h3>{{ tKeys.SM_DASHBOARD_PAGE_NOTIFICATIONS_TITLE | translate }}</h3>
+            <button class="mark-all-read-btn" (click)="markAllNotificationsAsRead()" *ngIf="hasUnreadNotifications">{{ tKeys.SM_DASHBOARD_PAGE_NOTIFICATIONS_MARK_ALL_READ | translate }}</button>
           </div>
           <ul *ngIf="notifications.length > 0; else noNotifications" class="notifications-list">
             <li *ngFor="let notification of notifications"
@@ -37,61 +37,61 @@
                 <strong class="notification-title">{{ notification.title }}</strong>
                 <p class="notification-message">{{ notification.message }}</p>
                 <small class="notification-timestamp">{{ notification.createdAt | date:'short' }}</small>
-                <a *ngIf="notification.link" [href]="notification.link" target="_blank" class="notification-link">View Details</a>
+                <a *ngIf="notification.link" [href]="notification.link" target="_blank" class="notification-link">{{ tKeys.SM_DASHBOARD_PAGE_NOTIFICATIONS_VIEW_DETAILS | translate }}</a>
               </div>
               <div class="notification-actions">
-                <button title="Mark as read" class="action-btn" *ngIf="!notification.isRead" (click)="markNotificationAsRead(notification.id)">
+                <button [title]="tKeys.SM_DASHBOARD_PAGE_NOTIFICATIONS_MARK_AS_READ_TITLE | translate" class="action-btn" *ngIf="!notification.isRead" (click)="markNotificationAsRead(notification.id)">
                   <i class="fas fa-check"></i>
                 </button>
-                <button title="Delete" class="action-btn delete-btn" (click)="deleteNotification(notification.id)">
+                <button [title]="tKeys.SM_DASHBOARD_PAGE_NOTIFICATIONS_DELETE_TITLE | translate" class="action-btn delete-btn" (click)="deleteNotification(notification.id)">
                   <i class="fas fa-times"></i>
                 </button>
               </div>
             </li>
           </ul>
           <ng-template #noNotifications>
-            <p class="no-notifications-message">No new notifications.</p>
+            <p class="no-notifications-message">{{ tKeys.SM_DASHBOARD_PAGE_NOTIFICATIONS_NO_NEW | translate }}</p>
           </ng-template>
           <div class="dropdown-footer" *ngIf="notifications.length > 0">
-            <button class="clear-all-btn" (click)="clearAllNotifications()">Clear All Notifications</button>
+            <button class="clear-all-btn" (click)="clearAllNotifications()">{{ tKeys.SM_DASHBOARD_PAGE_NOTIFICATIONS_CLEAR_ALL | translate }}</button>
             <!-- TODO: Add "View All Notifications" link if a dedicated page exists -->
           </div>
         </div>
       </div>
-      <button class="logout-button">Logout</button>
+      <button class="logout-button">{{ tKeys.SM_DASHBOARD_PAGE_LOGOUT_BUTTON | translate }}</button>
     </div>
   </header>
 
-  <h1>Store Dashboard</h1>
+  <h1>{{ tKeys.SM_DASHBOARD_PAGE_TITLE | translate }}</h1>
 
   <!-- Performance Snapshot Cards -->
   <section class="performance-cards">
     <div class="card">
-      <h3>Total Sales</h3>
+      <h3>{{ tKeys.SM_DASHBOARD_PAGE_CARD_TOTAL_SALES_TITLE | translate }}</h3>
       <p>${{ dashboardData.totalSales | number:'1.2-2' }} <span class="trend-indicator" [ngClass]="{'positive': dashboardData.totalSalesTrend >= 0, 'negative': dashboardData.totalSalesTrend < 0}">({{ dashboardData.totalSalesTrend > 0 ? '+' : '' }}{{ dashboardData.totalSalesTrend }}%)</span></p>
     </div>
     <div class="card">
-      <h3>Orders Today</h3>
+      <h3>{{ tKeys.SM_DASHBOARD_PAGE_CARD_ORDERS_TODAY_TITLE | translate }}</h3>
       <p>{{ dashboardData.ordersToday }} <span class="trend-indicator" [ngClass]="{'positive': dashboardData.ordersTodayTrend >= 0, 'negative': dashboardData.ordersTodayTrend < 0}">({{ dashboardData.ordersTodayTrend > 0 ? '+' : '' }}{{ dashboardData.ordersTodayTrend }}%)</span></p>
     </div>
     <div class="card">
-      <h3>Low Stock Items</h3>
+      <h3>{{ tKeys.SM_DASHBOARD_PAGE_CARD_LOW_STOCK_ITEMS_TITLE | translate }}</h3>
       <p>{{ dashboardData.lowStockItems }} <span class="alert-indicator" [ngClass]="{'warning': dashboardData.lowStockAlertLevel === 'yellow', 'danger': dashboardData.lowStockAlertLevel === 'red'}">({{ dashboardData.lowStockAlertLevel }})</span></p>
     </div>
   </section>
 
   <!-- Sales Chart -->
   <section class="sales-chart" style="max-height: 400px;">
-    <h2>Sales Chart</h2>
+    <h2>{{ tKeys.SM_DASHBOARD_PAGE_SALES_CHART_TITLE | translate }}</h2>
     <div class="chart-controls">
       <select (change)="onTimePeriodChange($event)">
-        <option value="daily">Daily</option>
-        <option value="weekly">Weekly</option>
-        <option value="monthly">Monthly</option>
-        <option value="all">All Time</option>
+        <option value="daily">{{ tKeys.SM_DASHBOARD_PAGE_SALES_CHART_OPT_DAILY | translate }}</option>
+        <option value="weekly">{{ tKeys.SM_DASHBOARD_PAGE_SALES_CHART_OPT_WEEKLY | translate }}</option>
+        <option value="monthly">{{ tKeys.SM_DASHBOARD_PAGE_SALES_CHART_OPT_MONTHLY | translate }}</option>
+        <option value="all">{{ tKeys.SM_DASHBOARD_PAGE_SALES_CHART_OPT_ALL_TIME | translate }}</option>
       </select>
       <label>
-        <input type="checkbox" (change)="onCompareChange($event)"> Compare to Previous Period
+        <input type="checkbox" (change)="onCompareChange($event)"> {{ tKeys.SM_DASHBOARD_PAGE_SALES_CHART_COMPARE_LABEL | translate }}
       </label>
     </div>
     <!-- Chart component will go here -->
@@ -104,16 +104,16 @@
 
   <!-- Recent Orders Table -->
   <section class="recent-orders">
-    <h2>Recent Orders</h2>
+    <h2>{{ tKeys.SM_DASHBOARD_PAGE_RECENT_ORDERS_TITLE | translate }}</h2>
     <table>
       <thead>
         <tr>
-          <th (click)="onSortChange('id')">Order ID <span class="sort-indicator" *ngIf="sortColumn === 'id'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-          <th (click)="onSortChange('customer')">Customer <span class="sort-indicator" *ngIf="sortColumn === 'customer'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-          <th (click)="onSortChange('date')">Date <span class="sort-indicator" *ngIf="sortColumn === 'date'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-          <th (click)="onSortChange('total')">Total <span class="sort-indicator" *ngIf="sortColumn === 'total'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-          <th (click)="onSortChange('status')">Status <span class="sort-indicator" *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
-          <th>Actions</th>
+          <th (click)="onSortChange('id')">{{ tKeys.SM_DASHBOARD_PAGE_RECENT_ORDERS_TH_ORDER_ID | translate }} <span class="sort-indicator" *ngIf="sortColumn === 'id'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="onSortChange('customer')">{{ tKeys.SM_DASHBOARD_PAGE_RECENT_ORDERS_TH_CUSTOMER | translate }} <span class="sort-indicator" *ngIf="sortColumn === 'customer'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="onSortChange('date')">{{ tKeys.SM_DASHBOARD_PAGE_RECENT_ORDERS_TH_DATE | translate }} <span class="sort-indicator" *ngIf="sortColumn === 'date'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="onSortChange('total')">{{ tKeys.SM_DASHBOARD_PAGE_RECENT_ORDERS_TH_TOTAL | translate }} <span class="sort-indicator" *ngIf="sortColumn === 'total'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th (click)="onSortChange('status')">{{ tKeys.SM_DASHBOARD_PAGE_RECENT_ORDERS_TH_STATUS | translate }} <span class="sort-indicator" *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '▲' : '▼' }}</span></th>
+          <th>{{ tKeys.SM_DASHBOARD_PAGE_RECENT_ORDERS_TH_ACTIONS | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -126,28 +126,28 @@
             'status-processing': order.status === 'Processing',
             'status-pending': order.status === 'Pending',
             'status-shipped': order.status === 'Shipped',
-            'status-completed': order.status === 'Completed',
+            'status-delivered': order.status === 'Delivered',
             'status-cancelled': order.status === 'Cancelled'
           }">{{ order.status }}</td> <!-- Color-coded status -->
-          <td><button (click)="viewOrder(order.id)">View</button></td>
+          <td><button (click)="viewOrder(order.id)">{{ tKeys.SM_DASHBOARD_PAGE_RECENT_ORDERS_ACTION_VIEW | translate }}</button></td>
         </tr>
       </tbody>
     </table>
     <!-- Pagination Controls -->
     <div class="pagination-controls">
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
-      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+      <span>{{ tKeys.SM_DASHBOARD_PAGE_PAGINATION_PAGE_INFO | translate:{ currentPage: currentPage, totalPages: totalPages } }}</span>
+      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1">{{ tKeys.SM_DASHBOARD_PAGE_PAGINATION_PREVIOUS | translate }}</button>
+      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages">{{ tKeys.SM_DASHBOARD_PAGE_PAGINATION_NEXT | translate }}</button>
     </div>
     <!-- Orders Count Summary -->
     <div class="orders-count-summary" *ngIf="totalOrders > 0">
-      <p>Showing {{ startIndex + 1 }} to {{ endIndex + 1 }} of {{ totalOrders }} orders</p>
+      <p>{{ tKeys.SM_DASHBOARD_PAGE_ORDERS_COUNT_SUMMARY | translate:{ startIndex: startIndex + 1, endIndex: endIndex + 1, totalOrders: totalOrders } }}</p>
     </div>
   </section>
 
   <!-- Inventory Alerts -->
   <section class="inventory-alerts-placeholder">
-    <h2>Inventory Alerts</h2>
+    <h2>{{ tKeys.SM_DASHBOARD_PAGE_INVENTORY_ALERTS_TITLE | translate }}</h2>
     <ul>
       <li *ngFor="let alert of inventoryAlerts">{{ alert.message }}</li>
     </ul>
@@ -155,14 +155,14 @@
 
   <!-- Quick Action Buttons -->
   <section class="quick-actions">
-    <button class="quick-action-button" [routerLink]="['../products']">Add New Product</button>
-    <button class="quick-action-button" [routerLink]="['../orders']">View All Orders</button>
-    <button class="quick-action-button" [routerLink]="['../settings']">Update Settings</button>
+    <button class="quick-action-button" [routerLink]="['../products']">{{ tKeys.SM_DASHBOARD_PAGE_QUICK_ACTION_ADD_PRODUCT | translate }}</button>
+    <button class="quick-action-button" [routerLink]="['../orders']">{{ tKeys.SM_DASHBOARD_PAGE_QUICK_ACTION_VIEW_ORDERS | translate }}</button>
+    <button class="quick-action-button" [routerLink]="['../settings']">{{ tKeys.SM_DASHBOARD_PAGE_QUICK_ACTION_UPDATE_SETTINGS | translate }}</button>
   </section>
 
   <!-- Store Health Score -->
   <section class="store-health-placeholder">
-    <h2>Store Health Score</h2>
+    <h2>{{ tKeys.SM_DASHBOARD_PAGE_STORE_HEALTH_TITLE | translate }}</h2>
     <p>{{ dashboardData.storeHealthScore }}%</p>
   </section>
 </div>

@@ -3,38 +3,44 @@
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Order Details</h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+        <h5 class="modal-title">{{ tKeys.SM_ORDER_DETAILS_MODAL_TITLE | translate }}</h5>
+        <button type="button" class="btn-close" [attr.aria-label]="tKeys.SM_ORDER_DETAILS_MODAL_CLOSE_ARIA_LABEL | translate" (click)="closeModal()"></button>
       </div>
       <div class="modal-body">
         <div *ngIf="order">
           <!-- Order Summary -->
-          <h6>Order Summary</h6>
-          <p><strong>Order Number:</strong> {{ order.orderNumber }}</p>
-          <p><strong>Order Date:</strong> {{ order.createdAt | date: 'medium' }}</p>
-          <p><strong>Status:</strong> {{ order.status }}</p>
-          <p><strong>Total Amount:</strong> {{ order.totalAmount | currency }}</p>
+          <h6>{{ tKeys.SM_ORDER_DETAILS_SUMMARY_TITLE | translate }}</h6>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_ORDER_NUMBER_LABEL | translate }}</strong> {{ order.orderNumber }}</p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_ORDER_DATE_LABEL | translate }}</strong> {{ order.createdAt | date: 'medium' }}</p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_STATUS_LABEL | translate }}</strong>
+            <ng-container *ngIf="getOrderStatusTranslationKey(order.status) as statusKey">{{ statusKey | translate }}</ng-container>
+            <ng-container *ngIf="!getOrderStatusTranslationKey(order.status)">{{ order.status }}</ng-container>
+          </p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_TOTAL_AMOUNT_LABEL | translate }}</strong> {{ order.totalAmount | currency }}</p>
 
           <!-- Status Update Control -->
           <div class="mb-3">
-            <label for="orderStatus" class="form-label">Update Status:</label>
+            <label for="orderStatus" class="form-label">{{ tKeys.SM_ORDER_DETAILS_UPDATE_STATUS_LABEL | translate }}</label>
             <select class="form-select" id="orderStatus" [(ngModel)]="newStatus">
-              <option *ngFor="let status of availableStatuses" [value]="status">{{ status }}</option>
+              <option *ngFor="let status of availableStatuses" [value]="status">
+                <ng-container *ngIf="getOrderStatusTranslationKey(status) as statusKey">{{ statusKey | translate }}</ng-container>
+                <ng-container *ngIf="!getOrderStatusTranslationKey(status)">{{ status }}</ng-container>
+              </option>
             </select>
           </div>
 
           <hr>
 
           <!-- Customer Information -->
-          <h6>Customer Information</h6>
-          <p><strong>Name:</strong> {{ order.customer?.firstName }} {{ order.customer?.lastName }}</p>
-          <p><strong>Email:</strong> {{ order.customer?.email }}</p>
-          <p><strong>Phone:</strong> {{ order.customer?.phone }}</p>
+          <h6>{{ tKeys.SM_ORDER_DETAILS_CUSTOMER_INFO_TITLE | translate }}</h6>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_CUSTOMER_NAME_LABEL | translate }}</strong> {{ order.customer?.firstName }} {{ order.customer?.lastName }}</p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_CUSTOMER_EMAIL_LABEL | translate }}</strong> {{ order.customer?.email }}</p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_CUSTOMER_PHONE_LABEL | translate }}</strong> {{ order.customer?.phone }}</p>
 
           <hr>
 
           <!-- Items List -->
-          <h6>Items</h6>
+          <h6>{{ tKeys.SM_ORDER_DETAILS_ITEMS_TITLE | translate }}</h6>
           <ul class="list-group mb-3">
             <li class="list-group-item" *ngFor="let item of order.items">
               {{ item.productName }} ({{ item.quantity }} x {{ item.price | currency }})
@@ -44,43 +50,46 @@
           <hr>
 
           <!-- Payment Information -->
-          <h6>Payment Information</h6>
-          <p><strong>Method:</strong> {{ order.paymentMethod }}</p>
-          <p><strong>Transaction ID:</strong> {{ order.transactionId }}</p>
-          <p><strong>Payment Status:</strong> {{ order.paymentStatus }}</p>
+          <h6>{{ tKeys.SM_ORDER_DETAILS_PAYMENT_INFO_TITLE | translate }}</h6>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_PAYMENT_METHOD_LABEL | translate }}</strong> {{ order.paymentMethod }}</p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_TRANSACTION_ID_LABEL | translate }}</strong> {{ order.transactionId }}</p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_PAYMENT_STATUS_LABEL | translate }}</strong>
+            <ng-container *ngIf="getPaymentStatusTranslationKey(order.paymentStatus) as paymentStatusKey">{{ paymentStatusKey | translate }}</ng-container>
+            <ng-container *ngIf="!getPaymentStatusTranslationKey(order.paymentStatus)">{{ order.paymentStatus }}</ng-container>
+          </p>
 
 
           <hr>
 
           <!-- Shipping Information -->
-          <h6>Shipping Information</h6>
-          <p><strong>Address:</strong> {{ order.shippingAddress?.street1 }}, {{ order.shippingAddress?.city }}, {{
+          <h6>{{ tKeys.SM_ORDER_DETAILS_SHIPPING_INFO_TITLE | translate }}</h6>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_SHIPPING_ADDRESS_LABEL | translate }}</strong> {{ order.shippingAddress?.street1 }}, {{ order.shippingAddress?.city }}, {{
             order.shippingAddress?.postalCode }}, {{ order.shippingAddress?.country }}
           </p>
-          <p><strong>Method:</strong> {{ order.shippingMethod }}</p>
-          <p><strong>Tracking Number:</strong> {{ order.trackingNumber }}</p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_SHIPPING_METHOD_LABEL | translate }}</strong> {{ order.shippingMethod }}</p>
+          <p><strong>{{ tKeys.SM_ORDER_DETAILS_TRACKING_NUMBER_DISPLAY_LABEL | translate }}</strong> {{ order.trackingNumber }}</p>
 
           <!-- Add Shipping Information Form -->
           <div class="mb-3">
-            <label for="trackingNumber" class="form-label">Tracking Number:</label>
+            <label for="trackingNumber" class="form-label">{{ tKeys.SM_ORDER_DETAILS_TRACKING_NUMBER_FORM_LABEL | translate }}</label>
             <input type="text" class="form-control" id="trackingNumber" [(ngModel)]="trackingNumber">
           </div>
           <div class="mb-3">
-            <label for="shippingCarrier" class="form-label">Shipping Carrier:</label>
+            <label for="shippingCarrier" class="form-label">{{ tKeys.SM_ORDER_DETAILS_SHIPPING_CARRIER_LABEL | translate }}</label>
             <input type="text" class="form-control" id="shippingCarrier" [(ngModel)]="shippingCarrier">
           </div>
           <button type="button" class="btn btn-primary" (click)="addShippingInformation()"
             [disabled]="isAddingShipping || !trackingNumber.trim() || !shippingCarrier.trim()">
             <span *ngIf="isAddingShipping" class="spinner-border spinner-border-sm" role="status"
               aria-hidden="true"></span>
-            {{ isAddingShipping ? 'Adding Shipping...' : 'Add Shipping Information' }}
+            {{ (isAddingShipping ? tKeys.SM_ORDER_DETAILS_ADDING_SHIPPING_BUTTON_TEXT : tKeys.SM_ORDER_DETAILS_ADD_SHIPPING_INFO_BUTTON_TEXT) | translate }}
           </button>
 
 
           <hr>
 
           <!-- Order Notes -->
-          <h6>Order Notes</h6>
+          <h6>{{ tKeys.SM_ORDER_DETAILS_ORDER_NOTES_TITLE | translate }}</h6>
           <div *ngIf="order.notes && order.notes.length > 0">
             <ul class="list-group mb-3">
               <li class="list-group-item" *ngFor="let note of order.notes">
@@ -89,41 +98,41 @@
             </ul>
           </div>
           <div *ngIf="!order.notes || order.notes.length === 0">
-            <p>No notes for this order.</p>
+            <p>{{ tKeys.SM_ORDER_DETAILS_NO_NOTES_TEXT | translate }}</p>
           </div>
 
           <!-- Add New Note -->
           <div class="mb-3">
-            <label for="newNote" class="form-label">Add New Note:</label>
+            <label for="newNote" class="form-label">{{ tKeys.SM_ORDER_DETAILS_ADD_NEW_NOTE_LABEL | translate }}</label>
             <textarea class="form-control" id="newNote" rows="3" [(ngModel)]="newNoteContent"></textarea>
           </div>
           <button type="button" class="btn btn-primary" (click)="addOrderNote()"
             [disabled]="isAddingNote || !newNoteContent.trim()">
             <span *ngIf="isAddingNote" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            {{ isAddingNote ? 'Adding Note...' : 'Add Note' }}
+            {{ (isAddingNote ? tKeys.SM_ORDER_DETAILS_ADDING_NOTE_BUTTON_TEXT : tKeys.SM_ORDER_DETAILS_ADD_NOTE_BUTTON_TEXT) | translate }}
           </button>
 
         </div>
         <div *ngIf="!order">
-          <p>Loading order details...</p>
+          <p>{{ tKeys.SM_ORDER_DETAILS_LOADING_TEXT | translate }}</p>
         </div>
 
         <hr>
 
         <!-- Customer Communication -->
-        <h6>Customer Communication</h6>
+        <h6>{{ tKeys.SM_ORDER_DETAILS_CUSTOMER_COMMUNICATION_TITLE | translate }}</h6>
         <div class="mb-3">
-          <label for="emailSubject" class="form-label">Subject:</label>
+          <label for="emailSubject" class="form-label">{{ tKeys.SM_ORDER_DETAILS_EMAIL_SUBJECT_LABEL | translate }}</label>
           <input type="text" class="form-control" id="emailSubject" [(ngModel)]="emailSubject">
         </div>
         <div class="mb-3">
-          <label for="emailBody" class="form-label">Body:</label>
+          <label for="emailBody" class="form-label">{{ tKeys.SM_ORDER_DETAILS_EMAIL_BODY_LABEL | translate }}</label>
           <textarea class="form-control" id="emailBody" rows="5" [(ngModel)]="emailBody"></textarea>
         </div>
         <button type="button" class="btn btn-primary" (click)="sendEmailToCustomer()"
           [disabled]="isSendingEmail || !emailSubject.trim() || !emailBody.trim()">
           <span *ngIf="isSendingEmail" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          {{ isSendingEmail ? 'Sending Email...' : 'Send Email to Customer' }}
+          {{ (isSendingEmail ? tKeys.SM_ORDER_DETAILS_SENDING_EMAIL_BUTTON_TEXT : tKeys.SM_ORDER_DETAILS_SEND_EMAIL_BUTTON_TEXT) | translate }}
         </button>
 
       </div>
@@ -134,22 +143,22 @@
         [disabled]="isCancellingOrder || order?.status === 'Cancelled' || order?.status === 'Delivered'">
         <span *ngIf="isCancellingOrder" class="spinner-border spinner-border-sm" role="status"
           aria-hidden="true"></span>
-        {{ isCancellingOrder ? 'Cancelling...' : 'Cancel Order' }}
+        {{ (isCancellingOrder ? tKeys.SM_ORDER_DETAILS_CANCELLING_ORDER_BUTTON_TEXT : tKeys.SM_ORDER_DETAILS_CANCEL_ORDER_BUTTON_TEXT) | translate }}
       </button>
-      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">{{ tKeys.SM_ORDER_DETAILS_CLOSE_BUTTON_TEXT | translate }}</button>
       <!-- Action buttons -->
       <button type="button" class="btn btn-primary" (click)="updateOrderStatus()"
         [disabled]="isLoading || newStatus === order?.status">
         <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        {{ isLoading ? 'Updating...' : 'Update Status' }}
+        {{ (isLoading ? tKeys.SM_ORDER_DETAILS_UPDATING_STATUS_BUTTON_TEXT : tKeys.SM_ORDER_DETAILS_UPDATE_STATUS_BUTTON_TEXT) | translate }}
       </button>
       <div class="btn-group ms-2">
         <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          Fulfillment
+          {{ tKeys.SM_ORDER_DETAILS_FULFILLMENT_DROPDOWN_TEXT | translate }}
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#" (click)="markAsFulfilled()">Mark as Fulfilled</a></li>
-          <li><a class="dropdown-item" href="#" (click)="printShippingLabel()">Print Shipping Label (Placeholder)</a></li>
+          <li><a class="dropdown-item" href="#" (click)="markAsFulfilled()">{{ tKeys.SM_ORDER_DETAILS_MARK_AS_FULFILLED_ACTION | translate }}</a></li>
+          <li><a class="dropdown-item" href="#" (click)="printShippingLabel()">{{ tKeys.SM_ORDER_DETAILS_PRINT_SHIPPING_LABEL_ACTION | translate }}</a></li>
           <!-- Add more fulfillment actions here -->
         </ul>
       </div>
@@ -157,7 +166,7 @@
         [disabled]="isGeneratingPackingSlip">
         <span *ngIf="isGeneratingPackingSlip" class="spinner-border spinner-border-sm" role="status"
           aria-hidden="true"></span>
-        {{ isGeneratingPackingSlip ? 'Generating...' : 'Generate Packing Slip' }}
+        {{ (isGeneratingPackingSlip ? tKeys.SM_ORDER_DETAILS_GENERATING_PACKING_SLIP_BUTTON_TEXT : tKeys.SM_ORDER_DETAILS_GENERATE_PACKING_SLIP_BUTTON_TEXT) | translate }}
       </button>
       <!-- <button type="button" class="btn btn-secondary">Export</button> -->
     </div>

@@ -1,0 +1,24 @@
+<a
+  [routerLink]="href"
+  [attr.aria-label]="altText"
+  tabindex="0"
+  class="featured-category-card"
+>
+  <img
+    [src]="category.imageUrl || 'assets/images/placeholder-image.webp'"
+    [alt]="altText"
+    class="card-image"
+    width="320"
+    height="220"
+    draggable="false"
+    aria-hidden="true"
+  />
+  <span aria-hidden="true" class="blur-overlay"></span>
+  <span aria-hidden="true" class="gradient-overlay"></span>
+  <span class="name-container" aria-hidden="true">
+    <span class="name-text">
+      {{ category.name }}
+    </span>
+  </span>
+  <span class="sr-only">{{ category.name }}</span>
+</a>

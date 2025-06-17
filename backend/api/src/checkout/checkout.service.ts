@@ -11,6 +11,11 @@ import { StoreEntity } from '../stores/entities/store.entity';
 import { CreateOrderDto } from '../orders/dto/create-order.dto';
 import { CartItemEntity } from '../cart/entities/cart-item.entity';
 import { TaxEstimateQueryDto } from './dto/tax-estimate.dto';
+import { CheckoutOrderDto } from './dto/checkout-order.dto';
+import { TranzilaService, TranzilaPaymentRequest, TranzilaDocumentRequest } from '../tranzila/tranzila.service';
+import { CreditCardEntity } from '../tranzila/entities/credit-card.entity';
+import { TranzilaDocumentEntity } from '../tranzila/entities/tranzila-document.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CheckoutService {
@@ -31,19 +36,14 @@ export class CheckoutService {
     private userRepository: Repository<UserEntity>,
     @InjectRepository(StoreEntity)
     private storeRepository: Repository<StoreEntity>,
+    @InjectRepository(CreditCardEntity)
+    private creditCardRepository: Repository<CreditCardEntity>,
+    @InjectRepository(TranzilaDocumentEntity)
+    private tranzilaDocumentRepository: Repository<TranzilaDocumentEntity>,
     private dataSource: DataSource,
+    private tranzilaService: TranzilaService,
+    private configService: ConfigService,
   ) {}
-
-  // Placeholder method for GET /api/shipping/methods
-  async getShippingMethods(storeSlug: string): Promise<any[]> {
-    this.logger.log(`Fetching shipping methods for store ${storeSlug}`);
-    // TODO: Implement actual logic to fetch shipping methods (e.g., from DB or external service)
-    // For now, return a predefined list
-    return [
-      { id: 'standard', name: 'Standard Shipping', cost: 5.00 },
-      { id: 'express', name: 'Express Shipping', cost: 10.00 },
-    ];
-  }
 
   // Placeholder method for GET /api/tax/estimate
   async getTaxEstimate(storeSlug: string, query: TaxEstimateQueryDto): Promise<{ estimatedTax: number }> {
@@ -73,7 +73,7 @@ export class CheckoutService {
   }
 
   // Method for POST /api/orders
-  async processOrder(userId: string, storeSlug: string, createOrderDto: CreateOrderDto): Promise<OrderEntity> {
+  async processOrder(userId: string, storeSlug: string, checkoutOrderDto: CheckoutOrderDto): Promise<OrderEntity> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -91,44 +91,50 @@ export class CheckoutService {
         throw new NotFoundException('Store not found.');
       }
 
-      // Fetch the user's cart for this store
-      const cart = await queryRunner.manager.findOne(CartEntity, {
-        where: { user: { id: userId }, store: { id: store.id } },
-        relations: ['items', 'items.product'],
+      // Create shipping address from form data
+      const shippingAddress = queryRunner.manager.create(AddressEntity, {
+        user,
+        fullName: `${checkoutOrderDto.shippingAddress.firstName} ${checkoutOrderDto.shippingAddress.lastName}`,
+        street1: checkoutOrderDto.shippingAddress.address1,
+        street2: checkoutOrderDto.shippingAddress.address2,
+        city: checkoutOrderDto.shippingAddress.city,
+        postalCode: checkoutOrderDto.shippingAddress.zipCode,
+        country: checkoutOrderDto.shippingAddress.country,
+        isDefaultShipping: false,
+        isDefaultBilling: false,
       });
+      await queryRunner.manager.save(AddressEntity, shippingAddress);
 
-      if (!cart || cart.items.length === 0) {
-        throw new BadRequestException('Cart is empty.');
-      }
+      // Create billing address from form data
+      const billingAddress = queryRunner.manager.create(AddressEntity, {
+        user,
+        fullName: `${checkoutOrderDto.billingAddress.firstName} ${checkoutOrderDto.billingAddress.lastName}`,
+        street1: checkoutOrderDto.billingAddress.address1,
+        street2: checkoutOrderDto.billingAddress.address2,
+        city: checkoutOrderDto.billingAddress.city,
+        postalCode: checkoutOrderDto.billingAddress.zipCode,
+        country: checkoutOrderDto.billingAddress.country,
+        isDefaultShipping: false,
+        isDefaultBilling: false,
+      });
+      await queryRunner.manager.save(AddressEntity, billingAddress);
 
-      // Validate shipping address
-      const shippingAddress = await queryRunner.manager.findOneBy(AddressEntity, { id: createOrderDto.shippingAddressId, user: { id: userId } });
-      if (!shippingAddress) {
-        throw new BadRequestException('Invalid shipping address.');
-      }
-
-      // TODO: Validate payment method (placeholder for now)
-      // if (!createOrderDto.paymentMethodId) {
-      //   throw new BadRequestException('Payment method is required.');
-      // }
-
-      // Calculate order totals (subtotal, shipping, tax, total)
+      // Calculate order totals from cart items data
       let subtotal = 0;
-      for (const item of cart.items) {
-        subtotal += item.product.price * item.quantity;
-        // TODO: Check product stock and potentially update inventory here
-        // if (item.product.stockLevel < item.quantity) {
-        //   throw new BadRequestException(`Insufficient stock for product ${item.product.name}`);
-        // }
-        // item.product.stockLevel -= item.quantity;
-        // await queryRunner.manager.save(ProductEntity, item.product);
+      for (const item of checkoutOrderDto.cartItems) {
+        subtotal += item.price * item.quantity;
+        const product = await queryRunner.manager.findOne(ProductEntity, { where: { id: item.productId } });
+        if (!product || product.stockLevel < item.quantity) {
+          throw new BadRequestException(`Insufficient stock for product ${item.productId}`);
+        }
+        product.stockLevel -= item.quantity;
+        await queryRunner.manager.save(ProductEntity, product);
       }
 
-      // Placeholder shipping cost and tax calculation
-      const shippingCost = createOrderDto.shippingMethod === 'standard' ? 5.00 : 10.00;
-      const taxRate = 0.08;
-      const taxAmount = subtotal * taxRate;
-      const totalAmount = subtotal + shippingCost + taxAmount;
+      // Use provided totals from frontend (they should match our calculations)
+      const shippingCost = checkoutOrderDto.shippingCost || 0;
+      const taxAmount = checkoutOrderDto.taxAmount || 0;
+      const totalAmount = checkoutOrderDto.total || (subtotal + shippingCost + taxAmount);
 
       // Create the order entity
       const order = this.orderRepository.create({
@@ -141,9 +147,8 @@ export class CheckoutService {
         taxAmount,
         totalAmount,
         shippingAddress,
-        shippingMethod: createOrderDto.shippingMethod,
-        // TODO: Add payment method details
-        // paymentMethod: createOrderDto.paymentMethodId,
+        billingAddress,
+        shippingMethod: checkoutOrderDto.shippingMethodId,
         items: [], // Items will be created separately
       } as DeepPartial<OrderEntity>); // Explicitly cast to DeepPartial<OrderEntity>
 
@@ -152,14 +157,21 @@ export class CheckoutService {
       order.store = store;
 
       await queryRunner.manager.save(OrderEntity, order);
-      // Create order items from cart items
-      for (const item of cart.items) {
+
+      // Create order items from cart items data
+      for (const item of checkoutOrderDto.cartItems) {
+        // Fetch product details for the order item
+        const product = await queryRunner.manager.findOne(ProductEntity, { where: { id: item.productId } });
+        if (!product) {
+          throw new BadRequestException(`Product ${item.productId} not found`);
+        }
+
         const orderItem = this.orderItemRepository.create({
           order,
-          productId: item.product.id,
-          productName: item.product.name,
+          productId: item.productId,
+          productName: product.name,
           quantity: item.quantity,
-          pricePerUnit: item.product.price,
+          pricePerUnit: item.price,
           // TODO: Add variant details if applicable
           // variantDetails: item.variantDetails,
         });
@@ -167,9 +179,15 @@ export class CheckoutService {
         await queryRunner.manager.save(OrderItemEntity, orderItem);
       }
 
-      // Clear the user's cart
-      await queryRunner.manager.remove(CartItemEntity, cart.items);
-      await queryRunner.manager.remove(CartEntity, cart);
+      // Process payment through Tranzila
+      await this.processPaymentWithTranzila(queryRunner, order, user);
+
+      // Create financial document if payment was successful
+      if (order.paymentStatus === PaymentStatus.COMPLETED) {
+        await this.createTranzilaDocument(queryRunner, order, user);
+      }
+
+      // Note: Cart clearing is handled by the frontend since we're not using database cart
 
       await queryRunner.commitTransaction();
 
@@ -186,6 +204,120 @@ export class CheckoutService {
       throw new InternalServerErrorException('Failed to process order.');
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  private async processPaymentWithTranzila(queryRunner: any, order: OrderEntity, user: UserEntity): Promise<void> {
+    // Get user's stored credit card
+    const creditCard = await queryRunner.manager.findOne(CreditCardEntity, {
+      where: { user: { id: user.id } },
+    });
+
+    if (!creditCard) {
+      this.logger.warn(`No credit card found for user ${user.id}. Skipping payment processing.`);
+      return;
+    }
+
+    // Convert amount to cents for Tranzila
+    const amountInCents = Math.round(order.totalAmount * 100);
+
+    const paymentRequest: TranzilaPaymentRequest = {
+      amount: amountInCents,
+      currency: 'ILS', // Default to ILS, can be made configurable
+      userId: user.id,
+      userEmail: user.email,
+      orderDescription: `Order ${order.orderReference}`,
+      internalOrderId: order.orderReference,
+      creditCardToken: creditCard.token,
+      expdate: creditCard.expdate,
+    };
+
+    try {
+      const paymentResult = await this.tranzilaService.processPayment(paymentRequest);
+
+      if (paymentResult.success) {
+        order.paymentStatus = PaymentStatus.COMPLETED;
+        order.status = OrderStatus.PROCESSING;
+        order.tranzilaTransactionId = paymentResult.tranzilaTransactionId;
+        this.logger.log(`Payment successful for order ${order.orderReference}. Transaction ID: ${paymentResult.tranzilaTransactionId}`);
+      } else {
+        order.paymentStatus = PaymentStatus.FAILED;
+        order.status = OrderStatus.CANCELLED;
+        order.paymentErrorMessage = paymentResult.message;
+        this.logger.warn(`Payment failed for order ${order.orderReference}: ${paymentResult.message}`);
+        throw new BadRequestException(`Payment failed: ${paymentResult.message}`);
+      }
+
+      await queryRunner.manager.save(OrderEntity, order);
+    } catch (error) {
+      order.paymentStatus = PaymentStatus.FAILED;
+      order.status = OrderStatus.CANCELLED;
+      order.paymentErrorMessage = error.message;
+      await queryRunner.manager.save(OrderEntity, order);
+      throw error;
+    }
+  }
+
+  private async createTranzilaDocument(queryRunner: any, order: OrderEntity, user: UserEntity): Promise<void> {
+    const defaultVatPercent = this.configService.get<string>('DEFAULT_VAT_PERCENT', '18.0');
+    const terminalName = this.configService.get<string>('TRANZILA_TERMINAL_NAME', '');
+
+    if (!terminalName) {
+      this.logger.warn('TRANZILA_TERMINAL_NAME not configured. Skipping document creation.');
+      return;
+    }
+
+    // Get user's credit card for payment info
+    const creditCard = await queryRunner.manager.findOne(CreditCardEntity, {
+      where: { user: { id: user.id } },
+    });
+
+    const documentRequest: TranzilaDocumentRequest = {
+      terminalName,
+      documentType: 'IR', // Tax Invoice/Receipt
+      action: 1, // Debit
+      documentCurrencyCode: 'ILS',
+      vatPercent: defaultVatPercent,
+      clientName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email,
+      clientEmail: user.email,
+      clientId: user.id,
+      items: order.items.map(item => ({
+        name: item.productName,
+        type: 'I', // Item
+        unitsNumber: item.quantity.toString(),
+        unitType: 1, // Unit
+        unitPrice: Math.round(item.pricePerUnit * 100), // Price in cents
+        priceType: 'G', // Gross price
+        currencyCode: 'ILS',
+      })),
+      payments: [{
+        paymentMethod: 1, // Credit Card
+        paymentDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+        ccLast4Digits: creditCard?.lastFour,
+        amount: Math.round(order.totalAmount * 100), // Amount in cents
+        currencyCode: 'ILS',
+      }],
+    };
+
+    try {
+      const documentResult = await this.tranzilaService.createFinancialDocument(documentRequest);
+
+      if (documentResult.document) {
+        const tranzilaDocument = queryRunner.manager.create(TranzilaDocumentEntity, {
+          order,
+          transactionId: order.tranzilaTransactionId,
+          tranzilaDocumentId: documentResult.document.id,
+          tranzilaDocumentNumber: documentResult.document.number,
+          tranzilaRetrievalKey: documentResult.document.retrievalKey,
+          metadata: documentResult,
+        });
+
+        await queryRunner.manager.save(TranzilaDocumentEntity, tranzilaDocument);
+        this.logger.log(`Financial document created for order ${order.orderReference}. Document ID: ${documentResult.document.id}`);
+      }
+    } catch (error) {
+      // Don't fail the order if document creation fails
+      this.logger.error(`Failed to create financial document for order ${order.orderReference}: ${error.message}`);
     }
   }
 }

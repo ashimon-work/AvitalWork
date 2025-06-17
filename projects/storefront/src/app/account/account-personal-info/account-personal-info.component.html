@@ -1,61 +1,102 @@
-<h3>Personal Information</h3>
-
-<!-- Loading Indicator -->
-<div *ngIf="isFetching" class="loading-indicator">Loading profile...</div>
-
-<!-- Success/Error Messages -->
-<div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
-<div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-
-<!-- Form -->
-<form *ngIf="!isFetching" [formGroup]="personalInfoForm" (ngSubmit)="savePersonalInfo()" novalidate>
-
-  <!-- Email (Display Only) -->
-  <div class="form-group mb-3">
-    <label for="email">Email Address</label>
-    <input type="email" id="email" formControlName="email" class="form-control" readonly>
-    <small class="form-text text-muted">Email address cannot be changed.</small>
+<section class="personal-info-section" [attr.aria-label]="'Personal information'">
+  <!-- Loading Indicator -->
+  <div *ngIf="isFetching" class="loading-indicator">
+    <p>{{ tKeys.SF_ACCOUNT_PERSONAL_INFO_LOADING | translate }}</p>
   </div>
 
-  <!-- First Name -->
-  <div class="form-group mb-3">
-    <label for="firstName">First Name</label>
-    <input type="text" id="firstName" formControlName="firstName" class="form-control"
-           [ngClass]="{ 'is-invalid': firstName?.invalid && (firstName?.dirty || firstName?.touched) }">
-    <div *ngIf="firstName?.invalid && (firstName?.dirty || firstName?.touched)" class="invalid-feedback">
-      <div *ngIf="firstName?.errors?.['required']">First name is required.</div>
-      <div *ngIf="firstName?.errors?.['maxlength']">First name cannot exceed 50 characters.</div>
-    </div>
+  <!-- Success/Error Messages -->
+  <div *ngIf="successMessage" class="message message-success">
+    <img src="assets/icons/check-circle.svg" alt="" class="message-icon">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="message message-error">
+    <img src="assets/icons/x.svg" alt="" class="message-icon">
+    {{ errorMessage }}
   </div>
 
-  <!-- Last Name -->
-  <div class="form-group mb-3">
-    <label for="lastName">Last Name</label>
-    <input type="text" id="lastName" formControlName="lastName" class="form-control"
-           [ngClass]="{ 'is-invalid': lastName?.invalid && (lastName?.dirty || lastName?.touched) }">
-    <div *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)" class="invalid-feedback">
-      <div *ngIf="lastName?.errors?.['required']">Last name is required.</div>
-      <div *ngIf="lastName?.errors?.['maxlength']">Last name cannot exceed 50 characters.</div>
-    </div>
+  <div *ngIf="!isFetching" class="personal-info-content">
+    <!-- Header -->
+    <header class="welcome-header">
+      <h1 class="welcome-title">{{ tKeys.SF_ACCOUNT_PERSONAL_INFO_TITLE | translate }}</h1>
+      <p class="welcome-subtitle">Update your personal information and contact details</p>
+    </header>
+
+    <!-- Form Card -->
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title class="card-title-with-icon">
+          <img src="assets/icons/user.svg" alt="" class="title-icon">
+          Personal Details
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content class="form-content">
+        <form [formGroup]="personalInfoForm" (ngSubmit)="savePersonalInfo()" novalidate class="personal-info-form">
+          
+          <!-- Email (Display Only) -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_PERSONAL_INFO_EMAIL_LABEL | translate }}</mat-label>
+              <input matInput formControlName="email" readonly>
+              <mat-hint>{{ tKeys.SF_ACCOUNT_PERSONAL_INFO_EMAIL_READONLY_NOTE | translate }}</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- Name Fields -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field half-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_PERSONAL_INFO_FIRST_NAME_LABEL | translate }}</mat-label>
+              <input matInput formControlName="firstName" autocomplete="given-name">
+              <mat-error *ngIf="firstName?.hasError('required')">
+                {{ tKeys.SF_ACCOUNT_PERSONAL_INFO_FIRST_NAME_REQUIRED_ERROR | translate }}
+              </mat-error>
+              <mat-error *ngIf="firstName?.hasError('maxlength')">
+                {{ tKeys.SF_ACCOUNT_PERSONAL_INFO_FIRST_NAME_MAXLENGTH_ERROR | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field half-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_PERSONAL_INFO_LAST_NAME_LABEL | translate }}</mat-label>
+              <input matInput formControlName="lastName" autocomplete="family-name">
+              <mat-error *ngIf="lastName?.hasError('required')">
+                {{ tKeys.SF_ACCOUNT_PERSONAL_INFO_LAST_NAME_REQUIRED_ERROR | translate }}
+              </mat-error>
+              <mat-error *ngIf="lastName?.hasError('maxlength')">
+                {{ tKeys.SF_ACCOUNT_PERSONAL_INFO_LAST_NAME_MAXLENGTH_ERROR | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_PERSONAL_INFO_PHONE_LABEL | translate }}</mat-label>
+              <input matInput type="tel" formControlName="phone" autocomplete="tel">
+              <mat-error *ngIf="phone?.hasError('pattern')">
+                {{ tKeys.SF_ACCOUNT_PERSONAL_INFO_PHONE_PATTERN_ERROR | translate }}
+              </mat-error>
+              <mat-error *ngIf="phone?.hasError('maxlength')">
+                {{ tKeys.SF_ACCOUNT_PERSONAL_INFO_PHONE_MAXLENGTH_ERROR | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button mat-raised-button 
+                    color="primary" 
+                    type="submit" 
+                    [disabled]="isLoading || personalInfoForm.invalid || personalInfoForm.pristine"
+                    class="save-button">
+              <img src="assets/icons/check.svg" alt="" class="button-icon" *ngIf="!isLoading">
+              {{ isLoading ? (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVING | translate) : (tKeys.SF_ACCOUNT_PERSONAL_INFO_SAVE_BUTTON_SAVE | translate) }}
+            </button>
+          </div>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
   </div>
-
-  <!-- Phone Number -->
-  <div class="form-group mb-3">
-    <label for="phone">Phone Number (Optional)</label>
-    <input type="tel" id="phone" formControlName="phone" class="form-control"
-           [ngClass]="{ 'is-invalid': phone?.invalid && (phone?.dirty || phone?.touched) }">
-    <div *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="invalid-feedback">
-       <div *ngIf="phone?.errors?.['pattern']">Please enter a valid phone number.</div>
-       <div *ngIf="phone?.errors?.['maxlength']">Phone number cannot exceed 20 characters.</div>
-    </div>
-  </div>
-
-  <!-- Add Birthday field later if needed -->
-
-  <div class="form-actions mt-3">
-    <button type="submit" class="btn btn-primary" [disabled]="isLoading || personalInfoForm.pristine">
-      {{ isLoading ? 'Saving...' : 'Save Changes' }}
-    </button>
-  </div>
-
-</form>
+</section>

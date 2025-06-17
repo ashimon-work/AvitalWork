@@ -7,15 +7,17 @@ import { WebsocketService } from '../../core/services/websocket.service';
 import { NotificationService as UiNotificationService } from '../../core/services/notification.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { CategoryScale, Chart, ChartConfiguration, ChartOptions, ChartType, registerables } from 'chart.js';
+import { T, TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, BaseChartDirective],
+  imports: [CommonModule, RouterModule, BaseChartDirective, TranslatePipe],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss'
 })
 export class DashboardPageComponent implements OnInit, OnDestroy {
+  public tKeys = T;
   dashboardData: any;
   recentOrders: any[] = [];
   totalOrders: number = 0;

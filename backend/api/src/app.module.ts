@@ -19,7 +19,10 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { PromoCodesModule } from './promo-codes/promo-codes.module';
 import { ContactModule } from './contact/contact.module';
 import { NotificationsModule } from './notifications/notifications.module';
-import { ReviewsModule } from './reviews/reviews.module'; // Import ReviewsModule
+import { ReviewsModule } from './reviews/reviews.module';
+import { TranzilaModule } from './tranzila/tranzila.module';
+import { ShippingModule } from './shipping/shipping.module';
+import { CheckoutModule } from './checkout/checkout.module';
 
 // Import all entities used in the seed script
 import { StoreEntity } from './stores/entities/store.entity';
@@ -37,6 +40,7 @@ import { ManagerModule } from './manager/manager.module';
 import { ManagerController } from './manager/manager.controller';
 import { ManagerService } from './manager/manager.service';
 import { SettingsModule } from './settings/settings.module';
+import { MarketplaceModule } from './marketplace/marketplace.module';
 
 @Module({
   imports: [
@@ -93,7 +97,11 @@ import { SettingsModule } from './settings/settings.module';
     PromoCodesModule,
     ContactModule,
     NotificationsModule,
-    ReviewsModule, // Add ReviewsModule to imports
+    ReviewsModule,
+    TranzilaModule,
+    ShippingModule,
+    CheckoutModule,
+    MarketplaceModule,
   ],
   controllers: [AppController, ManagerController],
   providers: [AppService, ManagerService],

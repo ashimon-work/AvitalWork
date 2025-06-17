@@ -1,49 +1,49 @@
 <div class="order-detail-container container mt-4 mb-5">
   <div *ngIf="isLoading" class="loading-indicator text-center my-5">
-    <p>Loading order details...</p>
+    <p>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_LOADING | translate }}</p>
     <!-- Add spinner or more elaborate loading animation here -->
   </div>
 
   <div *ngIf="order$ | async as order; else noOrderDataOrError">
     <div class="card shadow-sm">
       <div class="card-header bg-light d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">Order #{{ order.orderNumber }}</h2>
-        <a routerLink="/account/orders" class="btn btn-sm btn-outline-secondary">Back to Orders</a>
+        <h2 class="mb-0">{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_TITLE | translate:order.orderReference }}</h2>
+        <a routerLink="/account/orders" class="btn btn-sm btn-outline-secondary">{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_BACK_BUTTON | translate }}</a>
       </div>
       <div class="card-body">
         <div class="row mb-4">
           <div class="col-md-6">
-            <h4>Order Information</h4>
-            <p><strong>Order Date:</strong> {{ order.orderDate | date:'fullDate' }}</p>
-            <p><strong>Status:</strong> <span class="badge fs-6" [ngClass]="{
-              'bg-success': order.status === 'Completed' || order.status === 'Shipped',
+            <h4>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_INFO_TITLE | translate }}</h4>
+            <p><strong>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_DATE_LABEL | translate }}</strong> {{ order.orderDate | date:'fullDate' }}</p>
+            <p><strong>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_STATUS_LABEL | translate }}</strong> <span class="badge fs-6" [ngClass]="{
+              'bg-success': order.status === 'Delivered' || order.status === 'Shipped',
               'bg-warning text-dark': order.status === 'Processing' || order.status === 'Pending',
               'bg-danger': order.status === 'Cancelled' || order.status === 'Refunded',
               'bg-info text-dark': order.status === 'Partially Shipped',
-              'bg-secondary': !['Completed', 'Shipped', 'Processing', 'Pending', 'Cancelled', 'Refunded', 'Partially Shipped'].includes(order.status)
+              'bg-secondary': !['Delivered', 'Shipped', 'Processing', 'Pending', 'Cancelled', 'Refunded', 'Partially Shipped'].includes(order.status)
             }">{{ order.status }}</span></p>
-            <p *ngIf="order.trackingNumber"><strong>Tracking Number:</strong> {{ order.trackingNumber }}</p>
-            <p><strong>Payment Status:</strong> {{ order.paymentStatus }}</p>
+            <p *ngIf="order.trackingNumber"><strong>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_TRACKING_LABEL | translate }}</strong> {{ order.trackingNumber }}</p>
+            <p><strong>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_PAYMENT_STATUS_LABEL | translate }}</strong> {{ order.paymentStatus }}</p>
           </div>
           <div class="col-md-6" *ngIf="order.shippingAddress">
-            <h4>Shipping Address</h4>
+            <h4>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_SHIPPING_ADDRESS_TITLE | translate }}</h4>
             <p>{{ order.shippingAddress.fullName }}</p>
             <p>{{ order.shippingAddress.street1 }}</p>
             <p *ngIf="order.shippingAddress.street2">{{ order.shippingAddress.street2 }}</p>
             <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.country }} {{ order.shippingAddress.postalCode }}</p>
-            <p *ngIf="order.shippingAddress.phoneNumber">Phone: {{ order.shippingAddress.phoneNumber }}</p>
+            <p *ngIf="order.shippingAddress.phoneNumber">{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_PHONE_LABEL | translate }} {{ order.shippingAddress.phoneNumber }}</p>
           </div>
         </div>
 
-        <h4>Items Ordered</h4>
+        <h4>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_ITEMS_TITLE | translate }}</h4>
         <div class="table-responsive">
           <table class="table table-hover">
             <thead class="table-light">
               <tr>
-                <th>Product</th>
-                <th class="text-center">Quantity</th>
-                <th class="text-end">Price</th>
-                <th class="text-end">Total</th>
+                <th>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_TABLE_PRODUCT_HEADER | translate }}</th>
+                <th class="text-center">{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_TABLE_QUANTITY_HEADER | translate }}</th>
+                <th class="text-end">{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_TABLE_PRICE_HEADER | translate }}</th>
+                <th class="text-end">{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_TABLE_TOTAL_HEADER | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -65,8 +65,8 @@
                   </div>
                 </td>
                 <td class="text-center align-middle">{{ item.quantity }}</td>
-                <td class="text-end align-middle">{{ item.price | currency }}</td>
-                <td class="text-end align-middle">{{ (item.quantity * item.price) | currency }}</td>
+                <td class="text-end align-middle">{{ item.pricePerUnit | currency:'ILS' }}</td>
+                <td class="text-end align-middle">{{ (item.quantity * item.pricePerUnit) | currency:'ILS' }}</td>
               </tr>
             </tbody>
           </table>
@@ -76,20 +76,20 @@
           <div class="col-md-5 col-lg-4">
             <ul class="list-group">
               <li class="list-group-item d-flex justify-content-between align-items-center">
-                Subtotal:
-                <span>{{ order.subtotal | currency }}</span>
+                {{ tKeys.SF_ACCOUNT_ORDER_DETAIL_SUBTOTAL_LABEL | translate }}
+                <span>{{ order.subtotal | currency:'ILS' }}</span>
               </li>
               <li class="list-group-item d-flex justify-content-between align-items-center">
-                Shipping:
-                <span>{{ order.shippingCost | currency }}</span>
+                {{ tKeys.SF_ACCOUNT_ORDER_DETAIL_SHIPPING_LABEL | translate }}
+                <span>{{ order.shippingCost | currency:'ILS' }}</span>
               </li>
               <li class="list-group-item d-flex justify-content-between align-items-center">
-                Tax:
-                <span>{{ order.taxAmount | currency }}</span>
+                {{ tKeys.SF_ACCOUNT_ORDER_DETAIL_TAX_LABEL | translate }}
+                <span>{{ order.taxAmount | currency:'ILS' }}</span>
               </li>
               <li class="list-group-item d-flex justify-content-between align-items-center fw-bold fs-5">
-                Total:
-                <span>{{ order.totalAmount | currency }}</span>
+                {{ tKeys.SF_ACCOUNT_ORDER_DETAIL_GRAND_TOTAL_LABEL | translate }}
+                <span>{{ order.totalAmount | currency:'ILS' }}</span>
               </li>
             </ul>
           </div>
@@ -101,8 +101,8 @@
 
   <ng-template #noOrderDataOrError>
     <div *ngIf="!isLoading" class="alert alert-warning text-center" role="alert">
-      <p>Order details could not be loaded. The order may not exist or an error occurred.</p>
-      <a routerLink="/account/orders" class="btn btn-primary">Back to My Orders</a>
+      <p>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_ERROR_MESSAGE | translate }}</p>
+      <a routerLink="/account/orders" class="btn btn-primary">{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_ERROR_BACK_BUTTON | translate }}</a>
     </div>
   </ng-template>
 </div>

@@ -9,6 +9,10 @@ import { ProductEntity } from '../products/entities/product.entity';
 import { AddressEntity } from '../addresses/entities/address.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { StoreEntity } from '../stores/entities/store.entity';
+import { TranzilaModule } from '../tranzila/tranzila.module';
+import { CreditCardEntity } from '../tranzila/entities/credit-card.entity';
+import { TranzilaDocumentEntity } from '../tranzila/entities/tranzila-document.entity';
+import { StoresModule } from '../stores/stores.module';
 
 @Module({
   imports: [
@@ -20,7 +24,11 @@ import { StoreEntity } from '../stores/entities/store.entity';
       AddressEntity,
       UserEntity,
       StoreEntity,
+      CreditCardEntity,
+      TranzilaDocumentEntity,
     ]),
+    TranzilaModule,
+    StoresModule,
   ],
   providers: [CheckoutService],
   controllers: [CheckoutController],

@@ -1,0 +1,168 @@
+@use '../../styles/variables' as *;
+
+@keyframes slideDown {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--form-height, 0);
+    opacity: 1;
+  }
+}
+
+.payment-method {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  &__card {
+    padding: 1.5rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-lg;
+    background-color: $background-color; // Or a slightly different card color
+  }
+
+  &__card-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__card-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: $text-color-muted;
+  }
+
+  &__card-brand {
+    font-weight: 500;
+  }
+
+  &__card-text {
+    font-size: 0.875rem;
+    color: $text-color-muted;
+  }
+
+  &__add-icon {
+    margin-right: 0.5rem;
+  }
+
+  &__billing-address {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__billing-address-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__billing-address-form {
+    overflow: hidden;
+    transition: height 0.3s ease-out, opacity 0.3s ease-out;
+    &.visible {
+      animation: slideDown 0.5s ease-out forwards;
+    }
+  }
+}
+
+.visible {
+  display: block;
+}
+
+// Modal styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: $background-color;
+  padding: 2rem;
+  border-radius: $border-radius-lg;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  margin-bottom: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+// Tranzila form placeholder
+.tranzila-form {
+  text-align: center;
+  padding: 1.5rem;
+  border: 2px dashed $border-color;
+  border-radius: $border-radius-lg;
+
+  &__text {
+    color: $text-color-muted;
+    margin-bottom: 1rem;
+  }
+
+  &__inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__input-group {
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-md;
+  }
+}

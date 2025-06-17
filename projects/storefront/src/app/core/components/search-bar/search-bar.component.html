@@ -1,50 +1,48 @@
-<div class="search-container">
-  <!-- Wrap input in a form -->
-  <form (ngSubmit)="submitSearch()" class="search-form">
-    <input type="text"
-           placeholder="Search products..."
-           class="search-input"
-           [(ngModel)]="searchQuery"
-           name="searchQuery"
-           (input)="search(searchQuery)"
-           (blur)="hideSuggestions()">
-    <!-- Optional: Add a submit button if desired -->
-    <!-- <button type="submit" class="search-submit-btn">Go</button> -->
-  </form>
-  <!-- Suggestions Dropdown -->
-  <ul class="suggestions-list" *ngIf="showSuggestions && (searchResults$ | async) as results">
-    <!-- Check if results exist and query is long enough before showing "No results" -->
-    <li *ngIf="results.length === 0 && searchQuery.length >= 3" class="no-results">
-      No results found for "{{ searchQuery }}"
-    </li>
-    <!-- Loop through combined results -->
-    <li *ngFor="let suggestion of results" (mousedown)="selectSuggestion(suggestion)"> <!-- Use mousedown -->
-
-      <!-- Product Suggestion Template -->
-      <ng-container *ngIf="suggestion.resultType === 'product'">
-        <a [routerLink]="['/', currentStoreSlug$ | async, 'product', suggestion.id]" (click)="showSuggestions = false" class="suggestion-link product-suggestion">
-          <!-- Display actual image if available, otherwise omit image tag -->
-          <img *ngIf="suggestion.imageUrl" [src]="suggestion.imageUrl" alt="{{ suggestion.name }}" class="suggestion-image">
-          <!-- Add a placeholder text/icon if no image? For now, just omit. -->
-          <div class="suggestion-details">
-            <span class="suggestion-name">{{ suggestion.name }}</span>
-            <span class="suggestion-price">{{ suggestion.price | currency }}</span>
-          </div>
-        </a>
-      </ng-container>
-
-      <!-- Store Suggestion Template -->
-      <ng-container *ngIf="suggestion.resultType === 'store'">
-         <a [routerLink]="['/', suggestion.slug]" (click)="showSuggestions = false" class="suggestion-link store-suggestion">
-           <!-- Omit placeholder image tag as it doesn't exist -->
-           <!-- <img src="/assets/images/placeholder-store.png" alt="{{ suggestion.name }}" class="suggestion-image"> -->
-           <div class="suggestion-details">
-             <span class="suggestion-name">{{ suggestion.name }}</span>
-             <span class="suggestion-description" *ngIf="suggestion.description">{{ suggestion.description | slice:0:50 }}...</span>
-           </div>
-         </a>
-      </ng-container>
-    </li>
-    <!-- Optional: Add loading indicator -->
-  </ul>
+<div class="custom-search-wrapper">
+  <input
+    class="custom-search-input"
+    [placeholder]="tKeys.SF_SEARCH_BAR_PLACEHOLDER | translate"
+    [(ngModel)]="searchQuery"
+    (ngModelChange)="onSearchQueryChanged($event)"
+    (keydown)="handleKeyDown($event)"
+    (focus)="onSearchFocus()"
+    #searchInput>
+  <mat-icon *ngIf="!searchQuery && !searchInputFocused" class="search-icon-suffix" (click)="searchInput.focus()">search</mat-icon>
+  <button *ngIf="searchQuery" mat-icon-button class="clear-icon-suffix" aria-label="Clear search" (click)="clearSearch()">
+    <mat-icon>close</mat-icon>
+  </button>
 </div>
+<ul *ngIf="showSuggestions && currentSearchSuggestions.length > 0" class="suggestions-list">
+  <li *ngFor="let suggestion of currentSearchSuggestions; let i = index"
+      [class.active]="i === activeSuggestionIndex"
+      (mousedown)="selectSuggestion(suggestion)"
+      class="suggestion-item">
+    <!-- Product Suggestion Template -->
+    <ng-container *ngIf="suggestion.resultType === 'product'">
+      <div class="suggestion-link product-suggestion">
+        <img *ngIf="suggestion.imageUrls && suggestion.imageUrls.length > 0" [src]="suggestion.imageUrls[0]" [alt]="suggestion.name" class="suggestion-image">
+        <!-- Basic placeholder if no image -->
+        <div *ngIf="!suggestion.imageUrls || suggestion.imageUrls.length === 0" class="suggestion-image-placeholder">
+          <span>{{ suggestion.name.charAt(0) || 'P' }}</span>
+        </div>
+        <div class="suggestion-details">
+          <span class="suggestion-name">{{ suggestion.name }}</span>
+          <span *ngIf="suggestion.price" class="suggestion-price">{{ suggestion.price | currency }}</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Store Suggestion Template -->
+    <ng-container *ngIf="suggestion.resultType === 'store'">
+       <div class="suggestion-link store-suggestion">
+         <div class="suggestion-image-placeholder">
+            <span>{{ suggestion.name.charAt(0) || 'S' }}</span>
+         </div>
+         <div class="suggestion-details">
+           <span class="suggestion-name">{{ suggestion.name }}</span>
+           <span class="suggestion-description" *ngIf="suggestion.description">{{ suggestion.description | slice:0:50 }}{{ suggestion.description && suggestion.description.length > 50 ? '...' : ''}}</span>
+         </div>
+       </div>
+    </ng-container>
+  </li>
+</ul>

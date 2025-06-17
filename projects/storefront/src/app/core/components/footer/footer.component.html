@@ -1,34 +1,48 @@
 <footer class="store-footer">
-  <div class="footer-container">
+  <div class="footer-content-wrapper">
     <!-- Newsletter Section -->
-    <div class="footer-section newsletter-section">
-      <h4>Subscribe to our Newsletter</h4>
-      <app-newsletter-form></app-newsletter-form>
-    </div>
+    <section class="newsletter-section">
+      <h3>{{ tKeys.SF_FOOTER_NEWSLETTER_SUBSCRIBE_TITLE | translate }}</h3>
+      <p class="text-muted-foreground mb-4 text-sm">{{ tKeys.SF_FOOTER_NEWSLETTER_SUBTEXT | translate }}</p>
+      <form [formGroup]="newsletterForm" (ngSubmit)="handleSubmit()" class="newsletter-form-flex" aria-label="Newsletter signup">
+        <div class="newsletter-input-group">
+          <input type="email" formControlName="email" placeholder="{{ tKeys.SF_FORM_FIELD_EMAIL_LABEL | translate }}" required [disabled]="newsletterLoading" class="newsletter-email-input">
+          <button type="submit" class="newsletter-submit-button" [disabled]="newsletterLoading || newsletterForm.invalid">
+            <span *ngIf="!newsletterLoading">{{ 'SF_BUTTON_SUBSCRIBE' | translate }}</span>
+            <span *ngIf="newsletterLoading">{{ 'SF_BUTTON_SUBSCRIBING' | translate }}</span>
+          </button>
+        </div>
+        <div class="newsletter-errors" *ngIf="newsletterForm.get('email')?.touched && newsletterForm.get('email')?.invalid">
+          <p *ngIf="newsletterForm.get('email')?.hasError('required')" class="error-message">{{ 'SF_FORM_FIELD_EMAIL_ERROR_REQUIRED' | translate }}</p>
+          <p *ngIf="newsletterForm.get('email')?.hasError('email')" class="error-message">{{ 'SF_FORM_FIELD_EMAIL_ERROR_INVALID' | translate }}</p>
+        </div>
+      </form>
+    </section>
 
-    <!-- Quick Links Section (Example) -->
+    <!-- Quick Links Section -->
     <div class="footer-section links-section">
-      <h4>Quick Links</h4>
-      <ul *ngIf="currentStoreSlug$ | async as storeSlug"> <!-- Add *ngIf -->
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'about' }">About Us</a></li>
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'contact' }">Contact Us</a></li>
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'faq' }">FAQ</a></li>
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'shipping' }">Shipping Policy</a></li>
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'returns' }">Return Policy</a></li>
+      <h4>{{ tKeys.SF_FOOTER_QUICK_LINKS_TITLE | translate }}</h4>
+      <ul *ngIf="currentStoreSlug$ | async as storeSlug">
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'about' }">{{ tKeys.SF_FOOTER_ABOUT_US | translate }}</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'contact' }">{{ tKeys.SF_FOOTER_CONTACT_US | translate }}</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'faq' }">{{ tKeys.SF_FOOTER_FAQ | translate }}</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'shipping' }">{{ tKeys.SF_FOOTER_SHIPPING_POLICY | translate }}</a></li>
+        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'returns' }">{{ tKeys.SF_FOOTER_RETURN_POLICY | translate }}</a></li>
       </ul>
     </div>
 
     <!-- Social Media Section -->
-    <div class="footer-section social-section">
-      <h4>Follow Us</h4>
-      <div class="social-links">
-        <h5><a href="#" target="_blank" title="Instagram">Instagram</a></h5>
-        <h5><a href="#" target="_blank" title="Facebook">Facebook</a></h5>
-        <h5><a href="#" target="_blank" title="Twitter">Twitter</a></h5>
+    <nav class="social-media-nav footer-section" aria-label="Social media links">
+      <h4>{{ tKeys.SF_FOOTER_FOLLOW_US_TITLE | translate }}</h4>
+      <div class="social-links-container">
+        <a *ngFor="let social of socialLinks" [href]="social.href" target="_blank" rel="noopener noreferrer" [attr.aria-label]="social.label" class="social-icon-link">
+          <img [src]="'assets/icons/social/' + social.matIconName + '.svg'" [alt]="social.label" class="social-svg-icon" />
+        </a>
       </div>
-    </div>
+    </nav>
   </div>
+
   <div class="footer-bottom">
-    <p>&copy; {{ currentYear }} Your Store Name. All Rights Reserved.</p>
+    <p [innerHTML]="tKeys.SF_FOOTER_COPYRIGHT | translate:{ year: currentYear, storeName: (currentStoreSlug$ | async) || 'Modern Storefront' }"></p>
   </div>
 </footer>

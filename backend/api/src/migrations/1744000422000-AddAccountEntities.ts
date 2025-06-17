@@ -27,7 +27,7 @@ export class AddAccountEntities1744000422000 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "addresses" ADD CONSTRAINT "FK_addresses_userId" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
 
         // Create orders table
-        await queryRunner.query(`CREATE TYPE "public"."orders_status_enum" AS ENUM('pending', 'processing', 'shipped', 'completed', 'cancelled', 'failed')`);
+        await queryRunner.query(`CREATE TYPE "public"."orders_status_enum" AS ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled', 'failed')`);
         await queryRunner.query(`CREATE TYPE "public"."orders_paymentstatus_enum" AS ENUM('pending', 'paid', 'failed', 'refunded')`);
         await queryRunner.query(`
             CREATE TABLE "orders" (

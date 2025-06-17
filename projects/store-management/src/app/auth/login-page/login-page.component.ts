@@ -4,15 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
+import { T, TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, TranslatePipe],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss'
 })
 export class LoginPageComponent {
+  public tKeys = T;
   email!: string;
   password!: string;
   passwordVisible: boolean = false;

@@ -6,10 +6,13 @@ import { Product } from '@shared-types';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
 import { HttpClient } from '@angular/common/http';
+import { T, I18nService } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
+
 @Component({
   selector: 'app-account-wishlist',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   providers: [HttpClient],
   templateUrl: './account-wishlist.component.html',
   styleUrls: ['./account-wishlist.component.scss']
@@ -17,6 +20,9 @@ import { HttpClient } from '@angular/common/http';
 export class AccountWishlistComponent implements OnInit {
   private apiService = inject(ApiService);
   private cartService = inject(CartService);
+  private i18nService = inject(I18nService);
+
+  public tKeys = T;
 
   private refreshWishlist$ = new BehaviorSubject<void>(undefined); // Trigger to refresh list
   wishlist$: Observable<WishlistDto | null>;
@@ -68,13 +74,13 @@ export class AccountWishlistComponent implements OnInit {
       next: () => {
         this.isLoading = false;
         this.cdr.detectChanges();
-        this.successMessage = 'Item removed from wishlist.';
+        this.successMessage = this.i18nService.translate(this.tKeys.SF_ACCOUNT_WISHLIST_REMOVE_SUCCESS);
         this.refreshList(); // Refresh the list after removal
       },
       error: (err) => {
         this.isLoading = false;
         this.cdr.detectChanges();
-        this.errorMessage = err.error?.message || 'Failed to remove item from wishlist.';
+        this.errorMessage = err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_WISHLIST_REMOVE_ERROR);
         console.error('Error removing wishlist item:', err);
       }
     });
@@ -88,17 +94,27 @@ export class AccountWishlistComponent implements OnInit {
       // Cast Partial<Product> to Product; CartService might need adjustment if full Product is strictly required
       this.cartService.addItem(item.product as Product, 1).subscribe({
         next: () => {
-          this.successMessage = `${item.product.name || 'Item'} added to cart.`;
+          const productName = item.product.name;
+          if (productName) {
+            this.successMessage = this.i18nService.translate(this.tKeys.SF_ACCOUNT_WISHLIST_ADD_TO_CART_SUCCESS, { productName });
+          } else {
+            this.successMessage = this.i18nService.translate(this.tKeys.SF_ACCOUNT_WISHLIST_ADD_TO_CART_SUCCESS_DEFAULT_ITEM);
+          }
           // Optionally remove from wishlist after adding to cart
           // this.removeItem(item.id);
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || `Failed to add ${item.product.name || 'item'} to cart.`;
+          const productName = item.product.name;
+          if (productName) {
+            this.errorMessage = err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_WISHLIST_ADD_TO_CART_ERROR, { productName });
+          } else {
+            this.errorMessage = err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_WISHLIST_ADD_TO_CART_ERROR_DEFAULT_ITEM);
+          }
           console.error('Error adding item to cart from wishlist:', err);
         }
       });
     } else {
-      this.errorMessage = 'Product details are missing, cannot add to cart.';
+      this.errorMessage = this.i18nService.translate(this.tKeys.SF_ACCOUNT_WISHLIST_ADD_TO_CART_MISSING_DETAILS_ERROR);
       console.error('Missing product details for wishlist item:', item.id);
     }
     // Optionally remove from wishlist after adding to cart

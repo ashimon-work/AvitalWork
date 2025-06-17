@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core'; // Added OnDestroy, inject
 import { Observable, Subscription } from 'rxjs'; // Added Subscription
 import { RouterOutlet } from '@angular/router';
+import { T, TranslatePipe } from '@shared/i18n';
 import { HeaderComponent } from './core/components/header/header.component';
 import { FooterComponent } from './core/components/footer/footer.component';
 import { AuthService } from './core/services/auth.service';
@@ -11,11 +12,12 @@ import { NotificationToastComponent } from './shared/components/notification-toa
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, CommonModule, NotificationToastComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, CommonModule, NotificationToastComponent, TranslatePipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit, OnDestroy { // Implemented OnDestroy
+  public tKeys = T;
   isAuthenticated$!: Observable<boolean>;
   showCartNotification = false;
   private notificationTimeout: any = null; // Using 'any' for Node.js/Browser compatibility

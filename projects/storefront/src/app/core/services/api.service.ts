@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take, catchError, tap, filter, map } from 'rxjs/operators';
-import { Category, Product, Address, Order, User, Cart } from '@shared-types';
+import { Category, Product, Address, Order, User, Cart, Store } from '@shared-types';
 import { CarouselSlide } from '../../home/components/carousel/carousel.component';
 import { StoreContextService } from './store-context.service';
 import { AuthService } from './auth.service';
@@ -40,34 +40,38 @@ export interface AddressDto {
 }
 
 // Define Order types locally if not in shared-types
-// Based on backend DTOs
 export interface OrderItemDto {
   id: string;
   productId: string;
   productName: string;
   quantity: number;
-  price: number;
-  variantDetails?: Record<string, any>;
+  pricePerUnit: number;
+  variantDetails?: string;
   product?: Partial<Product>; // Use shared Product type
 }
 
 export interface OrderDto {
   id: string;
-  orderNumber: string; // Added missing property
   orderReference: string;
   orderDate: Date;
-  status: string; // Use string or specific enum type
+  status: string;
   totalAmount: number;
   subtotal: number;
   shippingCost: number;
   taxAmount: number;
-  shippingAddress: AddressDto; // Use AddressDto defined above
+  shippingAddress: AddressDto;
   shippingMethod?: string;
-  paymentStatus: string; // Use string or specific enum type
+  paymentStatus: string;
   trackingNumber?: string;
   items: OrderItemDto[];
-  createdAt: string; // Added missing property (assuming ISO date string)
   updatedAt: Date;
+  notes: string[];
+  user?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 }
 
 export interface PaginatedOrders {
@@ -550,6 +554,18 @@ export class ApiService {
     );
   }
 
+  getStoreDetailsBySlug(slug: string): Observable<Store | null> {
+    const url = `${this.apiUrl}/store/slug/${slug}`; // Fixed: Changed "stores" to "store"
+    console.log(`[ApiService] Fetching store details from: ${url}`);
+    return this.http.get<Store>(url).pipe(
+      tap(response => console.log(`[ApiService] Store details for slug "${slug}":`, response)),
+      catchError(error => {
+        console.error(`[ApiService] Error fetching store details for slug "${slug}":`, error);
+        return of(null); // Return null on error (e.g., 404 Not Found)
+      })
+    );
+  }
+
   // --- Contact Page Methods ---
 
   getFaqs(storeSlug: string | null): Observable<FaqItem[]> {
@@ -569,10 +585,18 @@ export class ApiService {
   }
 
   submitContactForm(storeSlug: string | null, formData: { name: string; email: string; subject: string; message: string; }): Observable<any> {
-    const payload = { ...formData, storeSlug };
+    // Remove storeSlug from payload since it should be passed as query parameter for StoreContextGuard
+    const payload = { ...formData };
     const url = `${this.apiUrl}/contact`;
-    console.log(`[ApiService] Submitting contact form to: ${url} with payload:`, payload);
-    return this.http.post<any>(url, payload).pipe(
+    
+    // Add storeSlug as query parameter if available
+    let params = new HttpParams();
+    if (storeSlug) {
+      params = params.set('storeSlug', storeSlug);
+    }
+    
+    console.log(`[ApiService] Submitting contact form to: ${url} with payload:`, payload, 'and params:', params.toString());
+    return this.http.post<any>(url, payload, { params }).pipe(
       catchError(error => {
         console.error('[ApiService] Error submitting contact form:', error);
         return throwError(() => error); // Re-throw error for component handling
@@ -998,6 +1022,35 @@ export class ApiService {
     );
   }
 
+  // Tranzila integration methods
+  getTranzilaTokenizationUrl(): Observable<{ tokenizationUrl: string }> {
+    return this.http.post<{ tokenizationUrl: string }>(`${this.apiUrl}/tranzila/tokenization-url`, {});
+  }
+
+  getMyCreditCard(): Observable<any> {
+    return this.storeContext.currentStoreSlug$.pipe(
+      take(1),
+      switchMap(storeSlug => {
+        if (!storeSlug) {
+          return throwError(() => new Error('Store context is required.'));
+        }
+        const params = new HttpParams().set('storeSlug', storeSlug);
+        return this.http.get(`${this.apiUrl}/checkout/tranzila/me/credit-card`, { params });
+      })
+    );
+  }
+
+  checkCreditCardStatus(): Observable<{ hasCard: boolean; cardInfo?: any }> {
+    return this.getMyCreditCard().pipe(
+      map(cardInfo => {
+        if (cardInfo && Object.keys(cardInfo).length > 0) {
+          return { hasCard: true, cardInfo };
+        }
+        return { hasCard: false };
+      }),
+      catchError(() => of({ hasCard: false }))
+    );
+  }
 
   // --- About Page Methods ---
 

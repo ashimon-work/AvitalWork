@@ -22,6 +22,7 @@ export interface FindAllProductsParams {
   tags?: string;
   q?: string;
   storeSlug?: string;
+  isFeaturedInMarketplace?: boolean;
 }
 
 @Injectable()
@@ -162,6 +163,10 @@ export class ProductsService {
     const skip = (page - 1) * limit;
 
     const where: FindOptionsWhere<ProductEntity> = { isActive: true };
+
+    if (params.isFeaturedInMarketplace) {
+      where.isFeaturedInMarketplace = true;
+    }
 
     if (params.storeSlug) {
       where.store = { slug: params.storeSlug };

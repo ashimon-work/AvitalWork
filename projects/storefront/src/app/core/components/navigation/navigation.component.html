@@ -1,9 +1,8 @@
 <nav class="main-navigation" *ngIf="currentStoreSlug$ | async as storeSlug">
   <ul>
-    <li><a [routerLink]="['/', storeSlug]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenuOnClick()">Home</a></li>
-    <li><a [routerLink]="['/', storeSlug, 'shop']" routerLinkActive="active" (click)="closeMenuOnClick()">Shop</a></li>
-    <li><a [routerLink]="['/', storeSlug, 'about']" routerLinkActive="active" (click)="closeMenuOnClick()">About</a></li>
-    <li><a [routerLink]="['/', storeSlug, 'contact']" routerLinkActive="active" (click)="closeMenuOnClick()">Contact</a></li>
+    <li><a [routerLink]="['/', storeSlug]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenuOnClick()">{{ tKeys.SF_NAV_HOME | translate }}</a></li>
+    <li><a [routerLink]="['/', storeSlug, 'about']" routerLinkActive="active" (click)="closeMenuOnClick()">About Us</a></li>
+    <li><a [routerLink]="['/', storeSlug, 'contact']" routerLinkActive="active" (click)="closeMenuOnClick()">{{ tKeys.SF_NAV_CONTACT | translate }}</a></li>
     <!-- Add other links as needed -->
   </ul>
 </nav>

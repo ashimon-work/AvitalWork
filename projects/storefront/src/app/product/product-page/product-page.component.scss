@@ -1,326 +1,753 @@
-// Using global variables defined in src/styles.scss
-
 :host {
   display: block;
 }
 
 .product-page-container {
-  // Use the global container for max-width and padding
   width: 100%;
-  max-width: var(--container-max-width);
-  margin: var(--spacing-xl) auto; // Add vertical margin
+  max-width: 1280px;
+  margin: var(--spacing-xl) auto;
   padding: 0 var(--container-padding-x);
 }
 
 .breadcrumbs {
   margin-bottom: var(--spacing-lg);
-  font-size: 0.9rem;
-  color: var(--text-color-light);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+
+  a,
+  span {
+    color: var(--text-color-muted, var(--text-color-light));
+    text-decoration: none;
+    transition: color 0.2s ease;
+    line-height: 1.5;
+  }
 
   a {
-    color: var(--text-color-light);
     &:hover {
-      color: var(--primary-color);
+      color: var(--product-accent-color);
     }
   }
 
-  span {
-    font-weight: var(--font-weight-medium);
-    color: var(--text-color);
+  span:not(:last-child) {
+    color: var(--text-color-muted, var(--text-color-light));
+  }
+
+  span:last-child {
+    font-weight: var(--font-weight-semibold, var(--font-weight-medium));
+    color: var(--text-color-foreground, var(--text-color));
+  }
+
+  .breadcrumb-separator-icon {
+    width: 1em;
+    height: 1em;
+    color: var(--text-color-muted, var(--text-color-light));
+
+    flex-shrink: 0;
   }
 }
 
-.product-details-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; // 50% / 50% split
-  gap: var(--spacing-xxl); // Generous gap between image and info
+.product-details-flex-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
   margin-bottom: var(--spacing-xxl);
-  // Ensure content doesn't overflow the grid items
   overflow: hidden;
 
-  @media (max-width: 992px) { // Adjust breakpoint for stacking
-    grid-template-columns: 1fr;
-    gap: var(--spacing-xl);
+  @media (min-width: 992px) {
+    flex-direction: row;
+    gap: var(--spacing-xxxl, 4rem);
   }
 }
 
 .product-image-section {
-  // Styles for image area
-  .main-product-image {
-    width: 100%;
-    max-width: 500px; // Max width as per plan
-    height: auto;
-    aspect-ratio: 1 / 1; // Maintain square aspect ratio
-    object-fit: cover;
-    border: var(--border-width) solid var(--border-color);
-    border-radius: var(--border-radius-lg);
-    background-color: var(--neutral-lightest); // Placeholder background
+  @media (min-width: 992px) {
+    width: 50%;
+    flex-shrink: 0;
   }
-  // Add styles for thumbnails later
+
+  // Styles for app-image-carousel will need to be applied within its own component or via ::ng-deep
+  // For now, this container sets up the space.
+  // The React ProductImageCarousel has a max-width of 500px and mx-auto for itself.
+  // If app-image-carousel doesn't fill this section, we might need to adjust.
+  // Example of targeting main image if app-image-carousel allows deep styling:
+  ::ng-deep app-image-carousel {
+    .main-image-container {
+      // Assuming a class within app-image-carousel
+      border-radius: var(--border-radius-xl, 12px); // React: rounded-xl
+      box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)); // React: shadow-lg
+      overflow: hidden;
+      background-color: var(--card-background-color, var(--neutral-lightest));
+    }
+
+    .main-product-image {
+      transition: transform 0.35s ease-out;
+      cursor: zoom-in;
+
+      &:hover,
+      &:focus {
+        transform: scale(1.1);
+      }
+    }
+
+    .thumbnail-list {
+      margin-top: var(--spacing-md);
+      gap: var(--spacing-sm);
+      justify-content: center;
+    }
+
+    .thumbnail-item button {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--border-radius-md, 8px);
+      border: 2px solid var(--border-color-muted, var(--border-color));
+      transition: border-color 0.2s ease;
+
+      &:hover {
+        border-color: rgba(var(--product-accent-color-rgb), 0.6);
+      }
+
+      &.selected {
+        border-color: var(--product-accent-color);
+        box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+      }
+
+      img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
 }
 
 .product-info-section {
-  // Styles for info area
+  @media (min-width: 992px) {
+    width: 50%;
+    flex-shrink: 0;
+  }
+
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md); // Spacing between info elements
+  gap: var(--spacing-lg);
 
   .product-name {
-    font-size: 2rem; // Larger heading for product name
-    margin-bottom: 0; // Adjust spacing via gap
+    font-size: clamp(1.75rem, 5vw, 2rem);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+
+    margin-bottom: 0;
+  }
+
+  .product-price-rating-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
   }
 
   .product-price {
-    font-size: 1.8rem; // Prominent price
+    font-size: clamp(1.5rem, 4vw, 1.75rem);
     font-weight: var(--font-weight-bold);
-    color: var(--primary-color); // Highlight color
-    margin-bottom: var(--spacing-sm);
+    color: var(--product-accent-color); // Verified - was already correct
+    margin-bottom: 0;
   }
 
   .product-rating {
-    margin-bottom: var(--spacing-md);
-    color: var(--text-color-light);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs); // React: gap-0.5 for stars, then gap to text
+    color: var(--text-color-muted, var(--text-color-light)); // For the text part
+    margin-bottom: 0; // Removed margin
 
     .star {
-      color: var(--neutral-dark); // Default star color
-      &.filled {
-        color: var(--warning-color); // Filled star color (e.g., yellow/orange)
+      display: inline-flex;
+
+      .rating-star-icon {
+        width: 1.25rem; // React: h-5 w-5 (20px)
+        height: 1.25rem;
+        // SVG fill/stroke will handle colors based on src
+        // Filled star color: var(--warning-color, #FFC107) -> React: text-yellow-400 fill-yellow-400
+        // Outline star color: var(--text-color-muted, #6c757d) -> React: text-muted-foreground
       }
+    }
+
+    span {
+      // The text part like "(4.7 from 10 reviews)"
+      font-size: 0.9rem;
+      margin-left: var(--spacing-sm);
     }
   }
 
   .product-description {
-    line-height: var(--line-height-base);
-    color: var(--text-color-light);
+
+    // React: list-disc pl-6 space-y-1 text-muted-foreground text-base
+    // If product.description becomes an array for <li>:
+    // ul { list-style: disc; padding-left: var(--spacing-lg); display: flex; flex-direction: column; gap: var(--spacing-xs); }
+    // li { color: var(--text-color-muted); font-size: 1rem; }
+    p {
+      // Current structure
+      color: var(--text-color-muted, var(--text-color-light));
+      font-size: 1rem; // React: text-base
+      line-height: var(--line-height-relaxed, 1.625);
+    }
   }
 
-  .product-variants,
-  .product-meta-info {
-    font-size: 0.9rem;
-    color: var(--text-color-light);
-    margin-top: var(--spacing-sm);
+  .product-variants {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md); // React: gap-4 (between different variant types)
+
+    .variant-option {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs); // React: gap-1 (between label and select)
+
+      label {
+        font-size: 0.875rem; // React: text-sm
+        font-weight: var(--font-weight-medium);
+        color: var(--text-color-foreground, var(--text-color)); // React: text-foreground
+      }
+
+      select {
+        // Basic styling to mimic React's Select component
+        width: 100%;
+        padding: var(--spacing-sm) var(--spacing-md); // React: h-10 (depends on line-height, border etc)
+        border: 1px solid var(--input-border-color, var(--border-color)); // React: border-input
+        border-radius: var(--border-radius-md, 6px); // React: rounded-md
+        background-color: var(--input-background-color, white);
+        font-size: 1rem;
+        color: var(--input-text-color, var(--text-color));
+        appearance: none; // Remove default arrow
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right var(--spacing-md) center;
+        background-size: 1em;
+
+        &:focus {
+          outline: none;
+          border-color: var(--product-accent-color);
+          box-shadow: 0 0 0 2px var(--product-accent-color-translucent); // React: ring-2 ring-ring
+        }
+
+        option[disabled] {
+          color: var(--text-color-disabled, #ccc);
+        }
+      }
+    }
+  }
+
+  .product-stock {
+    font-size: 0.875rem; // React: text-xs
+    color: var(--text-color-muted, var(--text-color-light));
+    margin-top: var(--spacing-sm); // React: ml-2 (part of quantity row)
+  }
+
+
+  .product-actions-group {
+    // New container for quantity and buttons
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md); // React: gap-3
+    margin-top: var(--spacing-lg); // React: mt-2 (relative to form)
   }
 
   .product-actions {
+    // This now refers to the row with quantity and stock text
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-lg);
-    flex-wrap: wrap; // Allow wrapping on small screens
+    gap: var(--spacing-md); // React: gap-3
+    flex-wrap: wrap;
 
     .quantity-selector {
       display: flex;
       align-items: center;
-      gap: var(--spacing-sm);
+      gap: var(--spacing-xs); // React: gap-1
 
       label {
+        font-size: 0.875rem; // React: text-sm
         font-weight: var(--font-weight-medium);
+        color: var(--text-color-foreground, var(--text-color));
+      }
+
+      button {
+        // +/- buttons
+        height: 32px; // React: h-8 w-8
+        width: 32px;
+        border: 1px solid var(--input-border-color, var(--border-color));
+        background-color: transparent;
+        color: var(--text-color);
+        border-radius: var(--border-radius-sm);
+        font-size: 1.25rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: var(--neutral-lighter, #f0f0f0);
+          border-color: var(--input-border-color-hover, var(--border-color-dark));
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
       }
 
       .quantity-input {
-        width: 70px; // Fixed width for quantity input
+        width: 48px;
+        height: 32px;
         text-align: center;
-        padding: var(--spacing-xs) var(--spacing-sm);
+        border: 1px solid var(--input-border-color, var(--border-color));
+        border-radius: var(--border-radius-md);
+        padding: var(--spacing-xs);
+        font-size: 1rem;
+        -moz-appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: var(--product-accent-color);
+          box-shadow: 0 0 0 2px var(--product-accent-color-translucent);
+        }
+      }
+    }
+  }
+
+  .add-to-cart-btn {
+    width: 100%;
+    height: 48px;
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-semibold);
+    background-color: var(--product-accent-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-lg, 8px);
+    box-shadow: var(--shadow-md);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+      background-color: var(--product-accent-color-darker);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .add-to-wishlist-btn {
+
+    width: 100%;
+    height: 48px;
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-semibold);
+    border: 1px solid var(--product-accent-color);
+    color: var(--product-accent-color);
+    background-color: transparent;
+    border-radius: var(--border-radius-lg, 8px);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+
+    .wishlist-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke-width: 2;
+
+      &.filled {
+
+        fill: var(--product-accent-color);
+        stroke: var(--product-accent-color);
       }
     }
 
-    .add-to-cart-btn {
-      // Inherits base button styles
-      flex-grow: 1; // Allow button to take space
-      min-width: 150px; // Minimum width
-      padding: var(--spacing-md) var(--spacing-lg); // Larger padding for primary action
-      font-size: 1.1rem;
+    &:hover:not(:disabled) {
+      background-color: var(--product-accent-color-translucent-light);
+      // color: var(--product-accent-color); // Stays product-accent-color
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .product-meta-info {
+    // Shipping/Return info
+    margin-top: var(--spacing-lg); // React: mt-4
+    font-size: 0.875rem; // React: text-sm
+    color: var(--text-color-muted, var(--text-color-light));
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs); // React: space-y-1
+
+    h4 {
+      // Not in React example, but keeping for structure
+      font-weight: var(--font-weight-medium);
+      color: var(--text-color);
+      margin-bottom: var(--spacing-xxs);
+    }
+
+    p {
+      margin-bottom: 0; // Using gap from parent
+      // React example uses emojis 🚚 and ↩️. If we want SVGs, they'd be added in HTML.
     }
   }
 }
 
 .product-lower-sections {
-  margin-top: var(--spacing-xxl);
+  margin-top: var(--spacing-xxl); // React: mt-12
   padding-top: var(--spacing-xl);
   border-top: var(--border-width) solid var(--border-color);
 }
 
 .product-tabs {
   margin-bottom: var(--spacing-xxl);
+  max-width: 1280px; // React: max-w-5xl (1024px for tabs section)
+  margin-left: auto;
+  margin-right: auto;
 
   .tab-headers {
+    // React: TabsList
     display: flex;
-    border-bottom: var(--border-width) solid var(--border-color);
-    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap; // Allow wrapping on small screens
+    gap: var(--spacing-sm); // React: gap-2
+    background-color: var(--neutral-lighter, #f0f0f0); // React: bg-muted
+    border-radius: var(--border-radius-lg, 8px); // React: rounded-lg
+    padding: var(--spacing-xs); // React: p-1
+    margin-bottom: var(--spacing-lg); // React: mb-6
+    border-bottom: none; // Remove original border
 
     .tab-button {
+      // React: TabsTrigger
+      flex: 1; // React: flex-1
+      min-width: 120px; // React: min-w-[120px]
       background-color: transparent;
       border: none;
-      padding: var(--spacing-md) var(--spacing-lg);
+      padding: var(--spacing-sm) var(--spacing-md); // React: default shadcn trigger padding
       cursor: pointer;
-      font-size: 1rem;
-      color: var(--text-color-light);
-      border-bottom: 2px solid transparent;
-      transition: color 0.2s ease, border-bottom-color 0.2s ease;
+      font-size: 1rem; // React: text-base
+      font-weight: var(--font-weight-medium); // React: font-medium
+      color: var(--text-color-muted, var(--text-color-light)); // React: default trigger text color
+      border-radius: var(--border-radius-md, 6px); // React: default trigger rounded
+      transition: color 0.2s ease, background-color 0.2s ease;
+      border-bottom: none; // Remove original border
 
       &:hover {
         color: var(--text-color);
+        // background-color: var(--neutral-light, #e0e0e0); // Subtle hover for non-active
       }
 
       &.active {
-        color: var(--primary-color);
-        border-bottom-color: var(--primary-color);
-        font-weight: var(--font-weight-medium);
+        // React: data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm
+        color: var(--product-accent-color);
+        background-color: var(--card-background-color, white);
+        box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+        font-weight: var(--font-weight-semibold, var(--font-weight-medium));
+        border-bottom-color: var(--product-accent-color);
       }
     }
   }
 
-  .tab-content {
-    padding-top: var(--spacing-md);
+  .tab-content>div {
+    // Direct children of .tab-content (e.g. .product-specs, .product-reviews)
+    // React: bg-card rounded-xl shadow p-6 (for specs)
+    // React: space-y-6 (for reviews, items are cards)
+    background-color: var(--card-background-color, white);
+    border-radius: var(--border-radius-xl, 12px);
+    box-shadow: var(--shadow-base, 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06));
+    padding: var(--spacing-lg); // React: p-6 (1.5rem)
+    // Add transition for tab switch
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+
+  .product-specs {
+    .product-specs-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--spacing-md) var(--spacing-lg);
+
+      @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .spec-item {
+        dt {
+          font-size: 0.875rem;
+          color: var(--text-color-muted, var(--text-color-light));
+          font-weight: var(--font-weight-medium);
+          margin-bottom: var(--spacing-xxs);
+        }
+
+        dd {
+          font-size: 1rem;
+          color: var(--text-color-foreground, var(--text-color));
+          font-weight: var(--font-weight-semibold, var(--font-weight-medium));
+        }
+      }
+    }
   }
 }
 
 .product-reviews {
+  // This class is inside .tab-content > div
+  // The parent .tab-content > div already has card styling.
+  // This class is for the content *within* the reviews tab.
+  // React: space-y-6 for review items
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg); // Replaces space-y-6
+
   .review-item {
-    margin-bottom: var(--spacing-lg);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 1px solid var(--border-color); // Lighter separator
+    // React: bg-card rounded-lg shadow p-5 flex flex-col gap-2
+    // If .tab-content > div is already a card, review-item might not need to be another card,
+    // but can have its own padding and border if separating from other content in the tab.
+    // For now, assuming .tab-content > div is the card, and review-item is just for structure.
+    // If review-item itself should be a card:
+    // background-color: var(--card-background-color-secondary, var(--neutral-lightest));
+    // border-radius: var(--border-radius-lg);
+    // box-shadow: var(--shadow-sm);
+    // padding: var(--spacing-md); // React: p-5 (1.25rem)
+
+    padding-bottom: var(--spacing-lg); // Keep separation
+    border-bottom: 1px solid var(--border-color-light, var(--border-color));
 
     &:last-child {
-      border-bottom: none; // No border for the last review
+      border-bottom: none;
+      padding-bottom: 0;
     }
+
 
     .review-header {
+      // React: flex items-center gap-2
       display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      color: var(--text-color-light);
-      margin-bottom: var(--spacing-xs);
+      align-items: center;
+      gap: var(--spacing-sm); // React: gap-2
+      margin-bottom: var(--spacing-xs); // React: no explicit mb, gap from parent
 
       strong {
-        color: var(--text-color);
+        // React: font-semibold text-foreground text-base
+        font-size: 1rem;
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-color-foreground, var(--text-color));
+      }
+
+      .review-date {
+        // Not in React example, but keeping
+        font-size: 0.875rem;
+        color: var(--text-color-muted, var(--text-color-light));
+      }
+
+      .review-rating {
+        // Moved inside header in React example
+        margin-left: auto; // Push to the right if inside header
+        margin-bottom: 0; // Reset
+        // Stars already styled
       }
     }
 
+    // Rating stars for review item (React: flex items-center gap-0.5 ml-2)
     .review-rating {
-      margin-bottom: var(--spacing-sm);
-      font-size: 1rem;
-      color: var(--text-color-light);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xxs); // React: gap-0.5
+      margin-bottom: var(--spacing-sm); // React: no explicit mb, part of header flow
 
-      .star {
-        color: var(--neutral-dark); // Default star color
-        &.filled {
-          color: var(--warning-color); // Filled star color (e.g., yellow/orange)
-        }
+      .star .rating-star-icon {
+        width: 1rem; // React: h-4 w-4 (16px)
+        height: 1rem;
+        // Colors from SVG source or specific classes if needed
+      }
+
+      span {
+        // Text like "4/5"
+        font-size: 0.875rem;
+        color: var(--text-color-muted);
+        margin-left: var(--spacing-xs);
       }
     }
+
 
     .review-comment {
-      line-height: var(--line-height-base);
-      color: var(--text-color);
+      // React: text-muted-foreground text-base leading-relaxed mt-1
+      font-size: 1rem;
+      color: var(--text-color-muted, var(--text-color-light));
+      line-height: var(--line-height-relaxed, 1.625);
+      margin-top: var(--spacing-xs); // React: mt-1
     }
   }
 
   .write-review-form {
+    // React: no specific container, form elements directly
     margin-top: var(--spacing-xl);
     padding-top: var(--spacing-lg);
     border-top: 1px solid var(--border-color);
 
     h4 {
-      margin-bottom: var(--spacing-md);
+      font-size: 1.25rem;
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-lg); // More space before form groups
     }
 
     .form-group {
-      margin-bottom: var(--spacing-md);
+      margin-bottom: var(--spacing-lg); // More space between form groups
 
       label {
         display: block;
-        margin-bottom: var(--spacing-xs);
+        margin-bottom: var(--spacing-sm); // More space for label
         font-weight: var(--font-weight-medium);
+        font-size: 0.875rem;
       }
 
       input[type="number"],
+      // React: uses custom Input component
       textarea {
         width: 100%;
-        padding: var(--spacing-sm);
-        border: var(--border-width) solid var(--border-color);
-        border-radius: var(--border-radius-sm);
+        padding: var(--spacing-sm) var(--spacing-md);
+        border: 1px solid var(--input-border-color, var(--border-color));
+        border-radius: var(--border-radius-md);
         font-size: 1rem;
+        background-color: var(--input-background-color, white);
+        color: var(--input-text-color, var(--text-color));
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &:focus {
+          outline: none;
+          border-color: var(--product-accent-color);
+          box-shadow: 0 0 0 2px var(--product-accent-color-translucent);
+        }
+      }
+
+      input[type="number"] {
+        // For rating input
+        max-width: 80px; // Limit width for rating
       }
     }
 
     .submit-review-btn {
-      // Inherits base button styles
-      background-color: var(--primary-color);
-      color: white;
-      padding: var(--spacing-md) var(--spacing-lg);
-      border: none;
-      border-radius: var(--border-radius-sm);
-      cursor: pointer;
+      // React: uses custom Button
+      // Similar to .add-to-cart-btn
+      height: 44px; // Slightly smaller than main CTA
       font-size: 1rem;
-      transition: background-color 0.2s ease;
+      font-weight: var(--font-weight-medium);
+      background-color: var(--product-accent-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius-md);
+      padding: 0 var(--spacing-lg);
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
 
-      &:hover {
-        // Use CSS filter for darkening with CSS variables
-        filter: brightness(90%);
+      &:hover:not(:disabled) {
+        background-color: var(--product-accent-color-darker);
+      }
+
+      &:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
       }
     }
 
     .error-message {
       color: var(--danger-color);
       margin-top: var(--spacing-sm);
-      font-size: 0.9rem;
+      font-size: 0.875rem;
     }
   }
 }
 
 
 .related-products-section {
-  margin-top: var(--spacing-xxl); // Space below tabs
+
+  // React: mt-12 (already handled by .product-lower-sections)
   h3 {
-    margin-bottom: var(--spacing-lg);
+    font-size: 1.5rem; // Larger heading
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-lg); // React: mb-6
   }
 
   .related-products-scroll-container {
-    overflow-x: auto; // Enable horizontal scrolling
-    padding-bottom: var(--spacing-md); // Add padding for scrollbar visibility
-    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
-    scrollbar-width: none;  /* Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
+    overflow-x: auto;
+    padding-bottom: var(--spacing-md);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin; // Show a thin scrollbar
+    scrollbar-color: var(--neutral-dark) var(--neutral-light); // Scrollbar colors
 
-    &::-webkit-scrollbar { // Hide scrollbar for aesthetic purposes
-      display: none;
+    &::-webkit-scrollbar {
+      height: 8px; // Make scrollbar visible but subtle
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--neutral-dark);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--neutral-light);
     }
   }
 
   .related-products-list {
-    display: flex; // Arrange items in a row
-    gap: var(--spacing-md); // Space between product cards
-    padding-right: var(--spacing-md); // Ensure last item is not cut off
-    // Use min-content to ensure the flex container is at least the size of its content
-    width: min-content;
+    // React: flex flex-row gap-6 min-w-[320px] pb-2
+    display: flex;
+    gap: var(--spacing-lg); // React: gap-6 (1.5rem)
+    padding-bottom: var(--spacing-sm); // React: pb-2
+    min-width: min-content; // Ensure it scrolls if content overflows
 
-    app-product-card {
-      flex: 0 0 250px; // Prevent cards from shrinking and set fixed width
-      width: 250px; // Redundant but good for clarity
+    app-featured-product-card {
+      flex: 0 0 250px;
+      width: 250px;
+      display: block; // Ensure it behaves as a block for flex sizing
     }
   }
 }
 
-.add-to-wishlist-btn {
-  background-color: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
-
-  &:hover {
-    background-color: var(--primary-color);
-    color: white;
-  }
-}
-
+// add-to-wishlist-btn already styled above in .product-info-section
 
 // Loading state styling
-p {
+:host ::ng-deep>p {
   text-align: center;
   padding: var(--spacing-xl);
   color: var(--text-color-light);

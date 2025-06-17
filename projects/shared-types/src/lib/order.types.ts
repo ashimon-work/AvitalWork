@@ -1,7 +1,9 @@
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'failed';
+
 export interface Order {
   id: string;
   orderNumber: string;
-  status: string;
+  status: OrderStatus;
   totalAmount: number;
   createdAt: string;
   // Add other relevant order properties based on backend API

@@ -1,61 +1,61 @@
 <div class="login-container">
   <div class="login-box">
     <!-- Store management portal logo -->
-    <img src="/assets/images/management-logo.png" alt="Store Management Logo" class="login-logo"> <!-- Placeholder image path -->
+    <img src="/assets/images/management-logo.png" [alt]="tKeys.SM_LOGIN_PAGE_LOGO_ALT | translate" class="login-logo"> <!-- Placeholder image path -->
 
     <!-- Welcome message -->
-    <h2>Welcome Back!</h2>
-    <p>Please login to your store management account.</p>
+    <h2>{{ tKeys.SM_LOGIN_PAGE_WELCOME_TITLE | translate }}</h2>
+    <p>{{ tKeys.SM_LOGIN_PAGE_WELCOME_SUBTITLE | translate }}</p>
 
     <!-- Login form -->
     <form (ngSubmit)="login()" class="login-form">
       <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" class="form-control" placeholder="Enter your email" [(ngModel)]="email" name="email" required>
+        <label for="email">{{ tKeys.SM_LOGIN_PAGE_EMAIL_LABEL | translate }}</label>
+        <input type="email" id="email" class="form-control" [placeholder]="tKeys.SM_LOGIN_PAGE_EMAIL_PLACEHOLDER | translate" [(ngModel)]="email" name="email" required>
       </div>
 
       <div class="form-group password-group">
-        <label for="password">Password</label>
-        <input [type]="passwordVisible ? 'text' : 'password'" id="password" class="form-control" placeholder="Enter your password" [(ngModel)]="password" name="password" required>
-        <button type="button" class="password-toggle-button" (click)="togglePasswordVisibility()">{{ passwordVisible ? 'Hide' : 'Show' }}</button>
+        <label for="password">{{ tKeys.SM_LOGIN_PAGE_PASSWORD_LABEL | translate }}</label>
+        <input [type]="passwordVisible ? 'text' : 'password'" id="password" class="form-control" [placeholder]="tKeys.SM_LOGIN_PAGE_PASSWORD_PLACEHOLDER | translate" [(ngModel)]="password" name="password" required>
+        <button type="button" class="password-toggle-button" (click)="togglePasswordVisibility()">{{ passwordVisible ? (tKeys.SM_LOGIN_PAGE_PASSWORD_HIDE_BUTTON | translate) : (tKeys.SM_LOGIN_PAGE_PASSWORD_SHOW_BUTTON | translate) }}</button>
       </div>
 
       <div class="form-group form-check">
         <input type="checkbox" id="remember" class="form-check-input">
-        <label for="remember" class="form-check-label">Remember this device</label>
+        <label for="remember" class="form-check-label">{{ tKeys.SM_LOGIN_PAGE_REMEMBER_DEVICE_LABEL | translate }}</label>
       </div>
 
-      <button type="submit" class="btn btn-primary login-button">Login</button>
+      <button type="submit" class="btn btn-primary login-button">{{ tKeys.SM_LOGIN_PAGE_LOGIN_BUTTON | translate }}</button>
     </form>
 
     <!-- Forgot Password link -->
     <div class="forgot-password">
-      <a href="#" (click)="openForgotPasswordModal()">Forgot Password?</a>
+      <a href="#" (click)="openForgotPasswordModal()">{{ tKeys.SM_LOGIN_PAGE_FORGOT_PASSWORD_LINK | translate }}</a>
     </div>
 
     <!-- System requirements notice -->
     <div class="system-requirements">
-      <p>Minimum browser requirements: Chrome 80+, Firefox 75+, Safari 13+.</p>
+      <p>{{ tKeys.SM_LOGIN_PAGE_SYSTEM_REQUIREMENTS | translate }}</p>
     </div>
 
     <!-- Support contact information -->
     <div class="support-contact">
-      <p>Need help? Contact support at support&#64;magicstore.com</p>
+      <p>{{ tKeys.SM_LOGIN_PAGE_SUPPORT_CONTACT | translate }}</p>
     </div>
   </div>
 
   <!-- Forgot Password Modal -->
   <div class="modal-overlay" *ngIf="isForgotPasswordModalVisible">
     <div class="modal-content">
-      <h3>Reset Password</h3>
-      <p>Enter your email address to receive a password reset link.</p>
+      <h3>{{ tKeys.SM_LOGIN_PAGE_RESET_PASSWORD_MODAL_TITLE | translate }}</h3>
+      <p>{{ tKeys.SM_LOGIN_PAGE_RESET_PASSWORD_MODAL_PROMPT | translate }}</p>
       <div class="form-group">
-        <label for="resetEmail">Email</label>
+        <label for="resetEmail">{{ tKeys.SM_LOGIN_PAGE_RESET_MODAL_EMAIL_LABEL | translate }}</label>
         <input type="email" id="resetEmail" class="form-control" [(ngModel)]="resetEmail" name="resetEmail" required>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-primary" (click)="submitForgotPassword()">Send Reset Link</button>
-        <button class="btn btn-secondary" (click)="closeForgotPasswordModal()">Cancel</button>
+        <button class="btn btn-primary" (click)="submitForgotPassword()">{{ tKeys.SM_LOGIN_PAGE_RESET_PASSWORD_MODAL_SEND_BUTTON | translate }}</button>
+        <button class="btn btn-secondary" (click)="closeForgotPasswordModal()">{{ tKeys.SM_LOGIN_PAGE_RESET_PASSWORD_MODAL_CANCEL_BUTTON | translate }}</button>
       </div>
     </div>
   </div>

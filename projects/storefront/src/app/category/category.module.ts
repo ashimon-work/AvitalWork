@@ -1,19 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel
+import { FormsModule } from '@angular/forms';
 
 import { CategoryRoutingModule } from './category-routing.module';
 
-import {  } from './category-page/category-page.component'; // Import the component
+import { CategoryPageComponent } from './category-page/category-page.component';
 
-import { ProductCardComponent } from '../shared/components/product-card/product-card.component'; // Import standalone ProductCardComponent
+import { FeaturedProductCardComponent } from '../shared/components/featured-product-card/featured-product-card.component';
+
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
     CategoryRoutingModule,
     FormsModule,
-    ProductCardComponent
+    FeaturedProductCardComponent,
+    CategoryPageComponent
   ]
 })
 export class CategoryModule { }

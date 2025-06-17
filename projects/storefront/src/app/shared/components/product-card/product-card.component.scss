@@ -5,114 +5,130 @@
 }
 
 .product-card {
-  background-color: var(--background-color);
-  border: var(--border-width) solid var(--border-color);
-  border-radius: var(--border-radius-lg);
-  overflow: hidden; // Clip content
   display: flex;
   flex-direction: column;
-  height: 100%; // Make card fill grid cell height if needed
-  transition: var(--transition-base);
-  box-shadow: var(--box-shadow-sm);
-
-  // Approximate size from plan (250x350px) - aspect ratio can help
-  // aspect-ratio: 250 / 350;
-  // Or let the grid define width and control height implicitly or explicitly
-
-  &:hover,
-  &:focus-within { // Highlight when card or interactive elements inside have focus
-    box-shadow: var(--box-shadow-md);
-    transform: translateY(-3px);
-    border-color: var(--neutral-medium);
-  }
-}
-
-.product-link {
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; // Allow link content to take available space above actions
-
-  &:focus {
-    outline: none; // Remove default outline, rely on card focus style
-  }
-}
-
-.product-image-container {
-  position: relative;
-  overflow: hidden;
-  // Define aspect ratio for image area, e.g., square or slightly taller
-  aspect-ratio: 1 / 1;
-  background-color: var(--neutral-lightest); // Placeholder background
-
-  .product-card:hover &,
-  .product-card:focus-within & {
-    // Optional: Add effect on card hover/focus
-  }
-}
-
-.product-image {
-  display: block;
-  width: 100%;
   height: 100%;
-  object-fit: cover; // Or 'contain' if full image visibility is crucial
-  transition: transform 0.3s ease;
-
-  .product-link:hover &,
-  .product-link:focus & {
-     transform: scale(1.05); // Zoom effect on link hover/focus
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.out-of-stock {
+    opacity: 0.6;
+    
+    .product-image {
+      filter: grayscale(50%);
+    }
+  }
+  
+  .product-link {
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    &:hover {
+      text-decoration: none;
+    }
+  }
+  
+  .product-image-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .out-of-stock-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+    }
+  }
+  
+  .product-info {
+    flex: 1;
+    padding: 16px;
+    
+    .product-name {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .product-price {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #2196f3;
+      margin: 0;
+    }
+  }
+  
+  .product-actions {
+    padding: 8px 16px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    
+    .add-to-cart-btn {
+      flex: 1;
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+    
+    .wishlist-btn {
+      flex-shrink: 0;
+    }
   }
 }
 
-.product-info {
-  padding: var(--spacing-md);
-  text-align: center; // Center align text info
-  flex-grow: 1; // Allow info to push actions down
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; // Push price down if space allows
-}
-
-.product-name {
-  font-size: 1.1rem;
-  font-weight: var(--font-weight-medium);
-  color: var(--text-color);
-  margin-bottom: var(--spacing-xs);
-  // Limit lines and add ellipsis for long names
-  display: -webkit-box;
-  -webkit-line-clamp: 2; // Show max 2 lines
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-height: calc(1.3em * 2); // Reserve space for 2 lines
-}
-
-.product-price {
-  font-size: 1.2rem;
-  font-weight: var(--font-weight-bold);
-  color: var(--primary-color); // Highlight price
-  margin-top: auto; // Push price towards the bottom of info section
-  margin-bottom: 0; // Remove default paragraph margin
-}
-
-.product-actions {
-  padding: 0 var(--spacing-md) var(--spacing-md); // Padding around the button area
-  margin-top: var(--spacing-sm); // Space above the button
-}
-
-.add-to-cart-btn {
-  // Inherits base button styles from global styles.scss
-  width: 100%; // Make button full width within actions area
-  font-size: 0.9rem;
-  padding: var(--spacing-sm) var(--spacing-md); // Slightly smaller padding
-
-  // Optional: Style adjustments for secondary action feel
-  // background-color: var(--secondary-color);
-  // border-color: var(--secondary-color);
-  // color: var(--primary-color);
-
-  &:hover, &:focus {
-    // Adjust hover state if needed
+// Responsive design
+@media (max-width: 768px) {
+  .product-card {
+    .product-image-container {
+      height: 180px;
+    }
+    
+    .product-info {
+      padding: 12px;
+      
+      .product-name {
+        font-size: 1rem;
+      }
+      
+      .product-price {
+        font-size: 1.1rem;
+      }
+    }
+    
+    .product-actions {
+      padding: 8px 12px 12px;
+      
+      .add-to-cart-btn {
+        font-size: 0.9rem;
+        
+        mat-icon {
+          margin-right: 4px;
+        }
+      }
+    }
   }
 }

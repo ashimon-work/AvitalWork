@@ -1,6 +1,6 @@
 <div class="image-carousel-container">
   <div class="main-image-container">
-    <img [src]="images[currentImageIndex] || '/assets/images/placeholder.png'" alt="Product Image" class="main-image">
+    <img [src]="images[currentImageIndex] || '/assets/images/placeholder.png'" [alt]="tKeys.SF_CAROUSEL_PRODUCT_IMAGE_ALT | translate" class="main-image">
     <!-- Add zoom functionality later -->
   </div>
 
@@ -8,13 +8,13 @@
     <img
       *ngFor="let image of images; let i = index"
       [src]="image || '/assets/images/placeholder.png'"
-      alt="Product Thumbnail"
+      [alt]="tKeys.SF_CAROUSEL_PRODUCT_THUMBNAIL_ALT | translate"
       [class.active]="i === currentImageIndex"
       (click)="selectImage(i)"
       class="thumbnail">
   </div>
 
   <!-- Navigation buttons (optional, can use swipe gestures later) -->
-  <button class="prev-button" (click)="prevImage()" [disabled]="images.length <= 1">Prev</button>
-  <button class="next-button" (click)="nextImage()" [disabled]="images.length <= 1">Next</button>
+  <button class="prev-button" (click)="prevImage()" [disabled]="images.length <= 1">{{ tKeys.SF_CAROUSEL_PREV_BUTTON | translate }}</button>
+  <button class="next-button" (click)="nextImage()" [disabled]="images.length <= 1">{{ tKeys.SF_CAROUSEL_NEXT_BUTTON | translate }}</button>
 </div>

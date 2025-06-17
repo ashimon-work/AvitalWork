@@ -28,7 +28,7 @@
 *   [x] Checkout Flow Implementation - Component implemented with multi-step UI, form validations (including Luhn), API integrations for shipping methods, tax estimation, and order placement.
 *   [x] Order Confirmation Page - Component implemented, fetches and displays order details and recommended products.
 *   [x] Authentication (Login, Registration, Recovery) - Registration page (frontend/backend) functional. Login page (frontend/backend) functional, including JWT handling (secret/expiration config fixed), profile loading, and store-specific routing/guard fixes. Recovery pending.
-*   [x] User Account Pages (Overview, Orders, Addresses, Wishlist, Personal Info, Password Change, Payment Methods) - All sections implemented with frontend and backend logic. Includes add/edit/delete for payment methods, order detail view, and full overview data. Newsletter subscription in footer implemented.
+*   [x] User Account Pages (Overview, Orders, Addresses, Wishlist, Personal Info, Password Change, Payment Methods) - All sections implemented with frontend and backend logic. Includes add/edit/delete for payment methods, order detail view, and full overview data. Newsletter subscription in footer implemented. Wishlist page internationalized.
 *   [x] Contact Page - Frontend implemented with form, FAQ display, and API integration. Backend saves submissions.
 *   [x] About Page - Frontend implemented, displays dynamic content (about, testimonials) from API.
 *   [x] 404 Page - Product search suggestions and frontend logging implemented.

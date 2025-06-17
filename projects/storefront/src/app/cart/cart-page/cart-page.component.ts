@@ -6,9 +6,13 @@ import { Observable, firstValueFrom, take, of, switchMap, map } from 'rxjs'; // 
 import { CartService, CartState, CartItem } from '../../core/services/cart.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { ApiService } from '../../core/services/api.service';
-import { RecentlyViewedService } from '../../core/services/recently-viewed.service'; // Added import
+import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
 import { Product } from '@shared-types';
-import { ProductCardComponent } from '../../shared/components/product-card/product-card.component'; // Added import
+import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component'; // Changed import
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
+import { NotificationService } from '../../core/services/notification.service';
+import { I18nService } from '@shared/i18n';
 
 @Component({
   selector: 'app-cart-page',
@@ -17,7 +21,8 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
     CommonModule,
     RouterModule,
     FormsModule,
-    ProductCardComponent // Added to imports
+    FeaturedProductCardComponent,
+    TranslatePipe
   ],
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss'
@@ -29,7 +34,10 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
   private router = inject(Router);
   private apiService = inject(ApiService);
   private recentlyViewedService = inject(RecentlyViewedService); // Added injection
+  private notificationService = inject(NotificationService); // Added
+  private i18nService = inject(I18nService); // Added
 
+  public tKeys = T;
   promoCode: string = '';
   appliedPromoCodeDetails: { code: string, discountAmount: number, message?: string } | null = null;
 
@@ -93,6 +101,25 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
        });
     } else {
       console.error('Cannot update quantity, product ID missing from item:', item);
+    }
+  }
+
+  incrementQuantity(item: CartItem): void {
+    if (item.product?.stockLevel && item.quantity < item.product.stockLevel) {
+      this.updateQuantity(item, (item.quantity + 1).toString());
+    }
+  }
+
+  decrementQuantity(item: CartItem): void {
+    if (item.quantity > 1) {
+      this.updateQuantity(item, (item.quantity - 1).toString());
+    } else if (item.quantity === 1) {
+      // Optionally, confirm before removing or just remove
+      // For now, let updateQuantity handle newQuantity === 0 logic if needed,
+      // or call removeItem directly if that's the desired UX for decrementing from 1.
+      // this.removeItem(item);
+      // Or, to prevent going to 0 via button, ensure updateQuantity handles it or do nothing.
+      // For now, this button won't go below 1 due to HTML [disabled] and this check.
     }
   }
 
@@ -182,5 +209,32 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
   // Method to navigate back
   goBack(): void {
     this.location.back();
+  }
+
+  onAddToCartFromRecentlyViewed(product: Product): void {
+    if (!product || !product.id) {
+      console.error('Invalid product data received from recently viewed:', product);
+      this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
+      return;
+    }
+
+    this.cartService.addItem(product).subscribe({
+      next: () => {
+        this.notificationService.showSuccess(
+          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, 1, product.name) // Assuming quantity 1
+        );
+      },
+      error: (error: any) => {
+        console.error('Error adding product to cart from recently viewed:', error);
+        this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
+      }
+    });
+  }
+
+  navigateToRecentlyViewedAll(): void {
+    // Placeholder for navigation logic
+    console.log('Navigate to all recently viewed products page - TBD');
+    // Example: this.router.navigate(['/', storeSlug, 'products', 'recently-viewed']);
+    // This would require a new route and component.
   }
 }

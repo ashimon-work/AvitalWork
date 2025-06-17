@@ -28,6 +28,9 @@ export class CategoryEntity { // Remove implements
   @Column({ nullable: true })
   imageUrl?: string;
 
+  @Column({ default: false })
+  isFeaturedInMarketplace: boolean;
+
   @ManyToOne(() => StoreEntity, (store) => store.categories, {
     nullable: false,
     onDelete: 'CASCADE',

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, ILike } from 'typeorm';
+import { Repository, FindOptionsWhere, ILike, FindManyOptions } from 'typeorm';
 import { StoreEntity } from './entities/store.entity';
 import { AboutContentEntity } from './entities/about-content.entity';
 import { TestimonialEntity } from './entities/testimonial.entity';
@@ -14,7 +14,11 @@ export class StoresService {
     private readonly aboutContentRepository: Repository<AboutContentEntity>,
     @InjectRepository(TestimonialEntity)
     private readonly testimonialRepository: Repository<TestimonialEntity>,
-  ) {}
+  ) { }
+
+  async findAll(options?: FindManyOptions<StoreEntity>): Promise<StoreEntity[]> {
+    return this.storesRepository.find(options);
+  }
 
   async searchStores(query: string, limit: number = 10): Promise<StoreEntity[]> {
     const where: FindOptionsWhere<StoreEntity> = {
@@ -28,6 +32,14 @@ export class StoresService {
       select: ['id', 'name', 'slug', 'description'],
       order: { name: 'ASC' },
     });
+  }
+
+  async findAllStores(): Promise<StoreEntity[]> {
+    return this.storesRepository.find();
+  }
+
+  async findStoreById(id: string): Promise<StoreEntity | null> {
+    return this.storesRepository.findOne({ where: { id } });
   }
 
   async findBySlug(slug: string): Promise<StoreEntity | null> {

@@ -3,15 +3,17 @@ import { ProfileService } from '../services/profile.service';
 import { catchError, finalize, of } from 'rxjs';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+import { T, TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, JsonPipe], // Add FormsModule and JsonPipe
+  imports: [CommonModule, FormsModule, JsonPipe, TranslatePipe], // Add FormsModule, JsonPipe and TranslatePipe
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.scss'
 })
 export class ProfilePageComponent implements OnInit {
+  public tKeys = T;
 
   managerProfile: any;
   editableProfile: any;

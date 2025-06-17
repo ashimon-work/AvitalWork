@@ -17,7 +17,7 @@ export enum OrderStatus {
   PENDING = 'pending',
   PROCESSING = 'processing',
   SHIPPED = 'shipped',
-  COMPLETED = 'completed',
+  DELIVERED = 'delivered',
   CANCELLED = 'cancelled',
   FAILED = 'failed', // Added for payment failures etc.
 }
@@ -25,6 +25,7 @@ export enum OrderStatus {
 export enum PaymentStatus {
   PENDING = 'pending',
   PAID = 'paid',
+  COMPLETED = 'completed',
   FAILED = 'failed',
   REFUNDED = 'refunded',
 }
@@ -126,6 +127,12 @@ export class OrderEntity {
     default: PaymentStatus.PENDING,
   })
   paymentStatus: PaymentStatus;
+
+  @Column({ length: 100, nullable: true, comment: 'Tranzila transaction/confirmation ID' })
+  tranzilaTransactionId?: string;
+
+  @Column({ type: 'text', nullable: true, comment: 'Payment error message if payment failed' })
+  paymentErrorMessage?: string;
 
   @Column({ length: 100, nullable: true })
   trackingNumber?: string;

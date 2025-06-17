@@ -1,146 +1,235 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core'; // Added OnDestroy, ViewChild, ElementRef
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel
-import { Router, RouterLink } from '@angular/router'; // Import Router and RouterLink
-import { ApiService } from '../../services/api.service'; // Import ApiService
-import { StoreContextService } from '../../services/store-context.service'; // Import StoreContextService
-import { Product } from '@shared-types';
-import { Subject, Observable, of, combineLatest, withLatestFrom } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { StoreContextService } from '../../services/store-context.service';
+import { Product, Store } from '@shared-types'; // Added Store type
+import { Subject, Observable, of, Subscription, fromEvent, firstValueFrom } from 'rxjs'; // Added Subscription, fromEvent, firstValueFrom
 import {
-  debounceTime, distinctUntilChanged, switchMap, catchError, tap, filter, map // Import map
-} from 'rxjs/operators';
+  debounceTime, distinctUntilChanged, switchMap, catchError, tap, filter, map, takeUntil, withLatestFrom
+} from 'rxjs/operators'; // Added takeUntil and withLatestFrom
+import { MatIconModule } from '@angular/material/icon'; // Import MatIconModule
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
+
+// Define a type for combined search results
+export type SearchResultItem = (Product & { resultType: 'product' }) | (Store & { resultType: 'store' });
 
 @Component({
   selector: 'app-search-bar',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, // Add FormsModule
-    RouterLink   // Add RouterLink
+    FormsModule,
+    TranslatePipe,
+    MatIconModule // Add MatIconModule here
   ],
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.scss'
 })
-export class SearchBarComponent implements OnInit {
+export class SearchBarComponent implements OnInit, OnDestroy {
+  public tKeys = T;
   searchQuery: string = '';
-  // Can hold either Product[] or StoreEntity[] (or a common suggestion type)
-  searchResults$: Observable<any[]> = of([]);
-  showSuggestions: boolean = false;
-  currentStoreSlug$: Observable<string | null>; // Add slug observable
+  showSuggestions = false;
+  activeSuggestionIndex = -1;
+  currentSearchSuggestions: SearchResultItem[] = []; // Use the new combined type
 
   private searchTerms = new Subject<string>();
+  private destroy$ = new Subject<void>();
+  private subscriptions = new Subscription();
+  public searchInputFocused = false; // Made public
+
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>; // Uncommented and will use #searchInput in template
 
   constructor(
     private apiService: ApiService,
     private router: Router,
-    private storeContext: StoreContextService
-  ) {
-    this.currentStoreSlug$ = this.storeContext.currentStoreSlug$; // Initialize slug observable
-  }
-
-  // Push a search term into the observable stream.
-  search(term: string): void {
-    console.log(`[SearchBar] search() called with term: "${term}"`); // Log input event
-    // Only search if term is long enough (as per plan)
-    if (term.length >= 3) {
-      console.log(`[SearchBar] Term "${term}" is >= 3 chars, pushing to searchTerms.`); // Log term push
-      this.searchTerms.next(term);
-      this.showSuggestions = true;
-    } else {
-      // Ensure we are NOT reassigning searchResults$ here.
-      // Rely on showSuggestions to hide the list.
-      this.showSuggestions = false;
-    }
-  }
+    private storeContext: StoreContextService,
+    private elementRef: ElementRef // Injected ElementRef
+  ) {}
 
   ngOnInit(): void {
-    console.log('[SearchBar] ngOnInit: Setting up searchResults$ pipe.'); // Log ngOnInit execution
-    this.searchResults$ = this.searchTerms.pipe(
+    const searchResults$: Observable<SearchResultItem[]> = this.searchTerms.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      // Combine with the latest store slug to decide which API to call
       withLatestFrom(this.storeContext.currentStoreSlug$),
-      switchMap(([term, slug]) => {
-        if (slug) {
-          // Store context exists: Search for products within the store
-          console.log(`[SearchBar] Pipe: switchMap: Searching PRODUCTS for term "${term}" in store "${slug}"`);
+      switchMap(([term, storeSlug]) => {
+        if (!term || term.length < 3) {
+          return of([]);
+        }
+        if (storeSlug) {
           return this.apiService.getSearchSuggestions(term).pipe(
-            // Add a flag or transform results if needed to distinguish them in the template
-            map(results => results.map(r => ({ ...r, resultType: 'product' })))
+            map(products => products.map(p => ({ ...p, resultType: 'product' } as SearchResultItem))),
+            catchError(error => {
+              console.error('[SearchBar] Error fetching product suggestions:', error);
+              return of([]);
+            })
           );
         } else {
-          // No store context: Search for stores globally
-          console.log(`[SearchBar] Pipe: switchMap: Searching STORES for term "${term}"`);
-          return this.apiService.searchStores(term).pipe(
-             // Add a flag or transform results
-            map(results => results.map(r => ({ ...r, resultType: 'store' })))
-          );
+          // If no store slug, perhaps we search globally for stores or offer a different experience.
+          // For now, let's assume product search is primary if store context exists.
+          // Or, call apiService.searchStores(term) if that's the desired fallback.
+          // This part matches the original SearchBarComponent's logic for store search.
+           return this.apiService.searchStores(term).pipe(
+             map(stores => stores.map(s => ({ ...s, resultType: 'store' } as SearchResultItem))),
+             catchError(error => {
+               console.error('[SearchBar] Error fetching store suggestions:', error);
+               return of([]);
+             })
+           );
         }
       }),
-      // Handle errors from either API call
-      catchError(error => {
-        console.error('[SearchBar] Pipe: Search API error:', error.message || error);
-        this.showSuggestions = false;
-        return of([]); // Return empty array on error
+      takeUntil(this.destroy$)
+    );
+
+    this.subscriptions.add(
+      searchResults$.subscribe(suggestions => {
+        this.currentSearchSuggestions = suggestions;
+        this.showSuggestions = this.searchInputFocused && suggestions.length > 0 && this.searchQuery.length >=3;
+        this.activeSuggestionIndex = -1;
       })
     );
-  }
 
-  // Method to hide suggestions when input loses focus (with a small delay)
-  hideSuggestions(): void {
-    // Use setTimeout to allow clicking on a suggestion link before hiding
-    setTimeout(() => {
+    // Click outside logic
+    fromEvent(document, 'click').pipe(
+      filter(event => {
+        if (!this.showSuggestions) return false;
+        const clickedElement = event.target as HTMLElement;
+        // Check if the click is outside the search-bar component itself
+        return !this.elementRef.nativeElement.contains(clickedElement);
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
       this.showSuggestions = false;
-    }, 200); // Adjust delay as needed
+      this.activeSuggestionIndex = -1;
+    });
   }
 
-  // Method to handle selecting any suggestion (product or store)
-  selectSuggestion(suggestion: any): void {
-    console.log('Selected suggestion:', suggestion);
-    if (suggestion.resultType === 'product') {
-      const currentSlug = this.storeContext.getCurrentStoreSlug();
-      if (currentSlug && suggestion.id) {
-        this.router.navigate(['/', currentSlug, 'product', suggestion.id]);
-      } else {
-        console.error('Cannot navigate to product suggestion, missing slug or product ID');
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  onSearchQueryChanged(query: string): void {
+    this.searchQuery = query; // Keep searchQuery bound for the input field
+    const trimmedQuery = query.trim();
+    this.searchTerms.next(trimmedQuery);
+
+    if (trimmedQuery.length < 3) {
+      this.showSuggestions = false;
+      this.currentSearchSuggestions = []; // Clear suggestions immediately
+    } else if (this.searchInputFocused) {
+        // If query is long enough and input is focused, intent is to show.
+        // Actual display depends on currentSearchSuggestions having items.
+        this.showSuggestions = true;
+    }
+     this.activeSuggestionIndex = -1;
+  }
+  
+  onSearchFocus(): void {
+    this.searchInputFocused = true;
+    if (this.searchQuery.trim().length >= 3 && this.currentSearchSuggestions.length > 0) {
+      this.showSuggestions = true;
+    }
+  }
+
+  // hideSuggestions on blur is tricky with click selection. Click-outside is better.
+  // public hideSuggestions(): void {
+  //   this.searchInputFocused = false;
+  //   setTimeout(() => {
+  //     if (!this.searchInputFocused) { // Check if focus hasn't returned (e.g., by clicking a suggestion)
+  //        this.showSuggestions = false;
+  //     }
+  //   }, 150);
+  // }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.searchTerms.next(''); // Clear the stream
+    this.showSuggestions = false;
+    this.activeSuggestionIndex = -1;
+    this.currentSearchSuggestions = [];
+    // Optionally re-focus input:
+    this.searchInput?.nativeElement.focus(); // Use ViewChild reference
+  }
+
+  handleKeyDown(event: KeyboardEvent): void {
+    if (!this.showSuggestions || this.currentSearchSuggestions.length === 0) {
+      if (event.key === 'Enter' && this.searchQuery.trim().length > 0) {
+        event.preventDefault();
+        this.submitSearch(); // Use existing submitSearch
       }
-    } else if (suggestion.resultType === 'store') {
-      if (suggestion.slug) {
-        this.router.navigate(['/', suggestion.slug]); // Navigate to store root
-      } else {
-         console.error('Cannot navigate to store suggestion, missing store slug');
-      }
-    } else {
-       console.error('Unknown suggestion type selected:', suggestion);
+      return;
     }
 
-    this.searchQuery = ''; // Clear search bar
-    this.showSuggestions = false; // Hide suggestions after selection
+    const suggestionsCount = this.currentSearchSuggestions.length;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.activeSuggestionIndex = (this.activeSuggestionIndex + 1) % suggestionsCount;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.activeSuggestionIndex = (this.activeSuggestionIndex - 1 + suggestionsCount) % suggestionsCount;
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      if (this.activeSuggestionIndex > -1 && this.activeSuggestionIndex < suggestionsCount) {
+        this.selectSuggestion(this.currentSearchSuggestions[this.activeSuggestionIndex]);
+      } else {
+        this.submitSearch();
+      }
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.showSuggestions = false;
+      this.activeSuggestionIndex = -1;
+    }
   }
 
-  // Method to handle submitting the full search query
-  // Decide whether to search products or stores based on context
-  submitSearch(): void {
+  // selectSuggestion now takes SearchResultItem
+  async selectSuggestion(suggestion: SearchResultItem): Promise<void> {
+    this.searchQuery = suggestion.name; // Assuming 'name' is common or handle specific properties
+    this.showSuggestions = false;
+    this.activeSuggestionIndex = -1;
+    
+    const storeSlug = await firstValueFrom(this.storeContext.currentStoreSlug$);
+
+    if (suggestion.resultType === 'product') {
+      if (storeSlug && suggestion.name) { // Check for name to slugify
+         // Products are identified by ID (UUID) in the backend, but routes use slugs.
+         // We will generate a slug from the product name for navigation.
+        const productSlug = this.slugify(suggestion.name);
+        this.router.navigate(['/', storeSlug, 'product', productSlug]);
+      } else {
+        console.error('Cannot navigate to product suggestion, missing store slug or product name for slug generation.');
+      }
+    } else if (suggestion.resultType === 'store' && suggestion.slug) {
+      this.router.navigate(['/', suggestion.slug]);
+    } else {
+      console.error('Unknown or incomplete suggestion type selected:', suggestion);
+    }
+  }
+  
+  private slugify(text: string): string {
+    return text.toString().toLowerCase().trim()
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(/[^\w-]+/g, '') // Remove all non-word chars
+      .replace(/--+/g, '-'); // Replace multiple - with single -
+  }
+
+  async submitSearch(): Promise<void> {
     const term = this.searchQuery.trim();
     if (!term) return;
 
-    const currentSlug = this.storeContext.getCurrentStoreSlug();
-    console.log(`Submitting search for "${term}" with slug: ${currentSlug}`);
+    this.showSuggestions = false;
+    const storeSlug = await firstValueFrom(this.storeContext.currentStoreSlug$);
 
-    if (currentSlug) {
-      // Navigate to product search results page within the store
-      this.router.navigate(['/', currentSlug, 'search'], { queryParams: { q: term } });
-      // TODO: Implement Product Search Results Page at '/:storeSlug/search' route
+    if (storeSlug) {
+      this.router.navigate(['/', storeSlug, 'search'], { queryParams: { q: term } });
     } else {
-      // Navigate to a global store search results page (or handle differently)
-      // For now, let's just log it, as a dedicated page might be needed
-      console.log('TODO: Implement global store search results page/handling for term:', term);
-      // Alternatively, could perform the store search here and display results inline,
-      // similar to the 404 page, but that might clutter the header.
-      // Let's stick to navigation for now, assuming a results page will exist.
-      // this.router.navigate(['/stores/search'], { queryParams: { q: term } }); // Example route
+      // For global search, redirect to a generic search page or handle as needed
+      this.router.navigate(['/search'], { queryParams: { q: term, global: 'true' } });
+      console.log('Performing global search for (stores or all products):', term);
     }
-    this.showSuggestions = false; // Hide suggestions after submitting
   }
 }
-

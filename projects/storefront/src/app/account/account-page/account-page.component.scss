@@ -5,70 +5,193 @@
 $mobile-breakpoint: 768px;
 
 :host {
-  display: block; // Ensure the host element takes up space
-  padding: variables.$spacing-lg variables.$container-padding-x; // Use SCSS vars
+  display: block;
+  min-height: 100vh;
+  background-color: #f8fafc;
 }
 
 .account-container {
+  min-height: 100vh;
+}
+
+.account-layout {
   display: flex;
-  gap: variables.$spacing-xl; // Use SCSS var
-  max-width: variables.$container-max-width; // Use SCSS var
-  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.desktop-sidebar {
+  width: 280px;
+  min-height: 100vh;
+  border-right: 1px solid variables.$border-color;
+  background-color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
 }
 
 .account-sidebar {
-  flex: 0 0 250px; // Fixed width for sidebar (adjust as needed)
-  border-right: 1px solid variables.$border-color; // Use SCSS var
-  padding-right: variables.$spacing-xl; // Use SCSS var
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
 
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: variables.$spacing-lg; // Use SCSS var
-    color: variables.$text-color; // Use SCSS var
+  // Header Section
+  .sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid variables.$border-color;
+
+    h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: variables.$text-color;
+    }
+
+    .sidebar-description {
+      font-size: 0.875rem;
+      color: variables.$text-muted;
+      margin: 0;
+    }
   }
 
+  // Navigation Section
   .account-nav {
+    flex: 1;
+    padding: 1rem;
+
     ul {
       list-style: none;
       padding: 0;
       margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
 
       li {
-        margin-bottom: variables.$spacing-sm; // Use SCSS var
+        margin: 0;
 
-        a {
-          display: block;
-          padding: variables.$spacing-sm variables.$spacing-md; // Use SCSS vars
-          color: variables.$text-color; // Use SCSS var
+        .nav-item {
+          display: flex;
+          align-items: center;
+          padding: 0.75rem 1rem;
+          color: variables.$text-color;
           text-decoration: none;
-          border-radius: variables.$border-radius-sm; // Use SCSS var
-          transition: background-color 0.2s ease, color 0.2s ease;
+          border-radius: 6px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          height: 48px;
+          position: relative;
 
-          &:hover {
-            background-color: variables.$neutral-light; // Use SCSS var
-            color: variables.$primary-color; // Use SCSS var
+          .nav-icon {
+            margin-right: 0.75rem;
+            width: 20px;
+            height: 20px;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+            vertical-align: middle;
+            flex-shrink: 0;
           }
 
-          &.active-link { // Style for the active route
-            background-color: variables.$primary-color-light; // Use SCSS var
-            color: variables.$primary-color; // Use SCSS var
-            font-weight: variables.$font-weight-medium; // Use SCSS var
+          .nav-label {
+            flex: 1;
+          }
+
+          &:hover {
+            background-color: rgba(variables.$primary-color, 0.1);
+            color: variables.$primary-color;
+
+            .nav-icon {
+              opacity: 1;
+            }
+          }
+
+          &.active-link {
+            background-color: rgba(variables.$primary-color, 0.1);
+            color: variables.$primary-color;
+            border-right: 2px solid variables.$primary-color;
+            font-weight: 600;
+
+            .nav-icon {
+              opacity: 1;
+            }
+
+            &::after {
+              content: '';
+              position: absolute;
+              right: 0.5rem;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 4px;
+              height: 24px;
+              background: variables.$primary-color;
+              border-radius: 2px;
+            }
           }
         }
       }
     }
   }
 
-  .logout-btn {
-    margin-top: variables.$spacing-xl; // Use SCSS var
-    width: 100%;
-    // Inherit button styles or add specific ones
+  // Footer Section
+  .sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid variables.$border-color;
+
+    mat-divider {
+      margin-bottom: 1rem;
+    }
+
+    .logout-btn {
+      width: 100%;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0.75rem 1rem;
+      border: 1px solid variables.$border-color;
+      border-radius: 6px;
+      background: transparent;
+      color: variables.$text-color;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      .logout-icon {
+        margin-right: 0.75rem;
+        width: 20px;
+        height: 20px;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+        vertical-align: middle;
+        flex-shrink: 0;
+      }
+
+      &:hover {
+        background-color: rgba(#ef4444, 0.1); // Red hover
+        color: #ef4444;
+        border-color: rgba(#ef4444, 0.2);
+
+        .logout-icon {
+          opacity: 1;
+        }
+      }
+    }
   }
 }
 
-.account-content {
-  flex: 1; // Takes up remaining space
-  padding: variables.$spacing-sm 0 variables.$spacing-sm variables.$spacing-md; // Use SCSS vars
+.main-content {
+  flex: 1;
+  min-height: 100vh;
+}
+
+.stats-section {
+  border-bottom: 1px solid variables.$border-color;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 1.5rem;
+}
+
+.content-section {
+  padding: 2rem;
 }
 
 // --- Mobile Menu Styles ---
@@ -121,10 +244,10 @@ $mobile-breakpoint: 768px;
 }
 
 .sidebar-wrapper {
-  // No special styles needed on desktop by default
-  // The .account-sidebar inside handles desktop layout
+  width: 100%;
+  height: 100vh;
+  padding: 1rem;
 }
-
 
 // Media Query for Mobile Screens
 @media (max-width: $mobile-breakpoint) {
@@ -132,9 +255,12 @@ $mobile-breakpoint: 768px;
     display: block; // Show the hamburger button
   }
 
-  .account-container {
-    flex-direction: column; // Stack content below sidebar area (conceptually)
-    gap: 0; // Remove gap on mobile if sidebar is overlaying
+  .account-layout {
+    flex-direction: column;
+  }
+
+  .desktop-sidebar {
+    display: none; // Hide desktop sidebar on mobile
   }
 
   .sidebar-wrapper {
@@ -156,30 +282,38 @@ $mobile-breakpoint: 768px;
   }
 
   .account-sidebar {
-    flex: none; // Remove flex sizing
-    width: 100%; // Take full width of the wrapper
-    border-right: none; // Remove border on mobile
-    padding: variables.$spacing-xl variables.$spacing-lg; // Adjust padding for mobile view
+    box-shadow: none; // Remove shadow on mobile since wrapper has it
+    border-radius: 0; // Remove border radius on mobile
     height: 100%; // Ensure it fills the wrapper
-    display: flex;
-    flex-direction: column; // Stack items vertically
 
-    h2 {
-      margin-top: variables.$spacing-lg; // Add some top margin
+    .sidebar-header {
+      padding: 1.5rem 1.5rem 1rem;
+      
+      h2 {
+        margin-top: 0.5rem; // Add some top margin
+      }
     }
 
     .account-nav {
       flex-grow: 1; // Allow nav to take available space
+      padding: 0.5rem 1rem;
     }
 
-    .logout-btn {
-      margin-top: auto; // Push logout button to the bottom
-      margin-bottom: variables.$spacing-lg;
+    .sidebar-footer {
+      margin-top: auto; // Push footer to the bottom
+      padding: 1rem 1.5rem 1.5rem;
     }
   }
 
-  .account-content {
-    padding: variables.$spacing-lg; // Adjust padding for mobile
-    width: 100%; // Ensure content takes full width
+  .main-content {
+    width: 100%;
+  }
+
+  .stats-section {
+    padding: 1rem;
+  }
+
+  .content-section {
+    padding: 1rem;
   }
 }

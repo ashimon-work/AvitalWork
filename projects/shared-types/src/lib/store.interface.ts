@@ -10,6 +10,7 @@ export interface Store {
   name: string;
   slug: string;
   description?: string;
+  logoUrl?: string;
   // products?: Product[]; // Typically not included directly in every Store fetch for performance
   // categories?: Category[]; // Same as above
   // carouselItems?: any[]; // Define CarouselItem interface if needed

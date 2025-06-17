@@ -2,24 +2,32 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { ApiService, UpdateUserInfoDto } from '../../core/services/api.service';
-import { AuthService } from '../../core/services/auth.service'; // To get initial data potentially
+import { AuthService } from '../../core/services/auth.service';
 import { tap, first } from 'rxjs';
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-account-personal-info',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, MatCardModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatDividerModule],
   templateUrl: './account-personal-info.component.html',
-  styleUrls: ['./account-personal-info.component.scss'] // Corrected property name
+  styleUrls: ['./account-personal-info.component.scss']
 })
 export class AccountPersonalInfoComponent implements OnInit {
   private apiService = inject(ApiService);
-  private authService = inject(AuthService); // Inject AuthService
+  private authService = inject(AuthService);
   private fb = inject(FormBuilder);
 
+  public tKeys = T;
   personalInfoForm: FormGroup;
   isLoading = false;
-  isFetching = false; // Separate flag for initial load
+  isFetching = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
@@ -59,12 +67,12 @@ export class AccountPersonalInfoComponent implements OnInit {
             if (profile) {
               this.personalInfoForm.patchValue(profile);
             } else {
-              this.errorMessage = 'Could not load profile data.';
+              this.errorMessage = this.tKeys.SF_ACCOUNT_PERSONAL_INFO_LOAD_ERROR;
             }
             this.isFetching = false;
           },
           error: (err) => {
-            this.errorMessage = 'Error loading profile data.';
+            this.errorMessage = this.tKeys.SF_ACCOUNT_PERSONAL_INFO_LOAD_ERROR;
             console.error('Error fetching profile:', err);
             this.isFetching = false;
           }
@@ -78,7 +86,7 @@ export class AccountPersonalInfoComponent implements OnInit {
     this.successMessage = null;
 
     if (this.personalInfoForm.invalid) {
-      this.errorMessage = 'Please fill in all required fields correctly.';
+      this.errorMessage = this.tKeys.SF_ACCOUNT_PERSONAL_INFO_FORM_INVALID_MESSAGE;
       this.personalInfoForm.markAllAsTouched();
       return;
     }
@@ -93,14 +101,14 @@ export class AccountPersonalInfoComponent implements OnInit {
     this.apiService.updateUserPersonalInfo(formData).subscribe({
       next: (updatedUser) => {
         this.isLoading = false;
-        this.successMessage = 'Personal information updated successfully.';
+        this.successMessage = this.tKeys.SF_ACCOUNT_PERSONAL_INFO_UPDATE_SUCCESS;
         // Optionally update AuthService state if necessary
         this.authService.updateCurrentUserState(updatedUser); // Assuming AuthService has such a method
         this.personalInfoForm.markAsPristine(); // Mark form as unchanged
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Failed to update personal information.';
+        this.errorMessage = err.error?.message || this.tKeys.SF_ACCOUNT_PERSONAL_INFO_UPDATE_FAILED;
         console.error('Error updating personal info:', err);
       }
     });

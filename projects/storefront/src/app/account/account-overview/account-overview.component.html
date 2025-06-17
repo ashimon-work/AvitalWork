@@ -1,92 +1,133 @@
-<div class="account-overview-container">
-  <h2 class="page-title">Account Overview</h2>
-
+<section class="overview-section" [attr.aria-label]="'Account overview'">
   <div *ngIf="isLoading" class="loading-indicator">
-    <p>Loading account details...</p>
-    <!-- You can add a spinner or more elaborate loading animation here -->
+    <p>{{ tKeys.SF_ACCOUNT_OVERVIEW_LOADING | translate }}</p>
   </div>
 
-  <div *ngIf="accountOverview$ | async as overview; else noOverviewData">
-    <div class="welcome-message" *ngIf="overview.profile">
-      <h3>Welcome back, {{ overview.profile.firstName }}!</h3>
-    </div>
+  <div *ngIf="accountOverview$ | async as overview; else noOverviewData" class="overview-content">
+    <!-- Welcome Header -->
+    <header class="welcome-header">
+      <h1 class="welcome-title" *ngIf="overview.profile">
+        Welcome back, {{ overview.profile.firstName }}!
+      </h1>
+      <p class="welcome-subtitle">
+        Here's an overview of your account activity
+      </p>
+    </header>
 
-    <!-- Profile Completeness -->
-    <div class="overview-section profile-completeness-section card">
-      <div class="card-header">
-        <h4>Profile Completeness</h4>
-      </div>
-      <div class="card-body">
-        <p>Your profile is {{ profileCompleteness }}% complete.</p>
-        <div class="progress-bar-container">
-          <div class="progress-bar" [style.width.%]="profileCompleteness">
-            {{ profileCompleteness }}%
-          </div>
-        </div>
-        <a routerLink="../personal-info" class="btn btn-sm btn-outline-primary mt-2">Complete Your Profile</a>
-      </div>
-    </div>
+    <div class="content-grid">
+      <!-- Recent Orders - Takes 2 columns on large screens -->
+      <div class="orders-section">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title class="card-title-with-icon">
+              <img src="assets/icons/check-circle.svg" alt="" class="title-icon">
+              {{ tKeys.SF_ACCOUNT_OVERVIEW_RECENT_ORDERS_TITLE | translate }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="table-container" *ngIf="overview.recentOrders && overview.recentOrders.length > 0; else noRecentOrders">
+              <table mat-table [dataSource]="overview.recentOrders" class="orders-table">
+                <!-- Order Number Column -->
+                <ng-container matColumnDef="orderNumber">
+                  <th mat-header-cell *matHeaderCellDef>Order #</th>
+                  <td mat-cell *matCellDef="let order" class="order-number">{{ order.orderReference }}</td>
+                </ng-container>
 
-    <!-- Recent Orders -->
-    <div class="overview-section recent-orders-section card">
-      <div class="card-header">
-        <h4>Recent Orders</h4>
-        <a routerLink="../orders" class="btn btn-sm btn-link">View All Orders</a>
-      </div>
-      <div class="card-body">
-        <ul *ngIf="overview.recentOrders && overview.recentOrders.length > 0; else noRecentOrders" class="list-group list-group-flush">
-          <li *ngFor="let order of overview.recentOrders" class="list-group-item">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                Order #{{ order.orderNumber }} - {{ order.orderDate | date:'mediumDate' }}
-                <span class="badge" [ngClass]="{
-                  'bg-success': order.status === 'Completed' || order.status === 'Shipped',
-                  'bg-warning text-dark': order.status === 'Processing' || order.status === 'Pending',
-                  'bg-danger': order.status === 'Cancelled' || order.status === 'Refunded',
-                  'bg-secondary': order.status !== 'Completed' && order.status !== 'Shipped' && order.status !== 'Processing' && order.status !== 'Pending' && order.status !== 'Cancelled' && order.status !== 'Refunded'
-                }">{{ order.status }}</span>
-              </div>
-              <div>
-                <span>Total: {{ order.totalAmount | currency }}</span>
-                <a [routerLink]="['../orders', order.id]" class="btn btn-sm btn-outline-secondary ms-2">View Details</a>
-              </div>
+                <!-- Date Column -->
+                <ng-container matColumnDef="date">
+                  <th mat-header-cell *matHeaderCellDef>Date</th>
+                  <td mat-cell *matCellDef="let order" class="order-date">{{ order.orderDate | date:'MMM d, yyyy' }}</td>
+                </ng-container>
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let order">
+                    <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+                      {{ order.status }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <!-- Total Column -->
+                <ng-container matColumnDef="total">
+                  <th mat-header-cell *matHeaderCellDef>Total</th>
+                  <td mat-cell *matCellDef="let order" class="order-total">{{ order.totalAmount | currency:'ILS' }}</td>
+                </ng-container>
+
+                <!-- Action Column -->
+                <ng-container matColumnDef="action">
+                  <th mat-header-cell *matHeaderCellDef class="action-header">Action</th>
+                  <td mat-cell *matCellDef="let order" class="action-cell">
+                    <button mat-button [routerLink]="['../orders', order.id]" class="view-button">
+                      <img src="assets/icons/eye.svg" alt="" class="button-icon">
+                      View
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="order-row"></tr>
+              </table>
             </div>
-          </li>
-        </ul>
-        <ng-template #noRecentOrders>
-          <p>No recent orders found.</p>
-        </ng-template>
+            <ng-template #noRecentOrders>
+              <p class="no-orders-message">{{ tKeys.SF_ACCOUNT_OVERVIEW_NO_RECENT_ORDERS | translate }}</p>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Right Column - Address and Profile -->
+      <div class="sidebar-section">
+        <!-- Default Address -->
+        <mat-card class="address-card">
+          <mat-card-header>
+            <mat-card-title class="card-title-with-icon">
+              <img src="assets/icons/map-pin.svg" alt="" class="title-icon">
+              {{ tKeys.SF_ACCOUNT_OVERVIEW_DEFAULT_SHIPPING_ADDRESS_TITLE | translate }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="address-content">
+            <div class="address-details">
+              <p class="address-line" *ngIf="overview.profile">{{ overview.profile.firstName }} {{ overview.profile.lastName }}</p>
+              <p class="address-line">{{ getDefaultShippingAddress(overview) }}</p>
+            </div>
+            <mat-divider></mat-divider>
+            <button mat-stroked-button routerLink="../addresses" class="edit-address-button">
+              <img src="assets/icons/edit.svg" alt="" class="button-icon">
+              {{ tKeys.SF_ACCOUNT_OVERVIEW_MANAGE_ADDRESSES_BUTTON | translate }}
+            </button>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Profile Completeness -->
+        <mat-card class="profile-card">
+          <mat-card-header>
+            <mat-card-title>{{ tKeys.SF_ACCOUNT_OVERVIEW_PROFILE_COMPLETENESS_TITLE | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="profile-content">
+            <div class="progress-section">
+              <div class="progress-header">
+                <span class="progress-label">Progress</span>
+                <span class="progress-percentage">{{ profileCompleteness }}%</span>
+              </div>
+              <mat-progress-bar [value]="profileCompleteness" class="progress-bar"></mat-progress-bar>
+            </div>
+            <p class="profile-description">
+              Complete your profile to unlock all features and get personalized recommendations.
+            </p>
+            <button mat-stroked-button routerLink="../personal-info" class="complete-profile-button">
+              {{ tKeys.SF_ACCOUNT_OVERVIEW_COMPLETE_PROFILE_BUTTON | translate }}
+            </button>
+          </mat-card-content>
+        </mat-card>
       </div>
     </div>
-
-    <!-- Default Address -->
-    <div class="overview-section default-address-section card">
-      <div class="card-header">
-        <h4>Default Shipping Address</h4>
-        <a routerLink="../addresses" class="btn btn-sm btn-link">Manage Addresses</a>
-      </div>
-      <div class="card-body">
-        <p>{{ getDefaultShippingAddress(overview) }}</p>
-      </div>
-    </div>
-
-    <!-- Quick Links/Actions -->
-    <div class="overview-section quick-links-section card">
-        <div class="card-header">
-            <h4>Quick Actions</h4>
-        </div>
-        <div class="card-body">
-            <a routerLink="../personal-info" class="btn btn-primary me-2">Update Personal Info</a>
-            <a routerLink="../payment-methods" class="btn btn-primary me-2">Manage Payment Methods</a>
-            <a routerLink="../change-password" class="btn btn-primary">Change Password</a>
-        </div>
-    </div>
-
   </div>
 
   <ng-template #noOverviewData>
-    <div *ngIf="!isLoading">
-      <p>Could not load account overview data. Please try again later or contact support.</p>
+    <div *ngIf="!isLoading" class="error-state">
+      <p>{{ tKeys.SF_ACCOUNT_OVERVIEW_LOAD_ERROR | translate }}</p>
     </div>
   </ng-template>
-</div>
+</section>

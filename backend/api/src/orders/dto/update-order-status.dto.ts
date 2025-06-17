@@ -3,6 +3,6 @@ import { OrderStatus } from '../entities/order.entity';
 
 export class UpdateOrderStatusDto {
   @IsNotEmpty()
-  @IsIn(['pending', 'processing', 'shipped', 'completed', 'cancelled', 'failed'])
+  @IsIn(['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'failed'])
   status: OrderStatus;
 }

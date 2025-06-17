@@ -1,0 +1,111 @@
+:host {
+  display: block; // Ensures the component takes up space like a block element
+}
+
+.featured-category-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: 220px;
+  border-radius: 1.5rem; // rounded-3xl
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); // shadow-xl
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; // duration-300 for all relevant properties
+
+  &:hover {
+    transform: scale(1.045);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.18);
+    border-color: rgba(99, 102, 241, 0.7);
+  }
+
+  &:focus-visible {
+    transform: scale(1.03); // Matches whileFocus scale
+    box-shadow: 0 6px 24px 0 rgba(0,0,0,0.12); // Matches whileFocus shadow
+    border-color: rgba(99,102,241,0.7); // Matches whileFocus border
+    outline: 2px solid transparent; // focus-visible:ring-2
+    outline-offset: 2px; // focus-visible:ring-offset-2
+    // Assuming --primary is defined or replace with actual color
+    // For ring-primary/70, we'll use a border or box-shadow trick if direct ring is not available
+    // Or, if a global primary color variable exists:
+    // box-shadow: 0 0 0 2px var(--primary-color, rgba(99, 102, 241, 0.7)); // ring-primary/70
+    // For simplicity, the border-color change on focus-visible already provides a strong visual cue.
+    // If a ring effect is strictly needed, it might require an additional pseudo-element or a more complex box-shadow.
+    // For now, relying on the border color change and existing shadow for focus.
+  }
+}
+
+.card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.blur-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.3); // bg-white/30
+  // For dark mode, you might need a theme variable or a separate class
+  // .dark & { background-color: rgba(0, 0, 0, 0.3); } // dark:bg-black/30
+  backdrop-filter: blur(2px); // Reduced blur
+  z-index: 10;
+}
+
+.gradient-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%; // h-2/5
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
+  z-index: 20;
+}
+
+.name-container {
+  position: absolute;
+  bottom: 1.5rem; // bottom-6
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 30;
+}
+
+.name-text {
+  color: white;
+  font-size: 1.5rem; // text-2xl
+  @media (min-width: 768px) { // md:
+    font-size: 1.875rem; // text-3xl
+  }
+  font-weight: 800; // font-extrabold
+  letter-spacing: 0.05em; // tracking-wide (approximate)
+  filter: drop-shadow(0 4px 3px rgba(0,0,0,0.07)) drop-shadow(0 2px 2px rgba(0,0,0,0.06)); // drop-shadow-lg (Tailwind's default)
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.7), 0 2px 8px rgba(0, 0, 0, 0.25);
+  user-select: none;
+  padding: 0.5rem 1.5rem; // px-6 py-2
+  border-radius: 1rem; // rounded-2xl
+  background-color: rgba(255, 255, 255, 0.1); // bg-white/10
+  backdrop-filter: blur(2px);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); // shadow-md (Tailwind's default)
+}
+
+// Tailwind sr-only utility
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

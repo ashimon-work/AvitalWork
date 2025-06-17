@@ -5,6 +5,7 @@ import { ProductService } from '../../product/product.service';
 import { Product, ProductVariant, ProductVariantOption } from '@shared-types'; // Import variant types
 import { StoreContextService } from '../../core/services/store-context.service';
 import { NotificationService } from 'projects/storefront/src/app/core/services/notification.service';
+import { T, TranslatePipe } from '@shared/i18n';
 
 import { Subject, combineLatest, Subscription, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, startWith } from 'rxjs/operators';
@@ -12,12 +13,13 @@ import { debounceTime, distinctUntilChanged, switchMap, startWith } from 'rxjs/o
 @Component({
   selector: 'app-product-management-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   providers: [ProductService],
   templateUrl: './product-management-page.component.html',
   styleUrl: './product-management-page.component.scss'
 })
 export class ProductManagementPageComponent implements OnInit, OnDestroy {
+  public tKeys = T;
 
   products: Product[] = [];
   searchTerm: string = '';

@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ErrorReportingService, ReportErrorPayload } from '../../core/services/error-reporting.service';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { T, TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-management-not-found-page',
@@ -10,12 +11,14 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule
+    RouterModule,
+    TranslatePipe
   ],
   templateUrl: './management-not-found-page.component.html',
   styleUrls: ['./management-not-found-page.component.scss']
 })
 export class ManagementNotFoundPageComponent implements OnInit {
+  public tKeys = T;
   private router = inject(Router);
   private location = inject(Location);
   private errorReportingService = inject(ErrorReportingService);

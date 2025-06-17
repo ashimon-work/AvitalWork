@@ -1,0 +1,25 @@
+<section class="stats-container" aria-label="Account statistics">
+  <div class="stats-grid">
+    <div 
+      *ngFor="let stat of stats; let i = index" 
+      class="stat-card"
+      [style.animation-delay]="(i * 100) + 'ms'"
+    >
+      <div class="card-content">
+        <div class="flex-container">
+          <!-- Icon -->
+          <div class="icon-container" [ngClass]="'icon-bg-' + stat.id">
+            <img [src]="stat.icon" [alt]="stat.label" class="stat-icon" [ngClass]="'icon-color-' + stat.id">
+          </div>
+
+          <!-- Content -->
+          <div class="content-section">
+            <h2 class="stat-label">{{ stat.label }}</h2>
+            <p class="stat-value">{{ stat.value }}</p>
+            <p class="stat-description">{{ stat.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 

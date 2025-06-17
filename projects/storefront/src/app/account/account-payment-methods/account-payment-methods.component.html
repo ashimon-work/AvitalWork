@@ -1,7 +1,7 @@
-<h3>Payment Methods</h3>
+<h3>{{ tKeys.SF_ACCOUNT_PAYMENT_METHODS_TITLE | translate }}</h3>
 
 <!-- Loading Indicator -->
-<div *ngIf="isLoading && !(paymentMethods$ | async)" class="loading-indicator">Loading payment methods...</div>
+<div *ngIf="isLoading && !(paymentMethods$ | async)" class="loading-indicator">{{ tKeys.SF_ACCOUNT_PAYMENT_METHODS_LOADING | translate }}</div>
 
 <!-- Success/Error Messages -->
 <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
@@ -15,12 +15,12 @@
         <!-- Basic representation - enhance with icons later -->
         <span class="card-type">{{ method.cardBrand }}</span> ending in <span class="card-last4">{{ method.last4 }}</span>
         <span class="card-expiry">Expires: {{ method.expiryMonth | number:'2.0' }}/{{ method.expiryYear }}</span>
-        <span *ngIf="method.isDefault" class="badge bg-primary ms-2">Default</span>
+        <span *ngIf="method.isDefault" class="badge bg-primary ms-2">{{ tKeys.SF_ACCOUNT_PAYMENT_METHODS_DEFAULT_BADGE | translate }}</span>
       </div>
       <div class="method-actions">
         <!-- Edit functionality is complex and usually handled by payment provider flow -->
         <!-- <button class="btn btn-sm btn-outline-secondary me-2" [disabled]="isLoading">Edit</button> -->
-        <button (click)="deletePaymentMethod(method.id)" class="btn btn-sm btn-outline-danger" [disabled]="isLoading">Remove</button>
+        <button (click)="deletePaymentMethod(method.id)" class="btn btn-sm btn-outline-danger" [disabled]="isLoading">{{ tKeys.SF_ACCOUNT_PAYMENT_METHODS_REMOVE_BUTTON | translate }}</button>
         <!-- Add Set Default button if backend supports it -->
         <!-- <button *ngIf="!method.isDefault" class="btn btn-sm btn-outline-primary ms-2" [disabled]="isLoading">Set as Default</button> -->
       </div>
@@ -28,8 +28,8 @@
   </div>
 
   <ng-template #noMethods>
-    <p>You haven't saved any payment methods yet.</p>
-    <p><small>Payment methods are typically saved during the checkout process.</small></p>
+    <p>{{ tKeys.SF_ACCOUNT_PAYMENT_METHODS_NO_METHODS | translate }}</p>
+    <p><small>{{ tKeys.SF_ACCOUNT_PAYMENT_METHODS_SAVE_NOTE | translate }}</small></p>
   </ng-template>
 </ng-container>
 

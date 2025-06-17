@@ -6,16 +6,17 @@ import { Subject, switchMap, takeUntil, tap, catchError, of, filter } from 'rxjs
 import { SettingsService } from '../settings.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { T, TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, JsonPipe, RouterLink, FormsModule],
+  imports: [CommonModule, JsonPipe, RouterLink, FormsModule, TranslatePipe],
   templateUrl: './settings-page.component.html',
   styleUrl: './settings-page.component.scss'
 })
 export class SettingsPageComponent implements OnInit, OnDestroy {
-
+  public tKeys = T;
   settings: any | null = null;
   editableSettings: any | null = null;
   isLoading = false;
@@ -254,7 +255,34 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     if (!category) {
       return '';
     }
+    // This will now return the translation key for the formatted name,
+    // assuming the formatted name itself is not directly a key.
+    // For direct key mapping, see getCategoryTranslationKey.
+    // This function is still used if you need the display string BEFORE translation.
     return category.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+  }
+
+  getCategoryTranslationKey(categorySlug: string | null): keyof typeof T {
+    if (!categorySlug) {
+      // Return a default or placeholder key if categorySlug is null
+      return 'SM_SETTINGS_PAGE_TITLE'; // Or handle as an error/empty string appropriately
+    }
+    switch (categorySlug) {
+      case 'general': return 'SM_SETTINGS_CATEGORY_GENERAL';
+      case 'shipping': return 'SM_SETTINGS_CATEGORY_SHIPPING';
+      case 'payments': return 'SM_SETTINGS_CATEGORY_PAYMENTS';
+      case 'taxes': return 'SM_SETTINGS_CATEGORY_TAXES';
+      case 'notifications': return 'SM_SETTINGS_CATEGORY_NOTIFICATIONS';
+      case 'users-permissions': return 'SM_SETTINGS_CATEGORY_USERS_PERMISSIONS';
+      case 'appearance': return 'SM_SETTINGS_CATEGORY_APPEARANCE';
+      case 'integrations': return 'SM_SETTINGS_CATEGORY_INTEGRATIONS';
+      default:
+        // Fallback for unknown categories, or throw an error
+        // For now, returning a generic title key as a fallback.
+        // Consider logging an error here if an unknown category is encountered.
+        console.warn(`Unknown settings category slug: ${categorySlug}`);
+        return 'SM_SETTINGS_PAGE_TITLE'; // Placeholder
+    }
   }
 
   downloadBackup(): void {

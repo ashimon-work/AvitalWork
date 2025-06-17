@@ -4,9 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Category, Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { StoreContextService } from '../../core/services/store-context.service';
-import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
+import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component';
 import { Observable, switchMap, tap, map, BehaviorSubject, combineLatest, Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, RouterLink, Router, Params } from '@angular/router';
+import { T, TranslatePipe } from '@shared/i18n';
+import { CartService } from '../../core/services/cart.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { I18nService } from '@shared/i18n';
 
 interface Filters {
   price_min?: number;
@@ -16,6 +20,22 @@ interface Filters {
   sizes?: string[];
 }
 
+interface DisplayableFilterItem {
+  value: string;
+  translationKey: keyof typeof T;
+}
+
+interface DisplayableColorItem extends DisplayableFilterItem {
+  colorHex: string;
+}
+
+interface PriceRangeFilterItem {
+  id: string; // e.g., '0-20'
+  labelTranslationKey: keyof typeof T;
+  min?: number;
+  max?: number;
+}
+
 @Component({
   selector: 'app-category-page',
   standalone: true,
@@ -23,12 +43,14 @@ interface Filters {
     CommonModule,
     FormsModule,
     RouterLink,
-    ProductCardComponent
+    FeaturedProductCardComponent,
+    TranslatePipe
   ],
   templateUrl: './category-page.component.html',
   styleUrl: './category-page.component.scss'
 })
 export class CategoryPageComponent implements OnInit, OnDestroy {
+  public tKeys = T;
   category$: Observable<Category | null> | undefined;
   products$: Observable<Product[]> | undefined;
   totalProducts$: Observable<number> | undefined;
@@ -50,15 +72,28 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   currentStoreSlug$: Observable<string | null>; // Add slug observable
 
   // Properties to bind to filter inputs in the template
-  selectedPriceRange: string = ''; // e.g., '0-20', '20-50'
+  // selectedPriceRange: string = ''; // Replaced by selectedPriceRanges
+  selectedPriceRanges: { [key: string]: boolean } = {}; // For checkbox-based price ranges
   selectedTags: { [key: string]: boolean } = {}; // e.g., { 'New': true, 'Sale': false }
   selectedColors: { [key: string]: boolean } = {};
   selectedSizes: { [key: string]: boolean } = {};
   isMobileFiltersVisible: boolean = false; // State for mobile filter overlay
 
   // Placeholder available options for filters
-  availableColors: string[] = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Purple', 'Orange', 'Pink', 'Brown', 'Gray'];
-  availableSizes: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  // availableColors: string[] = ['Red', 'Blue', 'Green', 'Black', 'White', 'Yellow', 'Purple', 'Orange', 'Pink', 'Brown', 'Gray'];
+  // availableSizes: string[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  availableTags: DisplayableFilterItem[];
+  availableColors: DisplayableColorItem[];
+  availableSizes: DisplayableFilterItem[];
+  availablePriceRanges: PriceRangeFilterItem[];
+
+  public filterSectionOpenState: { [key: string]: boolean } = {
+    price: true,
+    tags: true,
+    colors: true,
+    sizes: true
+  };
+
 
   // Template references for click outside detection
   @ViewChild('filterButton') filterButton!: ElementRef;
@@ -67,9 +102,45 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
-    private storeContext: StoreContextService // Inject StoreContextService
+    private storeContext: StoreContextService,
+    private cartService: CartService,
+    private notificationService: NotificationService,
+    private i18nService: I18nService
   ) {
     this.currentStoreSlug$ = this.storeContext.currentStoreSlug$; // Assign slug observable
+
+    this.availableTags = ['New', 'Sale', 'Featured'].map(tag => ({
+      value: tag,
+      translationKey: `SF_CATEGORY_TAG_${tag.toUpperCase()}` as keyof typeof T
+    }));
+
+    // Updated availableColors with softer hex values
+    this.availableColors = [
+      { value: 'Red', translationKey: 'SF_COLOR_RED' as keyof typeof T, colorHex: '#F28B82' }, // Soft Red
+      { value: 'Blue', translationKey: 'SF_COLOR_BLUE' as keyof typeof T, colorHex: '#89B4F8' }, // Soft Blue
+      { value: 'Green', translationKey: 'SF_COLOR_GREEN' as keyof typeof T, colorHex: '#81C995' }, // Muted Green
+      { value: 'Black', translationKey: 'SF_COLOR_BLACK' as keyof typeof T, colorHex: '#5F6368' }, // Dark Gray (softer than pure black)
+      { value: 'White', translationKey: 'SF_COLOR_WHITE' as keyof typeof T, colorHex: '#FFFFFF' },
+      { value: 'Yellow', translationKey: 'SF_COLOR_YELLOW' as keyof typeof T, colorHex: '#FDD663' }, // Soft Yellow
+      { value: 'Purple', translationKey: 'SF_COLOR_PURPLE' as keyof typeof T, colorHex: '#B39DDB' }, // Lavender
+      { value: 'Orange', translationKey: 'SF_COLOR_ORANGE' as keyof typeof T, colorHex: '#FDBA74' }, // Soft Orange
+      { value: 'Pink', translationKey: 'SF_COLOR_PINK' as keyof typeof T, colorHex: '#F48FB1' }, // Soft Pink
+      { value: 'Brown', translationKey: 'SF_COLOR_BROWN' as keyof typeof T, colorHex: '#BCAAA4' }, // Light/Muted Brown
+      { value: 'Gray', translationKey: 'SF_COLOR_GRAY' as keyof typeof T, colorHex: '#BDBDBD' }  // Medium Gray
+    ];
+
+
+    this.availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(size => ({
+      value: size,
+      translationKey: `SF_SIZE_${size.toUpperCase()}` as keyof typeof T
+    }));
+
+    this.availablePriceRanges = [
+      { id: '0-20', labelTranslationKey: 'SF_CATEGORY_FILTER_PRICE_0_20', min: 0, max: 20 },
+      { id: '20-50', labelTranslationKey: 'SF_CATEGORY_FILTER_PRICE_20_50', min: 20, max: 50 },
+      { id: '50-100', labelTranslationKey: 'SF_CATEGORY_FILTER_PRICE_50_100', min: 50, max: 100 },
+      { id: '100-Infinity', labelTranslationKey: 'SF_CATEGORY_FILTER_PRICE_100_PLUS', min: 100 }
+    ];
   }
 
   ngOnInit(): void {
@@ -131,14 +202,56 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   initializeFromQueryParams(): void {
     const queryParams = this.route.snapshot.queryParams;
     const initialFilters: Filters = {};
-    if (queryParams['price_min']) initialFilters.price_min = +queryParams['price_min'];
-    if (queryParams['price_max']) initialFilters.price_max = +queryParams['price_max'];
+
+    // Price ranges from query params (e.g., price_ranges=0-20,20-50)
+    if (queryParams['price_ranges']) {
+      const priceRangeIds = queryParams['price_ranges'].split(',');
+      priceRangeIds.forEach((id: string) => {
+        if (this.availablePriceRanges.some(r => r.id === id)) {
+          this.selectedPriceRanges[id] = true;
+        }
+      });
+      // Derive price_min and price_max from selectedPriceRanges for initialFilters
+      const activePriceRanges = this.availablePriceRanges.filter(r => this.selectedPriceRanges[r.id]);
+      if (activePriceRanges.length > 0) {
+        initialFilters.price_min = Math.min(...activePriceRanges.map(r => r.min || 0).filter((min): min is number => min !== undefined));
+        const maxValues = activePriceRanges.map(r => r.max).filter((max): max is number => max !== undefined);
+        if (maxValues.length > 0 && !activePriceRanges.some(r => r.max === undefined)) {
+          initialFilters.price_max = Math.max(...maxValues);
+        } else if (activePriceRanges.some(r => r.max === undefined) && maxValues.length > 0) {
+          // If "100+" is selected with other ranges, effectively no upper bound from those with max.
+          // This logic might need refinement based on desired behavior if "100+" is combined.
+          // For now, if "100+" is selected, price_max is undefined.
+           if (activePriceRanges.some(r => r.max === undefined)) {
+            initialFilters.price_max = undefined;
+           } else {
+            initialFilters.price_max = Math.max(...maxValues);
+           }
+        } else if (activePriceRanges.some(r => r.max === undefined)) {
+            initialFilters.price_max = undefined;
+        }
+      }
+    } else {
+        // Legacy support for price_min/price_max if price_ranges is not present
+        if (queryParams['price_min']) initialFilters.price_min = +queryParams['price_min'];
+        if (queryParams['price_max']) initialFilters.price_max = +queryParams['price_max'];
+        // Try to map back to a selectedPriceRange if only min/max are provided
+        const matchedRange = this.availablePriceRanges.find(r => r.min === initialFilters.price_min && r.max === initialFilters.price_max);
+        if (matchedRange) {
+            this.selectedPriceRanges[matchedRange.id] = true;
+        } else if (initialFilters.price_min === 100 && initialFilters.price_max === undefined) {
+            const plusRange = this.availablePriceRanges.find(r => r.id === '100-Infinity');
+            if (plusRange) this.selectedPriceRanges[plusRange.id] = true;
+        }
+    }
+
+
     if (queryParams['tags']) initialFilters.tags = queryParams['tags'].split(',');
     if (queryParams['colors']) initialFilters.colors = queryParams['colors'].split(',');
     if (queryParams['sizes']) initialFilters.sizes = queryParams['sizes'].split(',');
 
     // Initialize local state for filter inputs based on query params
-    this.selectedPriceRange = this.determinePriceRangeString(initialFilters.price_min, initialFilters.price_max);
+    // this.selectedPriceRange = this.determinePriceRangeString(initialFilters.price_min, initialFilters.price_max); // Removed
     this.selectedTags = (initialFilters.tags || []).reduce((acc, tag) => {
       acc[tag] = true;
       return acc;
@@ -157,24 +270,33 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     this.pageSubject.next(queryParams['page'] ? +queryParams['page'] : 1);
   }
 
-  determinePriceRangeString(min?: number, max?: number): string {
-    if (min === undefined && max === undefined) return '';
-    return `${min || 0}-${max || 'Infinity'}`; // Adjust representation as needed
-  }
+  // determinePriceRangeString(min?: number, max?: number): string { // No longer needed
+  //   if (min === undefined && max === undefined) return '';
+  //   return `${min || 0}-${max || 'Infinity'}`;
+  // }
 
   applyFilters(): void {
     const newFilters: Filters = {};
 
-    // Price Range Logic
-    if (this.selectedPriceRange) {
-      const parts = this.selectedPriceRange.split('-');
-      if (parts.length === 2) {
-        const min = parseInt(parts[0], 10);
-        const max = parts[1] === 'Infinity' ? undefined : parseInt(parts[1], 10);
-        if (!isNaN(min)) newFilters.price_min = min;
-        if (max !== undefined && !isNaN(max)) newFilters.price_max = max;
+    // Price Range Logic from Checkboxes
+    const activePriceRangeIds = Object.keys(this.selectedPriceRanges).filter(id => this.selectedPriceRanges[id]);
+    if (activePriceRangeIds.length > 0) {
+      const activeRanges = this.availablePriceRanges.filter(r => activePriceRangeIds.includes(r.id));
+      if (activeRanges.length > 0) {
+        newFilters.price_min = Math.min(...activeRanges.map(r => r.min || 0).filter((min): min is number => min !== undefined));
+        
+        const hasInfiniteRange = activeRanges.some(r => r.max === undefined);
+        if (hasInfiniteRange) {
+          newFilters.price_max = undefined;
+        } else {
+          const maxValues = activeRanges.map(r => r.max).filter((max): max is number => max !== undefined);
+          if (maxValues.length > 0) {
+            newFilters.price_max = Math.max(...maxValues);
+          }
+        }
       }
     }
+
 
     // Tags Logic
     const activeTags = Object.keys(this.selectedTags).filter(tag => this.selectedTags[tag]);
@@ -200,7 +322,7 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
 
 
   clearFilters(): void {
-    this.selectedPriceRange = '';
+    this.selectedPriceRanges = {};
     this.selectedTags = {};
     this.selectedColors = {};
     this.selectedSizes = {};
@@ -220,8 +342,13 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
 
   private mapFiltersToApiParams(filters: Filters): any {
     const apiParams: any = {};
+    // Price min/max are already correctly in filters object from applyFilters()
     if (filters.price_min !== undefined) apiParams.price_min = filters.price_min;
     if (filters.price_max !== undefined) apiParams.price_max = filters.price_max;
+    // If we wanted to send price range IDs instead:
+    // const activePriceRangeIds = Object.keys(this.selectedPriceRanges).filter(id => this.selectedPriceRanges[id]);
+    // if (activePriceRangeIds.length > 0) apiParams.price_ranges = activePriceRangeIds.join(',');
+
     if (filters.tags && filters.tags.length > 0) apiParams.tags = filters.tags.join(',');
     if (filters.colors && filters.colors.length > 0) apiParams.colors = filters.colors.join(',');
     if (filters.sizes && filters.sizes.length > 0) apiParams.sizes = filters.sizes.join(',');
@@ -240,12 +367,28 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     if (currentPage > 1) {
       queryParams['page'] = currentPage;
     }
-    if (currentFilters.price_min !== undefined) {
-      queryParams['price_min'] = currentFilters.price_min;
+
+    // Query params for price ranges
+    const activePriceRangeIds = Object.keys(this.selectedPriceRanges).filter(id => this.selectedPriceRanges[id]);
+    if (activePriceRangeIds.length > 0) {
+      queryParams['price_ranges'] = activePriceRangeIds.join(',');
+    } else {
+      // Remove legacy price_min/price_max if no ranges are selected
+      delete queryParams['price_min'];
+      delete queryParams['price_max'];
     }
-    if (currentFilters.price_max !== undefined) {
-      queryParams['price_max'] = currentFilters.price_max;
-    }
+    // Keep sending price_min and price_max for API compatibility if they exist on currentFilters
+    // This part might be redundant if price_ranges is the sole source of truth for URL
+    // However, mapFiltersToApiParams still uses price_min/max from the Filters object.
+    // For now, let price_ranges drive the URL, and applyFilters drives the Filters object.
+    // if (currentFilters.price_min !== undefined) {
+    //   queryParams['price_min'] = currentFilters.price_min;
+    // }
+    // if (currentFilters.price_max !== undefined) {
+    //   queryParams['price_max'] = currentFilters.price_max;
+    // }
+
+
     if (currentFilters.tags && currentFilters.tags.length > 0) {
       queryParams['tags'] = currentFilters.tags.join(',');
     }
@@ -272,6 +415,21 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     return Math.ceil(totalItems / this.itemsPerPage);
   }
 
+  toggleFilterSection(section: string): void {
+    if (this.filterSectionOpenState.hasOwnProperty(section)) {
+      this.filterSectionOpenState[section] = !this.filterSectionOpenState[section];
+    }
+  }
+
+  isFilterSectionOpen(section: string): boolean {
+    return !!this.filterSectionOpenState[section];
+  }
+
+  getChevronIcon(section: string): string {
+    // Always return chevron-right, SCSS will handle rotation
+    return 'assets/icons/chevron-right.svg';
+  }
+
   toggleMobileFilters(): void {
     this.isMobileFiltersVisible = !this.isMobileFiltersVisible;
   }
@@ -291,5 +449,25 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
     if (!clickedInsideButton && !clickedInsideOverlay) {
       this.isMobileFiltersVisible = false;
     }
+  }
+
+  onAddToCart(product: Product): void {
+    if (!product || !product.id) {
+      console.error('Invalid product data received for AddToCart:', product);
+      this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
+      return;
+    }
+
+    this.cartService.addItem(product).subscribe({
+      next: () => {
+        this.notificationService.showSuccess(
+          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, 1, product.name) // Assuming quantity 1 for now
+        );
+      },
+      error: (error: any) => {
+        console.error('Error adding product to cart from category page:', error);
+        this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
+      }
+    });
   }
 }

@@ -1,0 +1,13 @@
+<div class="map-card-component-wrapper">
+  <!-- This is where the actual map SDK would render. -->
+  <!-- For now, it's a placeholder. -->
+  <div class="map-placeholder-content">
+    <p *ngIf="address; else noAddress">
+      Showing map for: {{ formattedAddress }}
+      <!-- In a real map, this text might be an overlay or not present if the map loads successfully -->
+    </p>
+    <ng-template #noAddress>
+      <p>{{ mapPlaceholderText }}</p>
+    </ng-template>
+  </div>
+</div>

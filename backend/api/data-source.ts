@@ -21,6 +21,9 @@ import { ContactSubmissionEntity } from './src/contact/entities/contact-submissi
 import { NewsletterSubscription } from './src/newsletter/entities/newsletter-subscription.entity';
 import { PaymentMethodEntity } from './src/payment-methods/entities/payment-method.entity';
 import { NotificationEntity } from './src/notifications/entities/notification.entity';
+import { CreditCardEntity } from './src/tranzila/entities/credit-card.entity';
+import { TranzilaDocumentEntity } from './src/tranzila/entities/tranzila-document.entity';
+import { ShippingMethodEntity } from './src/shipping/entities/shipping-method.entity';
 dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions = {
@@ -52,6 +55,9 @@ export const dataSourceOptions: DataSourceOptions = {
     NewsletterSubscription,
     PaymentMethodEntity,
     NotificationEntity,
+    CreditCardEntity,
+    TranzilaDocumentEntity,
+    ShippingMethodEntity,
     // Add other entities here
     // __dirname + '/../**/*.entity{.ts,.js}', // Alternative: Use glob pattern
   ],

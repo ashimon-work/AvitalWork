@@ -5,18 +5,24 @@ import { ApiService, PaymentMethodDto, CreatePaymentMethodPayload, UpdatePayment
 import { Observable, BehaviorSubject, switchMap, tap, catchError, of, forkJoin } from 'rxjs';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NotificationService } from '../../core/services/notification.service';
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
+import { I18nService } from '@shared/i18n';
+
 
 @Component({
   selector: 'app-account-payment-methods',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './account-payment-methods.component.html',
   styleUrls: ['./account-payment-methods.component.scss']
 })
 export class AccountPaymentMethodsComponent implements OnInit {
+  public tKeys = T;
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
   private notificationService = inject(NotificationService);
+  private i18nService = inject(I18nService);
 
   private refreshPaymentMethods$ = new BehaviorSubject<void>(undefined);
   paymentMethods$: Observable<PaymentMethodDto[]>;
@@ -49,7 +55,7 @@ export class AccountPaymentMethodsComponent implements OnInit {
       }),
       switchMap(() => this.apiService.getUserPaymentMethods().pipe(
         catchError(err => {
-          this.notificationService.showError(err.error?.message || 'Failed to load payment methods.');
+          this.notificationService.showError(err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_LOADING_FAILED));
           return of([]); // Return empty array on error
         })
       )),
@@ -58,7 +64,7 @@ export class AccountPaymentMethodsComponent implements OnInit {
 
     this.userAddresses$ = this.apiService.getUserAddresses().pipe(
       catchError(err => {
-        this.notificationService.showError(err.error?.message || 'Failed to load addresses for payment form.');
+        this.notificationService.showError(err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_ADDRESSES_LOADING_FAILED));
         return of([]);
       })
     );
@@ -78,7 +84,7 @@ export class AccountPaymentMethodsComponent implements OnInit {
       tap(() => this.isLoading = false),
       catchError(err => {
         this.isLoading = false;
-        this.notificationService.showError(err.error?.message || 'Failed to load initial account data.');
+        this.notificationService.showError(err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_INITIAL_LOAD_FAILED));
         return of({ paymentMethods: [], addresses: [] });
       })
     ).subscribe(data => {
@@ -101,17 +107,17 @@ export class AccountPaymentMethodsComponent implements OnInit {
     if (!methodId) return;
     this.clearMessages();
     // Add confirmation dialog for security
-    if (confirm('Are you sure you want to remove this payment method? This action cannot be undone.')) {
+    if (confirm(this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_REMOVE_CONFIRM))) {
       this.isLoading = true;
       this.apiService.deleteUserPaymentMethod(methodId).subscribe({
         next: () => {
           this.isLoading = false;
-          this.notificationService.showSuccess('Payment method removed successfully.');
+          this.notificationService.showSuccess(this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_REMOVE_SUCCESS));
           this.refreshList();
         },
         error: (err) => {
           this.isLoading = false;
-          this.notificationService.showError(err.error?.message || 'Failed to remove payment method.');
+          this.notificationService.showError(err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_REMOVE_FAILED));
           console.error('Error deleting payment method:', err);
         }
       });
@@ -149,7 +155,7 @@ export class AccountPaymentMethodsComponent implements OnInit {
 
   onSubmit(): void {
     if (this.paymentMethodForm.invalid) {
-      this.notificationService.showError('Please fill in all required fields.');
+      this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_FORM_INVALID));
       Object.values(this.paymentMethodForm.controls).forEach(control => {
         control.markAsTouched();
       });
@@ -167,13 +173,13 @@ export class AccountPaymentMethodsComponent implements OnInit {
       this.apiService.updateUserPaymentMethod(this.editingMethodId, payload).subscribe({
         next: () => {
           this.isLoading = false;
-          this.notificationService.showSuccess('Payment method updated successfully.');
+          this.notificationService.showSuccess(this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_UPDATE_SUCCESS));
           this.refreshList();
           this.toggleForm(); // Close form
         },
         error: (err) => {
           this.isLoading = false;
-          this.notificationService.showError(err.error?.message || 'Failed to update payment method.');
+          this.notificationService.showError(err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_UPDATE_FAILED));
         }
       });
     } else {
@@ -186,13 +192,13 @@ export class AccountPaymentMethodsComponent implements OnInit {
       this.apiService.addUserPaymentMethod(payload).subscribe({
         next: () => {
           this.isLoading = false;
-          this.notificationService.showSuccess('Payment method added successfully.');
+          this.notificationService.showSuccess(this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_ADD_SUCCESS));
           this.refreshList();
           this.toggleForm(); // Close form
         },
         error: (err) => {
           this.isLoading = false;
-          this.notificationService.showError(err.error?.message || 'Failed to add payment method.');
+          this.notificationService.showError(err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_PAYMENT_METHODS_ADD_FAILED));
         }
       });
     }

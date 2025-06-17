@@ -1,0 +1,59 @@
+<section class="payment-method">
+  <h2 class="payment-method__title">Payment Method</h2>
+  <div class="payment-method__card">
+    <div *ngIf="storedCard; else noCard" class="payment-method__card-details">
+      <div class="payment-method__card-info">
+        <!-- Icon: CreditCard -->
+        <svg class="payment-method__card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+        <div>
+          <p class="payment-method__card-brand">{{ storedCard.brand }} ending in {{ storedCard.last4 }}</p>
+          <p class="payment-method__card-text">Your card is securely stored.</p>
+        </div>
+      </div>
+      <button (click)="isModalOpen = true" class="btn btn--outline">Update Card</button>
+    </div>
+    <ng-template #noCard>
+      <button (click)="isModalOpen = true" class="btn btn--default btn--full-width">
+        <!-- Icon: PlusCircle -->
+        <svg class="payment-method__add-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+        Add Payment Method
+      </button>
+    </ng-template>
+  </div>
+
+  <h2 class="payment-method__title">Billing Address</h2>
+  <div class="payment-method__billing-address">
+    <div class="payment-method__billing-address-option">
+      <input type="checkbox" id="sameAsShipping" [checked]="!showBillingForm" (change)="showBillingForm = !showBillingForm" />
+      <label for="sameAsShipping">Billing address is the same as shipping</label>
+    </div>
+    <div *ngIf="showBillingForm" class="payment-method__billing-address-form" [class.visible]="showBillingForm">
+        <app-shipping-address-form (formUpdate)="handleBillingSubmit($event)"></app-shipping-address-form>
+    </div>
+  </div>
+</section>
+
+<div *ngIf="isModalOpen" class="modal-overlay" (click)="isModalOpen = false">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">{{ storedCard ? 'Update' : 'Add' }} Payment Method</h3>
+      <button (click)="isModalOpen = false" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="tranzila-form">
+        <p class="tranzila-form__text">Tranzila Secure PCI-Compliant Form</p>
+        <div class="tranzila-form__inputs">
+          <input class="tranzila-form__input" placeholder="Card Number" />
+          <div class="tranzila-form__input-group">
+            <input class="tranzila-form__input" placeholder="MM/YY" />
+            <input class="tranzila-form__input" placeholder="CVC" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="isModalOpen = false" class="btn btn--secondary">Cancel</button>
+      <button (click)="handleCardSave()" class="btn btn--primary">Save Card</button>
+    </div>
+  </div>
+</div>

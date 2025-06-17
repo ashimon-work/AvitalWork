@@ -6,16 +6,19 @@
 }
 
 .store-footer {
-  background-color: var(--neutral-lightest); // Use a very light gray for footer background
-  color: var(--text-color-light); // Use lighter text color in the footer
+  background-color: var(--card-background, #ffffff); // Light card background
+  color: var(--card-foreground, var(--text-color));
   padding-top: var(--spacing-xl);
-  border-top: var(--border-width) solid var(--border-color);
+  border-top: 1px solid var(--border-color, #e0e0e0); // Subtle border top
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)); // Soft shadow
+  width: 100%;
 }
 
-.footer-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // Responsive grid layout
+.footer-content-wrapper {
+  display: flex;
+  flex-wrap: wrap; // Allow items to wrap on smaller screens
   gap: var(--spacing-lg);
+  justify-content: space-between; // Distribute space
 
   // Apply container constraints
   width: 100%;
@@ -24,17 +27,89 @@
   margin-left: auto;
   padding-right: var(--container-padding-x);
   padding-left: var(--container-padding-x);
-  padding-bottom: var(--spacing-xl); // Padding at the bottom of the main content
+  padding-bottom: var(--spacing-xl);
 }
 
 .footer-section {
-  h4 {
-    font-size: 1.1rem; // Slightly smaller heading for footer sections
-    font-weight: var(--font-weight-medium);
-    color: var(--text-color); // Use primary text color for headings
+  flex: 1 1 280px; // Flex properties for responsiveness
+  min-width: 250px; // Minimum width before wrapping
+
+  h3, h4 { // Target both h3 for newsletter and h4 for others
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-semibold, 600); // Use semibold or fallback
+    color: var(--text-color);
     margin-bottom: var(--spacing-md);
   }
 }
+
+.newsletter-section {
+  max-width: 450px; // Limit width of newsletter section
+
+  .text-muted-foreground {
+    color: var(--muted-foreground, var(--text-color-light)); // Use specific muted color or fallback
+    font-size: 0.9rem; // Slightly smaller text
+    margin-bottom: var(--spacing-md);
+  }
+
+  .newsletter-form-flex {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: flex-start; // Align items to the start for multi-line errors
+  }
+
+  .newsletter-input-group {
+    display: flex;
+    flex-grow: 1;
+    border: 1px solid var(--border-color-subtle, #ced4da); // Subtle border for the group
+    border-radius: var(--border-radius-lg, 20px); // Rounded corners for the group
+    overflow: hidden; // To ensure child borders don't poke out
+
+    .newsletter-email-input {
+      flex-grow: 1;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: none; // Remove individual border
+      outline: none;
+      font-size: 1rem;
+      background-color: transparent; // Match footer background
+      color: var(--text-color);
+      min-width: 0; // Allow input to shrink
+
+      &::placeholder {
+        color: var(--muted-foreground, var(--text-color-light));
+      }
+    }
+
+    .newsletter-submit-button {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border: none; // Remove individual border
+      border-left: 1px solid var(--border-color-subtle, #ced4da); // Subtle separator
+      background-color: var(--primary-color, #007bff);
+      color: var(--primary-contrast-color, #ffffff);
+      cursor: pointer;
+      font-weight: var(--font-weight-medium);
+      transition: background-color var(--transition-speed-fast) ease-in-out;
+
+      &:hover:not(:disabled) {
+        background-color: var(--primary-color-dark, #0056b3);
+      }
+
+      &:disabled {
+        background-color: var(--disabled-background-color, #e9ecef);
+        color: var(--disabled-foreground-color, #6c757d);
+        cursor: not-allowed;
+      }
+    }
+  }
+   .newsletter-errors {
+    margin-top: var(--spacing-xs);
+    .error-message {
+      color: var(--destructive-color, #dc3545);
+      font-size: 0.875rem;
+      margin-bottom: var(--spacing-xxs);
+    }
+  }
+}
+
 
 .links-section {
   ul {
@@ -46,48 +121,112 @@
       margin-bottom: var(--spacing-sm);
 
       a {
-        color: var(--text-color-light); // Lighter link color
+        color: var(--text-color-light);
         text-decoration: none;
+        transition: color var(--transition-speed-fast) ease-in-out;
 
         &:hover,
         &:focus {
-          color: var(--primary-color); // Highlight with primary color on hover
+          color: var(--primary-color);
           text-decoration: underline;
-          opacity: 1;
         }
       }
     }
   }
 }
 
-.social-section {
-  .social-links {
+.social-media-nav { // Applied to the nav element which is also a .footer-section
+  .social-links-container {
     display: flex;
-    flex-direction: column;
-    /* Stack the links vertically */
-    gap: var(--spacing-xs);
-    /* Reduce the gap between links */
+    gap: var(--spacing-md); // Gap between icons
+    align-items: center;
+    flex-wrap: wrap; // Allow icons to wrap
+  }
 
-    h5 {
-      font-size: 0.8rem;
-      /* Make the text smaller */
-      margin: 0;
-      /* Remove default margins */
-      color: var(--text-color-light);
+  .social-icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; // Circular background size
+    height: 40px;
+    border-radius: 50%; // Circular shape
+    background-color: var(--muted-background-color, var(--neutral-lighter, #f0f0f0)); // Muted background
+    color: var(--muted-foreground-color, var(--text-color)); // Icon color
+    transition: background-color var(--transition-speed-fast) ease-in-out, color var(--transition-speed-fast) ease-in-out;
+    // box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0,0,0,0.05)); // Optional: subtle shadow on icons
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--primary-color);
+      color: var(--primary-contrast-color, #fff); // Text color on primary background
+      outline: none;
+    }
+
+    &:focus-visible {
+       box-shadow: 0 0 0 2px var(--primary-color-focus, rgba(var(--primary-color-rgb, 0, 123, 255), 0.4));
+    }
+
+    .social-svg-icon {
+      width: 20px; // Icon size
+      height: 20px;
+      // currentColor will not work directly on <img> src.
+      // For color changes on hover, you'd typically use CSS filters
+      // or embed SVGs directly to manipulate 'fill' or 'stroke'.
+      // Given we are using <img>, hover color change is limited.
+      // The background of the <a> tag will change as per existing :hover rules.
     }
   }
 }
 
+
 .footer-bottom {
-  background-color: var(--neutral-light); // Slightly darker background for the bottom bar
+  background-color: var(--neutral-light, #f8f9fa); // Slightly different shade for separation if desired
   padding: var(--spacing-md) var(--container-padding-x);
   text-align: center;
-  margin-top: var(--spacing-lg); // Space between main footer content and bottom bar
-  border-top: var(--border-width) solid var(--border-color);
+  margin-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color, #e0e0e0); // Subtle border top
 
   p {
-    margin-bottom: 0; // Remove default paragraph margin
-    font-size: 0.9rem;
+    margin-bottom: 0;
+    font-size: 0.85rem; // Slightly smaller copyright text
     color: var(--text-color-light);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .footer-content-wrapper {
+    flex-direction: column; // Stack sections vertically
+    align-items: center; // Center items when stacked
+    text-align: center; // Center text within sections
+  }
+
+  .newsletter-section {
+    width: 100%; // Allow newsletter to take full width
+    max-width: 100%;
+
+    .newsletter-form-flex {
+      flex-direction: column; // Stack form elements
+      align-items: stretch; // Stretch form elements to full width
+
+      .newsletter-input-group {
+        width: 100%;
+      }
+      .newsletter-submit-button { // Ensure button also takes full width if needed or adjust
+         margin-top: var(--spacing-sm); // Add space when stacked
+      }
+    }
+  }
+
+  .social-media-nav {
+    .social-links-container {
+      justify-content: center; // Center social icons
+    }
+  }
+
+  .links-section ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center; // Center links
   }
 }

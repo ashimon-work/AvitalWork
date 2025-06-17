@@ -1,0 +1,237 @@
+@use '../../../styles/variables' as variables;
+
+.personal-info-section {
+  padding: 2rem 0;
+  max-width: 100%;
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  
+  p {
+    color: variables.$text-muted;
+    font-size: 1rem;
+  }
+}
+
+// Message styles
+.message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+
+  .message-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &.message-success {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+
+  &.message-error {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+}
+
+.personal-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+// Welcome header - matching overview and addresses sections
+.welcome-header {
+  margin-bottom: 1rem;
+
+  .welcome-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: variables.$text-color;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .welcome-subtitle {
+    color: variables.$text-muted;
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+// Form card
+.form-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid variables.$border-color;
+  max-width: 800px;
+  margin: 0 auto;
+
+  mat-card-header {
+    padding: 1.5rem 1.5rem 0;
+
+    .card-title-with-icon {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+
+      .title-icon {
+        width: 20px;
+        height: 20px;
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .form-content {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+}
+
+.personal-info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+
+    .form-field {
+      &.full-width {
+        flex: 1;
+      }
+
+      &.half-width {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 0;
+
+      .form-field {
+        &.half-width {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+
+  .save-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    border-radius: 8px;
+    font-weight: 600;
+
+    .button-icon {
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .save-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Material form field customizations
+::ng-deep {
+  .mat-mdc-form-field {
+    &.mat-form-field-appearance-outline {
+      .mat-mdc-form-field-outline {
+        color: variables.$border-color;
+      }
+
+      &.mat-focused {
+        .mat-mdc-form-field-outline-thick {
+          color: variables.$primary-color;
+        }
+      }
+
+      .mat-mdc-form-field-label {
+        color: variables.$text-muted;
+      }
+
+      &.mat-focused .mat-mdc-form-field-label {
+        color: variables.$primary-color;
+      }
+    }
+
+    .mat-mdc-input-element {
+      color: variables.$text-color;
+      caret-color: variables.$primary-color;
+
+      &[readonly] {
+        background-color: rgba(variables.$neutral-light, 0.5);
+        color: variables.$text-muted;
+        cursor: not-allowed;
+      }
+    }
+
+    .mat-mdc-form-field-hint {
+      color: variables.$text-muted;
+      font-size: 0.75rem;
+    }
+  }
+
+  .mat-mdc-form-field-error {
+    color: #dc2626;
+    font-size: 0.75rem;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .personal-info-section {
+    padding: 1rem 0;
+  }
+
+  .welcome-header {
+    .welcome-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  .form-card {
+    margin: 0;
+    border-radius: 8px;
+
+    mat-card-header,
+    .form-content {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+}

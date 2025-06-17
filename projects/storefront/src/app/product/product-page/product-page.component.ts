@@ -12,7 +12,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
 import { ImageCarouselComponent } from '../../shared/components/image-carousel/image-carousel.component';
-import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
+import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component'; // Corrected import
+import { T, TranslatePipe } from '@shared/i18n';
+import { I18nService } from '@shared/i18n';
 
 @Component({
   selector: 'app-product-page',
@@ -22,12 +24,14 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
     RouterModule,
     FormsModule,
     ImageCarouselComponent,
-    ProductCardComponent
+    FeaturedProductCardComponent, // This should now be correct
+    TranslatePipe
   ],
   templateUrl: './product-page.component.html',
   styleUrl: './product-page.component.scss'
 })
 export class ProductPageComponent implements OnInit {
+  public tKeys = T;
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private apiService = inject(ApiService);
@@ -37,6 +41,7 @@ export class ProductPageComponent implements OnInit {
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
   private recentlyViewedService = inject(RecentlyViewedService); // Added injection
+  private i18nService = inject(I18nService);
 
   public currentStoreSlug$ = this.storeContext.currentStoreSlug$;
   categoryId$: Observable<string | null>;
@@ -319,12 +324,14 @@ export class ProductPageComponent implements OnInit {
     this.cartService.addItem(itemToAdd, this.quantity).subscribe({
       next: () => {
         console.log('Item added successfully via service');
-        this.notificationService.showSuccess(`${this.quantity} x ${product.name} added to cart.`);
+        this.notificationService.showSuccess(
+          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, this.quantity, product.name)
+        );
         // TODO: Add button state change (e.g., temporarily disable or show added state)
       },
       error: (err: any) => {
         console.error('Failed to add item via service:', err);
-        this.notificationService.showError('Failed to add item to cart. Please try again.');
+        this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
       }
     });
   }
@@ -370,11 +377,15 @@ export class ProductPageComponent implements OnInit {
         next: () => {
           console.log(`Product ${product.id} removed from wishlist`);
           this.isInWishlist = false;
-          this.notificationService.showInfo(`${product.name} removed from wishlist.`);
+          this.notificationService.showInfo(
+            this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REMOVE_FROM_WISHLIST_SUCCESS_NOTIFICATION, product.name)
+          );
         },
         error: (err: any) => {
           console.error('Failed to remove item from wishlist:', err);
-          this.notificationService.showError('Failed to remove item from wishlist. Please try again.');
+          this.notificationService.showError(
+            this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REMOVE_FROM_WISHLIST_ERROR_NOTIFICATION)
+          );
         }
       });
     } else {
@@ -383,11 +394,15 @@ export class ProductPageComponent implements OnInit {
         next: () => {
           console.log(`Product ${product.id} added to wishlist`);
           this.isInWishlist = true;
-          this.notificationService.showSuccess(`${product.name} added to wishlist.`);
+          this.notificationService.showSuccess(
+            this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_WISHLIST_SUCCESS_NOTIFICATION, product.name)
+          );
         },
         error: (err: any) => {
           console.error('Failed to add item to wishlist:', err);
-          this.notificationService.showError('Failed to add item to wishlist. Please try again.');
+          this.notificationService.showError(
+            this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_WISHLIST_ERROR_NOTIFICATION)
+          );
         }
       });
     }
@@ -397,25 +412,28 @@ export class ProductPageComponent implements OnInit {
   submitReview(productId: string | undefined): void {
     if (!productId) {
       console.error('Cannot submit review: Product ID is missing.');
-      this.reviewSubmissionError = 'Product ID is missing.';
+      this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_ERROR_PRODUCT_ID_MISSING);
       return;
     }
 
-    if (!this.authService.isAuthenticated$) {
+    if (!this.authService.isAuthenticated$) { // This check needs to be performed on the observable's value, typically via async pipe or subscription
       console.warn('Cannot submit review: User is not logged in.');
-      this.reviewSubmissionError = 'You must be logged in to write a review.';
+      this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_ERROR_USER_NOT_LOGGED_IN);
+      // It might be better to rely on the isLoggedIn$ observable in the template to hide the form
+      // or check its current value if synchronous access is needed and available.
+      // For now, this logic might not work as expected if isAuthenticated$ is not subscribed to here.
       return;
     }
 
     if (this.newReviewRating < 1 || this.newReviewRating > 5) {
       console.warn('Cannot submit review: Invalid rating.');
-      this.reviewSubmissionError = 'Please provide a rating between 1 and 5.';
+      this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_ERROR_INVALID_RATING);
       return;
     }
 
     if (!this.newReviewComment || this.newReviewComment.trim() === '') {
       console.warn('Cannot submit review: Comment is empty.');
-      this.reviewSubmissionError = 'Please provide a comment for your review.';
+      this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_ERROR_COMMENT_EMPTY);
       return;
     }
 
@@ -429,18 +447,19 @@ export class ProductPageComponent implements OnInit {
 
     this.apiService.submitReview(reviewData).subscribe({
       next: () => {
+        // Removed duplicate next: () => {
         console.log('Review submitted successfully');
-        this.notificationService.showSuccess('Review submitted successfully!');
+        this.notificationService.showSuccess(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_SUBMIT_SUCCESS_NOTIFICATION));
         // Refresh reviews list after successful submission
         this.fetchReviews(productId);
         // Reset form
         this.newReviewRating = 0;
         this.newReviewComment = '';
       },
-      error: (err: any) => {
+      error: (err: any) => { // Add type for err
         console.error('Failed to submit review:', err);
-        this.reviewSubmissionError = 'Failed to submit review. Please try again.';
-        this.notificationService.showError('Failed to submit review. Please try again.');
+        this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_SUBMIT_ERROR_NOTIFICATION);
+        this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_SUBMIT_ERROR_NOTIFICATION));
         // TODO: Add more specific error handling based on API response
       }
     });

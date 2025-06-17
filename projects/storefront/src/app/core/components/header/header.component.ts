@@ -1,13 +1,30 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core'; // Added OnInit, OnDestroy
-import { CommonModule } from '@angular/common'; // For *ngIf
-import { RouterLink } from '@angular/router'; // For routerLink directives
-import { NavigationComponent } from '../navigation/navigation.component'; // Import Navigation
-import { SearchBarComponent } from '../search-bar/search-bar.component'; // Import Search Bar
-import { CartService } from '../../services/cart.service'; // Import CartService
-import { StoreContextService } from '../../services/store-context.service'; // Import StoreContextService
-import { AuthService } from '../../services/auth.service'; // Import AuthService
-import { Observable, Subscription } from 'rxjs'; // Import Observable and Subscription
-import { MobileMenuService } from '../../services/mobile-menu.service'; // Import MobileMenuService
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core'; // Removed inject, ElementRef, HostListener
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+// FormsModule, ReactiveFormsModule removed as search is delegated
+import { Observable, Subscription, of, firstValueFrom } from 'rxjs'; // Removed Subject, fromEvent, operators not needed by header
+import { map } from 'rxjs/operators'; // Keep map if used by other parts
+
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatBadgeModule } from '@angular/material/badge';
+
+import { CartService } from '../../services/cart.service';
+import { StoreContextService } from '../../services/store-context.service';
+import { AuthService } from '../../services/auth.service';
+// ApiService removed, SearchBarComponent will use it
+import { SearchBarComponent } from '../search-bar/search-bar.component'; // Import SearchBarComponent
+
+interface NavLink {
+  label: string;
+  pathSegments: string[];
+  isStoreSpecific: boolean;
+  key: string;
+  exact?: boolean;
+}
 
 @Component({
   selector: 'app-header',
@@ -15,66 +32,129 @@ import { MobileMenuService } from '../../services/mobile-menu.service'; // Impor
   imports: [
     CommonModule,
     RouterLink,
-    NavigationComponent,
-    SearchBarComponent
+    RouterLinkActive,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSidenavModule,
+    MatListModule,
+    MatBadgeModule,
+    SearchBarComponent // Add SearchBarComponent here
+    // FormsModule, ReactiveFormsModule removed
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  cartItemCount$: Observable<number> | undefined;
-  cartItemCount: number = 0; // For direct binding in template
-  private cartCountSubscription: Subscription | undefined;
-  currentStoreSlug$: Observable<string | null>; // Add slug observable
-  isAuthenticated$: Observable<boolean>; // Add auth state observable
-  isMobileMenuOpen$: Observable<boolean>; // Use observable from service
+  @ViewChild('mobileDrawer') mobileDrawer!: MatSidenav;
 
-  // Inject CartService, StoreContextService, and AuthService
+  public storeSlug$: Observable<string | null>;
+  storeName$: Observable<string | undefined>;
+  storeLogoUrl$: Observable<string | undefined | null>;
+  isAuthenticated$: Observable<boolean>;
+  userProfileImageUrl$: Observable<string | undefined | null>;
+  public defaultUserProfileImageUrl = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC44Hzw2Taav4khTujCr44832VCInQKGrmMHAEErJ1sru0o-XS9uVoReQQEzDLpC9OoAoZUKM69RkahY-FFPaPF5jpGlzqrIfUatLHXrzt8tg9WGwbuTklTGc4v8cH-uILUQ3CW-L_92nIWVbmWVtfUdrxMaGKeJziBnC_x0B2Ikvk9IsqHRlLid8b7Oibg6-bZ_mGSDB1H7YvWp8vqb00wPXIuMQtuX3mOJOK_ovrNvtQu6a3sYG14bPfBYF20swftpnpdKlQ9dA';
+
+  cartItemCount$: Observable<number>;
+  private subscriptions = new Subscription();
+
+  // All search-related properties removed:
+  // searchQuery, searchSuggestions$, currentSearchSuggestions, searchQueryChanged,
+  // showSuggestions, activeSuggestionIndex, destroy$, searchInputFocused,
+  // desktopSearchInput, mobileSearchInput
+
+  public NAV_LINKS: NavLink[] = [
+    { label: 'Home', pathSegments: [], isStoreSpecific: true, key: 'home', exact: true },
+    { label: 'About Us', pathSegments: ['about'], isStoreSpecific: true, key: 'about' },
+    { label: 'Contact', pathSegments: ['contact'], isStoreSpecific: true, key: 'contact' },
+  ];
+
   constructor(
+    private router: Router,
     private cartService: CartService,
     private storeContext: StoreContextService,
-    private authService: AuthService, // Inject AuthService
-    private mobileMenuService: MobileMenuService, // Inject MobileMenuService
-    private el: ElementRef
+    private authService: AuthService
+    // ElementRef and ApiService removed
   ) {
-    this.currentStoreSlug$ = this.storeContext.currentStoreSlug$; // Assign slug observable
-    this.isAuthenticated$ = this.authService.isAuthenticated$; // Assign auth state observable
-    this.isMobileMenuOpen$ = this.mobileMenuService.isOpen$; // Assign menu state observable
+    this.storeSlug$ = this.storeContext.currentStoreSlug$;
+    this.isAuthenticated$ = this.authService.isAuthenticated$;
+    this.userProfileImageUrl$ = this.authService.currentUser$.pipe(map(user => user?.profilePictureUrl || null));
+
+    this.storeName$ = this.storeContext.currentStoreDetails$.pipe(
+      map(store => store?.name)
+    );
+    this.storeLogoUrl$ = this.storeContext.currentStoreDetails$.pipe(
+      map(store => store?.logoUrl)
+    );
+    this.cartItemCount$ = this.cartService.getItemCount();
   }
 
   ngOnInit() {
-    // Subscribe to the cart count observable
-    this.cartItemCount$ = this.cartService.getItemCount();
-    this.cartCountSubscription = this.cartItemCount$.subscribe(count => {
-      this.cartItemCount = count;
-      console.log('Cart count updated in header:', count); // For debugging
-    });
+    // Search-related subscriptions removed
   }
 
   ngOnDestroy() {
-    // Unsubscribe to prevent memory leaks
-    if (this.cartCountSubscription) {
-      this.cartCountSubscription.unsubscribe();
-    }
-}
-
-closeMobileMenuOnClick(): void {
-  this.mobileMenuService.closeMenu();
-}
-
-  toggleMobileMenu(): void {
-    this.mobileMenuService.toggleMenu();
+    this.subscriptions.unsubscribe();
+    // destroy$ for search removed
   }
 
-  @HostListener('document:click', ['$event'])
-  clickout(event: Event): void {
-    // Check if the click is outside the header element AND if the menu is open (using service state)
-    if (!this.el.nativeElement.contains(event.target) && this.mobileMenuService.isOpen) {
-       this.mobileMenuService.closeMenu(); // Use service to close
+  generateRouterLink(link: NavLink, slug: string | null | undefined): string[] {
+    if (link.isStoreSpecific) {
+      if (slug) {
+        const segments = link.pathSegments.length === 0 ? [] : link.pathSegments;
+        return ['/', slug, ...segments].filter(segment => segment !== undefined && segment !== null && segment !== '');
+      } else {
+        return ['/', ...link.pathSegments].filter(segment => segment !== undefined && segment !== null && segment !== '');
+      }
+    }
+    return ['/', ...link.pathSegments].filter(segment => segment !== undefined && segment !== null && segment !== '');
+  }
+
+  // All search-related methods removed:
+  // onSearchQueryChanged, fetchSearchSuggestions, clearSearch, onSearchFocus,
+  // handleKeyDown, selectSuggestion, slugify, performSearch
+
+  async onAccountClick(): Promise<void> {
+    const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
+    const slug = await firstValueFrom(this.storeSlug$);
+
+    if (isAuthenticated) {
+      this.router.navigate(slug ? ['/', slug, 'account'] : ['/account']);
+    } else {
+      this.router.navigate(slug ? ['/', slug, 'login'] : ['/login']);
+    }
+    if (this.mobileDrawer?.opened) {
+      this.mobileDrawer.close();
+    }
+  }
+
+  async onCartClick(): Promise<void> {
+    const slug = await firstValueFrom(this.storeSlug$);
+    this.router.navigate(slug ? ['/', slug, 'cart'] : ['/cart']);
+    if (this.mobileDrawer?.opened) {
+      this.mobileDrawer.close();
+    }
+  }
+
+  async onLogoClick(): Promise<void> {
+    const slug = await firstValueFrom(this.storeSlug$);
+    this.router.navigate(slug ? ['/', slug] : ['/']);
+     if (this.mobileDrawer?.opened) {
+      this.mobileDrawer.close();
+    }
+  }
+
+  handleNavLinkClick(): void {
+    if (this.mobileDrawer?.opened) {
+      this.mobileDrawer.close();
     }
   }
 
   logout(): void {
     this.authService.logout();
+    this.router.navigate(['/']);
+    if (this.mobileDrawer?.opened) {
+      this.mobileDrawer.close();
+    }
   }
 }

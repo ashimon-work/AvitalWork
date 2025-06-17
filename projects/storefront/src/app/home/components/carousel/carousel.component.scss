@@ -10,7 +10,7 @@
   width: 100%;
   background-color: var(--neutral-lightest);
   border-radius: var(--border-radius-lg);
-  height: auto;
+  height: 400px; // Fixed height for the carousel
 }
 
 .slides-wrapper {

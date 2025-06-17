@@ -1,24 +1,24 @@
 <!-- Store Management 404 Page -->
 <div class="management-not-found-container">
-  <h1>404 - Page Not Found</h1>
-  <p>The page you were looking for in the Store Management Portal could not be found.</p>
+  <h1>{{ tKeys.SM_MGMT_NOT_FOUND_TITLE | translate }}</h1>
+  <p>{{ tKeys.SM_MGMT_NOT_FOUND_MESSAGE | translate }}</p>
 
   <!-- "Back to Dashboard" button -->
-  <button [routerLink]="['/', storeSlug, 'dashboard']">Back to Dashboard</button>
+  <button [routerLink]="['/', storeSlug, 'dashboard']">{{ tKeys.SM_MGMT_NOT_FOUND_BACK_TO_DASHBOARD_BUTTON | translate }}</button>
 
   <!-- Quick links to common management pages -->
   <div class="quick-links">
-    <h2>Quick Links:</h2>
+    <h2>{{ tKeys.SM_MGMT_NOT_FOUND_QUICK_LINKS_TITLE | translate }}</h2>
     <ul>
-      <li><a [routerLink]="['/', storeSlug, 'products']">Product Management</a></li>
-      <li><a [routerLink]="['/', storeSlug, 'orders']">Order Management</a></li>
-      <li><a [routerLink]="['/', storeSlug, 'customers']">Customer Management</a></li>
-      <li><a [routerLink]="['/', storeSlug, 'settings']">Settings</a></li>
+      <li><a [routerLink]="['/', storeSlug, 'products']">{{ tKeys.SM_MGMT_NOT_FOUND_PRODUCT_MANAGEMENT_LINK | translate }}</a></li>
+      <li><a [routerLink]="['/', storeSlug, 'orders']">{{ tKeys.SM_MGMT_NOT_FOUND_ORDER_MANAGEMENT_LINK | translate }}</a></li>
+      <li><a [routerLink]="['/', storeSlug, 'customers']">{{ tKeys.SM_MGMT_NOT_FOUND_CUSTOMER_MANAGEMENT_LINK | translate }}</a></li>
+      <li><a [routerLink]="['/', storeSlug, 'settings']">{{ tKeys.SM_MGMT_NOT_FOUND_SETTINGS_LINK | translate }}</a></li>
     </ul>
   </div>
 
   <!-- Support contact information -->
   <div class="support-contact">
-    <p>If you believe this is an error, please contact support at support&#64;magicstore.com</p>
+    <p>{{ tKeys.SM_MGMT_NOT_FOUND_SUPPORT_MESSAGE | translate }}</p>
   </div>
 </div>

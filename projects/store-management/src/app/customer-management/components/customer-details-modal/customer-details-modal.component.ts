@@ -5,16 +5,18 @@ import { CustomerService } from '../../services/customer.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { catchError, of, tap } from 'rxjs';
 import { User, Order, Note } from '@shared-types'; // Assuming Order and Note interface are available
+import { T, TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-customer-details-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './customer-details-modal.component.html',
   styleUrl: './customer-details-modal.component.scss'
 })
 export class CustomerDetailsModalComponent implements OnChanges {
   @Input() customer: User | null = null;
+  public tKeys = T;
 
   editableCustomer: User | null = null;
   isLoading = false;

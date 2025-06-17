@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { NotificationService, Notification } from '../../../core/services/notification.service';
 import { Subject, timer } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-notification-toast',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './notification-toast.component.html',
   styleUrl: './notification-toast.component.scss'
 })
 export class NotificationToastComponent implements OnInit, OnDestroy {
+  public tKeys = T;
   private notificationService = inject(NotificationService);
   private destroy$ = new Subject<void>();
 

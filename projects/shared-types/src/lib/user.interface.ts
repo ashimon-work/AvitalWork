@@ -18,6 +18,7 @@ export interface User {
   addresses?: Address[];
   accountStatus?: string;
   registrationDate?: string;
-  notes?: Note[]; // Changed from string[]
+  notes?: Note[];
+  profilePictureUrl?: string;
   // Add timestamps later
 }

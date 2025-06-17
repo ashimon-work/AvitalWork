@@ -11,7 +11,12 @@ export class CategoriesService {
   constructor(
     @InjectRepository(CategoryEntity)
     private readonly categoriesRepository: Repository<CategoryEntity>,
-  ) {}
+  ) { }
+
+
+  async findAll(options?: FindManyOptions<CategoryEntity>): Promise<CategoryEntity[]> {
+    return this.categoriesRepository.find(options);
+  }
 
   async getFeaturedCategories(storeSlug?: string): Promise<CategoryEntity[]> { // Add storeSlug parameter
     const where: FindOptionsWhere<CategoryEntity> = {};
@@ -31,10 +36,11 @@ export class CategoriesService {
     return categories;
   }
 
-  async findOne(id: string, storeSlug?: string): Promise<CategoryEntity | null> { // Add storeSlug parameter
+
+  async findOne(id: string, storeSlug?: string): Promise<CategoryEntity | null> {
     const where: FindOptionsWhere<CategoryEntity> = { id };
     if (storeSlug) {
-      where.store = { slug: storeSlug }; // Filter by store slug if provided
+      where.store = { slug: storeSlug };
     }
 
     // Use findOne with where and relations instead of findOneBy for relation filtering

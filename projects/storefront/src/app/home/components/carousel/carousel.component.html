@@ -11,10 +11,10 @@
     <div class="slide" *ngIf="slides.length > 1">
        <a *ngIf="slides[slides.length - 1].linkUrl && (currentStoreSlug | async); else noLinkCloneLast"
          [routerLink]="['/', (currentStoreSlug | async), 'product', slides[slides.length - 1].linkUrl]">
-        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText + ' (Clone Last)'">
+        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText + (tKeys.SF_CAROUSEL_ALT_SUFFIX_CLONE_LAST | translate)">
       </a>
       <ng-template #noLinkCloneLast>
-        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText + ' (Clone Last)'">
+        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText + (tKeys.SF_CAROUSEL_ALT_SUFFIX_CLONE_LAST | translate)">
       </ng-template>
     </div>
 
@@ -34,18 +34,18 @@
     <div class="slide" *ngIf="slides.length > 1">
        <a *ngIf="slides[0].linkUrl && (currentStoreSlug | async); else noLinkClone"
          [routerLink]="['/', (currentStoreSlug | async), 'product', slides[0].linkUrl]">
-        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText + ' (Clone)'"> <!-- Added (Clone) for debugging clarity if needed -->
+        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText + (tKeys.SF_CAROUSEL_ALT_SUFFIX_CLONE | translate)">
       </a>
       <ng-template #noLinkClone>
-        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText + ' (Clone)'"> <!-- Added (Clone) for debugging clarity if needed -->
+        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText + (tKeys.SF_CAROUSEL_ALT_SUFFIX_CLONE | translate)">
       </ng-template>
     </div>
 
   </div>
 
   <!-- Navigation Arrows -->
-  <button class="carousel-control prev" (click)="prevSlide()">&#10094;</button>
-  <button class="carousel-control next" (click)="nextSlide()">&#10095;</button>
+  <button class="carousel-control prev" (click)="prevSlide()" [attr.aria-label]="tKeys.SF_CAROUSEL_PREV_BUTTON | translate">&#10094;</button>
+  <button class="carousel-control next" (click)="nextSlide()" [attr.aria-label]="tKeys.SF_CAROUSEL_NEXT_BUTTON | translate">&#10095;</button>
 
   <!-- Indicators (Dots) -->
   <div class="carousel-indicators">

@@ -1,0 +1,28 @@
+// Checkout Page Specific Variables
+
+// Color Palette
+$primary-color: var(--primary-color, #2B2B2B);
+$secondary-color: var(--secondary-color, #f0f2f5);
+$text-color: var(--text-color, #333333);
+$text-color-light: var(--text-color-light, #666666);
+$border-color: var(--border-color, #e0e0e0);
+$background-color: var(--background-color, #ffffff);
+$success-color: var(--success-color, #2ecc71);
+$error-color: var(--error-color, #e74c3c);
+$warning-color: var(--warning-color, #f39c12);
+$text-color-muted: var(--text-color-muted, #6c757d);
+
+// Spacing
+$spacing-unit: var(--spacing-unit, 8px);
+$spacing-xs: var(--spacing-xs, 4px);
+$spacing-sm: var(--spacing-sm, 8px);
+$spacing-md: var(--spacing-md, 16px);
+$spacing-lg: var(--spacing-lg, 24px);
+$spacing-xl: var(--spacing-xl, 32px);
+$spacing-xxl: var(--spacing-xxl, 48px);
+
+// Borders
+$border-radius-sm: var(--border-radius-sm, 4px);
+$border-radius-md: var(--border-radius-md, 6px);
+$border-radius-lg: var(--border-radius-lg, 8px);
+$border-width: var(--border-width, 1px);

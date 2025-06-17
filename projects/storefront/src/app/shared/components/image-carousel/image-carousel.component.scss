@@ -9,43 +9,63 @@
 
   .main-image-container {
     width: 100%;
-    height: 500px; // Match Product Page plan
+    // height: 500px; // Let aspect-ratio define height
+    aspect-ratio: 1 / 1; // Ensure square aspect ratio
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; // Hide overflowing parts of the image
-    position: relative; // Needed for zoom effect
-    cursor: zoom-in; // Indicate zoom capability
+    overflow: hidden;
+    position: relative;
+    cursor: zoom-in;
+    border-radius: var(--border-radius-xl, 12px);
+    box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+    background-color: var(--card-background-color, var(--neutral-lightest));
 
     .main-image {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain; // Ensure the image fits within the container
-      transition: transform 0.3s ease-in-out; // Smooth transition for zoom
+      width: 100%; // Ensure image fills the container width
+      height: 100%; // Ensure image fills the container height
+      object-fit: cover; // Use cover to fill, might crop
+      transition: transform 0.35s ease-out;
     }
 
-    &:hover .main-image {
-      transform: scale(1.5); // Zoom effect on hover
-      object-fit: cover; // Change object-fit to cover when zoomed
+    &:hover .main-image,
+    &:focus-within .main-image { // Added focus-within for accessibility
+      transform: scale(1.1); // Adjusted zoom scale
     }
   }
 
   .thumbnail-container {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
-    gap: 5px; // Space between thumbnails
+    margin-top: var(--spacing-md, 16px);
+    gap: var(--spacing-sm, 8px);
 
     .thumbnail {
-      width: 60px; // Thumbnail size
-      height: 60px;
-      object-fit: cover; // Crop thumbnails to fill the space
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
       cursor: pointer;
-      border: 2px solid transparent;
+      border: 2px solid var(--border-color-muted, var(--border-color));
+      border-radius: var(--border-radius-md, 8px);
       transition: border-color 0.2s ease-in-out;
+      padding: 0;
+      background: none;
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: calc(var(--border-radius-md, 8px) - 2px);
+      }
+
+      &:hover {
+        border-color: rgba(var(--product-accent-color-rgb), 0.6);
+      }
 
       &.active {
-        border-color: #007bff; // Highlight active thumbnail
+        border-color: var(--product-accent-color);
+        box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
       }
     }
   }
@@ -55,18 +75,18 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.6); /* Slightly darker background */
+    background-color: rgba(0, 0, 0, 0.6);
     color: white;
     border: none;
-    padding: 10px 15px; /* More padding */
+    padding: 10px 15px;
     cursor: pointer;
-    z-index: 10; // Ensure buttons are above images
-    border-radius: 5px; /* Rounded corners */
-    font-size: 18px; /* Larger font */
-    transition: background-color 0.3s ease; /* Smooth transition */
+    z-index: 10;
+    border-radius: 5px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.8); /* Darker on hover */
+      background-color: rgba(0, 0, 0, 0.8);
     }
 
     &:disabled {

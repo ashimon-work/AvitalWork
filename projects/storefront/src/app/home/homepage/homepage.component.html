@@ -5,25 +5,26 @@
 
 <!-- Featured Categories -->
 <section class="featured-categories container">
-  <h2>Featured Categories</h2>
+  <h2>{{ tKeys.SF_HOMEPAGE_FEATURED_CATEGORIES_TITLE | translate }}</h2>
   <div class="category-grid" *ngIf="featuredCategories$ | async as categories">
-    <app-category-card
+    <app-featured-category-card
       *ngFor="let category of categories"
       [storeSlug]="currentStoreSlug$ | async"
       [category]="category"
-    ></app-category-card>
+    ></app-featured-category-card>
   </div>
   <!-- Add loading/error state handling later -->
 </section>
 
 <!-- Featured Products -->
 <section class="featured-products container">
-  <h2>Featured Products</h2>
+  <h2>{{ tKeys.SF_HOMEPAGE_FEATURED_PRODUCTS_TITLE | translate }}</h2>
   <div class="product-grid" *ngIf="featuredProducts$ | async as products">
-    <app-product-card
+    <app-featured-product-card
       *ngFor="let product of products"
       [product]="product"
       [storeSlug]="currentStoreSlug$ | async"
-    ></app-product-card>
+      (addToCart)="onAddToCart($event)"
+    ></app-featured-product-card>
   </div>
 </section>

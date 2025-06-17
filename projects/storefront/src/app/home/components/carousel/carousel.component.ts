@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { interval, Subscription, Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { StoreContextService } from '../../../core/services/store-context.service';
+import { T, TranslatePipe } from '@shared/i18n';
 
 export interface CarouselSlide {
   imageUrl: string;
@@ -14,11 +15,12 @@ export interface CarouselSlide {
 @Component({
   selector: 'app-carousel',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './carousel.component.html',
   styleUrl: './carousel.component.scss',
 })
 export class CarouselComponent implements OnInit, OnDestroy {
+  public tKeys = T;
   slides: CarouselSlide[] = [];
 
   private apiService: ApiService;

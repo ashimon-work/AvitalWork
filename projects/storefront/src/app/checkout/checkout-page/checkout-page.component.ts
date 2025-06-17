@@ -1,90 +1,73 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms'; // Added AbstractControl, ValidationErrors
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ApiService, ShippingMethod } from '../../core/services/api.service'; // Import ShippingMethod
+import { ApiService, ShippingMethod, AddressDto } from '../../core/services/api.service';
+import { T, TranslatePipe, I18nService } from '@shared/i18n';
 import { CartService } from '../../core/services/cart.service';
 import { StoreContextService } from '../../core/services/store-context.service';
-import { Observable, combineLatest, switchMap, tap, of, BehaviorSubject } from 'rxjs'; // Added of, BehaviorSubject
+import { Observable, combineLatest, switchMap, tap, of, BehaviorSubject } from 'rxjs';
 import { Cart, CartItem } from 'projects/shared-types/src/lib/cart.interface';
-import { NotificationService } from '../../core/services/notification.service'; // For user feedback
-import { Router } from '@angular/router'; // For navigation
+import { NotificationService } from '../../core/services/notification.service';
+import { Router } from '@angular/router';
+import { CheckoutProgressIndicatorComponent } from '../components/checkout-progress-indicator/checkout-progress-indicator.component';
+import { ShippingAddressFormComponent, ShippingAddressData } from '../components/shipping-address-form/shipping-address-form.component';
+import { PaymentMethodSectionComponent } from '../components/payment-method-section/payment-method-section.component';
+import { OrderSummaryCardComponent, OrderItem } from '../components/order-summary-card/order-summary-card.component';
+import { ShippingMethodComponent } from '../components/shipping-method/shipping-method.component';
 
 @Component({
   selector: 'app-checkout-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    CheckoutProgressIndicatorComponent,
+    ShippingAddressFormComponent,
+    PaymentMethodSectionComponent,
+    OrderSummaryCardComponent,
+    ShippingMethodComponent
+  ],
   templateUrl: './checkout-page.component.html',
-  styleUrl: './checkout-page.component.scss'
+  styleUrls: ['./checkout-page.component.scss'],
+  providers: [TranslatePipe, I18nService]
 })
 export class CheckoutPageComponent implements OnInit {
-  checkoutForm!: FormGroup;
+  public tKeys = T;
   cart$: Observable<Cart | null>;
   shippingMethods$: BehaviorSubject<ShippingMethod[]> = new BehaviorSubject<ShippingMethod[]>([]);
   selectedShippingMethod: ShippingMethod | null = null;
   taxEstimate$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   orderTotal$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   isLoading: boolean = false;
-  currentStep: BehaviorSubject<number> = new BehaviorSubject<number>(1); // For multi-step UI
+  // currentStep is no longer needed, page will be a single step.
+  // currentStep: BehaviorSubject<number> = new BehaviorSubject<number>(1);
+
+  // Tranzila integration
+  hasCreditCard$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  creditCardInfo$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  isCheckingCard: boolean = false;
+
+  // New properties for child components
+  shippingAddressData: ShippingAddressData | null = null;
+  storedCard: { last4: string; brand: string; } | undefined = undefined;
+  orderItems: OrderItem[] = [];
+
 
   constructor(
-    private fb: FormBuilder,
     private apiService: ApiService,
     private cartService: CartService,
     private storeContextService: StoreContextService,
-    private notificationService: NotificationService, // Inject NotificationService
-    private router: Router // Inject Router
+    private notificationService: NotificationService,
+    private router: Router,
+    private translatePipe: TranslatePipe
   ) {
     this.cart$ = this.cartService.cartState$;
   }
 
   ngOnInit(): void {
-    this.initForm();
     this.loadShippingMethods();
     this.subscribeToCartChanges();
-  }
-
-  initForm(): void {
-    this.checkoutForm = this.fb.group({
-      shippingAddress: this.fb.group({
-        firstName: ['', Validators.required],
-        lastName: ['', Validators.required],
-        address1: ['', Validators.required],
-        address2: [''],
-        city: ['', Validators.required],
-        // state: ['', Validators.required], // Removed state based on memory bank
-        zipCode: ['', Validators.required],
-        country: [{ value: 'Israel', disabled: true }, Validators.required] // Default to Israel and disable
-      }),
-      billingAddressSameAsShipping: [true],
-      billingAddress: this.fb.group({
-        firstName: ['', Validators.required],
-        lastName: ['', Validators.required],
-        address1: ['', Validators.required],
-        address2: [''],
-        city: ['', Validators.required],
-        // state: ['', Validators.required], // Removed state based on memory bank
-        zipCode: ['', Validators.required],
-        country: [{ value: 'Israel', disabled: true }, Validators.required] // Default to Israel and disable
-      }),
-      shippingMethod: ['', Validators.required],
-      paymentInfo: this.fb.group({
-        cardNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{13,19}$/), this.luhnValidator.bind(this)]],
-        expiryDate: ['', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/)]], // MM/YY
-        cvv: ['', [Validators.required, Validators.pattern(/^[0-9]{3,4}$/)]]
-      }),
-      newsletterOptIn: [false],
-      termsAccepted: [false, Validators.requiredTrue]
-    });
-
-    // Disable billing address initially if same as shipping
-    this.checkoutForm.get('billingAddressSameAsShipping')?.valueChanges.subscribe(value => {
-      const billingAddressGroup = this.checkoutForm.get('billingAddress');
-      if (value) {
-        billingAddressGroup?.disable();
-      } else {
-        billingAddressGroup?.enable();
-      }
-    });
+    this.checkCreditCardStatus();
   }
 
   loadShippingMethods(): void {
@@ -92,7 +75,8 @@ export class CheckoutPageComponent implements OnInit {
     this.storeContextService.currentStoreSlug$.pipe(
       switchMap(storeSlug => {
         if (!storeSlug) {
-          this.notificationService.showError('Store context not found. Cannot load shipping methods.');
+          const storeContextErrorMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_STORE_CONTEXT_ERROR);
+          this.notificationService.showError(storeContextErrorMsg);
           return of([]);
         }
         return this.apiService.getShippingMethods(storeSlug);
@@ -101,175 +85,221 @@ export class CheckoutPageComponent implements OnInit {
       this.shippingMethods$.next(methods);
       this.isLoading = false;
       if (methods.length > 0) {
-        // Pre-select the first method if not already set or if current selection is invalid
-        const currentSelection = this.checkoutForm.get('shippingMethod')?.value;
-        if (!currentSelection || !methods.find(m => m.id === currentSelection)) {
-            this.checkoutForm.get('shippingMethod')?.setValue(methods[0].id);
-            // selectedShippingMethod will be updated by the form's valueChanges subscription
-        }
-      } else {
-        this.notificationService.showInfo('No shipping methods available for your location.'); // Changed to showInfo
+              // Pre-select the first method if not already set or if current selection is invalid
+              if (!this.selectedShippingMethod || !methods.find(m => m.id === this.selectedShippingMethod?.id)) {
+                this.selectedShippingMethod = methods[0];
+                this.cart$.subscribe(cart => {
+                  if(cart) this.calculateTotals(cart)
+                 });
+              }
+            } else {
+        const noShippingInfoMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_NO_SHIPPING_METHODS);
+        this.notificationService.showInfo(noShippingInfoMsg); // Changed to showInfo
       }
     });
   }
 
-  // onShippingMethodChange is handled by form valueChanges
-
-  subscribeToCartChanges(): void {
-    combineLatest([
-      this.cart$,
-      this.checkoutForm.get('shippingAddress')!.valueChanges, // Potential null if form not ready
-      this.checkoutForm.get('shippingMethod')!.valueChanges  // Potential null
-    ]).pipe(
-      switchMap(([cart, shippingAddress, shippingMethodId]) => {
-        if (!cart || cart.items.length === 0) {
-          this.orderTotal$.next(0);
-          this.taxEstimate$.next(0);
-          return of(null); // No cart, no further processing needed
+    subscribeToCartChanges(): void {
+      this.cart$.subscribe(cart => {
+        if (cart) {
+          this.orderItems = cart.items.map(item => ({
+            id: item.product.id,
+            name: item.product.name,
+            options: '', // Add logic to get options if available
+            price: item.product.price,
+            quantity: item.quantity,
+            image: item.product.imageUrls?.[0] || ''
+          }));
+          this.calculateTotals(cart);
         }
+      });
+    }
+  
+    calculateTotals(cart: Cart): void {
+      const shippingCost = this.selectedShippingMethod?.cost || 0;
+      // Tax calculation logic will be simplified for now
+      const taxAmount = (cart.subtotal || 0) * 0.1; // Example 10% tax
+          this.taxEstimate$.next(taxAmount);
+          this.orderTotal$.next((cart.subtotal || 0) + shippingCost + taxAmount);
+    }
+  
+  
+    // --- Multi-step form navigation removed ---
+  
+    handleShippingSubmit(data: ShippingAddressData) {
+      this.shippingAddressData = data;
+    }
 
-        const currentSelectedMethod = this.shippingMethods$.value.find(method => method.id === shippingMethodId);
-        this.selectedShippingMethod = currentSelectedMethod || null;
-
-        const storeSlug = this.storeContextService.getCurrentStoreSlug();
-        if (storeSlug && shippingAddress && cart.items.length > 0) {
-          // Prepare cart items for tax estimation
-          const taxCartItems = cart.items.map(item => ({ productId: item.product.id, quantity: item.quantity }));
-          return this.apiService.getTaxEstimate(storeSlug, taxCartItems, shippingAddress).pipe(
-            tap(taxResponse => {
-              this.taxEstimate$.next(taxResponse.taxAmount);
-              this.updateOrderTotal(cart.subtotal ?? 0, currentSelectedMethod?.cost || 0, taxResponse.taxAmount);
-            }),
-            // catchError inside getTaxEstimate handles individual errors, returning 0 tax
-          );
-        } else {
-          // If no storeSlug, shippingAddress, or items, calculate total without tax
-          this.taxEstimate$.next(0);
-          this.updateOrderTotal(cart.subtotal ?? 0, currentSelectedMethod?.cost || 0, 0);
-          return of(null); // Indicate no tax call was made
+    handleShippingMethodChange(method: ShippingMethod) {
+      this.selectedShippingMethod = method;
+      this.cart$.subscribe(cart => {
+        if (cart) {
+          this.calculateTotals(cart);
         }
-      })
-    ).subscribe();
-  }
-
-  updateOrderTotal(cartSubtotal: number, shippingCost: number, taxAmount: number): void {
-    this.orderTotal$.next(cartSubtotal + shippingCost + taxAmount);
-  }
-
-  // --- Multi-step form navigation ---
-  nextStep(): void {
-    if (this.currentStep.value < 3) { // Assuming 3 steps: Shipping, Billing/Payment, Review
-      // Add validation for current step before proceeding
-      if (this.currentStep.value === 1 && this.checkoutForm.get('shippingAddress')?.invalid) {
-        this.checkoutForm.get('shippingAddress')?.markAllAsTouched();
-        this.notificationService.showError('Please fill in all required shipping address fields.');
+      });
+    }
+  
+    handleCardUpdate(card: { last4: string; brand: string; }) {
+        this.storedCard = card;
+      }
+    
+      canPlaceOrder(): boolean {
+        return !!this.shippingAddressData && !!this.storedCard && this.shippingAddressData.terms;
+      }
+    
+      placeOrder(): void {
+      if (!this.shippingAddressData || !this.storedCard) {
+        this.notificationService.showError('Please complete all steps.');
         return;
       }
-      if (this.currentStep.value === 1 && this.checkoutForm.get('shippingMethod')?.invalid) {
-        this.checkoutForm.get('shippingMethod')?.markAsTouched();
-        this.notificationService.showError('Please select a shipping method.');
-        return;
-      }
-      // Add more step-specific validations as needed for step 2 (billing/payment)
-
-      this.currentStep.next(this.currentStep.value + 1);
-    }
+  
+      this.isLoading = true;
+  
+      const orderData = {
+        storeSlug: this.storeContextService.getCurrentStoreSlug(),
+        cartItems: this.cartService.getCurrentCart()!.items.map((item: CartItem) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+          price: item.product.price
+        })),
+        shippingAddress: {
+          firstName: this.shippingAddressData.fullName.split(' ')[0],
+          lastName: this.shippingAddressData.fullName.split(' ').slice(1).join(' '),
+          address1: this.shippingAddressData.address1,
+          address2: this.shippingAddressData.address2,
+          city: this.shippingAddressData.city,
+          zipCode: this.shippingAddressData.zip,
+          country: this.shippingAddressData.country,
+        },
+        billingAddress: { // Assuming same as shipping for now
+          firstName: this.shippingAddressData.fullName.split(' ')[0],
+          lastName: this.shippingAddressData.fullName.split(' ').slice(1).join(' '),
+          address1: this.shippingAddressData.address1,
+          address2: this.shippingAddressData.address2,
+          city: this.shippingAddressData.city,
+          zipCode: this.shippingAddressData.zip,
+          country: this.shippingAddressData.country,
+        },
+        shippingMethodId: this.selectedShippingMethod?.id,
+        newsletterOptIn: this.shippingAddressData.newsletter,
+        termsAccepted: this.shippingAddressData.terms,
+        subtotal: this.cartService.getCurrentCart()!.subtotal,
+        shippingCost: this.selectedShippingMethod?.cost || 0,
+        taxAmount: this.taxEstimate$.value,
+        total: this.orderTotal$.value
+      };
+  
+      this.apiService.placeOrder(orderData).subscribe({
+        next: (response: { orderId: string, orderNumber: string }) => {
+          this.isLoading = false;
+          const successMessage = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_ORDER_SUCCESS, { orderNumber: response.orderNumber } as any);
+          this.notificationService.showSuccess(successMessage);
+          this.cartService.loadInitialCart();
+          const storeSlug = this.storeContextService.getCurrentStoreSlug();
+          this.router.navigate(['/', storeSlug, 'order-confirmation', response.orderId]);
+        },
+        error: (error: any) => {
+          this.isLoading = false;
+          this.notificationService.showError(error.error?.message || 'Failed to place order.');
+          console.error('Error placing order:', error);
+        }
+      });
   }
 
-  prevStep(): void {
-    if (this.currentStep.value > 1) {
-      this.currentStep.next(this.currentStep.value - 1);
+  public get creditCardDisplay(): string {
+    const cardInfo = this.creditCardInfo$.value;
+    if (cardInfo && cardInfo.lastFour) {
+      return `•••• •••• •••• ${cardInfo.lastFour}`;
     }
+    return '';
   }
 
-  goToStep(step: number): void {
-    // Potentially add validation before allowing direct step jumps
-    this.currentStep.next(step);
-  }
-  // --- End multi-step form navigation ---
-
-
-  placeOrder(): void {
-    if (this.checkoutForm.invalid) {
-      // Mark all fields as touched to display validation errors
-      this.checkoutForm.markAllAsTouched();
-      console.error('Form is invalid. Cannot place order.');
-      return;
-    }
-
-    if (!this.cartService.getCurrentCart() || this.cartService.getCurrentCart()!.items.length === 0) {
-      console.error('Cart is empty. Cannot place order.');
-      // TODO: Redirect to cart page or show an error message
-      return;
-    }
-
-    this.isLoading = true;
-
-    const formValue = this.checkoutForm.getRawValue(); // Use getRawValue to include disabled fields
-
-    const orderData = {
-      storeSlug: this.storeContextService.getCurrentStoreSlug(),
-      cartItems: this.cartService.getCurrentCart()!.items.map((item: CartItem) => ({
-        productId: item.product.id,
-        quantity: item.quantity,
-        price: item.product.price // Use product price at time of order
-      })),
-      shippingAddress: formValue.shippingAddress,
-      billingAddress: formValue.billingAddressSameAsShipping ? formValue.shippingAddress : formValue.billingAddress,
-      shippingMethodId: formValue.shippingMethod,
-      paymentInfo: formValue.paymentInfo, // TODO: This should be a token or reference, not raw card details
-      newsletterOptIn: formValue.newsletterOptIn,
-      termsAccepted: formValue.termsAccepted,
-      // Include calculated totals for backend verification (optional but good practice)
-      subtotal: this.cartService.getCurrentCart()!.subtotal,
-      shippingCost: this.selectedShippingMethod?.cost || 0,
-      taxAmount: this.taxEstimate$.value,
-      total: this.orderTotal$.value
-    };
-
-    this.apiService.placeOrder(orderData).subscribe({
-      next: (response: { orderId: string, orderNumber: string }) => { // Assuming backend returns orderId and orderNumber
-        this.isLoading = false;
-        this.notificationService.showSuccess(`Order #${response.orderNumber} placed successfully!`);
-        // Backend should clear the cart. Frontend reloads cart state.
-        this.cartService.loadInitialCart();
-        const storeSlug = this.storeContextService.getCurrentStoreSlug();
-        this.router.navigate(['/', storeSlug, 'order-confirmation', response.orderId]);
+  checkCreditCardStatus(): void {
+    this.isCheckingCard = true;
+    this.apiService.checkCreditCardStatus().subscribe({
+      next: (result) => {
+        const hasCard = result && result.hasCard;
+        this.hasCreditCard$.next(hasCard);
+        if (hasCard && result.cardInfo) {
+          this.creditCardInfo$.next(result.cardInfo);
+          this.storedCard = { last4: result.cardInfo.lastFour, brand: 'Visa' }; // Assuming Visa for now
+        }
+        this.isCheckingCard = false;
       },
-      error: (error: any) => {
-        this.isLoading = false;
-        this.notificationService.showError(error.error?.message || 'Failed to place order. Please try again.');
-        console.error('Error placing order:', error);
+      error: (error) => {
+        this.hasCreditCard$.next(false);
+        this.isCheckingCard = false;
+        console.log('Error checking credit card status:', error);
       }
     });
   }
 
-  // Helper for Luhn algorithm (basic credit card validation)
-  isValidLuhn(cardNumber: string): boolean {
-    if (/[^0-9-\s]+/.test(cardNumber)) return false;
+  addCreditCard(): void {
+    this.isLoading = true;
+    this.apiService.getTranzilaTokenizationUrl().subscribe({
+      next: (response) => {
+        // Open Tranzila tokenization page in a new window with secure iframe
+        const tokenizationWindow = window.open(
+          response.tokenizationUrl,
+          'tranzila-tokenization',
+          'width=500,height=600,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no'
+        );
 
-    let nCheck = 0, bEven = false;
-    cardNumber = cardNumber.replace(/\D/g, "");
+        if (!tokenizationWindow) {
+          this.isLoading = false;
+          const popupBlockedMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
+          this.notificationService.showError(popupBlockedMsg);
+          return;
+        }
 
-    for (var n = cardNumber.length - 1; n >= 0; n--) {
-      var cDigit = cardNumber.charAt(n),
-          nDigit = parseInt(cDigit, 10);
+        // Listen for the window to close and refresh card status
+        const checkClosed = setInterval(() => {
+          if (tokenizationWindow?.closed) {
+            clearInterval(checkClosed);
+            this.isLoading = false;
+            // Show success dialog and refresh card status after delay
+            setTimeout(() => {
+              this.showCardSavedDialog();
+              this.checkCreditCardStatus();
+            }, 1500);
+          }
+        }, 1000);
 
-      if (bEven && (nDigit *= 2) > 9) nDigit -= 9;
-
-      nCheck += nDigit;
-      bEven = !bEven;
-    }
-    return (nCheck % 10) == 0;
+        // Also listen for navigation events in the popup (if accessible)
+        try {
+          tokenizationWindow.addEventListener('beforeunload', () => {
+            setTimeout(() => {
+              if (tokenizationWindow.closed) {
+                clearInterval(checkClosed);
+                this.isLoading = false;
+                this.showCardSavedDialog();
+                this.checkCreditCardStatus();
+              }
+            }, 1000);
+          });
+        } catch (error) {
+          // Cross-origin restrictions might prevent this - that's okay
+          console.log('Cross-origin restrictions prevent popup monitoring');
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        const errorMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
+        this.notificationService.showError(errorMsg);
+        console.error('Error getting tokenization URL:', error);
+      }
+    });
   }
 
-  // TODO: Add specific validators for card number, expiry, CVV to the form init
-  // Example for card number:
-  // cardNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{13,19}$/), this.luhnValidator.bind(this)]],
-  luhnValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value) {
-      return null; // Don't validate empty values, let `required` handle it
-    }
-    return this.isValidLuhn(control.value) ? null : { luhnInvalid: true };
+  private showCardSavedDialog(): void {
+    // Use a simple success message for card saving
+    this.notificationService.showSuccess('Payment details saved successfully!');
+  }
+
+  removeCreditCard(): void {
+    // For now, we'll just show a message that the user needs to contact support
+    // In a full implementation, you might want to add a backend endpoint to remove cards
+    const removeCardMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_REMOVE_CARD_CONTACT_SUPPORT);
+    this.notificationService.showInfo(removeCardMsg);
   }
 }

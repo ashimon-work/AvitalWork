@@ -9,6 +9,7 @@ import { StoreContextService } from '../../core/services/store-context.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { Order, OrderListResponse, OrderQueryParams } from '@shared-types';
 import { OrderDetailsModalComponent } from '../components/order-details-modal/order-details-modal.component';
+import { T, TranslatePipe, I18nService, TranslationKey } from '@shared/i18n';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let bootstrap: any; // Declare bootstrap for type usage
@@ -16,18 +17,17 @@ declare let bootstrap: any; // Declare bootstrap for type usage
 @Component({
   selector: 'app-order-management-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, OrderDetailsModalComponent],
+  imports: [CommonModule, FormsModule, OrderDetailsModalComponent, TranslatePipe],
   templateUrl: './order-management-page.component.html',
   styleUrl: './order-management-page.component.scss'
 })
 export class OrderManagementPageComponent implements OnInit, OnDestroy {
-
+  public tKeys = T;
   orders: Order[] = [];
   totalOrders: number = 0;
   totalPages: number = 0;
   isLoading: boolean = false;
   error: any = null;
-  paginationSummaryText: string = '';
   isExporting: boolean = false;
 
   // Public properties for template binding (synchronized with Subjects)
@@ -62,7 +62,8 @@ export class OrderManagementPageComponent implements OnInit, OnDestroy {
   constructor(
     private orderService: OrderService,
     private storeContextService: StoreContextService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private i18nService: I18nService
   ) {
     // Combine all relevant observables to form the query parameters
     this.queryParams$ = combineLatest([
@@ -118,7 +119,10 @@ export class OrderManagementPageComponent implements OnInit, OnDestroy {
             this.error = err;
             this.isLoading = false;
             console.error('Error fetching orders:', err);
-            this.notificationService.showError('Failed to fetch orders. Please try again.', 'Data Error');
+            this.notificationService.showError(
+              this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_FETCH_ORDERS_FAILED_MESSAGE),
+              this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_FETCH_ORDERS_FAILED_TITLE)
+            );
             return new Observable<OrderListResponse>(); // Return empty observable on error
           })
         );
@@ -135,7 +139,6 @@ export class OrderManagementPageComponent implements OnInit, OnDestroy {
         this.totalOrders = 0;
         this.totalPages = 0;
       }
-      this.updatePaginationSummary(); // Update pagination summary text
       this.isLoading = false;
     });
   }
@@ -185,10 +188,10 @@ export class OrderManagementPageComponent implements OnInit, OnDestroy {
     this.pageSubject.next(1); // Reset to first page on sort change
   }
 
-  private updatePaginationSummary(): void {
+  public get paginationSummaryText(): string {
     const start = this.totalOrders > 0 ? (this.currentPage - 1) * this.pageSize + 1 : 0;
     const end = Math.min(start + this.pageSize - 1, this.totalOrders);
-    this.paginationSummaryText = `Showing ${start} to ${end} of ${this.totalOrders} orders`;
+    return this.i18nService.translate(T.SM_ORDER_MGMT_PAGE_PAGINATION_SUMMARY, { start, end, total: this.totalOrders });
   }
 
   // Helper methods to parse date range string
@@ -297,19 +300,28 @@ export class OrderManagementPageComponent implements OnInit, OnDestroy {
               const modalInstance = new bootstrap.Modal(modalElement);
               modalInstance.show();
             } else {
-              this.notificationService.showError('Order details modal could not be found.', 'UI Error');
+              this.notificationService.showError(
+                this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_MODAL_NOT_FOUND_MESSAGE),
+                this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_MODAL_NOT_FOUND_TITLE)
+              );
             }
           },
           error: (err) => {
             this.error = err;
             this.isLoading = false;
             console.error('Error fetching order details:', err);
-            this.notificationService.showError('Failed to fetch order details.', 'Data Error');
+            this.notificationService.showError(
+              this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_FETCH_DETAILS_FAILED_MESSAGE),
+              this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_FETCH_ORDERS_FAILED_TITLE) // Re-use title
+            );
           }
         });
       } else {
         console.warn('Store slug or Order ID not available, cannot fetch order details.');
-        this.notificationService.showWarning('Cannot fetch order details. Missing store or order ID.', 'Missing Information');
+        this.notificationService.showWarning(
+          this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_FETCH_DETAILS_MISSING_INFO_MESSAGE),
+          this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_FETCH_DETAILS_MISSING_INFO_TITLE)
+        );
         this.isLoading = false;
       }
     });
@@ -327,7 +339,10 @@ export class OrderManagementPageComponent implements OnInit, OnDestroy {
   }
 
   handleOrderUpdated(): void {
-    this.notificationService.showSuccess('Order updated successfully.');
+    this.notificationService.showSuccess(
+      this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_ORDER_UPDATED_SUCCESS_MESSAGE),
+      this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_ORDER_UPDATED_SUCCESS_TITLE)
+    );
     this.fetchOrders(); // Refresh the order list
     this.closeModal(); // Close modal after update
   }
@@ -346,7 +361,10 @@ export class OrderManagementPageComponent implements OnInit, OnDestroy {
     this.storeContextService.currentStoreSlug$.subscribe(storeSlug => {
       if (!storeSlug) {
         console.warn('Store slug not available, cannot export orders.');
-        this.notificationService.showError('Store information is missing. Cannot export orders.', 'Export Error');
+        this.notificationService.showError(
+          this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_EXPORT_MISSING_STORE_MESSAGE),
+          this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_EXPORT_MISSING_STORE_TITLE)
+        );
         this.isExporting = false;
         return;
       }
@@ -378,15 +396,30 @@ export class OrderManagementPageComponent implements OnInit, OnDestroy {
           window.URL.revokeObjectURL(url); // Clean up the URL object
 
           this.isExporting = false;
-          this.notificationService.showSuccess('Orders exported successfully.', 'Export Complete');
+          this.notificationService.showSuccess(
+            this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_EXPORT_SUCCESS_MESSAGE),
+            this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_EXPORT_SUCCESS_TITLE)
+          );
         },
         error: (err) => {
           this.error = err;
           this.isExporting = false;
           console.error('Error exporting orders:', err);
-          this.notificationService.showError('Failed to export orders. Please try again.', 'Export Error');
+          this.notificationService.showError(
+            this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_EXPORT_FAILED_MESSAGE),
+            this.i18nService.translate(T.SM_ORDER_MGMT_NOTIF_EXPORT_MISSING_STORE_TITLE) // Re-use title
+          );
         }
       });
     });
+  }
+
+  getOrderStatusTranslationKey(status: string): TranslationKey {
+    const statusKey = `SM_ORDER_STATUS_${status.toUpperCase()}` as TranslationKey;
+    if (this.tKeys[statusKey]) {
+      return statusKey;
+    }
+    console.warn(`Missing translation key for order status: ${status}`);
+    return status as TranslationKey; // Fallback, though it might not be a valid key
   }
 }

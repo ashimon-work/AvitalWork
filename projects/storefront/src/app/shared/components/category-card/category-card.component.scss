@@ -41,6 +41,7 @@
   overflow: hidden; // Hide image overflow if needed
   position: relative;
   flex-grow: 1; // Allow image area to take up most space
+  height: 150px; // Fixed height for the image wrapper
   background-color: var(--neutral-lightest); // Placeholder background
 }
 

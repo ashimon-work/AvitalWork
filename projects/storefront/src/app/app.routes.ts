@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 // Import the generated components for direct routing
-import { ShopPageComponent } from './shop/shop-page/shop-page.component';
 import { AboutPageComponent } from './about/about-page/about-page.component';
 import { ContactPageComponent } from './contact/contact-page/contact-page.component';
 import { AccountPageComponent } from './account/account-page/account-page.component';
@@ -49,24 +48,20 @@ export const routes: Routes = [
       // Existing routes moved under the :storeSlug parameter
       {
         path: '', // Default path for a store (e.g., /awesome-gadgets)
-        loadChildren: () =>
-          import('./home/home.module').then((m) => m.HomeModule),
+        loadComponent: () =>
+          import('./home/homepage/homepage.component').then((m) => m.HomepageComponent),
       },
       {
-        path: 'category', // e.g., /awesome-gadgets/category
-        loadChildren: () =>
-          import('./category/category.module').then((m) => m.CategoryModule),
+        path: 'category/:id', // e.g., /awesome-gadgets/category/electronics
+        loadComponent: () =>
+          import('./category/category-page/category-page.component').then((m) => m.CategoryPageComponent),
       },
       {
-        path: 'product', // e.g., /awesome-gadgets/product
-        loadChildren: () =>
-          import('./product/product.module').then((m) => m.ProductModule),
+        path: 'product/:id', // e.g., /awesome-gadgets/product/123
+        loadComponent: () =>
+          import('./product/product-page/product-page.component').then((m) => m.ProductPageComponent),
       },
       // Routes for the newly generated standalone components
-      {
-        path: 'shop', // e.g., /awesome-gadgets/shop
-        component: ShopPageComponent
-      },
       {
         path: 'about', // e.g., /awesome-gadgets/about
         component: AboutPageComponent

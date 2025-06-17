@@ -1,110 +1,173 @@
-// Using global variables defined in src/styles.scss
+// Base Variables (copied for context, consider moving to a shared SCSS variables file if not already)
+$primary-color: #E53E3E;
+$text-gray-900: #1A202C;
+$text-gray-700: #4A5568;
+$text-gray-500: #718096;
+$border-gray-300: #E2E8F0;
+$background-gray-50: #F9FAFB;
+$white-color: #fff;
 
+// Styles moved from header.component.scss
 :host {
-  display: block;
-  position: relative; // Needed for absolute positioning of the suggestions list
+  display: block; // Ensures the component takes up space
+  position: relative; // For positioning the suggestions list absolutely within the search-bar
+  width: 100%; // Search bar should take full width of its container in header
 }
 
-.search-container {
-  position: relative; // Container for positioning
-}
+.custom-search-wrapper {
+  position: relative; // For icon positioning
+  display: flex;
+  align-items: center;
+  background-color: $background-gray-50;
+  border: 1px solid $border-gray-300;
+  border-radius: 24px; // Rounded corners for the wrapper
+  height: 40px;
+  padding: 0 0 0 16px; // Left padding for text, right padding handled by icons
+  width: 100%;
+  transition: border-color 0.2s ease-in-out;
+  outline: none; // Remove default outline on wrapper
 
-.search-input {
-  // Inherits base input styles from global styles.scss
-  // Add specific overrides or additions here if needed
-  padding-right: calc(var(--spacing-md) * 2.5); // Make space for a potential search icon inside
-  // Example: Add a subtle background
-  // background-color: var(--neutral-lightest);
-}
+  &:focus-within { // Add back a subtle focus indicator on the wrapper
+    border-color: $primary-color;
+  }
 
-/* Optional: Add a search icon inside the input */
-/*
-.search-container::after {
-  content: 'search'; // Material Icons ligature
-  font-family: 'Material Icons';
-  position: absolute;
-  right: var(--spacing-md);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-color-light);
-  pointer-events: none; // Don't interfere with input clicks
-  font-size: 20px;
-}
-*/
+  .custom-search-input {
+    flex-grow: 1; // Input takes available space
+    height: 100%;
+    border: none;
+    outline: none; // Remove default outline on input
+    background-color: transparent;
+    font-size: 0.9rem;
+    color: $text-gray-900;
+    padding: 0; // Remove default input padding
 
-.suggestions-list {
-  position: absolute;
-  top: calc(100% + var(--spacing-xs)); // Position below the input with a small gap
-  left: 0;
-  right: 0;
-  background-color: var(--background-color);
-  border: var(--border-width) solid var(--border-color);
-  border-top: none; // Avoid double border with input focus ring
-  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md); // Rounded bottom corners
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  z-index: 1010; // Ensure it's above header but potentially below modals
-  max-height: 300px; // Limit height and allow scrolling
-  overflow-y: auto;
-  box-shadow: var(--box-shadow-md);
-
-  li {
-    padding: var(--spacing-sm) var(--spacing-md);
-    cursor: pointer;
-    border-bottom: var(--border-width) solid var(--neutral-lightest); // Separator line
-
-    &:last-child {
-      border-bottom: none;
+    &::placeholder {
+      color: $text-gray-500;
+      opacity: 1;
     }
+  }
 
-    // Style for "No results found" message
-    &:first-child:last-child { // If it's the only item
-      color: var(--text-color-light);
-      font-style: italic;
-      cursor: default;
-    }
-
-    a {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      text-decoration: none;
-      color: var(--text-color); // Reset link color inside suggestions
-
-      &:hover,
-      &:focus {
-        text-decoration: none; // No underline needed here
-        opacity: 1;
-      }
-    }
-
-    &:hover,
-    &:focus-within { // Highlight on hover or when link inside is focused
-      background-color: var(--neutral-lightest);
+  .search-icon-suffix, .clear-icon-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-gray-500;
+    padding: 0 8px; // Padding around icons
+    height: 100%;
+    cursor: pointer; // Make search icon clickable to focus input
+  }
+  .clear-icon-suffix { // Specific for clear button if it's a mat-icon-button
+    border-radius: 50%;
+    color: $text-gray-500; // Explicitly set icon color
+    &:hover {
+      background-color: rgba(0,0,0,0.04);
     }
   }
 }
 
-.suggestion-image {
-  width: 40px;
-  height: 40px;
-  object-fit: cover; // Scale image nicely
-  border-radius: var(--border-radius-sm);
-  flex-shrink: 0;
-}
+.suggestions-list {
+  position: absolute;
+  top: 100%; // Position below the search input wrapper
+  left: 0;
+  right: 0;
+  background-color: $white-color;
+  border: 1px solid $border-gray-300;
+  border-top: none; // Avoid double border with input
+  border-radius: 0 0 8px 8px; // Rounded bottom corners
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  z-index: 1001; // Ensure it's above other header content but below modals if any
+  max-height: 300px;
+  overflow-y: auto;
 
-.suggestion-name {
-  flex-grow: 1; // Take available space
-  font-weight: var(--font-weight-medium);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; // Prevent long names from breaking layout
-}
+  .suggestion-item {
+    padding: 0; // Remove padding, link will handle it
+    cursor: pointer;
 
-.suggestion-price {
-  font-size: 0.9rem;
-  color: var(--text-color-light);
-  white-space: nowrap;
-  margin-left: var(--spacing-sm);
+    // Styles for the link within the list item for better click handling and layout
+    .suggestion-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      text-decoration: none;
+      color: $text-gray-700;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: $background-gray-50;
+        color: $text-gray-900;
+      }
+
+      &.product-suggestion {
+        // Specific styles if needed
+      }
+      &.store-suggestion {
+        // Specific styles if needed
+      }
+    }
+
+
+    &.active { // Style for the active list item (keyboard navigation)
+      // The link itself will get hover, but li.active can have a distinct style if needed
+      // For example, a subtle border or different background on the li itself.
+      // For now, relying on link hover/focus for visual cue.
+      // If direct styling on li.active is needed:
+       background-color: rgba($primary-color, 0.05); // Lighter than hover for distinction
+       .suggestion-link { // Ensure link text is still prominent
+         color: $primary-color; // Or $text-gray-900 if preferred
+       }
+    }
+
+    .suggestion-image {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      margin-right: 12px;
+      border-radius: 4px;
+      border: 1px solid $border-gray-300; // Subtle border for images
+    }
+    .suggestion-image-placeholder {
+      width: 40px;
+      height: 40px;
+      margin-right: 12px;
+      border-radius: 4px;
+      background-color: $background-gray-50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      color: $text-gray-500;
+      border: 1px solid $border-gray-300;
+    }
+
+    .suggestion-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0; // Allow text to truncate
+    }
+
+    .suggestion-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: $text-gray-900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .suggestion-price {
+      font-size: 0.8rem;
+      color: $text-gray-700;
+    }
+    .suggestion-description {
+      font-size: 0.8rem;
+      color: $text-gray-500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }

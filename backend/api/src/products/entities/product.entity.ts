@@ -60,6 +60,9 @@ export class ProductEntity { // Remove implements clause
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: false })
+  isFeaturedInMarketplace: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -1,27 +1,29 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule, Location } from '@angular/common'; // Import Location
+import { CommonModule, Location } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Observable, of, BehaviorSubject, Subject } from 'rxjs';
 import { catchError, tap, map, startWith, debounceTime, distinctUntilChanged, switchMap, filter } from 'rxjs/operators';
 import { StoreContextService } from '../../services/store-context.service';
 import { ApiService } from '../../services/api.service';
-import { Product } from '@shared-types'; // Import Product type
+import { Product } from '@shared-types';
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-not-found-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslatePipe],
   templateUrl: './not-found-page.component.html',
   styleUrls: ['./not-found-page.component.scss']
 })
 export class NotFoundPageComponent implements OnInit {
+  public tKeys = T;
   private storeContextService = inject(StoreContextService);
   private apiService = inject(ApiService);
   private router = inject(Router);
-  private location = inject(Location); // Inject Location
+  private location = inject(Location);
 
-  // Use a local subject to manage the slug specifically for this component
   private slugSubject = new BehaviorSubject<string | null>(null);
   currentStoreSlug$: Observable<string | null> = this.slugSubject.asObservable();
 
@@ -38,12 +40,8 @@ export class NotFoundPageComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    // Log the 404 event
-    // Using this.router.url as it reflects the URL that Angular tried to navigate to.
     const path = this.router.url;
     console.warn(`404 Not Found: ${path}`);
-    // Optional: Call a backend logging service here if available
-    // Example: this.apiService.logError({ event: '404', path: path, timestamp: new Date() }).subscribe();
 
     this.storeContextService.currentStoreSlug$.subscribe(slugFromContext => {
       this.slugSubject.next(slugFromContext);

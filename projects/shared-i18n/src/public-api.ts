@@ -3,6 +3,9 @@
  * Public API Surface of shared-i18n
  */
 
-// Export initial types and key helper
 export * from './lib/i18n.keys';
-export * from './lib/translations/he';
+export * from './lib/translations/he'; // Keep default export for schema, but barrel handles modules
+export * from './lib/translations'; // Export the new barrel file
+export * from './lib/i18n.service';
+export * from './lib/translate.pipe';
+export * from './lib/i18n.module';

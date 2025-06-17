@@ -1,4 +1,4 @@
 <div *ngIf="currentNotification && isVisible" class="notification-toast {{ currentNotification.type }}">
   <div class="message">{{ currentNotification.message }}</div>
-  <button class="close-button" (click)="closeNotification()">&times;</button>
+  <button class="close-button" (click)="closeNotification()">{{ tKeys.SF_NOTIFICATION_CLOSE_BUTTON | translate }}</button>
 </div>

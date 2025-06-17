@@ -161,9 +161,9 @@ export class OrdersService {
       // Placeholder: Payment Processing
       this.logger.log(`Placeholder: Simulating payment processing for order ${savedOrder.id}...`);
       // Simulate payment success
-      savedOrder.paymentStatus = PaymentStatus.PAID; // Corrected from COMPLETED
-      savedOrder.status = OrderStatus.PROCESSING; // Update status after successful payment
-      await queryRunner.manager.save(savedOrder); // Save again to update status
+      savedOrder.paymentStatus = PaymentStatus.PAID;
+      savedOrder.status = OrderStatus.PROCESSING;
+      await queryRunner.manager.save(savedOrder);
       this.logger.log(`Placeholder: Payment processed successfully for order ${savedOrder.id}. Status updated to ${savedOrder.status}.`);
 
       // Clear cart
@@ -656,16 +656,15 @@ export class OrdersService {
       throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
     }
 
-    if (order.status === OrderStatus.COMPLETED || order.status === OrderStatus.SHIPPED) {
-        // Or if there's a specific "Fulfilled" status, check against that too.
-        // For now, if it's already completed or shipped, we can consider it a no-op or throw a BadRequestException.
+    if (order.status === OrderStatus.DELIVERED
+       || order.status === OrderStatus.SHIPPED) {
         this.logger.warn(`Order ${orderId} is already in status ${order.status}. No action taken.`);
         // Optionally, throw new BadRequestException(`Order is already ${order.status}.`);
         // For now, let's return the order as is if it's already in a final state.
         // Or, we can still update fulfilledAt if it's not set.
     }
 
-    order.status = OrderStatus.COMPLETED; // Using COMPLETED as the fulfilled status
+    order.status = OrderStatus.DELIVERED;
     order.fulfilledAt = new Date();
 
     const updatedOrder = await this.ordersRepository.save(order);

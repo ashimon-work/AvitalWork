@@ -2,17 +2,22 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ApiService, ChangePasswordDto } from '../../core/services/api.service';
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
+import { I18nService } from '@shared/i18n';
 
 @Component({
   selector: 'app-account-change-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './account-change-password.component.html',
   styleUrls: ['./account-change-password.component.scss'] // Corrected property name
 })
 export class AccountChangePasswordComponent {
+  public tKeys = T;
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
+  private i18nService = inject(I18nService);
 
   changePasswordForm: FormGroup;
   isLoading = false;
@@ -62,7 +67,7 @@ export class AccountChangePasswordComponent {
     this.successMessage = null;
 
     if (this.changePasswordForm.invalid) {
-      this.errorMessage = 'Please fill in all fields correctly.';
+      this.errorMessage = this.i18nService.translate(this.tKeys.SF_ACCOUNT_CHANGE_PASSWORD_FORM_INVALID_MESSAGE);
       this.changePasswordForm.markAllAsTouched();
       return;
     }
@@ -76,17 +81,17 @@ export class AccountChangePasswordComponent {
     this.apiService.changeUserPassword(passwordData).subscribe({
       next: () => {
         this.isLoading = false;
-        this.successMessage = 'Password changed successfully.';
+        this.successMessage = this.i18nService.translate(this.tKeys.SF_ACCOUNT_CHANGE_PASSWORD_SUCCESS);
         this.changePasswordForm.reset(); // Clear form
       },
       error: (err) => {
         this.isLoading = false;
         // Handle specific errors like incorrect current password (e.g., 401 or 403 from backend)
         if (err.status === 401 || err.status === 403) {
-             this.errorMessage = 'Incorrect current password.';
+             this.errorMessage = this.i18nService.translate(this.tKeys.SF_ACCOUNT_CHANGE_PASSWORD_CURRENT_INCORRECT_ERROR);
              this.changePasswordForm.get('currentPassword')?.setErrors({ incorrect: true });
         } else {
-            this.errorMessage = err.error?.message || 'Failed to change password. Please try again.';
+            this.errorMessage = err.error?.message || this.i18nService.translate(this.tKeys.SF_ACCOUNT_CHANGE_PASSWORD_FAILED);
         }
         console.error('Error changing password:', err);
       }

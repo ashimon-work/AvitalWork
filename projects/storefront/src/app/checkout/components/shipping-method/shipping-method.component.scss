@@ -1,0 +1,54 @@
+@use '../../styles/variables' as *;
+
+.shipping-method {
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-lg;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &.selected {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px $primary-color;
+    }
+
+    &:hover {
+      border-color: $primary-color;
+    }
+  }
+
+  &__option-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__option-name {
+    font-weight: 500;
+  }
+
+  &__option-description {
+    font-size: 0.875rem;
+    color: $text-color-muted;
+  }
+
+  &__option-cost {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+}

@@ -3,18 +3,24 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Product } from '@shared-types';
 import { CartService } from '../../../core/services/cart.service';
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
+import { MaterialModule } from '../../material.module';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink
+    RouterLink,
+    TranslatePipe,
+    MaterialModule
   ],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss'
 })
 export class ProductCardComponent {
+  public tKeys = T;
   @Input() product!: Product;
   @Input() storeSlug: string | null = null;
   @Input() categoryId: string | null = null;

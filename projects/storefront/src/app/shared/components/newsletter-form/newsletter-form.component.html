@@ -1,21 +1,21 @@
 <form #newsletterForm="ngForm" (ngSubmit)="onSubmit(newsletterForm)" class="newsletter-form">
   <div class="form-group">
-    <label for="newsletter-email" class="sr-only">Email address</label>
+    <label for="newsletter-email" class="sr-only">{{ tKeys.SF_NEWSLETTER_EMAIL_LABEL | translate }}</label>
     <input type="email"
            id="newsletter-email"
            name="email"
-           placeholder="Enter your email address"
+           [placeholder]="tKeys.SF_NEWSLETTER_EMAIL_PLACEHOLDER | translate"
            [(ngModel)]="email"
            required
            email #emailInput="ngModel"
            [disabled]="isSubmitting">
     <button type="submit" [disabled]="newsletterForm.invalid || isSubmitting">
-      {{ isSubmitting ? 'Subscribing...' : 'Subscribe' }}
+      {{ isSubmitting ? (tKeys.SF_NEWSLETTER_BUTTON_SUBSCRIBING | translate) : (tKeys.SF_NEWSLETTER_BUTTON_SUBSCRIBE | translate) }}
     </button>
   </div>
   <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="error-message">
-    <span *ngIf="emailInput.errors?.['required']">Email is required.</span>
-    <span *ngIf="emailInput.errors?.['email']">Please enter a valid email address.</span>
+    <span *ngIf="emailInput.errors?.['required']">{{ tKeys.SF_NEWSLETTER_EMAIL_REQUIRED_ERROR | translate }}</span>
+    <span *ngIf="emailInput.errors?.['email']">{{ tKeys.SF_NEWSLETTER_EMAIL_INVALID_ERROR | translate }}</span>
   </div>
   <div *ngIf="message" class="feedback-message" [ngClass]="{'success': isSuccess, 'error': !isSuccess}">
     {{ message }}

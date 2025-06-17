@@ -4,72 +4,72 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="customerDetailsModalLabel">Customer Details</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="customerDetailsModalLabel">{{ tKeys.SM_CUSTOMER_DETAILS_TITLE | translate }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="tKeys.SM_CUSTOMER_DETAILS_CLOSE_BUTTON | translate"></button>
       </div>
       <div class="modal-body">
         <!-- Loading Spinner -->
         <div *ngIf="!customer" class="text-center">
           <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+            <span class="visually-hidden">{{ tKeys.SM_CUSTOMER_DETAILS_LOADING | translate }}</span>
           </div>
-          <p>Loading customer details...</p>
+          <p>{{ tKeys.SM_CUSTOMER_DETAILS_LOADING_DETAILS | translate }}</p>
         </div>
 
         <!-- Customer Details Content -->
         <div *ngIf="editableCustomer">
-          <h6>Personal Information</h6>
+          <h6>{{ tKeys.SM_CUSTOMER_DETAILS_PERSONAL_INFO_TITLE | translate }}</h6>
           <div class="mb-3">
-            <label for="firstName" class="form-label">First Name</label>
+            <label for="firstName" class="form-label">{{ tKeys.SM_CUSTOMER_DETAILS_FIRST_NAME_LABEL | translate }}</label>
             <input type="text" class="form-control" id="firstName" [(ngModel)]="editableCustomer.firstName">
           </div>
           <div class="mb-3">
-            <label for="lastName" class="form-label">Last Name</label>
+            <label for="lastName" class="form-label">{{ tKeys.SM_CUSTOMER_DETAILS_LAST_NAME_LABEL | translate }}</label>
             <input type="text" class="form-control" id="lastName" [(ngModel)]="editableCustomer.lastName">
           </div>
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+            <label for="email" class="form-label">{{ tKeys.SM_CUSTOMER_DETAILS_EMAIL_LABEL | translate }}</label>
             <input type="email" class="form-control" id="email" [(ngModel)]="editableCustomer.email" disabled>
           </div>
           <div class="mb-3">
-            <label for="phone" class="form-label">Phone</label>
+            <label for="phone" class="form-label">{{ tKeys.SM_CUSTOMER_DETAILS_PHONE_LABEL | translate }}</label>
             <input type="text" class="form-control" id="phone" [(ngModel)]="editableCustomer.phone">
           </div>
-          <p><strong>Account Status:</strong> {{ editableCustomer.accountStatus }}</p>
-          <p><strong>Registration Date:</strong> {{ editableCustomer.registrationDate | date }}</p>
+          <p><strong>{{ tKeys.SM_CUSTOMER_DETAILS_ACCOUNT_STATUS_LABEL | translate }}</strong> {{ editableCustomer.accountStatus }}</p>
+          <p><strong>{{ tKeys.SM_CUSTOMER_DETAILS_REGISTRATION_DATE_LABEL | translate }}</strong> {{ editableCustomer.registrationDate | date }}</p>
 
           <hr>
 
-          <h6>Address Book</h6>
+          <h6>{{ tKeys.SM_CUSTOMER_DETAILS_ADDRESS_BOOK_TITLE | translate }}</h6>
           <div *ngIf="editableCustomer.addresses && editableCustomer.addresses.length > 0">
             <div *ngFor="let address of editableCustomer.addresses">
               <p>{{ address.street1 }}, {{ address.city }}, {{ address.postalCode }}, {{ address.country }}</p>
             </div>
           </div>
           <div *ngIf="!editableCustomer.addresses || editableCustomer.addresses.length === 0">
-            <p>No addresses found.</p>
+            <p>{{ tKeys.SM_CUSTOMER_DETAILS_NO_ADDRESSES | translate }}</p>
           </div>
 
           <hr>
-          <h6>Order History</h6>
+          <h6>{{ tKeys.SM_CUSTOMER_DETAILS_ORDER_HISTORY_TITLE | translate }}</h6>
           <div *ngIf="isLoadingOrders" class="text-center">
             <div class="spinner-border spinner-border-sm text-primary" role="status">
-              <span class="visually-hidden">Loading orders...</span>
+              <span class="visually-hidden">{{ tKeys.SM_CUSTOMER_DETAILS_LOADING_ORDERS | translate }}</span>
             </div>
-            <p>Loading orders...</p>
+            <p>{{ tKeys.SM_CUSTOMER_DETAILS_LOADING_ORDERS | translate }}</p>
           </div>
           <div *ngIf="!isLoadingOrders && customerOrders.length === 0">
-            <p>No orders found for this customer.</p>
+            <p>{{ tKeys.SM_CUSTOMER_DETAILS_NO_ORDERS | translate }}</p>
           </div>
           <div *ngIf="!isLoadingOrders && customerOrders.length > 0" class="table-responsive">
             <table class="table table-sm table-striped">
               <thead>
                 <tr>
-                  <th>Order ID</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Total</th>
-                  <th>Items</th>
+                  <th>{{ tKeys.SM_CUSTOMER_DETAILS_ORDER_ID_HEADER | translate }}</th>
+                  <th>{{ tKeys.SM_CUSTOMER_DETAILS_DATE_HEADER | translate }}</th>
+                  <th>{{ tKeys.SM_CUSTOMER_DETAILS_STATUS_HEADER | translate }}</th>
+                  <th>{{ tKeys.SM_CUSTOMER_DETAILS_TOTAL_HEADER | translate }}</th>
+                  <th>{{ tKeys.SM_CUSTOMER_DETAILS_ITEMS_HEADER | translate }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -86,15 +86,15 @@
           <hr>
           <hr>
 
-          <h6>Communication History</h6>
+          <h6>{{ tKeys.SM_CUSTOMER_DETAILS_COMMUNICATION_HISTORY_TITLE | translate }}</h6>
           <!-- TODO: Implement Communication History -->
-          <p>Communication history goes here.</p>
+          <p>{{ tKeys.SM_CUSTOMER_DETAILS_COMMUNICATION_HISTORY_PLACEHOLDER | translate }}</p>
 
           <hr>
 
-          <h6>Notes</h6>
+          <h6>{{ tKeys.SM_CUSTOMER_DETAILS_NOTES_TITLE | translate }}</h6>
           <div class="mb-3">
-            <h6>Notes</h6>
+            <h6>{{ tKeys.SM_CUSTOMER_DETAILS_NOTES_TITLE | translate }}</h6>
             <div *ngIf="editableCustomer.notes && editableCustomer.notes.length > 0">
               <!-- This requires @shared-types/User to have notes: Note[] (where Note has createdAt and content) -->
               <!-- and backend to provide this structure. -->
@@ -103,47 +103,47 @@
               </div>
             </div>
             <div *ngIf="!editableCustomer.notes || editableCustomer.notes.length === 0">
-              <p>No notes found.</p>
+              <p>{{ tKeys.SM_CUSTOMER_DETAILS_NO_NOTES | translate }}</p>
             </div>
             <hr>
-            <h6>Add New Note</h6>
+            <h6>{{ tKeys.SM_CUSTOMER_DETAILS_ADD_NEW_NOTE_TITLE | translate }}</h6>
             <textarea class="form-control mb-2" rows="3" [(ngModel)]="newNoteContent"
-              placeholder="Enter internal note..."></textarea>
+              [placeholder]="tKeys.SM_CUSTOMER_DETAILS_NEW_NOTE_PLACEHOLDER | translate"></textarea>
             <button type="button" class="btn btn-primary btn-sm" (click)="addCustomerNote()"
               [disabled]="isAddingNote || !newNoteContent.trim()">
               <span *ngIf="isAddingNote" class="spinner-border spinner-border-sm" role="status"
                 aria-hidden="true"></span>
-              Add Note
+              {{ tKeys.SM_CUSTOMER_DETAILS_ADD_NOTE_BUTTON | translate }}
             </button>
           </div>
 
           <hr>
 
-          <h6>Direct Contact Options</h6>
+          <h6>{{ tKeys.SM_CUSTOMER_DETAILS_DIRECT_CONTACT_TITLE | translate }}</h6>
           <div class="mb-3">
-            <label for="emailSubject" class="form-label">Subject</label>
+            <label for="emailSubject" class="form-label">{{ tKeys.SM_CUSTOMER_DETAILS_EMAIL_SUBJECT_LABEL | translate }}</label>
             <input type="text" class="form-control" id="emailSubject" [(ngModel)]="emailSubject"
-              placeholder="Email Subject">
+              [placeholder]="tKeys.SM_CUSTOMER_DETAILS_EMAIL_SUBJECT_PLACEHOLDER | translate">
           </div>
           <div class="mb-3">
-            <label for="emailBody" class="form-label">Body</label>
+            <label for="emailBody" class="form-label">{{ tKeys.SM_CUSTOMER_DETAILS_EMAIL_BODY_LABEL | translate }}</label>
             <textarea class="form-control" id="emailBody" rows="5" [(ngModel)]="emailBody"
-              placeholder="Email Body"></textarea>
+              [placeholder]="tKeys.SM_CUSTOMER_DETAILS_EMAIL_BODY_PLACEHOLDER | translate"></textarea>
           </div>
           <button type="button" class="btn btn-primary" (click)="sendEmailToCustomer()"
             [disabled]="isSendingEmail || !emailSubject.trim() || !emailBody.trim()">
             <span *ngIf="isSendingEmail" class="spinner-border spinner-border-sm" role="status"
               aria-hidden="true"></span>
-            Send Email
+            {{ tKeys.SM_CUSTOMER_DETAILS_SEND_EMAIL_BUTTON | translate }}
           </button>
 
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ tKeys.SM_CUSTOMER_DETAILS_CLOSE_BUTTON | translate }}</button>
         <button type="button" class="btn btn-primary" (click)="saveCustomerChanges()" [disabled]="isLoading">
           <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          Save Changes
+          {{ tKeys.SM_CUSTOMER_DETAILS_SAVE_CHANGES_BUTTON | translate }}
         </button>
       </div>
     </div>

@@ -1,95 +1,205 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Observable, of } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
-import { ApiService, FaqItem } from '../../core/services/api.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { T, TranslatePipe, I18nService } from '@shared/i18n';
+import { ApiService } from '../../core/services/api.service';
 import { StoreContextService } from '../../core/services/store-context.service';
-import { AsyncPipe, NgIf, NgFor, NgClass } from '@angular/common';
+import { take } from 'rxjs/operators';
+
+interface FaqItem {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+}
+
+interface StoreDetails {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phone: string;
+  email: string;
+  // Optional: Add coordinates if needed for a map library
+  // latitude?: number;
+  // longitude?: number;
+}
 
 @Component({
   selector: 'app-contact-page',
   standalone: true,
-  imports: [ReactiveFormsModule, AsyncPipe, NgIf, NgFor, NgClass],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './contact-page.component.html',
-  styleUrl: './contact-page.component.scss'
+  styleUrls: ['./contact-page.component.scss'],
+  // animations: [] // Placeholder for Angular Animations
 })
 export class ContactPageComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private apiService = inject(ApiService);
-  private storeContextService = inject(StoreContextService);
-
+  public tKeys = T;
   contactForm!: FormGroup;
-  faqs$!: Observable<FaqItem[]>;
-  storeContactInfo = {
-    email: 'contact@example.com', // Placeholder
-    phone: '+1 (555) 123-4567', // Placeholder
-    address: '123 Main St, Anytown, USA' // Placeholder
+  isSubmitting = false;
+  submitSuccess = false;
+  submitError: string | null = null;
+  
+  storeDetails: StoreDetails = {
+    street: "123 Commerce Street",
+    city: "New York",
+    state: "NY",
+    zipCode: "10001",
+    country: "United States",
+    phone: "+1 (555) 123-4567",
+    email: "contact@luxestore.com"
   };
-  submissionStatus: { success?: boolean; message?: string } | null = null;
+
+  faqList: FaqItem[] = [];
+
+  // A flag to decide whether to use a dedicated component or inline template for the form.
+  // For now, we'll plan for an integrated form as per the HTML plan.
+  useDedicatedContactFormComponent = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private sanitizer: DomSanitizer,
+    private apiService: ApiService,
+    private storeContextService: StoreContextService,
+    private i18nService: I18nService
+  ) {
+    // Listen for language changes and update FAQ content
+    effect(() => {
+      // Access the signal to trigger the effect when language changes
+      this.i18nService.currentLang$();
+      this.initializeFaqList();
+    });
+  }
 
   ngOnInit(): void {
     this.contactForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      subject: ['', Validators.required],
+      subject: ['', Validators.required], // Made required as per backend DTO
       message: ['', Validators.required]
     });
 
-    this.faqs$ = this.storeContextService.currentStoreSlug$.pipe(
-      switchMap(storeSlug => {
-        if (!storeSlug) {
-          console.warn('Contact Page: Store slug not available for fetching FAQs.');
-          return of([]); // Or handle as an error
-        }
-        return this.apiService.getFaqs(storeSlug);
-      }),
-      catchError(error => {
-        console.error('Error fetching FAQs:', error);
-        return of([]); // Return empty array on error
-      })
-    );
+    // Initialize FAQ list with translated content
+    this.initializeFaqList();
 
-    // Initialize storeContactInfo if it were dynamic, e.g.,
-    // this.storeContextService.currentStore$.subscribe(store => {
-    //   if (store && store.contactInfo) { // Assuming contactInfo is part of your Store model
-    //     this.storeContactInfo = store.contactInfo;
-    //   }
-    // });
+    // Debug: Log current store slug
+    this.storeContextService.currentStoreSlug$.subscribe(slug => {
+      console.log('[ContactPageComponent] Current store slug:', slug);
+    });
   }
 
-  onSubmitContactForm(): void {
-    this.submissionStatus = null;
-    if (this.contactForm.valid) {
-      this.storeContextService.currentStoreSlug$.pipe(
-        switchMap(storeSlug => {
-          if (!storeSlug) {
-            console.error('Contact form submission: Store slug not available.');
-            // Potentially set an error message for the user
-            this.submissionStatus = { success: false, message: 'Could not submit form. Store information is missing.' };
-            return of(null); // Prevent further processing
+  private initializeFaqList(): void {
+    this.faqList = [
+      {
+        question: this.i18nService.translate('SF_CONTACT_FAQ_OPENING_HOURS_QUESTION'),
+        answer: this.i18nService.translate('SF_CONTACT_FAQ_OPENING_HOURS_ANSWER'),
+        isOpen: false
+      },
+      {
+        question: this.i18nService.translate('SF_CONTACT_FAQ_TRACK_ORDER_QUESTION'),
+        answer: this.i18nService.translate('SF_CONTACT_FAQ_TRACK_ORDER_ANSWER'),
+        isOpen: false
+      },
+      {
+        question: this.i18nService.translate('SF_CONTACT_FAQ_RETURN_POLICY_QUESTION'),
+        answer: this.i18nService.translate('SF_CONTACT_FAQ_RETURN_POLICY_ANSWER'),
+        isOpen: false
+      }
+    ];
+  }
+
+  onContactSubmit(): void {
+    if (this.contactForm.valid && !this.isSubmitting) {
+      this.isSubmitting = true;
+      this.submitError = null;
+      this.submitSuccess = false;
+
+      const formData = this.contactForm.value;
+      
+      // Get current store slug
+      this.storeContextService.currentStoreSlug$.pipe(take(1)).subscribe(storeSlug => {
+        console.log('Submitting contact form with store slug:', storeSlug);
+        console.log('Form data:', formData);
+        
+        if (!storeSlug) {
+          console.error('Store slug is missing, cannot submit contact form');
+          this.isSubmitting = false;
+          this.submitError = this.i18nService.translate('SF_CONTACT_FORM_SUBMISSION_ERROR_STORE_MISSING');
+          
+          // Hide error message after 5 seconds
+          setTimeout(() => {
+            this.submitError = null;
+          }, 5000);
+          return;
+        }
+        
+        this.apiService.submitContactForm(storeSlug, formData).subscribe({
+          next: (response) => {
+            console.log('Contact form submitted successfully:', response);
+            this.isSubmitting = false;
+            this.submitSuccess = true;
+            this.contactForm.reset();
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+              this.submitSuccess = false;
+            }, 5000);
+          },
+          error: (error) => {
+            console.error('Error submitting contact form:', error);
+            this.isSubmitting = false;
+            
+            // Extract more specific error message from the backend response
+            let errorMessage = this.i18nService.translate('SF_CONTACT_FORM_SUBMISSION_ERROR_GENERAL');
+            
+            if (error.error) {
+              if (error.error.message) {
+                errorMessage = error.error.message;
+              } else if (typeof error.error === 'string') {
+                errorMessage = error.error;
+              } else if (error.error.error) {
+                errorMessage = error.error.error;
+              }
+            }
+            
+            this.submitError = errorMessage;
+            
+            // Hide error message after 10 seconds for longer error messages
+            setTimeout(() => {
+              this.submitError = null;
+            }, 10000);
           }
-          return this.apiService.submitContactForm(storeSlug, this.contactForm.value).pipe(
-            tap(() => {
-              this.submissionStatus = { success: true, message: 'Your message has been sent successfully!' };
-              this.contactForm.reset();
-              // Optionally, mark form as pristine and untouched
-              Object.keys(this.contactForm.controls).forEach(key => {
-                this.contactForm.get(key)?.markAsPristine();
-                this.contactForm.get(key)?.markAsUntouched();
-                this.contactForm.get(key)?.updateValueAndValidity();
-              });
-            }),
-            catchError(error => {
-              console.error('Error submitting contact form:', error);
-              this.submissionStatus = { success: false, message: 'There was an error sending your message. Please try again later.' };
-              return of(null); // Handle error, prevent breaking the stream
-            })
-          );
-        })
-      ).subscribe();
+        });
+      });
     } else {
+      // Mark all fields as touched to display validation errors
       this.contactForm.markAllAsTouched();
-      this.submissionStatus = { success: false, message: 'Please fill out all required fields correctly.' };
     }
+  }
+
+  toggleFaq(faqItem: FaqItem): void {
+    faqItem.isOpen = !faqItem.isOpen;
+  }
+
+  getMapUrl(): SafeResourceUrl {
+    const baseUrl = "https://www.google.com/maps/embed/v1/place";
+    // IMPORTANT: Replace with your actual Google Maps API Key
+    const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
+    const queryParts = [
+      this.storeDetails.street,
+      this.storeDetails.city,
+      this.storeDetails.state,
+      this.storeDetails.zipCode,
+      this.storeDetails.country
+    ];
+    const query = encodeURIComponent(queryParts.filter(part => !!part).join(', '));
+
+    if (!apiKey || apiKey === "YOUR_GOOGLE_MAPS_API_KEY") {
+      console.warn("Google Maps API Key is not configured. Map will not display correctly.");
+      // Return a placeholder or an empty safe URL if the key is missing
+      return this.sanitizer.bypassSecurityTrustResourceUrl('');
+    }
+    return this.sanitizer.bypassSecurityTrustResourceUrl(`${baseUrl}?key=${apiKey}&q=${query}`);
   }
 }

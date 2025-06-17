@@ -39,7 +39,7 @@ export class ManagerService {
       .createQueryBuilder('order')
       .select('SUM(order.totalAmount)', 'totalSales')
       .where('order.storeId = :storeId', { storeId })
-      .andWhere('order.status = :status', { status: OrderStatus.COMPLETED })
+      .andWhere('order.status = :status', { status: OrderStatus.DELIVERED })
       .getRawOne();
 
     const totalSales = parseFloat(salesResult?.totalSales) || 0;
@@ -158,11 +158,10 @@ export class ManagerService {
 
     const storeId = store.id;
 
-    // Fetch completed orders for the store
-    const completedOrders = await this.orderRepository.find({
+    const deliveredOrders = await this.orderRepository.find({
       where: {
         store: { id: storeId },
-        status: OrderStatus.COMPLETED,
+        status: OrderStatus.DELIVERED,
       },
       order: { orderDate: 'ASC' }, // Order by date for time series data
     });
@@ -171,7 +170,7 @@ export class ManagerService {
     const salesData: { [key: string]: number } = {};
     const labels: string[] = [];
 
-    completedOrders.forEach(order => {
+    deliveredOrders.forEach(order => {
       const orderDate = new Date(order.orderDate);
       let key: string;
       let label: string;
@@ -225,7 +224,7 @@ export class ManagerService {
               return salesData['all'] || 0;
            }
            // Find the corresponding key for the label (reverse mapping for daily/weekly/monthly)
-           const key = completedOrders.find(order => {
+           const key = deliveredOrders.find(order => {
               const orderDate = new Date(order.orderDate);
               if (period === 'daily' && orderDate.toISOString().split('T')[0] === label) return true;
               if (period === 'monthly' && orderDate.toLocaleString('default', { month: 'short', year: 'numeric' }) === label) return true;

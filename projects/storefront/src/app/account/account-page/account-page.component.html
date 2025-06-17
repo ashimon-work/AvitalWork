@@ -6,32 +6,100 @@
 </button>
 
 <div class="account-container">
-  <!-- Wrapper for sidebar with conditional class -->
-  <div class="sidebar-wrapper" [class.open]="isMobileMenuOpen">
-    <aside class="account-sidebar">
-      <h2>My Account</h2>
-      <nav class="account-nav">
-        <ul>
-          <!-- Use routerLinkActive for styling the active link -->
-          <!-- Close menu on navigation -->
-          <li><a routerLink="overview" routerLinkActive="active-link" (click)="toggleMobileMenu()">Overview</a></li>
-          <li><a routerLink="orders" routerLinkActive="active-link" (click)="toggleMobileMenu()">Orders</a></li>
-          <li><a routerLink="addresses" routerLinkActive="active-link" (click)="toggleMobileMenu()">Addresses</a></li>
-          <li><a routerLink="payment-methods" routerLinkActive="active-link" (click)="toggleMobileMenu()">Payment Methods</a></li>
-          <li><a routerLink="personal-info" routerLinkActive="active-link" (click)="toggleMobileMenu()">Personal Information</a></li>
-          <li><a routerLink="wishlist" routerLinkActive="active-link" (click)="toggleMobileMenu()">Wishlist</a></li>
-          <li><a routerLink="change-password" routerLinkActive="active-link">Change Password</a></li>
-          <li><a routerLink="change-password" routerLinkActive="active-link" (click)="toggleMobileMenu()">Change Password</a></li>
-        </ul>
-      </nav>
-      <button (click)="logout()" class="btn btn-secondary logout-btn" style="background-color: #bf0f0f; border-color: #bf0f0f;">Logout</button>
+  <div class="account-layout">
+    <!-- Desktop Sidebar -->
+    <aside class="desktop-sidebar">
+      <div class="sidebar-wrapper" [class.open]="isMobileMenuOpen">
+        <div class="account-sidebar" role="navigation" [attr.aria-label]="'Account navigation'">
+          <!-- Header -->
+          <header class="sidebar-header">
+            <h2>{{ tKeys.SF_ACCOUNT_TITLE | translate }}</h2>
+            <p class="sidebar-description">Manage your account settings</p>
+          </header>
+
+          <!-- Navigation Menu -->
+          <nav class="account-nav">
+            <ul role="list">
+              <li role="listitem">
+                <a routerLink="overview" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                  <img src="assets/icons/dashboard.svg" alt="" class="nav-icon">
+                  <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_OVERVIEW | translate }}</span>
+                </a>
+              </li>
+              <li role="listitem">
+                <a routerLink="orders" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                  <img src="assets/icons/package.svg" alt="" class="nav-icon">
+                  <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_ORDERS | translate }}</span>
+                </a>
+              </li>
+              <li role="listitem">
+                <a routerLink="addresses" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                  <img src="assets/icons/map-pin.svg" alt="" class="nav-icon">
+                  <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_ADDRESSES | translate }}</span>
+                </a>
+              </li>
+              <li role="listitem">
+                <a routerLink="payment-methods" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                  <img src="assets/icons/credit-card.svg" alt="" class="nav-icon">
+                  <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_PAYMENT_METHODS | translate }}</span>
+                </a>
+              </li>
+              <li role="listitem">
+                <a routerLink="personal-info" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                  <img src="assets/icons/user.svg" alt="" class="nav-icon">
+                  <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_PERSONAL_INFO | translate }}</span>
+                </a>
+              </li>
+              <li role="listitem">
+                <a routerLink="wishlist" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                  <img src="assets/icons/heart.svg" alt="" class="nav-icon">
+                  <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_WISHLIST | translate }}</span>
+                </a>
+              </li>
+              <li role="listitem">
+                <a routerLink="change-password" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                  <img src="assets/icons/lock.svg" alt="" class="nav-icon">
+                  <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_CHANGE_PASSWORD | translate }}</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Footer with Logout -->
+          <footer class="sidebar-footer">
+            <mat-divider></mat-divider>
+            <button 
+              mat-button 
+              class="logout-btn" 
+              (click)="logout()"
+            >
+              <img src="assets/icons/log-out.svg" alt="" class="logout-icon">
+              <span>{{ tKeys.SF_ACCOUNT_LOGOUT_BUTTON | translate }}</span>
+            </button>
+          </footer>
+        </div>
+      </div>
     </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Stats Bar -->
+      <div class="stats-section">
+        <ng-container *ngIf="accountData$ | async as accountData">
+          <app-account-stats-bar 
+            [totalOrders]="accountData.totalOrders" 
+            [rewardPoints]="accountData.rewardPoints">
+          </app-account-stats-bar>
+        </ng-container>
+      </div>
+
+      <!-- Content -->
+      <div class="content-section">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
   </div>
 
-  <main class="account-content">
-    <!-- Child routes will be rendered here -->
-    <router-outlet></router-outlet>
-    <!-- Overlay for mobile menu -->
-    <div class="mobile-menu-overlay" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen"></div>
-  </main>
+  <!-- Mobile overlay -->
+  <div class="mobile-menu-overlay" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen"></div>
 </div>

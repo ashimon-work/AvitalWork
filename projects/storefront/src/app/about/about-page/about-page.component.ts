@@ -4,15 +4,18 @@ import { switchMap, take } from 'rxjs/operators';
 import { AsyncPipe, NgIf, NgFor, DatePipe } from '@angular/common';
 import { ApiService, AboutContent, Testimonial } from '../../core/services/api.service';
 import { StoreContextService } from '../../core/services/store-context.service';
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-about-page',
   standalone: true,
-  imports: [AsyncPipe, NgIf, NgFor, DatePipe],
+  imports: [AsyncPipe, NgIf, NgFor, DatePipe, TranslatePipe],
   templateUrl: './about-page.component.html',
   styleUrl: './about-page.component.scss'
 })
 export class AboutPageComponent implements OnInit {
+  public tKeys = T;
   private apiService = inject(ApiService);
   private storeContextService = inject(StoreContextService);
 

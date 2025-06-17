@@ -1,143 +1,214 @@
-<h3>Manage Addresses</h3>
-
-<!-- Loading Indicator -->
-<div *ngIf="isLoading" class="loading-indicator">Loading addresses...</div>
-
-<!-- Success/Error Messages -->
-<div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
-<div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
-
-<!-- Address List -->
-<div *ngIf="!showForm && (addresses$ | async) as addresses">
-  <button (click)="openAddForm()" class="btn btn-primary mb-3">Add New Address</button>
-
-  <div *ngIf="addresses.length > 0; else noAddresses" class="address-list">
-    <div *ngFor="let address of addresses" class="address-card">
-      <h4>{{ address.fullName }}</h4>
-      <p>
-        {{ address.street1 }}<br>
-        <ng-container *ngIf="address.street2">{{ address.street2 }}<br></ng-container> <!-- Added street2 display -->
-        {{ address.city }}, {{ address.postalCode }}<br> <!-- Removed state -->
-        {{ address.country }}<br>
-        <ng-container *ngIf="address.phoneNumber">Phone: {{ address.phoneNumber }}</ng-container>
-      </p>
-      <div class="address-status">
-        <span *ngIf="address.isDefaultShipping" class="badge bg-info me-1">Default Shipping</span>
-        <span *ngIf="address.isDefaultBilling" class="badge bg-secondary">Default Billing</span>
-      </div>
-      <div class="address-actions mt-2">
-        <button (click)="openEditForm(address)" class="btn btn-sm btn-outline-secondary me-2">Edit</button>
-        <button (click)="deleteAddress(address.id)" class="btn btn-sm btn-outline-danger me-2"
-          [disabled]="isLoading">Delete</button>
-        <button *ngIf="!address.isDefaultShipping" (click)="setDefault(address.id, 'shipping')"
-          class="btn btn-sm btn-outline-primary me-2" [disabled]="isLoading">Set Default Shipping</button>
-        <button *ngIf="!address.isDefaultBilling" (click)="setDefault(address.id, 'billing')"
-          class="btn btn-sm btn-outline-primary" [disabled]="isLoading">Set Default Billing</button>
-      </div>
-    </div>
+<section class="addresses-section" [attr.aria-label]="'Manage addresses'">
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>{{ tKeys.SF_ACCOUNT_ADDRESSES_LOADING | translate }}</p>
   </div>
 
-  <ng-template #noAddresses>
-    <p>You haven't saved any addresses yet.</p>
-  </ng-template>
-</div>
+  <!-- Success/Error Messages -->
+  <div *ngIf="successMessage" class="message message-success">
+    <img src="assets/icons/check-circle.svg" alt="" class="message-icon">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="message message-error">
+    <img src="assets/icons/x.svg" alt="" class="message-icon">
+    {{ errorMessage }}
+  </div>
 
-<!-- Add/Edit Form -->
-<div *ngIf="showForm" class="address-form-container">
-  <h4>{{ isEditing ? 'Edit Address' : 'Add New Address' }}</h4>
-  <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" novalidate>
+  <!-- Header -->
+  <header class="welcome-header" *ngIf="!showForm">
+    <h1 class="welcome-title">{{ tKeys.SF_ACCOUNT_ADDRESSES_TITLE | translate }}</h1>
+    <p class="welcome-subtitle">Manage your saved addresses</p>
+    <button mat-raised-button color="primary" (click)="openAddForm()" class="add-address-button">
+      <img src="assets/icons/plus.svg" alt="" class="button-icon">
+      {{ tKeys.SF_ACCOUNT_ADDRESSES_ADD_NEW_BUTTON | translate }}
+    </button>
+  </header>
 
-    <!-- Full Name -->
-    <div class="form-group mb-3">
-      <label for="fullName">Full Name</label>
-      <input type="text" id="fullName" formControlName="fullName" class="form-control"
-        [ngClass]="{ 'is-invalid': fullName?.invalid && (fullName?.dirty || fullName?.touched) }">
-      <div *ngIf="fullName?.invalid && (fullName?.dirty || fullName?.touched)" class="invalid-feedback">
-        <div *ngIf="fullName?.errors?.['required']">Full name is required.</div>
-        <div *ngIf="fullName?.errors?.['maxlength']">Full name cannot exceed 100 characters.</div>
+  <!-- Address List -->
+  <div *ngIf="!showForm && (addresses$ | async) as addresses" class="addresses-content">
+    <div *ngIf="addresses.length > 0; else noAddresses" class="addresses-grid">
+      <mat-card *ngFor="let address of addresses" class="address-card">
+        <mat-card-header>
+          <mat-card-title class="address-name">{{ address.fullName }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="address-details">
+            <p class="address-line">{{ address.street1 }}</p>
+            <p class="address-line" *ngIf="address.street2">{{ address.street2 }}</p>
+            <p class="address-line">{{ address.city }}, {{ address.postalCode }}</p>
+            <p class="address-line">{{ address.country }}</p>
+            <p class="address-line" *ngIf="address.phoneNumber">
+              <strong>Phone:</strong> {{ address.phoneNumber }}
+            </p>
+          </div>
+
+          <!-- Status Badge -->
+          <div class="address-badges" *ngIf="address.isDefaultShipping">
+            <span class="default-badge">
+              <img src="assets/icons/check-circle.svg" alt="" class="badge-icon">
+              Default Address
+            </span>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Actions -->
+          <div class="address-actions">
+            <button mat-button (click)="openEditForm(address)" class="action-button edit-button">
+              <img src="assets/icons/edit.svg" alt="" class="action-icon">
+              {{ tKeys.SF_ACCOUNT_ADDRESSES_EDIT_BUTTON | translate }}
+            </button>
+            
+            <!-- Default Address Toggle -->
+            <button mat-button 
+                    (click)="toggleDefault(address.id)"
+                    [disabled]="isLoading" 
+                    class="action-button"
+                    [ngClass]="address.isDefaultShipping ? 'default-active' : 'default-inactive'">
+              <img [src]="address.isDefaultShipping ? 'assets/icons/check-circle.svg' : 'assets/icons/check.svg'" 
+                   alt="" class="action-icon">
+              {{ address.isDefaultShipping ? 'Remove Default' : 'Make Default' }}
+            </button>
+            
+            <button mat-button 
+                    (click)="deleteAddress(address.id)" 
+                    [disabled]="isLoading"
+                    class="action-button delete-button">
+              <img src="assets/icons/trash.svg" alt="" class="action-icon">
+              {{ tKeys.SF_ACCOUNT_ADDRESSES_DELETE_BUTTON | translate }}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <ng-template #noAddresses>
+      <div class="empty-state">
+        <img src="assets/icons/map-pin.svg" alt="" class="empty-icon">
+        <h3 class="empty-title">No addresses found</h3>
+        <p class="empty-description">{{ tKeys.SF_ACCOUNT_ADDRESSES_NO_ADDRESSES | translate }}</p>
+        <button mat-raised-button color="primary" (click)="openAddForm()" class="empty-action-button">
+          <img src="assets/icons/plus.svg" alt="" class="button-icon">
+          {{ tKeys.SF_ACCOUNT_ADDRESSES_ADD_NEW_BUTTON | translate }}
+        </button>
       </div>
-    </div>
+    </ng-template>
+  </div>
 
-    <!-- Street -->
-    <div class="form-group mb-3">
-      <label for="street1">Street Address</label>
-      <input type="text" id="street1" formControlName="street1" class="form-control"
-        [ngClass]="{ 'is-invalid': street1?.invalid && (street1?.dirty || street1?.touched) }">
-      <div *ngIf="street1?.invalid && (street1?.dirty || street1?.touched)" class="invalid-feedback">
-        <div *ngIf="street1?.errors?.['required']">Street address is required.</div>
-        <div *ngIf="street1?.errors?.['maxlength']">Street address cannot exceed 255 characters.</div>
-      </div>
-    </div>
-  
-    <!-- Apartment/Suite (Optional) -->
-    <div class="form-group mb-3">
-      <label for="street2">Apartment, suite, etc. (Optional)</label>
-        <input type="text" id="street2" formControlName="street2" class="form-control"
-          [ngClass]="{ 'is-invalid': street2?.invalid && (street2?.dirty || street2?.touched) }">
-        <div *ngIf="street2?.invalid && (street2?.dirty || street2?.touched)" class="invalid-feedback">
-          <!-- Add validation messages for street2 if any are defined in the component -->
-          <div *ngIf="street2?.errors?.['maxlength']">Apartment/suite cannot exceed 255 characters.</div>
-        </div>
-      </div>
-    <!-- City -->
-    <div class="form-group mb-3">
-      <label for="city">City</label>
-      <input type="text" id="city" formControlName="city" class="form-control"
-        [ngClass]="{ 'is-invalid': city?.invalid && (city?.dirty || city?.touched) }">
-      <div *ngIf="city?.invalid && (city?.dirty || city?.touched)" class="invalid-feedback">
-        <div *ngIf="city?.errors?.['required']">City is required.</div>
-        <div *ngIf="city?.errors?.['maxlength']">City cannot exceed 100 characters.</div>
-      </div>
-    </div>
+  <!-- Add/Edit Form -->
+  <div *ngIf="showForm" class="form-section">
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title class="form-title">
+          <img src="assets/icons/map-pin.svg" alt="" class="title-icon">
+          {{ isEditing ? (tKeys.SF_ACCOUNT_ADDRESSES_EDIT_FORM_TITLE | translate) : (tKeys.SF_ACCOUNT_ADDRESSES_ADD_FORM_TITLE | translate) }}
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content class="form-content">
+        <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" novalidate class="address-form">
+          <div class="form-row">
+            <!-- Full Name -->
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_ADDRESSES_FULL_NAME_LABEL | translate }}</mat-label>
+              <input matInput formControlName="fullName" autocomplete="name">
+              <mat-error *ngIf="fullName?.hasError('required')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_FULL_NAME_REQUIRED_ERROR | translate }}
+              </mat-error>
+              <mat-error *ngIf="fullName?.hasError('maxlength')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_FULL_NAME_MAXLENGTH_ERROR | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-    <!-- State (Removed) -->
-    <!--
-    <div class="form-group mb-3">
-      <label for="state">State/Province</label>
-      <input type="text" id="state" formControlName="state" class="form-control"
-             [ngClass]="{ 'is-invalid': state?.invalid && (state?.dirty || state?.touched) }">
-      <div *ngIf="state?.invalid && (state?.dirty || state?.touched)" class="invalid-feedback">
-        <div *ngIf="state?.errors?.['required']">State/Province is required.</div>
-        <div *ngIf="state?.errors?.['maxlength']">State/Province cannot exceed 100 characters.</div>
-      </div>
-    </div>
-    -->
+          <div class="form-row">
+            <!-- Street Address -->
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_ADDRESSES_STREET1_LABEL | translate }}</mat-label>
+              <input matInput formControlName="street1" autocomplete="address-line1">
+              <mat-error *ngIf="street1?.hasError('required')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_STREET1_REQUIRED_ERROR | translate }}
+              </mat-error>
+              <mat-error *ngIf="street1?.hasError('maxlength')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_STREET1_MAXLENGTH_ERROR | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-    <!-- Postal Code -->
-    <div class="form-group mb-3">
-      <label for="postalCode">Postal Code</label>
-      <input type="text" id="postalCode" formControlName="postalCode" class="form-control"
-        [ngClass]="{ 'is-invalid': postalCode?.invalid && (postalCode?.dirty || postalCode?.touched) }">
-      <div *ngIf="postalCode?.invalid && (postalCode?.dirty || postalCode?.touched)" class="invalid-feedback">
-        <div *ngIf="postalCode?.errors?.['required']">Postal code is required.</div>
-        <div *ngIf="postalCode?.errors?.['maxlength']">Postal code cannot exceed 20 characters.</div>
-      </div>
-    </div>
+          <div class="form-row">
+            <!-- Apartment/Suite -->
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_ADDRESSES_STREET2_LABEL | translate }}</mat-label>
+              <input matInput formControlName="street2" autocomplete="address-line2">
+              <mat-error *ngIf="street2?.hasError('maxlength')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_STREET2_MAXLENGTH_ERROR | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-    <!-- Country (Now defaulted and disabled) -->
-    <div class="form-group mb-3">
-      <label for="country">Country</label>
-      <input type="text" id="country" formControlName="country" class="form-control" [disabled]="true">
-      <!-- Removed validation display as it's disabled -->
-      <!-- <div *ngIf="country?.invalid && (country?.dirty || country?.touched)" class="invalid-feedback">
-        <div *ngIf="country?.errors?.['required']">Country is required.</div> -->
-      <div *ngIf="country?.errors?.['maxlength']">Country cannot exceed 100 characters.</div>
-    </div> <!-- Re-add missing closing div for invalid-feedback -->
+          <div class="form-row">
+            <!-- City -->
+            <mat-form-field appearance="outline" class="form-field half-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_ADDRESSES_CITY_LABEL | translate }}</mat-label>
+              <input matInput formControlName="city" autocomplete="address-level2">
+              <mat-error *ngIf="city?.hasError('required')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_CITY_REQUIRED_ERROR | translate }}
+              </mat-error>
+              <mat-error *ngIf="city?.hasError('maxlength')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_CITY_MAXLENGTH_ERROR | translate }}
+              </mat-error>
+            </mat-form-field>
 
+            <!-- Postal Code -->
+            <mat-form-field appearance="outline" class="form-field half-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_ADDRESSES_POSTAL_CODE_LABEL | translate }}</mat-label>
+              <input matInput formControlName="postalCode" autocomplete="postal-code">
+              <mat-error *ngIf="postalCode?.hasError('required')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_POSTAL_CODE_REQUIRED_ERROR | translate }}
+              </mat-error>
+              <mat-error *ngIf="postalCode?.hasError('maxlength')">
+                {{ tKeys.SF_ACCOUNT_ADDRESSES_POSTAL_CODE_MAXLENGTH_ERROR | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-    <!-- Phone Number -->
-    <div class="form-group mb-3">
-      <label for="phoneNumber">Phone Number (Optional)</label>
-      <input type="tel" id="phoneNumber" formControlName="phoneNumber" class="form-control">
-      <!-- Add pattern validation message if needed -->
-    </div>
+          <div class="form-row">
+            <!-- Country -->
+            <mat-form-field appearance="outline" class="form-field half-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_ADDRESSES_COUNTRY_LABEL | translate }}</mat-label>
+              <input matInput formControlName="country" readonly>
+            </mat-form-field>
 
-    <div class="form-actions mt-3">
-      <button type="submit" class="btn btn-success me-2" [disabled]="isLoading">
-        {{ isLoading ? 'Saving...' : (isEditing ? 'Update Address' : 'Save Address') }}
-      </button>
-      <button type="button" (click)="closeForm()" class="btn btn-secondary" [disabled]="isLoading">Cancel</button>
-    </div>
+            <!-- Phone Number -->
+            <mat-form-field appearance="outline" class="form-field half-width">
+              <mat-label>{{ tKeys.SF_ACCOUNT_ADDRESSES_PHONE_NUMBER_LABEL | translate }}</mat-label>
+              <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel">
+            </mat-form-field>
+          </div>
 
-  </form>
-</div>
+          <mat-divider></mat-divider>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button mat-raised-button 
+                    color="primary" 
+                    type="submit" 
+                    [disabled]="isLoading || addressForm.invalid"
+                    class="save-button">
+              <img src="assets/icons/check.svg" alt="" class="button-icon" *ngIf="!isLoading">
+              {{ isLoading ? (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVING | translate) : (isEditing ? (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_UPDATE | translate) : (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVE | translate)) }}
+            </button>
+            
+            <button mat-button 
+                    type="button" 
+                    (click)="closeForm()" 
+                    [disabled]="isLoading"
+                    class="cancel-button">
+              {{ tKeys.SF_ACCOUNT_ADDRESSES_CANCEL_BUTTON | translate }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</section>

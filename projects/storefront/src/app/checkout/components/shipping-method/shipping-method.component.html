@@ -1,0 +1,15 @@
+<section class="shipping-method">
+  <h2 class="shipping-method__title">Shipping Method</h2>
+  <div class="shipping-method__options">
+    <div *ngFor="let method of shippingMethods"
+         class="shipping-method__option"
+         [class.selected]="method.id === selectedMethod?.id"
+         (click)="selectMethod(method)">
+      <div class="shipping-method__option-details">
+        <span class="shipping-method__option-name">{{ method.name }}</span>
+        <span class="shipping-method__option-description">{{ method.description }}</span>
+      </div>
+      <span class="shipping-method__option-cost">{{ method.cost | currency }}</span>
+    </div>
+  </div>
+</section>

@@ -6,6 +6,7 @@ import { Subject, catchError, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CustomerService } from '../services/customer.service'; // Corrected import path
 import { NotificationService } from '../../core/services/notification.service';
+import { T, TranslatePipe } from '@shared/i18n';
 
 // Declare bootstrap globally if using it directly
 declare var bootstrap: any;
@@ -13,13 +14,13 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-customer-management-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   // Removed providers: [CustomerService] to use the root-provided service
   templateUrl: './customer-management-page.component.html',
   styleUrl: './customer-management-page.component.scss'
 })
 export class CustomerManagementPageComponent implements OnInit {
-
+  public tKeys = T;
   customers: any[] = []; // Replace 'any[]' with a proper customer interface later
   searchTerm: string = '';
   selectedFilter: string = '';
@@ -90,9 +91,9 @@ export class CustomerManagementPageComponent implements OnInit {
       },
       error: (err: any) => { // Added type annotation
         console.error('Error loading customers:', err);
-        this.error = 'Failed to load customers. Please try again later.';
+        this.error = this.tKeys.SM_CUSTOMER_MGMT_PAGE_ERROR_LOAD_CUSTOMERS_DETAIL;
         this.isLoading = false;
-        this.notificationService.showError('Failed to load customers.'); // Use notification service
+        this.notificationService.showError(this.tKeys.SM_CUSTOMER_MGMT_PAGE_ERROR_LOAD_CUSTOMERS); // Use notification service
       }
     });
   }
@@ -116,7 +117,7 @@ export class CustomerManagementPageComponent implements OnInit {
 
   openCustomerDetailsModal(customer: any): void { // Replace 'any' with a proper customer interface later
     if (!customer || !customer.id) {
-      this.notificationService.showError('Invalid customer data.');
+      this.notificationService.showError(this.tKeys.SM_CUSTOMER_MGMT_PAGE_ERROR_INVALID_CUSTOMER_DATA);
       return;
     }
 
@@ -126,7 +127,7 @@ export class CustomerManagementPageComponent implements OnInit {
     this.customerService.getManagerCustomerDetails(customer.id).pipe(
       catchError(err => {
         console.error('Error fetching customer details:', err);
-        this.notificationService.showError('Failed to load customer details.');
+        this.notificationService.showError(this.tKeys.SM_CUSTOMER_MGMT_PAGE_ERROR_LOAD_CUSTOMER_DETAILS);
         this.isModalLoading = false;
         return of(null); // Return an observable of null to continue the stream
       })
@@ -141,7 +142,7 @@ export class CustomerManagementPageComponent implements OnInit {
           modal.show();
         } else {
           console.error('Customer details modal element not found.');
-          this.notificationService.showError('Modal component not found.');
+          this.notificationService.showError(this.tKeys.SM_CUSTOMER_MGMT_PAGE_ERROR_MODAL_NOT_FOUND);
         }
       }
     });
@@ -167,7 +168,7 @@ export class CustomerManagementPageComponent implements OnInit {
       next: (response: HttpResponse<Blob>) => {
         const blob = response.body;
         if (!blob) {
-          this.notificationService.showError('Export failed: No data received.');
+          this.notificationService.showError(this.tKeys.SM_CUSTOMER_MGMT_PAGE_ERROR_EXPORT_NO_DATA);
           this.isExporting = false;
           return;
         }
@@ -193,12 +194,12 @@ export class CustomerManagementPageComponent implements OnInit {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
         this.isExporting = false;
-        this.notificationService.showSuccess('Customer data exported successfully.');
+        this.notificationService.showSuccess(this.tKeys.SM_CUSTOMER_MGMT_PAGE_SUCCESS_EXPORT);
       },
       error: (err: any) => {
         console.error('Error exporting customers:', err);
         this.isExporting = false;
-        this.notificationService.showError('Failed to export customer data.');
+        this.notificationService.showError(this.tKeys.SM_CUSTOMER_MGMT_PAGE_ERROR_EXPORT_FAILED);
       }
     });
   }

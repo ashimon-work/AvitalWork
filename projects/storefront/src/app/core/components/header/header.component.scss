@@ -1,282 +1,188 @@
-// Using global variables defined in src/styles.scss
+// Base Variables
+$primary-color: #E53E3E;
+$text-gray-900: #1A202C;
+$text-gray-700: #4A5568;
+$text-gray-500: #718096;
+$border-gray-200: #EDF2F7;
+$border-gray-300: #E2E8F0; // For input borders
+$background-gray-50: #F9FAFB; // Light background for input field itself
+$background-gray-100: #F7FAFC;
+$white-color: #fff;
+$header-height-desktop: 64px;
+$header-height-mobile: 56px;
+
+@mixin media-breakpoint-up($breakpoint) {
+  @if $breakpoint == md {
+    @media (min-width: 768px) { @content; }
+  }
+  @if $breakpoint == lg {
+    @media (min-width: 1024px) { @content; }
+  }
+}
 
 :host {
-  display: block; // Ensure the component takes up block space
-}
-
-.store-header {
-  background-color: var(--background-color);
-  border-bottom: var(--border-width) solid var(--border-color);
-  padding: var(--spacing-sm) 0; // Vertical padding, horizontal handled by container
-  position: sticky; // Make header sticky
-  top: 0;
-  z-index: 1000; // Ensure it stays above other content
-  box-shadow: var(--box-shadow-sm); // Subtle shadow for separation
-}
-
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--spacing-lg); // Space between logo, nav, right section
-
-  // Apply container constraints
+  display: block;
   width: 100%;
-  max-width: var(--container-max-width);
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: var(--container-padding-x);
-  padding-left: var(--container-padding-x);
 }
 
-.logo {
-  flex-shrink: 0; // Prevent logo from shrinking
-
-  a {
-    display: inline-block; // Ensures link wraps the image correctly
-    line-height: 0; // Remove extra space below image if any
-  }
-
-  img {
-    height: 40px; // Adjust height as needed, maintain aspect ratio
-    width: auto; // Let width adjust automatically
-    vertical-align: middle; // Align image nicely if there's text nearby
-  }
+.app-sidenav-container {
+  // Potential full height if sidenav is global, managed by app.component typically
+  // The mat-sidenav-content within this might be causing overflow issues.
+  // ::ng-deep .mat-drawer-content rule removed.
 }
 
-.navigation {
-  flex-grow: 1; // Allow navigation to take up available space
-  display: flex;
-  justify-content: center; // Center navigation links (adjust if needed)
-}
-
-.header-right {
+.modern-header {
+  position: sticky;
+  top: 0;
+  top: 0;
+  z-index: 1000; // Header itself
+  background-color: $white-color;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  padding: 0 16px;
+  // overflow: visible; // Removed, as it caused page scroll
+  height: $header-height-mobile;
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  justify-content: flex-end; /* Align items to the end of the container */
-}
-
-.search-bar {
-  // Placeholder: Specific styling will be in search-bar.component.scss
-  // Might need width constraints here depending on the search bar's internal styling
-  max-width: 300px; // Example constraint
-}
-
-.user-actions {
-  display: flex;
-  align-items: center;
-  margin-left: 0px;
-  gap: var(--spacing-md); // Space between icons
-}
-
-.action-icon {
-  color: var(--text-color); // Use default text color for icons
-  text-decoration: none;
-  position: relative; // For positioning the cart count badge
-  display: flex; // Helps center the icon vertically if needed
-  align-items: center;
-  padding: var(--spacing-xs); // Small padding for better click area
-  border-radius: 50%; // Make it circular on hover/focus
-
-  &:hover,
-  &:focus {
-    color: var(--primary-color); // Change color on hover/focus
-    background-color: var(--neutral-lightest); // Subtle background
-    text-decoration: none; // Remove underline
-    opacity: 1; // Override default link opacity hover
-    outline: none; // Remove default focus outline if needed
+  @include media-breakpoint-up(md) {
+    padding: 0 24px;
+    height: $header-height-desktop;
   }
 
-  .material-icons {
-    font-size: 20px; // Reduced icon size
-    vertical-align: middle;
-  }
-}
-
-.cart-count {
-  position: absolute;
-  top: -5px; // Adjust position relative to the icon
-  right: -8px; // Adjust position relative to the icon
-  background-color: var(--error-color); // Use error/alert color for emphasis
-  color: rgb(255, 255, 255);
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  border-radius: 50%;
-  padding: 2px 5px;
-  line-height: 1;
-  min-width: 18px; // Ensure it's roughly circular even for single digits
-  text-align: center;
-}
-
-// Hamburger Button Styles (Hidden on Desktop)
-.hamburger-button {
-  display: block; // Visible by default
-  margin-left: 0px; /* Push to the right */
-  background: none;
-  border: none;
-  padding: var(--spacing-xs);
-  cursor: pointer;
-  color: var(--text-color);
-
-  .material-icons {
-    font-size: 22px; // Larger icon for touch
-    vertical-align: middle;
-  }
-
-  &:hover,
-  &:focus {
-    color: var(--primary-color);
-    background-color: var(--neutral-lightest);
-    border-radius: 50%;
-    outline: none;
-  }
-}
-
-// Mobile Menu Container Styles (Hidden on Desktop)
-.mobile-menu-content {
-  display: none; // Hidden by default
-}
-
-
-// Responsive adjustments
-@media (max-width: 768px) {
-  .header-container {
-    gap: var(--spacing-xs); // Further reduce gap
-    padding-right: var(--spacing-xs); // Further reduce padding
-    padding-left: var(--spacing-xs); // Further reduce padding
-    position: relative; // Needed for absolute positioning of the menu
-  }
-
-  // Reduce logo size on mobile
-  .logo img {
-    height: 30px; // Smaller logo height
-  }
-
-  // Hide original nav and search bar (now inside mobile menu)
-  .navigation,
-  .search-bar {
-    display: none; // Hide original nav
-  }
-
-  // Show hamburger button
-  .hamburger-button {
-    display: block !important;
-
-    .material-icons {
-      font-size: 15px; // Smaller menu icon
-    }
-  }
-
-  // Keep user actions visible, adjust gap
-  .header-right {
-    /* order: 2; // Place user actions before hamburger */
-    gap: var(--spacing-xs); // Further reduce gap between user actions and hamburger
-    flex-wrap: nowrap;
-    justify-content: flex-end; // Keep this alignment
-    flex-grow: 1; /* Allow it to take up available space */
-
-    .action-icon .material-icons {
-      font-size: 14px; // Further reduced mobile icon size
-    }
-
-    .user-actions {
-      gap: var(--spacing-xxs); // Reduce gap even further
-      font-size: 0.6rem; // Even smaller font size for all text
-    }
-
-    justify-content: flex-end;
-
-    // Hide the desktop search bar specifically on mobile
-    .desktop-search {
-      display: none;
-    }
-  }
-
-  // Style the mobile menu container
-  .mobile-menu-content {
-    display: none; // Hidden by default
-    position: absolute;
-    top: 100%; // Position below the header
-    left: 0;
-    right: 0;
-    background-color: var(--background-color);
-    border-top: var(--border-width) solid var(--border-color);
-    box-shadow: var(--box-shadow-md);
-    padding: var(--spacing-md);
-    z-index: 999; // Below header but above page content
-
-    // Show when open
-    &.open {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-md);
-    }
-  }
-}
-
-// Style the mobile menu container
-.mobile-menu-content {
-  display: none; // Hidden by default
-  position: absolute;
-  top: 100%; // Position below the header
-  left: 0;
-  right: 0;
-  background-color: var(--background-color);
-  border-top: var(--border-width) solid var(--border-color);
-  box-shadow: var(--box-shadow-md);
-  padding: var(--spacing-md);
-  z-index: 999; // Below header but above page content
-
-  // Show when open
-  &.open {
+  .header-content-wrapper {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-  }
-
-  // Ensure nav and search display correctly inside the menu
-  .navigation,
-  .search-bar {
-    display: block; // Show them inside the menu
-    width: 100%; // Take full width
-    max-width: none; // Remove previous max-width constraint on search
-    margin-bottom: var(--spacing-sm); // Add some spacing
-  }
-
-  // Adjust navigation styles for vertical layout if needed
-  .navigation {
-    // Example: If app-navigation uses flex row, change it
-    // ::ng-deep ul { flex-direction: column; align-items: flex-start; }
-    justify-content: flex-start; // Align items to the start
-  }
-
-  .action-link {
-    font-size: 1.15rem;
-  }
-
-  @media (min-width: 769px) {
-    .header-right .action-link {
-      font-size: 1.35rem;
-    }
-  }
-
-  .action-icon {
-    padding: var(--spacing-xxs); // Even smaller padding
-  }
-
-  .user-actions {
-    gap: var(--spacing-xxs); // Reduce gap even further
-  }
-
-  .cart-count {
-    font-size: 0.7rem; // Reduce cart count font size
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+    // overflow: visible; // Removed, as it caused page scroll
   }
 }
 
-// Define extra small spacing variable if it doesn't exist
-:root {
-  --spacing-xxs: calc(0.25 * var(--spacing-unit)); // 2px
+.logo-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: $text-gray-900;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    @include media-breakpoint-up(md) { height: 40px; }
+    .logo-image, .logo-svg-fallback {
+      height: 100%; width: auto; max-width: 120px; object-fit: contain;
+      &.small-logo { height: 28px; max-width: 100px; }
+    }
+    .logo-svg-fallback { color: $primary-color; }
+  }
+  .brand-name {
+    font-size: 1.125rem; font-weight: 600; line-height: 1.25; margin: 0; color: $text-gray-900; white-space: nowrap;
+    @include media-breakpoint-up(md) { font-size: 1.25rem; }
+  }
+  .brand-name-mobile { font-size: 1rem; font-weight: 600; color: $text-gray-900; white-space: nowrap; }
+}
+
+.flex-spacer { flex-grow: 1; }
+
+.desktop-navigation {
+  display: flex; justify-content: center; align-items: center;
+  .nav-links-list {
+    display: flex; gap: 4px; list-style: none; padding: 0; margin: 0;
+    @include media-breakpoint-up(lg) { gap: 8px; }
+    .nav-link {
+      padding: 8px 12px; font-size: 0.9rem; font-weight: 500; color: $text-gray-700;
+      text-decoration: none; border-radius: 6px; transition: background-color 0.2s ease, color 0.2s ease; white-space: nowrap;
+      &:hover { background-color: $background-gray-100; color: $primary-color; }
+      &.active-link { color: $primary-color; font-weight: 600; background-color: rgba($primary-color, 0.08); }
+    }
+  }
+}
+
+.desktop-actions {
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+
+// Custom Search Input Styling - MOVED to search-bar.component.scss
+
+
+.desktop-search-area {
+  position: relative; // Anchor for suggestions list (app-search-bar will be child)
+  width: 300px;
+  @include media-breakpoint-up(lg) { width: 350px; }
+  display: flex;
+  align-items: center;
+}
+
+// .suggestions-list MOVED to search-bar.component.scss
+
+
+.action-icon-button {
+  color: $text-gray-700;
+  &:hover { background-color: $background-gray-100; color: $primary-color; }
+  ::ng-deep .mat-badge-content { font-size: 10px; }
+}
+
+.mobile-menu-button {
+  color: $text-gray-700; margin-right: 8px;
+}
+
+.md\:hidden { @include media-breakpoint-up(md) { display: none !important; } }
+.hidden { display: none !important; }
+.md\:flex { @include media-breakpoint-up(md) { display: flex !important; } }
+.md\:block { @include media-breakpoint-up(md) { display: block !important; } }
+
+.mobile-sidenav {
+  width: clamp(280px, 85vw, 340px); padding: 0; background-color: $white-color;
+  display: flex; flex-direction: column; box-shadow: 0 0 15px rgba(0,0,0,0.15);
+
+  .mobile-drawer-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; border-bottom: 1px solid $border-gray-200;
+    min-height: $header-height-mobile; flex-shrink: 0;
+    .logo-brand-link { gap: 12px; }
+    button[mat-icon-button] { color: $text-gray-700; }
+  }
+
+  .mobile-nav-list {
+    padding-top: 8px; padding-bottom: 8px; flex-grow: 1; overflow-y: auto;
+    .mat-mdc-list-item {
+      color: $text-gray-900; font-weight: 500; height: 48px !important; padding: 0 24px !important;
+      .mdc-list-item__primary-text { font-size: 1rem; }
+      &:hover { background-color: $background-gray-50; }
+      &.active-link {
+        color: $primary-color; font-weight: 600; background-color: rgba($primary-color, 0.05);
+        &::before {
+          content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 4px;
+          background-color: $primary-color; border-top-right-radius: 4px; border-bottom-right-radius: 4px;
+        }
+      }
+    }
+  }
+
+  .mobile-drawer-search {
+    padding: 16px 24px; border-top: 1px solid $border-gray-200; flex-shrink: 0;
+    position: relative; // Anchor for suggestions list (app-search-bar will be child)
+  }
+
+  .mobile-drawer-actions {
+    padding: 16px 24px 24px; border-top: 1px solid $border-gray-200;
+    display: flex; flex-direction: column; gap: 12px; flex-shrink: 0;
+    .full-width-button {
+      width: 100%; justify-content: center; padding: 10px 16px; font-size: 0.9rem;
+      font-weight: 500; color: $text-gray-700; border: 1px solid $border-gray-300; border-radius: 8px;
+      mat-icon { margin-right: 8px; color: $text-gray-500; }
+      &:hover { background-color: $background-gray-50; border-color: $text-gray-500; color: $text-gray-900; }
+    }
+  }
+}
+
+// ::ng-deep .mat-mdc-autocomplete-panel styles removed as it's no longer used.
+
+button[mat-icon-button] { // General style for mat-icon-buttons if not overridden
+  border-radius: 50%;
+  &:hover { background-color: rgba(0,0,0,0.04); }
 }
