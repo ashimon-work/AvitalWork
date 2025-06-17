@@ -8,7 +8,7 @@ class ShoppingCartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = cartService.cart;
+    final cart = cartService.carts;
 
     return Scaffold(
       appBar: AppBar(
