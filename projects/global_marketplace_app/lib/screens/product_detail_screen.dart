@@ -26,7 +26,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<Map<String, dynamic>> _fetchProductDetails() async {
-    final url = Uri.parse('http://localhost:3000/stores/${widget.storeSlug}/products/${widget.productId}');
+    final url = Uri.parse('https://smartyapp.co.il/api/stores/${widget.storeSlug}/products/${widget.productId}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -54,8 +54,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final product = snapshot.data!;
-            final primaryImage = (product['images'] as List).isNotEmpty
-                ? (product['images'] as List).first['url']
+            final primaryImage = (product['imageUrls'] as List).isNotEmpty
+                ? (product['imageUrls'] as List).first
                 : null;
 
             return SingleChildScrollView(

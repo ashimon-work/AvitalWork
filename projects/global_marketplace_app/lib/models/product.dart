@@ -60,4 +60,6 @@ class Product {
       storeId: json['storeId'],
     );
   }
+
+  String get firstImageUrl => imageUrls.isNotEmpty ? imageUrls.first : '';
 }
