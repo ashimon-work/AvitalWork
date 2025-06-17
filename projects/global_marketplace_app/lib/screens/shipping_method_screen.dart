@@ -45,16 +45,16 @@ class ShippingMethodScreen extends StatefulWidget {
   final Address selectedAddress;
 
   const ShippingMethodScreen({
-    Key? key,
+    super.key,
     required this.storeSlug,
     required this.selectedAddress,
-  }) : super(key: key);
+  });
 
   @override
-  _ShippingMethodScreenState createState() => _ShippingMethodScreenState();
+  ShippingMethodScreenState createState() => ShippingMethodScreenState();
 }
 
-class _ShippingMethodScreenState extends State<ShippingMethodScreen> {
+class ShippingMethodScreenState extends State<ShippingMethodScreen> {
   List<ShippingMethod> _shippingMethods = [];
   ShippingMethod? _selectedMethod;
   bool _isLoading = true;
@@ -67,7 +67,7 @@ class _ShippingMethodScreenState extends State<ShippingMethodScreen> {
 
   Future<void> _fetchShippingMethods() async {
     final authService = Provider.of<AuthService>(context, listen: false);
-    final token = authService.token;
+    final token = await authService.getToken();
 
     if (token == null) {
       // Handle missing token
@@ -79,7 +79,7 @@ class _ShippingMethodScreenState extends State<ShippingMethodScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:3000/stores/${widget.storeSlug}/shipping/methods'),
+        Uri.parse('https://smartyapp.co.il/api/stores/${widget.storeSlug}/shipping/methods'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
