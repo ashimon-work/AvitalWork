@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/product.dart';
-import '../services/cart_service.dart';
+import '../providers/providers.dart';
+import '../widgets/common_app_bar.dart';
 
 // As per style guide
 const Color primaryColor = Color(0xFF0A4F70);
@@ -25,7 +27,6 @@ class ProductDetailScreen extends StatefulWidget {
 
 class ProductDetailScreenState extends State<ProductDetailScreen> {
   late Future<Map<String, dynamic>> _productFuture;
-  final CartService _cartService = CartService();
   final ValueNotifier<int> _currentPageNotifier = ValueNotifier<int>(0);
 
   @override
@@ -61,21 +62,10 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        elevation: 0, // A subtle detail for a flatter design
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Product', // Or can be empty as per design doc implication
-          style: TextStyle(
-            fontFamily: fontName,
-            color: Colors.white,
-          ),
-        ),
-      ),
+             appBar: const CommonAppBar(
+         title: 'Product',
+         showBackButton: true,
+       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _productFuture,
         builder: (context, snapshot) {
@@ -248,16 +238,38 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
             borderRadius: BorderRadius.circular(12), // Per style guide
           ),
         ),
-        onPressed: () {
-          final product = Product.fromJson(productData);
-          _cartService.addToCart(widget.storeSlug, product, 1);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Product added to cart!', style: TextStyle(fontFamily: fontName)),
-              duration: Duration(seconds: 2),
-              backgroundColor: accentColor,
-            ),
-          );
+        onPressed: () async {
+          try {
+            final product = Product.fromJson(productData);
+            final cartProvider = Provider.of<CartProvider>(context, listen: false);
+            final authProvider = Provider.of<AuthProvider>(context, listen: false);
+            
+            await cartProvider.addToCart(widget.storeSlug, product, 1, authProvider.userToken);
+            
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Product added to cart!', style: TextStyle(fontFamily: fontName)),
+                  duration: Duration(seconds: 2),
+                  backgroundColor: accentColor,
+                ),
+              );
+            }
+          } catch (e) {
+            if (mounted) {
+              String errorMessage = e.toString();
+              if (errorMessage.contains('log in')) {
+                errorMessage = 'Please log in to add items to your cart';
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(errorMessage, style: const TextStyle(fontFamily: fontName)),
+                  duration: const Duration(seconds: 3),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
         },
         child: const Text(
           'Add to Cart',

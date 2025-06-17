@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'shipping_method_screen.dart';
+import '../widgets/common_app_bar.dart';
 
 class ShippingAddressScreen extends StatefulWidget {
   final String storeSlug;
@@ -84,9 +85,7 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Shipping Address'),
-      ),
+      appBar: const CommonAppBar(title: 'Shipping Address', showBackButton: true),
       body: _buildBody(),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),

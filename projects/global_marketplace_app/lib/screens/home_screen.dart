@@ -4,6 +4,7 @@ import 'package:global_marketplace_app/services/api_service.dart';
 import 'package:global_marketplace_app/models/product.dart';
 import 'package:global_marketplace_app/screens/store_screen.dart';
 import 'package:global_marketplace_app/widgets/product_grid.dart';
+import 'package:global_marketplace_app/widgets/common_app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +15,11 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   late Future<HomeData> _homeDataFuture;
+  String? _selectedCategoryId;
+  List<Product> _filteredProducts = [];
+  List<Product> _allProducts = [];
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -22,51 +28,49 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onCategorySelected(String? categoryId, String categoryName) {
+    setState(() {
+      _selectedCategoryId = categoryId;
+      _filterProducts();
+    });
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query.toLowerCase();
+      _filterProducts();
+    });
+  }
+
+  void _filterProducts() {
+    _filteredProducts = _allProducts.where((product) {
+      // Apply search filter
+      bool matchesSearch = _searchQuery.isEmpty ||
+          product.name.toLowerCase().contains(_searchQuery) ||
+          product.description.toLowerCase().contains(_searchQuery) ||
+          product.store.name.toLowerCase().contains(_searchQuery) ||
+          product.tags.any((tag) => tag.toLowerCase().contains(_searchQuery));
+
+      // Apply category filter
+      bool matchesCategory = _selectedCategoryId == null ||
+          product.categories.any((cat) => 
+              _selectedCategoryId == cat.id || 
+              (_selectedCategoryId == cat.name && cat.name.toLowerCase() == _selectedCategoryId!.toLowerCase()));
+
+      return matchesSearch && matchesCategory;
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: AppBar(
-        title: const Text(
-          'Global Marketplace',
-          style: TextStyle(fontFamily: 'Lato'),
-        ),
-        backgroundColor: const Color(0xFF0A4F70),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart_outlined),
-                onPressed: () {
-                  // TODO: Implement cart functionality
-                },
-              ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFC107),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
-                  child: const Text(
-                    '2', // Example cart count
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+      appBar: const CommonAppBar(title: 'Global Marketplace'),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -114,14 +118,16 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      child: const TextField(
-        style: TextStyle(fontFamily: 'Lato'),
+      child: TextField(
+        controller: _searchController,
+        style: const TextStyle(fontFamily: 'Lato'),
         decoration: InputDecoration(
-          icon: Icon(Icons.search_outlined),
+          icon: const Icon(Icons.search_outlined),
           hintText: 'Discover unique, handcrafted goods...',
-          hintStyle: TextStyle(fontFamily: 'Lato'),
+          hintStyle: const TextStyle(fontFamily: 'Lato'),
           border: InputBorder.none,
         ),
+        onChanged: _onSearchChanged,
       ),
     );
   }
@@ -138,25 +144,87 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFeaturedCategories() {
-    // Placeholder data
-    final categories = ['Pottery', 'Jewelry', 'Textiles', 'Woodcraft', 'Art'];
-    return SizedBox(
-      height: 40,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          return Chip(
-            label: Text(categories[index], style: const TextStyle(fontFamily: 'Lato')),
-            backgroundColor: index == 0 ? const Color(0xFFFFC107) : const Color(0xFFF5F5F5),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-              side: const BorderSide(color: Colors.grey),
+    return FutureBuilder<HomeData>(
+      future: _homeDataFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 40,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final categories = snapshot.data!.featuredCategories;
+          if (categories.isEmpty) {
+            // Fallback to placeholder data if no categories from API
+            final placeholderCategories = ['All', 'Pottery', 'Jewelry', 'Textiles', 'Woodcraft', 'Art'];
+            return SizedBox(
+              height: 40,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: placeholderCategories.length,
+                itemBuilder: (context, index) {
+                  final categoryName = placeholderCategories[index];
+                  final isSelected = index == 0 ? _selectedCategoryId == null : _selectedCategoryId == categoryName;
+                  
+                  return GestureDetector(
+                    onTap: () {
+                      _onCategorySelected(index == 0 ? null : categoryName, categoryName);
+                    },
+                    child: Chip(
+                      label: Text(categoryName, style: const TextStyle(fontFamily: 'Lato')),
+                      backgroundColor: isSelected ? const Color(0xFFFFC107) : const Color(0xFFF5F5F5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: const BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) => const SizedBox(width: 8),
+              ),
+            );
+          }
+          
+          // Add "All" option at the beginning for real categories
+          final allCategories = [
+            {'id': null, 'name': 'All'},
+            ...categories.map((cat) => {'id': cat.id, 'name': cat.name})
+          ];
+          
+          return SizedBox(
+            height: 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: allCategories.length,
+              itemBuilder: (context, index) {
+                final categoryData = allCategories[index];
+                final categoryId = categoryData['id'] as String?;
+                final categoryName = categoryData['name'] as String;
+                final isSelected = _selectedCategoryId == categoryId;
+                
+                return GestureDetector(
+                  onTap: () {
+                    _onCategorySelected(categoryId, categoryName);
+                  },
+                  child: Chip(
+                    label: Text(categoryName, style: const TextStyle(fontFamily: 'Lato')),
+                    backgroundColor: isSelected ? const Color(0xFFFFC107) : const Color(0xFFF5F5F5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: const BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
             ),
           );
-        },
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-      ),
+        } else {
+          return const Center(child: Text('No categories available'));
+        }
+      },
     );
   }
 
@@ -186,7 +254,18 @@ class HomeScreenState extends State<HomeScreen> {
                   ))
               .toList();
 
-          return ProductGrid(products: products);
+          // Initialize products if not already done
+          if (_allProducts.isEmpty) {
+            _allProducts = products;
+            _filteredProducts = products;
+          }
+
+          // Use filtered products if search or category is applied, otherwise show all products
+          final displayProducts = (_searchQuery.isNotEmpty || _selectedCategoryId != null) 
+              ? _filteredProducts 
+              : products;
+
+          return ProductGrid(products: displayProducts);
         } else {
           return const Center(child: Text('No products available'));
         }

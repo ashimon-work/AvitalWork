@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:global_marketplace_app/services/auth_service.dart';
-import 'package:global_marketplace_app/services/cart_service.dart';
+import 'package:provider/provider.dart';
+import 'package:global_marketplace_app/providers/providers.dart';
+import 'package:global_marketplace_app/widgets/common_app_bar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,10 +11,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final CartService _cartService = CartService();
 
   @override
   void dispose() {
@@ -27,17 +26,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text.trim();
 
     if (email.isNotEmpty && password.isNotEmpty) {
-      final success = await _authService.login(email, password);
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.login(email, password);
 
       if (success) {
         if (mounted) {
-          await _cartService.refreshCarts();
           Navigator.pop(context);
         }
       } else {
         if (mounted) {
+          final errorMessage = authProvider.error ?? 'Login failed. Please try again.';
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login failed. Please try again.')),
+            SnackBar(content: Text(errorMessage)),
           );
         }
       }
@@ -47,30 +47,40 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      appBar: const CommonAppBar(title: 'Login', showBackButton: true),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _login,
-              child: const Text('Login'),
-            ),
-          ],
+        child: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) {
+            return Column(
+              children: [
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  keyboardType: TextInputType.emailAddress,
+                  enabled: !authProvider.isLoading,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  obscureText: true,
+                  enabled: !authProvider.isLoading,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: authProvider.isLoading ? null : _login,
+                  child: authProvider.isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Login'),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

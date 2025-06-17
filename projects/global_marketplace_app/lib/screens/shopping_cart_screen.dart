@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/cart_item.dart';
-import '../services/cart_service.dart';
+import '../providers/providers.dart';
 import 'shipping_address_screen.dart';
 import '../theme/app_theme.dart';
+import '../widgets/common_app_bar.dart';
 
 class ShoppingCartScreen extends StatefulWidget {
   const ShoppingCartScreen({super.key});
@@ -12,37 +14,24 @@ class ShoppingCartScreen extends StatefulWidget {
 }
 
 class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
-  final CartService _cartService = CartService();
-  late Future<void> _fetchCartsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchCartsFuture = _cartService.refreshCarts();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.neutralOffWhite,
-      appBar: AppBar(
-        title: const Text('Shopping Cart'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+      appBar: const CommonAppBar(
+        title: 'Shopping Cart',
+        showBackButton: true,
       ),
-      body: FutureBuilder<void>(
-        future: _fetchCartsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<CartProvider>(
+        builder: (context, cartProvider, child) {
+          if (cartProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Failed to load cart.'));
-          } else if (_cartService.carts.isEmpty) {
+          } else if (cartProvider.error != null) {
+            return Center(child: Text('Failed to load cart: ${cartProvider.error}'));
+          } else if (cartProvider.isEmpty) {
             return _buildEmptyState();
           } else {
-            return _buildMultiStoreCart();
+            return _buildMultiStoreCart(cartProvider);
           }
         },
       ),
@@ -73,14 +62,14 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
     );
   }
 
-  Widget _buildMultiStoreCart() {
-    final stores = _cartService.carts.keys.toList();
+  Widget _buildMultiStoreCart(CartProvider cartProvider) {
+    final stores = cartProvider.carts.keys.toList();
     return ListView.builder(
       padding: const EdgeInsets.all(8.0),
       itemCount: stores.length,
       itemBuilder: (context, index) {
         final storeName = stores[index];
-        final cartItems = _cartService.carts[storeName]!;
+        final cartItems = cartProvider.carts[storeName]!;
         final subtotal = cartItems.fold(0.0, (sum, item) => sum + (item.product.price * item.quantity));
 
         return Card(

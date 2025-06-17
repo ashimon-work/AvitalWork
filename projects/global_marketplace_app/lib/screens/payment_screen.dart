@@ -1,13 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:global_marketplace_app/screens/shipping_method_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import '../models/cart_item.dart';
-import '../services/auth_service.dart';
-import '../services/cart_service.dart';
+import '../providers/providers.dart';
 import 'add_payment_method_screen.dart';
-import 'shipping_address_screen.dart';
-import 'shipping_method_screen.dart';
 
 class PaymentMethodEntity {
   final String id;
@@ -54,8 +51,8 @@ class PaymentScreenState extends State<PaymentScreen> {
   }
 
   Future<void> _fetchPaymentMethods() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final token = await authService.getToken();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final token = authProvider.userToken;
     if (token == null) {
       setState(() => _isLoading = false);
       return;
@@ -92,11 +89,11 @@ class PaymentScreenState extends State<PaymentScreen> {
 
     setState(() => _isPlacingOrder = true);
 
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final cartService = Provider.of<CartService>(context, listen: false);
-    final token = await authService.getToken();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final token = authProvider.userToken;
     
-    final cartItems = cartService.getCartItemsForStore(widget.storeSlug);
+    final cartItems = cartProvider.getCartItemsForStore(widget.storeSlug);
     final items = cartItems.map((item) => {'productId': item.product.id, 'quantity': item.quantity}).toList();
 
     try {
@@ -116,7 +113,7 @@ class PaymentScreenState extends State<PaymentScreen> {
       );
 
       if (response.statusCode == 201) {
-        cartService.clearCartForStore(widget.storeSlug);
+        cartProvider.clearCartForStore(widget.storeSlug);
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const OrderConfirmationScreen()),
           (Route<dynamic> route) => false,

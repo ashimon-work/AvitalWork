@@ -45,4 +45,8 @@ class AuthService {
     }
     return null;
   }
+
+  Future<void> logout() async {
+    await _secureStorage.delete(key: 'jwt_token');
+  }
 }

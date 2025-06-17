@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:global_marketplace_app/models/store_data.dart';
 import 'package:global_marketplace_app/services/api_service.dart';
 import 'package:global_marketplace_app/widgets/product_grid.dart';
+import 'package:global_marketplace_app/widgets/common_app_bar.dart';
 
 class StoreScreen extends StatefulWidget {
   final String storeSlug;
@@ -24,9 +25,7 @@ class StoreScreenState extends State<StoreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Store Page'),
-      ),
+             appBar: const CommonAppBar(title: 'Store Page', showBackButton: true),
       body: FutureBuilder<StoreData>(
         future: _storeDataFuture,
         builder: (context, snapshot) {
