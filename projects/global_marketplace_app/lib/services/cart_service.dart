@@ -36,9 +36,10 @@ class CartService {
     );
 
     if (response.statusCode == 201) {
-      final List<dynamic> cartData = jsonDecode(response.body);
+      final cartData = jsonDecode(response.body);
+      final List<dynamic> items = cartData['items'];
       _carts[storeSlug] =
-          cartData.map((data) => Product.fromJson(data)).toList();
+          items.map((data) => Product.fromJson(data['product'])).toList();
     } else {
       throw Exception('Failed to add to cart');
     }
