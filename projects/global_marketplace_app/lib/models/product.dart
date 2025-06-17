@@ -38,7 +38,7 @@ class Product {
       sku: json['sku'],
       name: json['name'],
       description: json['description'],
-      price: (json['price'] as num).toDouble(),
+      price: double.parse(json['price'].toString()),
       imageUrls: List<String>.from(json['imageUrls']),
       categories: (json['categories'] as List? ?? [])
           .map((i) => Category.fromJson(i))
