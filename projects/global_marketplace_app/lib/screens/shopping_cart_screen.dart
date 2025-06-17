@@ -85,7 +85,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ShippingAddressScreen(),
+                      builder: (context) => const ShippingAddressScreen(storeSlug: "default-store"),
                     ),
                   );
                 },

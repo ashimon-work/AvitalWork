@@ -2,40 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
-// A placeholder for the address model.
-// In a real app, this would be in its own file.
-class Address {
-  final String id;
-  final String street;
-  final String city;
-  final String state;
-  final String zipCode;
-  final String country;
-
-  Address({
-    required this.id,
-    required this.street,
-    required this.city,
-    required this.state,
-    required this.zipCode,
-    required this.country,
-  });
-
-  factory Address.fromJson(Map<String, dynamic> json) {
-    return Address(
-      id: json['id'],
-      street: json['street'],
-      city: json['city'],
-      state: json['state'],
-      zipCode: json['zipCode'],
-      country: json['country'],
-    );
-  }
-}
+import 'shipping_method_screen.dart';
 
 class ShippingAddressScreen extends StatefulWidget {
-  const ShippingAddressScreen({super.key});
+  final String storeSlug;
+
+  const ShippingAddressScreen({Key? key, required this.storeSlug}) : super(key: key);
 
   @override
   State<ShippingAddressScreen> createState() => _ShippingAddressScreenState();
@@ -77,7 +49,19 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         setState(() {
-          _addresses = data.map((json) => Address.fromJson(json)).toList();
+          _addresses = data.map((json) {
+            // The Address class is now imported from shipping_method_screen.dart
+            // so we need to adjust the fromJson call if the keys are different.
+            // Assuming the keys are 'id', 'street', 'city', 'state', 'postalCode', 'country'
+            return Address(
+              id: json['id'],
+              street: json['street'],
+              city: json['city'],
+              state: json['state'],
+              postalCode: json['zipCode'], // Assuming backend sends 'zipCode'
+              country: json['country'],
+            );
+          }).toList();
           if (_addresses.isNotEmpty) {
             _selectedAddressId = _addresses.first.id;
           }
@@ -105,12 +89,25 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
       ),
       body: _buildBody(),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: () {
-            // For now, just a placeholder
-          },
-          child: const Text('Add New Address'),
+          onPressed: _selectedAddressId != null
+              ? () {
+                  final selectedAddress = _addresses.firstWhere(
+                    (address) => address.id == _selectedAddressId,
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ShippingMethodScreen(
+                        storeSlug: widget.storeSlug,
+                        selectedAddress: selectedAddress,
+                      ),
+                    ),
+                  );
+                }
+              : null,
+          child: const Text('Continue'),
         ),
       ),
     );
@@ -135,7 +132,7 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
         final address = _addresses[index];
         return RadioListTile<String>(
           title: Text('${address.street}, ${address.city}'),
-          subtitle: Text('${address.state}, ${address.zipCode}, ${address.country}'),
+          subtitle: Text('${address.state}, ${address.postalCode}, ${address.country}'),
           value: address.id,
           groupValue: _selectedAddressId,
           onChanged: (String? value) {
