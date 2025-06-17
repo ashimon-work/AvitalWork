@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:global_marketplace_app/screens/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -57,6 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Global Marketplace'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () {
