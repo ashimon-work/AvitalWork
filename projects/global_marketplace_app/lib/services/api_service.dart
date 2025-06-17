@@ -4,7 +4,7 @@ import '../models/home_data.dart';
 import '../models/store_data.dart';
 
 class ApiService {
-  static const String _baseUrl = 'https://smartyapp.co.il/api/v1';
+  static const String _baseUrl = 'https://smartyapp.co.il/api';
 
   Future<HomeData> fetchHomeData() async {
     final response = await http.get(Uri.parse('$_baseUrl/marketplace/home'));

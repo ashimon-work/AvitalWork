@@ -1,8 +1,7 @@
-import 'category.dart';
-import 'store.dart';
+import 'product.dart';
 
 class HomeData {
-  final List<FeaturedProduct> featuredProducts;
+  final List<Product> featuredProducts;
   final List<FeaturedCategory> featuredCategories;
   final List<FeaturedStore> featuredStores;
 
@@ -15,7 +14,7 @@ class HomeData {
   factory HomeData.fromJson(Map<String, dynamic> json) {
     return HomeData(
       featuredProducts: (json['featuredProducts'] as List)
-          .map((i) => FeaturedProduct.fromJson(i))
+          .map((i) => Product.fromJson(i))
           .toList(),
       featuredCategories: (json['featuredCategories'] as List)
           .map((i) => FeaturedCategory.fromJson(i))
@@ -23,49 +22,6 @@ class HomeData {
       featuredStores: (json['featuredStores'] as List)
           .map((i) => FeaturedStore.fromJson(i))
           .toList(),
-    );
-  }
-}
-
-class FeaturedProduct {
-  final String id;
-  final String sku;
-  final String name;
-  final String description;
-  final double price;
-  final List<String> imageUrls;
-  final List<Category> categories;
-  final List<String> tags;
-  final int stockLevel;
-  final Store store;
-
-  FeaturedProduct({
-    required this.id,
-    required this.sku,
-    required this.name,
-    required this.description,
-    required this.price,
-    required this.imageUrls,
-    required this.categories,
-    required this.tags,
-    required this.stockLevel,
-    required this.store,
-  });
-
-  factory FeaturedProduct.fromJson(Map<String, dynamic> json) {
-    return FeaturedProduct(
-      id: json['id'],
-      sku: json['sku'],
-      name: json['name'],
-      description: json['description'],
-      price: (json['price'] as num).toDouble(),
-      imageUrls: List<String>.from(json['imageUrls']),
-      categories: (json['categories'] as List)
-          .map((i) => Category.fromJson(i))
-          .toList(),
-      tags: List<String>.from(json['tags']),
-      stockLevel: json['stockLevel'],
-      store: Store.fromJson(json['store']),
     );
   }
 }

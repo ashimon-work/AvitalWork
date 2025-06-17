@@ -113,7 +113,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          '\$${product['price']?.toStringAsFixed(2) ?? 'N/A'}',
+                          '\$${product['price']}',
                           style: const TextStyle(
                             fontFamily: fontName,
                             fontSize: 24,
