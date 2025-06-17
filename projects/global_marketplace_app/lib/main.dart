@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'models/featured_data.dart';
+import 'widgets/product_card.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -68,7 +71,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ...snapshot.data!.categories.map((category) => Text(category.name)),
                   const SizedBox(height: 20),
                   const Text('Featured Products', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  ...snapshot.data!.products.map((product) => Text(product.name)),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: snapshot.data!.products.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemBuilder: (context, index) {
+                      return ProductCard(product: snapshot.data!.products[index]);
+                    },
+                  ),
                 ],
               );
             } else if (snapshot.hasError) {
@@ -78,58 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
-    );
-  }
-}
-
-class FeaturedData {
-  final List<Product> products;
-  final List<Category> categories;
-  final List<Store> stores;
-
-  FeaturedData({required this.products, required this.categories, required this.stores});
-
-  factory FeaturedData.fromJson(Map<String, dynamic> json) {
-    return FeaturedData(
-      products: (json['featuredProducts'] as List).map((i) => Product.fromJson(i)).toList(),
-      categories: (json['featuredCategories'] as List).map((i) => Category.fromJson(i)).toList(),
-      stores: (json['featuredStores'] as List).map((i) => Store.fromJson(i)).toList(),
-    );
-  }
-}
-
-class Product {
-  final String name;
-
-  Product({required this.name});
-
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      name: json['name'],
-    );
-  }
-}
-
-class Category {
-  final String name;
-
-  Category({required this.name});
-
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      name: json['name'],
-    );
-  }
-}
-
-class Store {
-  final String name;
-
-  Store({required this.name});
-
-  factory Store.fromJson(Map<String, dynamic> json) {
-    return Store(
-      name: json['name'],
     );
   }
 }
