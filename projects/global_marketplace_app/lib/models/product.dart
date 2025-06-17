@@ -14,8 +14,6 @@ class Product {
   final int stockLevel;
   final bool isActive;
   final bool isFeaturedInMarketplace;
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final Store store;
   final String storeId;
 
@@ -32,8 +30,6 @@ class Product {
     required this.stockLevel,
     required this.isActive,
     required this.isFeaturedInMarketplace,
-    required this.createdAt,
-    required this.updatedAt,
     required this.store,
     required this.storeId,
   });
@@ -54,8 +50,6 @@ class Product {
       stockLevel: json['stockLevel'],
       isActive: json['isActive'],
       isFeaturedInMarketplace: json['isFeaturedInMarketplace'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
       store: Store.fromJson(json['store']),
       storeId: json['storeId'],
     );
