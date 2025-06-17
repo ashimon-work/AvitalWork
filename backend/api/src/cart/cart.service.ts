@@ -9,6 +9,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { PromoCodesService } from '../promo-codes/promo-codes.service';
 import { ApplyPromoCodeDto } from './dto/apply-promo-code.dto';
 
+import { v4 as uuidv4 } from 'uuid';
 // Define a simple DTO for the expected payload
 export interface AddToCartDto {
   productId: string;
@@ -33,16 +34,16 @@ export class CartService {
     private promoCodesService: PromoCodesService,
   ) { }
 
-  async addItem(storeSlug: string, addToCartDto: AddToCartDto, userId?: string, guestCartId?: string): Promise<CartEntity[] | null> {
+  async addItem(storeSlug: string, addToCartDto: AddToCartDto, userId?: string, guestSessionId?: string): Promise<CartEntity[] | null> {
     const { productId, quantity } = addToCartDto;
-    this.logger.log(`Attempting to add item: ${productId}, Quantity: ${quantity} for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+    this.logger.log(`Attempting to add item: ${productId}, Quantity: ${quantity} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`);
 
     if (!productId || quantity == null || quantity < 1) {
       throw new BadRequestException('Invalid product ID or quantity.');
     }
 
-    if (!userId && !guestCartId) {
-      throw new BadRequestException('Either userId or guestCartId must be provided.');
+    if (!userId && !guestSessionId) {
+      guestSessionId = uuidv4();
     }
 
     let user: UserEntity | null = null;
@@ -79,22 +80,22 @@ export class CartService {
         await this.cartRepository.save(cart);
         this.logger.log(`Created new cart ${cart.id} for user ${userId} in store ${storeSlug}.`);
       }
-    } else if (guestCartId) {
+    } else if (guestSessionId) {
       cart = await this.cartRepository.findOne({
-        where: { guestCartId, store: { id: store.id } },
+        where: { guest_session_id: guestSessionId, store: { id: store.id } },
         relations, // user will be null here
       });
       if (!cart) {
-        // If the frontend sent a guestCartId, it expects us to use it or create a cart with it.
-        cart = this.cartRepository.create({ guestCartId, store, items: [], user: undefined }); // Explicitly undefined user for guest
+        // If the frontend sent a guestSessionId, it expects us to use it or create a cart with it.
+        cart = this.cartRepository.create({ guest_session_id: guestSessionId, store, items: [], user: undefined }); // Explicitly undefined user for guest
         await this.cartRepository.save(cart);
-        this.logger.log(`Created new cart ${cart.id} for guestCartId ${guestCartId} in store ${storeSlug}.`);
+        this.logger.log(`Created new cart ${cart.id} for guestSessionId ${guestSessionId} in store ${storeSlug}.`);
       }
     }
 
     if (!cart) {
       // This case should ideally not be reached if logic above is correct
-      this.logger.error(`Cart could not be found or created for user ${userId}/guest ${guestCartId}`);
+      this.logger.error(`Cart could not be found or created for user ${userId}/guest ${guestSessionId}`);
       throw new NotFoundException('Cart could not be established.');
     }
 
@@ -117,15 +118,15 @@ export class CartService {
     }
 
     if (userId) {
-      return this.findAllByUserIdOrGuestId(userId);
-    } else if (guestCartId) {
-      return this.findAllByUserIdOrGuestId(undefined, guestCartId);
+      return this.findAllByUserIdOrGuestSessionId(userId);
+    } else if (guestSessionId) {
+      return this.findAllByUserIdOrGuestSessionId(undefined, guestSessionId);
     }
     return null; // Should not happen due to checks above
   }
 
-  async getCart(storeSlug: string, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
-    this.logger.log(`Getting cart for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+  async getCart(storeSlug: string, userId?: string, guestSessionId?: string): Promise<CartEntity | null> {
+    this.logger.log(`Getting cart for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`);
 
     const store = await this.storeRepository.findOneBy({ slug: storeSlug });
     if (!store) {
@@ -143,32 +144,32 @@ export class CartService {
         relations: relations,
       });
       if (cart) this.logger.log(`Found cart ${cart.id} for user ${userId}`);
-    } else if (guestCartId) {
+    } else if (guestSessionId) {
       cart = await this.cartRepository.findOne({
-        where: { guestCartId, store: { id: store.id } },
+        where: { guest_session_id: guestSessionId, store: { id: store.id } },
         relations: relations, // user will be null here if it's a guest cart
       });
-      if (cart) this.logger.log(`Found cart ${cart.id} for guestCartId ${guestCartId}`);
+      if (cart) this.logger.log(`Found cart ${cart.id} for guestSessionId ${guestSessionId}`);
     }
 
-    // If no cart is found for a guest, and a guestCartId was provided,
-    // it implies the guestCartId is invalid or the cart was cleared.
-    // If no cart is found for a guest and NO guestCartId was provided,
-    // the controller/frontend might decide to generate a new guestCartId.
+    // If no cart is found for a guest, and a guestSessionId was provided,
+    // it implies the guestSessionId is invalid or the cart was cleared.
+    // If no cart is found for a guest and NO guestSessionId was provided,
+    // the controller/frontend might decide to generate a new guestSessionId.
     // For now, this service will return null if no cart is actively found.
-    // A more advanced implementation might create a new guest cart here if guestCartId is new.
+    // A more advanced implementation might create a new guest cart here if guestSessionId is new.
 
     if (!cart) {
-      this.logger.log(`No cart found for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+      this.logger.log(`No cart found for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`);
     }
     return cart;
   }
 
-  async updateItemQuantity(storeSlug: string, productId: string, quantity: number, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
-    this.logger.log(`Attempting to update quantity for ${productId} to ${quantity} for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+  async updateItemQuantity(storeSlug: string, productId: string, quantity: number, userId?: string, guestSessionId?: string): Promise<CartEntity | null> {
+    this.logger.log(`Attempting to update quantity for ${productId} to ${quantity} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`);
 
-    if (!userId && !guestCartId) {
-      throw new BadRequestException('Either userId or guestCartId must be provided for updateItemQuantity.');
+    if (!userId && !guestSessionId) {
+      throw new BadRequestException('Either userId or guestSessionId must be provided for updateItemQuantity.');
     }
 
     const store = await this.storeRepository.findOneBy({ slug: storeSlug });
@@ -184,15 +185,15 @@ export class CartService {
         where: { user: { id: userId }, store: { id: store.id } },
         relations,
       });
-    } else if (guestCartId) {
+    } else if (guestSessionId) {
       cart = await this.cartRepository.findOne({
-        where: { guestCartId, store: { id: store.id } },
+        where: { guest_session_id: guestSessionId, store: { id: store.id } },
         relations,
       });
     }
 
     if (!cart) {
-      throw new NotFoundException(`Cart not found for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}.`);
+      throw new NotFoundException(`Cart not found for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}.`);
     }
 
     const existingItem = cart.items.find(item => item.product.id === productId);
@@ -222,11 +223,11 @@ export class CartService {
     return updatedCart;
   }
 
-  async removeItem(storeSlug: string, productId: string, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
-    this.logger.log(`Attempting to remove item ${productId} for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
+  async removeItem(storeSlug: string, productId: string, userId?: string, guestSessionId?: string): Promise<CartEntity | null> {
+    this.logger.log(`Attempting to remove item ${productId} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`);
 
-    if (!userId && !guestCartId) {
-      throw new BadRequestException('Either userId or guestCartId must be provided for removeItem.');
+    if (!userId && !guestSessionId) {
+      throw new BadRequestException('Either userId or guestSessionId must be provided for removeItem.');
     }
 
     const store = await this.storeRepository.findOneBy({ slug: storeSlug });
@@ -242,15 +243,15 @@ export class CartService {
         where: { user: { id: userId }, store: { id: store.id } },
         relations,
       });
-    } else if (guestCartId) {
+    } else if (guestSessionId) {
       cart = await this.cartRepository.findOne({
-        where: { guestCartId, store: { id: store.id } },
+        where: { guest_session_id: guestSessionId, store: { id: store.id } },
         relations,
       });
     }
 
     if (!cart) {
-      throw new NotFoundException(`Cart not found for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}.`);
+      throw new NotFoundException(`Cart not found for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}.`);
     }
 
     const existingItem = cart.items.find(item => item.product.id === productId);
@@ -279,9 +280,9 @@ export class CartService {
     userId: string | undefined, // Can be undefined for guest
     applyPromoCodeDto: ApplyPromoCodeDto,
     contextStoreSlug?: string,
-    guestCartId?: string, // Added for guest cart promo application
+    guestSessionId?: string, // Added for guest cart promo application
   ): Promise<CartEntity | { error: string; message: string }> {
-    this.logger.log(`Attempting to apply promo code "${applyPromoCodeDto.promoCode}" for user ${userId || 'guest'} (guestId: ${guestCartId}). DTO storeSlug: ${applyPromoCodeDto.storeSlug}, Context storeSlug: ${contextStoreSlug}`);
+    this.logger.log(`Attempting to apply promo code "${applyPromoCodeDto.promoCode}" for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}). DTO storeSlug: ${applyPromoCodeDto.storeSlug}, Context storeSlug: ${contextStoreSlug}`);
 
     const effectiveStoreSlug = applyPromoCodeDto.storeSlug || contextStoreSlug;
     if (!effectiveStoreSlug) {
@@ -289,14 +290,14 @@ export class CartService {
       return { error: 'STORE_CONTEXT_MISSING', message: 'Store context is required to apply a promo code.' };
     }
 
-    if (!userId && !guestCartId) {
-      throw new BadRequestException('Either userId or guestCartId must be provided for applyPromoCode.');
+    if (!userId && !guestSessionId) {
+      throw new BadRequestException('Either userId or guestSessionId must be provided for applyPromoCode.');
     }
 
-    // Use the modified getCart which handles userId or guestCartId
-    const cart = await this.getCart(effectiveStoreSlug, userId, guestCartId);
+    // Use the modified getCart which handles userId or guestSessionId
+    const cart = await this.getCart(effectiveStoreSlug, userId, guestSessionId);
     if (!cart) {
-      this.logger.warn(`Cart not found for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${effectiveStoreSlug}`);
+      this.logger.warn(`Cart not found for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${effectiveStoreSlug}`);
       return { error: 'CART_NOT_FOUND', message: 'Cart not found.' };
     }
 
@@ -464,14 +465,14 @@ export class CartService {
     return finalUserCart;
   }
 
-  async findAllByUserIdOrGuestId(userId?: string, guestCartId?: string): Promise<CartEntity[]> {
+  async findAllByUserIdOrGuestSessionId(userId?: string, guestSessionId?: string): Promise<CartEntity[]> {
     const whereCondition: any = {};
     if (userId) {
       this.logger.log(`Finding all carts for user ${userId}`);
       whereCondition.user = { id: userId };
-    } else if (guestCartId) {
-      this.logger.log(`Finding all carts for guest ${guestCartId}`);
-      whereCondition.guestCartId = guestCartId;
+    } else if (guestSessionId) {
+      this.logger.log(`Finding all carts for guest ${guestSessionId}`);
+      whereCondition.guest_session_id = guestSessionId;
     } else {
       return [];
     }

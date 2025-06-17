@@ -9,22 +9,22 @@ class CartProvider extends ChangeNotifier {
   final Map<String, List<CartItem>> _carts = {};
   bool _isLoading = false;
   String? _error;
-  String? _guestCartId;
+  String? _guestSessionId;
 
   CartProvider() {
-    _loadGuestCartId();
+    _loadGuestSessionId();
   }
 
-  Future<void> _loadGuestCartId() async {
+  Future<void> _loadGuestSessionId() async {
     final prefs = await SharedPreferences.getInstance();
-    _guestCartId = prefs.getString('guestCartId');
+    _guestSessionId = prefs.getString('guestSessionId');
     notifyListeners();
   }
 
-  Future<void> _setGuestCartId(String guestCartId) async {
+  Future<void> _setGuestSessionId(String guestSessionId) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('guestCartId', guestCartId);
-    _guestCartId = guestCartId;
+    await prefs.setString('guestSessionId', guestSessionId);
+    _guestSessionId = guestSessionId;
   }
 
   Map<String, List<CartItem>> get carts => Map.unmodifiable(_carts);
@@ -60,8 +60,10 @@ class CartProvider extends ChangeNotifier {
 
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
-      } else if (_guestCartId != null) {
-        headers['x-guest-cart-id'] = _guestCartId!;
+      } else if (_guestSessionId != null) {
+        headers['x-guest-session-id'] = _guestSessionId!;
+      } else {
+        // Let the backend create a new session if one doesn't exist
       }
 
       final response = await http.post(
@@ -78,17 +80,16 @@ class CartProvider extends ChangeNotifier {
         print('[CartProvider DEBUG] API Response on Add: ${response.body}');
         
         print('[CartProvider DEBUG] State BEFORE update: ${_carts.keys.toList()} - Total Items: ${getTotalItemCount()}');
-        _carts.clear();
         for (var cartData in cartsData) {
           final storeSlug = cartData['store']['slug'];
           final List<dynamic> itemsData = cartData['items'];
           _carts[storeSlug] = itemsData.map((data) => CartItem.fromJson(data)).toList();
         }
 
-        if (token == null && cartsData.isNotEmpty && cartsData.first.containsKey('guestCartId')) {
-          final newGuestCartId = cartsData.first['guestCartId'];
-          if (newGuestCartId != null) {
-            await _setGuestCartId(newGuestCartId);
+        if (token == null && cartsData.isNotEmpty && cartsData.first.containsKey('guest_session_id')) {
+          final newGuestSessionId = cartsData.first['guest_session_id'];
+          if (newGuestSessionId != null) {
+            await _setGuestSessionId(newGuestSessionId);
           }
         }
         
@@ -113,7 +114,7 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> refreshCarts(String? token) async {
-    if (token == null && _guestCartId == null) {
+    if (token == null && _guestSessionId == null) {
       _carts.clear();
       notifyListeners();
       return;
@@ -130,8 +131,8 @@ class CartProvider extends ChangeNotifier {
       };
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
-      } else if (_guestCartId != null) {
-        headers['x-guest-cart-id'] = _guestCartId!;
+      } else if (_guestSessionId != null) {
+        headers['x-guest-session-id'] = _guestSessionId!;
       }
 
       final response = await http.get(
@@ -177,8 +178,8 @@ class CartProvider extends ChangeNotifier {
       };
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
-      } else if (_guestCartId != null) {
-        headers['x-guest-cart-id'] = _guestCartId!;
+      } else if (_guestSessionId != null) {
+        headers['x-guest-session-id'] = _guestSessionId!;
       }
 
       final response = await http.post(

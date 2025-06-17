@@ -13,7 +13,7 @@ import { plainToInstance } from 'class-transformer';
 export class MergeCartDto {
   @IsNotEmpty()
   @IsUUID()
-  guestCartId: string;
+  guestSessionId: string;
 }
 
 @Controller('stores/:storeSlug/cart')
@@ -31,20 +31,20 @@ export class CartController {
   async addItemToCart(
     @Req() req: AuthenticatedRequest,
     @Body() addToCartDto: AddToCartDto,
-    @Headers('x-guest-cart-id') guestCartIdHeader?: string
+    @Headers('x-guest-session-id') guestSessionIdHeader?: string
   ): Promise<CartDto[]> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
-    let guestCartId = guestCartIdHeader;
+    let guestSessionId = guestSessionIdHeader;
 
     // storeSlug presence is validated by the guard now.
 
-    if (!userId && !guestCartId) {
-      guestCartId = uuidv4();
-      this.logger.warn(`addItemToCart: No userId and no guestCartId provided. Generated new one: ${guestCartId} for store ${storeSlug}. This flow should be reviewed.`);
+    if (!userId && !guestSessionId) {
+      guestSessionId = uuidv4();
+      this.logger.warn(`addItemToCart: No userId and no guestSessionId provided. Generated new one: ${guestSessionId} for store ${storeSlug}. This flow should be reviewed.`);
     }
 
-    const carts = await this.cartService.addItem(storeSlug, addToCartDto, userId, guestCartId);
+    const carts = await this.cartService.addItem(storeSlug, addToCartDto, userId, guestSessionId);
     if (!carts) {
       throw new NotFoundException('Cart not found or item could not be added.');
     }
@@ -58,26 +58,26 @@ export class CartController {
   @UseGuards(StoreContextGuard)
   async getCart(
     @Req() req: AuthenticatedRequest,
-    @Headers('x-guest-cart-id') guestCartIdHeader?: string
+    @Headers('x-guest-session-id') guestSessionIdHeader?: string
   ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
-    let guestCartId = guestCartIdHeader;
+    let guestSessionId = guestSessionIdHeader;
 
     // storeSlug presence is validated by the guard.
 
-    this.logger.log(`CartController: getCart called. UserID: ${userId}, GuestCartID Header: ${guestCartIdHeader}, StoreSlug from params: ${storeSlug}`);
+    this.logger.log(`CartController: getCart called. UserID: ${userId}, GuestSessionID Header: ${guestSessionIdHeader}, StoreSlug from params: ${storeSlug}`);
 
-    let cart = await this.cartService.getCart(storeSlug, userId, guestCartId);
+    let cart = await this.cartService.getCart(storeSlug, userId, guestSessionId);
 
     if (!cart) {
       if (!userId) {
-        const newGuestCartId = uuidv4();
-        this.logger.log(`CartController: No cart found for guest. Generating new guestCartId: ${newGuestCartId} for store ${storeSlug}`);
+        const newGuestSessionId = uuidv4();
+        this.logger.log(`CartController: No cart found for guest. Generating new guestSessionId: ${newGuestSessionId} for store ${storeSlug}`);
         // Return a structure that CartService.loadInitialCart can understand for new guest carts
         return plainToInstance(CartDto, {
           id: null, // No persisted cart ID yet
-          guestCartId: newGuestCartId, // The new ID for the frontend to store
+          guest_session_id: newGuestSessionId, // The new ID for the frontend to store
           items: [],
           subtotal: 0,
           grandTotal: 0,
@@ -114,19 +114,19 @@ export class CartController {
     @Req() req: AuthenticatedRequest,
     @Param('productId') productId: string,
     @Body('quantity', ParseIntPipe) quantity: number,
-    @Headers('x-guest-cart-id') guestCartIdHeader?: string
+    @Headers('x-guest-session-id') guestSessionIdHeader?: string
   ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
-    const guestCartId = guestCartIdHeader;
+    const guestSessionId = guestSessionIdHeader;
 
     // storeSlug presence is validated by the guard.
 
-    if (!userId && !guestCartId) {
-      throw new BadRequestException('Cart identifier (userId or guestCartId) is missing.');
+    if (!userId && !guestSessionId) {
+      throw new BadRequestException('Cart identifier (userId or guestSessionId) is missing.');
     }
 
-    const updatedCart = await this.cartService.updateItemQuantity(storeSlug, productId, quantity, userId, guestCartId);
+    const updatedCart = await this.cartService.updateItemQuantity(storeSlug, productId, quantity, userId, guestSessionId);
     if (!updatedCart) {
       throw new NotFoundException('Cart or item not found for update.');
     }
@@ -142,19 +142,19 @@ export class CartController {
   async removeItem(
     @Req() req: AuthenticatedRequest,
     @Param('productId') productId: string,
-    @Headers('x-guest-cart-id') guestCartIdHeader?: string
+    @Headers('x-guest-session-id') guestSessionIdHeader?: string
   ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
-    const guestCartId = guestCartIdHeader;
+    const guestSessionId = guestSessionIdHeader;
 
     // storeSlug presence is validated by the guard.
 
-    if (!userId && !guestCartId) {
-      throw new BadRequestException('Cart identifier (userId or guestCartId) is missing.');
+    if (!userId && !guestSessionId) {
+      throw new BadRequestException('Cart identifier (userId or guestSessionId) is missing.');
     }
 
-    const updatedCart = await this.cartService.removeItem(storeSlug, productId, userId, guestCartId);
+    const updatedCart = await this.cartService.removeItem(storeSlug, productId, userId, guestSessionId);
     if (!updatedCart) {
       throw new NotFoundException('Cart or item not found for removal.');
     }
@@ -170,21 +170,21 @@ export class CartController {
   async applyPromoCode(
     @Req() req: AuthenticatedRequest,
     @Body() applyPromoCodeDto: ApplyPromoCodeDto,
-    @Headers('x-guest-cart-id') guestCartIdHeader?: string
+    @Headers('x-guest-session-id') guestSessionIdHeader?: string
   ): Promise<CartDto> {
     const userId = req.user?.id;
     const contextStoreSlug: string = req.params.storeSlug; // Correctly get from route params
-    const guestCartId = guestCartIdHeader;
+    const guestSessionId = guestSessionIdHeader;
 
     // storeSlug presence is validated by the guard.
     // applyPromoCodeDto.storeSlug might be redundant if contextStoreSlug is always used from param.
     // For now, service uses applyPromoCodeDto.storeSlug first, then contextStoreSlug.
 
-    if (!userId && !guestCartId) {
-      throw new BadRequestException('Cart identifier (userId or guestCartId) is missing for applying promo code.');
+    if (!userId && !guestSessionId) {
+      throw new BadRequestException('Cart identifier (userId or guestSessionId) is missing for applying promo code.');
     }
 
-    const result = await this.cartService.applyPromoCode(userId, applyPromoCodeDto, contextStoreSlug, guestCartId);
+    const result = await this.cartService.applyPromoCode(userId, applyPromoCodeDto, contextStoreSlug, guestSessionId);
 
     if (result && typeof result === 'object' && 'error' in result && 'message' in result) {
       const errorResult = result as { error: string; message: string };
@@ -221,14 +221,14 @@ export class CartController {
     const storeId = req.storeId; // From StoreContextGuard
     const storeSlug = req.params.storeSlug; // For logging or if service needs it
 
-    this.logger.log(`mergeGuestCart: User ${userId} attempting to merge guest cart ${mergeCartDto.guestCartId} for store slug ${storeSlug} (ID: ${storeId})`);
+    this.logger.log(`mergeGuestCart: User ${userId} attempting to merge guest cart ${mergeCartDto.guestSessionId} for store slug ${storeSlug} (ID: ${storeId})`);
 
     if (!storeId) {
         this.logger.error(`mergeGuestCart: StoreId not found on request for slug ${storeSlug}. Guard issue?`);
         throw new BadRequestException('Store context could not be determined.');
     }
 
-    const mergedCart = await this.cartService.mergeCarts(userId, storeId, mergeCartDto.guestCartId);
+    const mergedCart = await this.cartService.mergeCarts(userId, storeId, mergeCartDto.guestSessionId);
     if (!mergedCart) {
       // This could mean the user's cart couldn't be created/found, or guest cart was invalid.
       // The service should throw specific errors if needed.

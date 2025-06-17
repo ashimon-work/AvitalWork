@@ -23,6 +23,10 @@ export class CartEntity {
   @Index()
   guestCartId?: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  @Index()
+  guest_session_id?: string;
+
   @OneToOne(() => UserEntity, { onDelete: 'CASCADE', nullable: true })
   @JoinColumn()
   user?: UserEntity;

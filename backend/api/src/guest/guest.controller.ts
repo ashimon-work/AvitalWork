@@ -8,11 +8,11 @@ export class GuestController {
   constructor(private readonly cartService: CartService) {}
 
   @Get('carts')
-  async getGuestCarts(@Headers('x-guest-cart-id') guestCartId?: string) {
-    this.logger.log(`Getting carts for guest ${guestCartId}`);
-    if (!guestCartId) {
+  async getGuestCarts(@Headers('x-guest-session-id') guestSessionId?: string) {
+    this.logger.log(`Getting carts for guest ${guestSessionId}`);
+    if (!guestSessionId) {
       return [];
     }
-    return this.cartService.findAllByUserIdOrGuestId(undefined, guestCartId);
+    return this.cartService.findAllByUserIdOrGuestSessionId(undefined, guestSessionId);
   }
 }
