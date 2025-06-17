@@ -46,7 +46,7 @@ class Product {
       description: json['description'],
       price: json['price'],
       imageUrls: List<String>.from(json['imageUrls']),
-      categories: (json['categories'] as List)
+      categories: (json['categories'] as List? ?? [])
           .map((i) => Category.fromJson(i))
           .toList(),
       tags: List<String>.from(json['tags']),

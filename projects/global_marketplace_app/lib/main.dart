@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'models/featured_data.dart';
 import 'widgets/product_card.dart';
+import 'screens/shopping_cart_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,6 +56,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Global Marketplace'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ShoppingCartScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: FutureBuilder<FeaturedData>(

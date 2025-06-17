@@ -2,7 +2,7 @@ import { IsString, IsNotEmpty, IsNumber, IsOptional, IsBoolean, IsArray, Validat
 import { Type } from 'class-transformer';
 import { Product as IProduct } from '@shared-types';
 import { ProductVariantDto } from './product-variant.dto';
-import { CategoryEntity } from '../../categories/entities/category.entity'; // Assuming CategoryEntity is used directly in DTO for simplicity, or create CategoryDto
+import { CategoryDto } from '../../categories/dto/category.dto';
 
 // Note: This DTO represents the structure returned by the API,
 // which aligns closely with the shared Product interface but includes relations.
@@ -33,10 +33,9 @@ export class ProductDto implements IProduct {
 
   // Assuming categories are returned as an array of CategoryEntity or a simplified DTO
   @IsArray()
-  // @ValidateNested({ each: true }) // Uncomment if using CategoryDto
-  // @Type(() => CategoryDto) // Uncomment if using CategoryDto
-  // For now, assuming array of CategoryEntity or simple objects
-  categoryIds: string[]; // Or CategoryEntity[] or CategoryDto[]
+  @ValidateNested({ each: true })
+  @Type(() => CategoryDto)
+  categories: CategoryDto[];
 
   @IsArray()
   @IsOptional()

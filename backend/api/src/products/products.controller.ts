@@ -19,7 +19,7 @@ export class ProductsController {
       description: product.description,
       price: product.price,
       imageUrls: product.imageUrls,
-      categoryIds: product.categories ? product.categories.map(cat => cat.id) : [],
+      categories: product.categories,
       tags: product.tags,
       stockLevel: product.stockLevel,
       isActive: product.isActive,
