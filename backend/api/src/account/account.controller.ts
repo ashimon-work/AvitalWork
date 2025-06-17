@@ -122,7 +122,7 @@ export class AccountController {
   @Get('carts')
   async getAccountCarts(@Req() req: AuthenticatedRequest) {
     const userId = req.user.id;
-    return this.cartService.findAllByUserId(userId);
+    return this.cartService.findAllByUserIdOrGuestId(userId);
   }
 
   // TODO: Add endpoints for payment methods later

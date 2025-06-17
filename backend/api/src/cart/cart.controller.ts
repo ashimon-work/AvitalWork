@@ -32,7 +32,7 @@ export class CartController {
     @Req() req: AuthenticatedRequest,
     @Body() addToCartDto: AddToCartDto,
     @Headers('x-guest-cart-id') guestCartIdHeader?: string
-  ): Promise<CartDto> {
+  ): Promise<CartDto[]> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
     let guestCartId = guestCartIdHeader;
@@ -44,13 +44,13 @@ export class CartController {
       this.logger.warn(`addItemToCart: No userId and no guestCartId provided. Generated new one: ${guestCartId} for store ${storeSlug}. This flow should be reviewed.`);
     }
 
-    const cart = await this.cartService.addItem(storeSlug, addToCartDto, userId, guestCartId);
-    if (!cart) {
+    const carts = await this.cartService.addItem(storeSlug, addToCartDto, userId, guestCartId);
+    if (!carts) {
       throw new NotFoundException('Cart not found or item could not be added.');
     }
-    return plainToInstance(CartDto, cart, { 
+    return plainToInstance(CartDto, carts, {
       excludeExtraneousValues: true,
-      enableImplicitConversion: true 
+      enableImplicitConversion: true
     });
   }
 

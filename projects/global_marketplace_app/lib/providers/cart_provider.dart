@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product.dart';
 import '../models/cart_item.dart';
 
@@ -8,6 +9,23 @@ class CartProvider extends ChangeNotifier {
   final Map<String, List<CartItem>> _carts = {};
   bool _isLoading = false;
   String? _error;
+  String? _guestCartId;
+
+  CartProvider() {
+    _loadGuestCartId();
+  }
+
+  Future<void> _loadGuestCartId() async {
+    final prefs = await SharedPreferences.getInstance();
+    _guestCartId = prefs.getString('guestCartId');
+    notifyListeners();
+  }
+
+  Future<void> _setGuestCartId(String guestCartId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('guestCartId', guestCartId);
+    _guestCartId = guestCartId;
+  }
 
   Map<String, List<CartItem>> get carts => Map.unmodifiable(_carts);
   bool get isLoading => _isLoading;
@@ -26,33 +44,25 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> addToCart(String storeSlug, Product product, int quantity, String? token) async {
-    if (token == null) {
-      _setError('Please log in to add items to cart');
-      return;
-    }
-
     _setLoading(true);
     _clearError();
 
     try {
-      // Debug: Print current cart state before adding
-      print('Before adding: Total items = ${getTotalItemCount()}, Store $storeSlug items = ${getCartItemsForStore(storeSlug).length}');
-      
-      // Check if the product already exists in the cart
-      final existingItems = getCartItemsForStore(storeSlug);
-      final existingItem = existingItems.where((item) => item.product.id == product.id).firstOrNull;
-      
-      // Calculate the new quantity (existing quantity + new quantity)
-      final newQuantity = (existingItem?.quantity ?? 0) + quantity;
-      
-      print('Adding product ${product.id} to store $storeSlug with quantity $newQuantity');
+      final newQuantity = (getCartItemsForStore(storeSlug)
+          .where((item) => item.product.id == product.id)
+          .firstOrNull?.quantity ?? 0) + quantity;
 
       final url = Uri.parse('https://smartyapp.co.il/api/stores/$storeSlug/cart/add');
       
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
       };
+
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      } else if (_guestCartId != null) {
+        headers['x-guest-cart-id'] = _guestCartId!;
+      }
 
       final response = await http.post(
         url,
@@ -64,14 +74,25 @@ class CartProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 201) {
-        final cartData = jsonDecode(response.body);
-        print('API Response: $cartData');
+        final List<dynamic> cartsData = jsonDecode(response.body);
+        print('API Response: $cartsData');
         
-        final List<dynamic> items = cartData['items'];
-        _carts[storeSlug] = items.map((data) => CartItem.fromJson(data)).toList();
+        _carts.clear();
+        for (var cartData in cartsData) {
+          final storeSlug = cartData['store']['slug'];
+          final List<dynamic> itemsData = cartData['items'];
+          _carts[storeSlug] = itemsData.map((data) => CartItem.fromJson(data)).toList();
+        }
+
+        if (token == null && cartsData.isNotEmpty && cartsData.first.containsKey('guestCartId')) {
+          final newGuestCartId = cartsData.first['guestCartId'];
+          if (newGuestCartId != null) {
+            await _setGuestCartId(newGuestCartId);
+          }
+        }
         
         // Debug: Print cart state after adding
-        print('After adding: Total items = ${getTotalItemCount()}, Store $storeSlug items = ${getCartItemsForStore(storeSlug).length}');
+        print('After adding: Total items = ${getTotalItemCount()}');
         print('All carts: ${_carts.keys.toList()}');
         
         notifyListeners();
@@ -90,7 +111,7 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> refreshCarts(String? token) async {
-    if (token == null) {
+    if (token == null && _guestCartId == null) {
       _carts.clear();
       notifyListeners();
       return;
@@ -99,13 +120,21 @@ class CartProvider extends ChangeNotifier {
     _setLoading(true);
 
     try {
-      final url = Uri.parse('https://smartyapp.co.il/api/account/carts');
+      final url = token != null
+          ? Uri.parse('https://smartyapp.co.il/api/account/carts')
+          : Uri.parse('https://smartyapp.co.il/api/guest/carts');
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      } else if (_guestCartId != null) {
+        headers['x-guest-cart-id'] = _guestCartId!;
+      }
+
       final response = await http.get(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
@@ -135,11 +164,6 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> removeFromCart(String storeSlug, String productId, String? token) async {
-    if (token == null) {
-      _setError('Please log in to modify cart');
-      return;
-    }
-
     _setLoading(true);
     _clearError();
 
@@ -148,8 +172,12 @@ class CartProvider extends ChangeNotifier {
       
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
       };
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      } else if (_guestCartId != null) {
+        headers['x-guest-cart-id'] = _guestCartId!;
+      }
 
       final response = await http.post(
         url,

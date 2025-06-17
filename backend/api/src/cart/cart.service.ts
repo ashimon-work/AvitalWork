@@ -33,7 +33,7 @@ export class CartService {
     private promoCodesService: PromoCodesService,
   ) { }
 
-  async addItem(storeSlug: string, addToCartDto: AddToCartDto, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
+  async addItem(storeSlug: string, addToCartDto: AddToCartDto, userId?: string, guestCartId?: string): Promise<CartEntity[] | null> {
     const { productId, quantity } = addToCartDto;
     this.logger.log(`Attempting to add item: ${productId}, Quantity: ${quantity} for user ${userId || 'guest'} (guestId: ${guestCartId}) in store ${storeSlug}`);
 
@@ -116,19 +116,12 @@ export class CartService {
       this.logger.log(`Added new item ${productId} to cart ${cart.id}.`);
     }
 
-    // Reload the cart to ensure relations are updated
-    cart = await this.cartRepository.findOne({
-      where: { id: cart.id },
-      relations: [
-        'items',
-        'items.product',
-        'items.product.store',
-        'user',
-        'store'
-      ],
-    });
-
-    return cart;
+    if (userId) {
+      return this.findAllByUserIdOrGuestId(userId);
+    } else if (guestCartId) {
+      return this.findAllByUserIdOrGuestId(undefined, guestCartId);
+    }
+    return null; // Should not happen due to checks above
   }
 
   async getCart(storeSlug: string, userId?: string, guestCartId?: string): Promise<CartEntity | null> {
@@ -471,10 +464,20 @@ export class CartService {
     return finalUserCart;
   }
 
-  async findAllByUserId(userId: string): Promise<CartEntity[]> {
-    this.logger.log(`Finding all carts for user ${userId}`);
+  async findAllByUserIdOrGuestId(userId?: string, guestCartId?: string): Promise<CartEntity[]> {
+    const whereCondition: any = {};
+    if (userId) {
+      this.logger.log(`Finding all carts for user ${userId}`);
+      whereCondition.user = { id: userId };
+    } else if (guestCartId) {
+      this.logger.log(`Finding all carts for guest ${guestCartId}`);
+      whereCondition.guestCartId = guestCartId;
+    } else {
+      return [];
+    }
+
     return this.cartRepository.find({
-      where: { user: { id: userId } },
+      where: whereCondition,
       relations: ['store', 'items', 'items.product'],
     });
   }
