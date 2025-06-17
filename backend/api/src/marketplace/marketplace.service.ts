@@ -18,8 +18,14 @@ export class MarketplaceService {
       this.storesService.findAll({ where: { isFeaturedInMarketplace: true } }),
     ]);
 
+    // Ensure products have valid store data
+    const productsWithValidStores = featuredProductsResult.products.map(product => ({
+      ...product,
+      store: product.store || null // Ensure store is never undefined
+    }));
+
     return {
-      featuredProducts: featuredProductsResult.products,
+      featuredProducts: productsWithValidStores,
       featuredCategories,
       featuredStores,
     };
