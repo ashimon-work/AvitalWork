@@ -50,6 +50,10 @@ export class ProductDto implements IProduct {
   @IsNotEmpty()
   isActive: boolean;
 
+  @IsBoolean()
+  @IsNotEmpty()
+  isFeaturedInMarketplace: boolean;
+
   @IsArray()
   @IsOptional()
   @IsString({ each: true })

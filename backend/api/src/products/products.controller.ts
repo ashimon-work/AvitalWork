@@ -23,6 +23,7 @@ export class ProductsController {
       tags: product.tags,
       stockLevel: product.stockLevel,
       isActive: product.isActive,
+      isFeaturedInMarketplace: product.isFeaturedInMarketplace,
       options: product.options,
       variants: product.variants ? product.variants.map(variant => ({
         id: variant.id,
