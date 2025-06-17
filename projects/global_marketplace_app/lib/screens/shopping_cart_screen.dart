@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/cart_service.dart';
+import 'shipping_address_screen.dart';
 
 class ShoppingCartScreen extends StatefulWidget {
   const ShoppingCartScreen({super.key});
@@ -74,6 +75,22 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
             );
           }
         },
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          onPressed: cartService.carts.isEmpty
+              ? null
+              : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ShippingAddressScreen(),
+                    ),
+                  );
+                },
+          child: const Text('Proceed to Checkout'),
+        ),
       ),
     );
   }
