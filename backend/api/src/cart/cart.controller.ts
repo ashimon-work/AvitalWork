@@ -6,6 +6,8 @@ import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.i
 import { ApplyPromoCodeDto } from './dto/apply-promo-code.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { IsNotEmpty, IsUUID } from 'class-validator';
+import { CartDto } from './dto/cart.dto';
+import { plainToInstance } from 'class-transformer';
 
 // DTO for the merge cart request
 export class MergeCartDto {
@@ -30,7 +32,7 @@ export class CartController {
     @Req() req: AuthenticatedRequest,
     @Body() addToCartDto: AddToCartDto,
     @Headers('x-guest-cart-id') guestCartIdHeader?: string
-  ) {
+  ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
     let guestCartId = guestCartIdHeader;
@@ -46,7 +48,7 @@ export class CartController {
     if (!cart) {
       throw new NotFoundException('Cart not found or item could not be added.');
     }
-    return cart;
+    return plainToInstance(CartDto, cart, { excludeExtraneousValues: true });
   }
 
   @Get()
@@ -54,7 +56,7 @@ export class CartController {
   async getCart(
     @Req() req: AuthenticatedRequest,
     @Headers('x-guest-cart-id') guestCartIdHeader?: string
-  ) {
+  ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
     let guestCartId = guestCartIdHeader;
@@ -70,7 +72,7 @@ export class CartController {
         const newGuestCartId = uuidv4();
         this.logger.log(`CartController: No cart found for guest. Generating new guestCartId: ${newGuestCartId} for store ${storeSlug}`);
         // Return a structure that CartService.loadInitialCart can understand for new guest carts
-        return {
+        return plainToInstance(CartDto, {
           id: null, // No persisted cart ID yet
           guestCartId: newGuestCartId, // The new ID for the frontend to store
           items: [],
@@ -83,7 +85,7 @@ export class CartController {
           // Ensure all fields expected by Cart interface are present
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        };
+        }, { excludeExtraneousValues: true });
       } else {
         // For logged-in users, if cartService.getCart returns null, it means no cart exists.
         // We could create one here, or let the service handle it.
@@ -94,7 +96,7 @@ export class CartController {
         throw new NotFoundException('Cart not found for this user and store.');
       }
     }
-    return cart;
+    return plainToInstance(CartDto, cart, { excludeExtraneousValues: true });
   }
 
   @Patch(':productId')
@@ -104,7 +106,7 @@ export class CartController {
     @Param('productId') productId: string,
     @Body('quantity', ParseIntPipe) quantity: number,
     @Headers('x-guest-cart-id') guestCartIdHeader?: string
-  ) {
+  ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
     const guestCartId = guestCartIdHeader;
@@ -119,7 +121,7 @@ export class CartController {
     if (!updatedCart) {
       throw new NotFoundException('Cart or item not found for update.');
     }
-    return updatedCart;
+    return plainToInstance(CartDto, updatedCart, { excludeExtraneousValues: true });
   }
 
   @Delete(':productId')
@@ -129,7 +131,7 @@ export class CartController {
     @Req() req: AuthenticatedRequest,
     @Param('productId') productId: string,
     @Headers('x-guest-cart-id') guestCartIdHeader?: string
-  ) {
+  ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
     const guestCartId = guestCartIdHeader;
@@ -144,7 +146,7 @@ export class CartController {
     if (!updatedCart) {
       throw new NotFoundException('Cart or item not found for removal.');
     }
-    return updatedCart;
+    return plainToInstance(CartDto, updatedCart, { excludeExtraneousValues: true });
   }
 
   @Post('promo')
@@ -154,7 +156,7 @@ export class CartController {
     @Req() req: AuthenticatedRequest,
     @Body() applyPromoCodeDto: ApplyPromoCodeDto,
     @Headers('x-guest-cart-id') guestCartIdHeader?: string
-  ) {
+  ): Promise<CartDto> {
     const userId = req.user?.id;
     const contextStoreSlug: string = req.params.storeSlug; // Correctly get from route params
     const guestCartId = guestCartIdHeader;
@@ -187,7 +189,7 @@ export class CartController {
       throw new NotFoundException('Cart not found or unable to apply promo code.');
     }
 
-    return result;
+    return plainToInstance(CartDto, result, { excludeExtraneousValues: true });
   }
 
   @Post('merge')
@@ -196,7 +198,7 @@ export class CartController {
   async mergeGuestCart(
     @Req() req: AuthenticatedRequest,
     @Body() mergeCartDto: MergeCartDto,
-  ) {
+  ): Promise<CartDto> {
     const userId = req.user.id; // From JwtAuthGuard
     const storeId = req.storeId; // From StoreContextGuard
     const storeSlug = req.params.storeSlug; // For logging or if service needs it
@@ -214,6 +216,6 @@ export class CartController {
       // The service should throw specific errors if needed.
       throw new BadRequestException('Failed to merge cart. Guest cart may be invalid or user cart inaccessible.');
     }
-    return mergedCart;
+    return plainToInstance(CartDto, mergedCart, { excludeExtraneousValues: true });
   }
 }
