@@ -118,8 +118,14 @@ export class CartService {
 
     // Reload the cart to ensure relations are updated
     cart = await this.cartRepository.findOne({
-      where: { id: cart.id }, // Use the cart.id obtained above
-      relations, // Use the same comprehensive relations
+      where: { id: cart.id },
+      relations: [
+        'items',
+        'items.product',
+        'items.product.store',
+        'user',
+        'store'
+      ],
     });
 
     return cart;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'payment_screen.dart';
 
 // A placeholder for the Address model.
 // You should replace this with your actual Address model.
@@ -143,7 +144,15 @@ class ShippingMethodScreenState extends State<ShippingMethodScreen> {
                   child: ElevatedButton(
                     onPressed: _selectedMethod != null
                         ? () {
-                            // TODO: Navigate to Payment Screen
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PaymentScreen(
+                                  storeSlug: widget.storeSlug,
+                                  selectedAddress: widget.selectedAddress,
+                                  selectedShippingMethod: _selectedMethod!,
+                                ),
+                              ),
+                            );
                           }
                         : null,
                     child: const Text('Continue to Payment'),

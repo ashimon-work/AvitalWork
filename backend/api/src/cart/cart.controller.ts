@@ -48,7 +48,10 @@ export class CartController {
     if (!cart) {
       throw new NotFoundException('Cart not found or item could not be added.');
     }
-    return plainToInstance(CartDto, cart, { excludeExtraneousValues: true });
+    return plainToInstance(CartDto, cart, { 
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true 
+    });
   }
 
   @Get()
@@ -85,7 +88,10 @@ export class CartController {
           // Ensure all fields expected by Cart interface are present
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        }, { excludeExtraneousValues: true });
+        }, { 
+          excludeExtraneousValues: true,
+          enableImplicitConversion: true 
+        });
       } else {
         // For logged-in users, if cartService.getCart returns null, it means no cart exists.
         // We could create one here, or let the service handle it.
@@ -96,7 +102,10 @@ export class CartController {
         throw new NotFoundException('Cart not found for this user and store.');
       }
     }
-    return plainToInstance(CartDto, cart, { excludeExtraneousValues: true });
+    return plainToInstance(CartDto, cart, { 
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true 
+    });
   }
 
   @Patch(':productId')
@@ -121,7 +130,10 @@ export class CartController {
     if (!updatedCart) {
       throw new NotFoundException('Cart or item not found for update.');
     }
-    return plainToInstance(CartDto, updatedCart, { excludeExtraneousValues: true });
+    return plainToInstance(CartDto, updatedCart, { 
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true 
+    });
   }
 
   @Delete(':productId')
@@ -146,7 +158,10 @@ export class CartController {
     if (!updatedCart) {
       throw new NotFoundException('Cart or item not found for removal.');
     }
-    return plainToInstance(CartDto, updatedCart, { excludeExtraneousValues: true });
+    return plainToInstance(CartDto, updatedCart, { 
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true 
+    });
   }
 
   @Post('promo')
@@ -189,7 +204,10 @@ export class CartController {
       throw new NotFoundException('Cart not found or unable to apply promo code.');
     }
 
-    return plainToInstance(CartDto, result, { excludeExtraneousValues: true });
+    return plainToInstance(CartDto, result, { 
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true 
+    });
   }
 
   @Post('merge')
@@ -216,6 +234,9 @@ export class CartController {
       // The service should throw specific errors if needed.
       throw new BadRequestException('Failed to merge cart. Guest cart may be invalid or user cart inaccessible.');
     }
-    return plainToInstance(CartDto, mergedCart, { excludeExtraneousValues: true });
+    return plainToInstance(CartDto, mergedCart, { 
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true 
+    });
   }
 }
