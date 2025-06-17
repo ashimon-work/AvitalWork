@@ -63,9 +63,10 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: products.length,
                       itemBuilder: (context, productIndex) {
-                        final product = products[productIndex];
+                        final cartItem = products[productIndex];
                         return ListTile(
-                          title: Text(product.name),
+                          title: Text(cartItem.product.name),
+                          subtitle: Text('Quantity: ${cartItem.quantity}'),
                         );
                       },
                     ),

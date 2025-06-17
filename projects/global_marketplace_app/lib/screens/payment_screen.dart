@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import '../models/cart_item.dart';
 import '../services/auth_service.dart';
 import '../services/cart_service.dart';
 import 'add_payment_method_screen.dart';
@@ -118,7 +119,7 @@ class PaymentScreenState extends State<PaymentScreen> {
         cartService.clearCartForStore(widget.storeSlug);
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const OrderConfirmationScreen()),
-          (Route<dynamic> route) => route.isFirst,
+          (Route<dynamic> route) => false,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
