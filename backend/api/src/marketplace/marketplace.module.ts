@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
-import { MarketplaceService } from './marketplace.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { MarketplaceController } from './marketplace.controller';
-import { ProductsModule } from '../products/products.module';
-import { CategoriesModule } from '../categories/categories.module';
-import { StoresModule } from '../stores/stores.module';
+import { MarketplaceService } from './marketplace.service';
+import { ProductEntity } from '../products/entities/product.entity';
+import { CategoryEntity } from '../categories/entities/category.entity';
+import { StoreEntity } from '../stores/entities/store.entity';
 
 @Module({
   imports: [
-    ProductsModule,
-    CategoriesModule,
-    StoresModule,
+    TypeOrmModule.forFeature([ProductEntity, CategoryEntity, StoreEntity]),
   ],
   controllers: [MarketplaceController],
   providers: [MarketplaceService],
 })
-export class MarketplaceModule {}
+export class MarketplaceModule { }

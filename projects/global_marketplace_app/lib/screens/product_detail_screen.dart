@@ -9,16 +9,16 @@ class ProductDetailScreen extends StatefulWidget {
   final String storeSlug;
 
   const ProductDetailScreen({
-    Key? key,
+    super.key,
     required this.productId,
     required this.storeSlug,
-  }) : super(key: key);
+  });
 
   @override
-  _ProductDetailScreenState createState() => _ProductDetailScreenState();
+  ProductDetailScreenState createState() => ProductDetailScreenState();
 }
 
-class _ProductDetailScreenState extends State<ProductDetailScreen> {
+class ProductDetailScreenState extends State<ProductDetailScreen> {
   late Future<Map<String, dynamic>> _productFuture;
   final CartService _cartService = CartService();
 
@@ -29,7 +29,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<Map<String, dynamic>> _fetchProductDetails() async {
-    final url = Uri.parse('https://smartyapp.co.il/api/stores/${widget.storeSlug}/products/${widget.productId}');
+    final url = Uri.parse(
+        'https://smartyapp.co.il/api/stores/${widget.storeSlug}/products/${widget.productId}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -106,10 +107,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        textStyle: const TextStyle(fontSize: 18),
-                      ),
                       child: const Text('Add to Cart'),
                     ),
                   ),

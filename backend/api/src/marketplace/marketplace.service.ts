@@ -1,31 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { ProductsService } from '../products/products.service';
-import { CategoriesService } from '../categories/categories.service';
-import { StoresService } from '../stores/stores.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ProductEntity } from '../products/entities/product.entity';
+import { CategoryEntity } from '../categories/entities/category.entity';
+import { StoreEntity } from '../stores/entities/store.entity';
 
 @Injectable()
 export class MarketplaceService {
   constructor(
-    private readonly productsService: ProductsService,
-    private readonly categoriesService: CategoriesService,
-    private readonly storesService: StoresService,
+    @InjectRepository(ProductEntity)
+    private readonly productRepository: Repository<ProductEntity>,
+    @InjectRepository(CategoryEntity)
+    private readonly categoryRepository: Repository<CategoryEntity>,
+    @InjectRepository(StoreEntity)
+    private readonly storeRepository: Repository<StoreEntity>,
   ) { }
 
   async getHomePageData() {
-    const [featuredProductsResult, featuredCategories, featuredStores] = await Promise.all([
-      this.productsService.findAll({ isFeaturedInMarketplace: true }),
-      this.categoriesService.findAll({ where: { isFeaturedInMarketplace: true } }),
-      this.storesService.findAll({ where: { isFeaturedInMarketplace: true } }),
-    ]);
-
-    // Ensure products have valid store data
-    const productsWithValidStores = featuredProductsResult.products.map(product => ({
-      ...product,
-      store: product.store || null // Ensure store is never undefined
-    }));
+    const featuredProducts = await this.productRepository.find({
+      where: { isFeaturedInMarketplace: true },
+    });
+    const featuredCategories = await this.categoryRepository.find({
+      where: { isFeaturedInMarketplace: true },
+    });
+    const featuredStores = await this.storeRepository.find({
+      where: { isFeaturedInMarketplace: true },
+    });
 
     return {
-      featuredProducts: productsWithValidStores,
+      featuredProducts,
       featuredCategories,
       featuredStores,
     };
