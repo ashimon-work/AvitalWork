@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../models/product.dart';
+import '../services/cart_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -18,6 +20,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late Future<Map<String, dynamic>> _productFuture;
+  final CartService _cartService = CartService();
 
   @override
   void initState() {
@@ -87,6 +90,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final productData = snapshot.data!;
+                        final product = Product.fromJson(productData);
+                        _cartService.addToCart(widget.storeSlug, product);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Product added to cart!'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        textStyle: const TextStyle(fontSize: 18),
+                      ),
+                      child: const Text('Add to Cart'),
+                    ),
                   ),
                 ],
               ),
