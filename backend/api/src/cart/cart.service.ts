@@ -58,7 +58,10 @@ export class CartService {
       throw new NotFoundException('Store not found.');
     }
 
-    const product = await this.productRepository.findOneBy({ id: productId, store: { id: store.id } });
+    const product = await this.productRepository.findOne({
+      where: { id: productId, store: { id: store.id } },
+      relations: ['store']
+    });
     if (!product) {
       throw new NotFoundException(`Product with ID ${productId} not found in store ${storeSlug}.`);
     }
