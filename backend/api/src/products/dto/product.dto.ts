@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { Product as IProduct } from '@shared-types';
 import { ProductVariantDto } from './product-variant.dto';
 import { CategoryDto } from '../../categories/dto/category.dto';
+import { StoreDto } from '../../stores/dto/store.dto';
 
 // Note: This DTO represents the structure returned by the API,
 // which aligns closely with the shared Product interface but includes relations.
@@ -30,6 +31,10 @@ export class ProductDto implements IProduct {
   @IsArray()
   @IsString({ each: true })
   imageUrls: string[];
+
+  @ValidateNested()
+  @Type(() => StoreDto)
+  store: StoreDto;
 
   // Assuming categories are returned as an array of CategoryEntity or a simplified DTO
   @IsArray()

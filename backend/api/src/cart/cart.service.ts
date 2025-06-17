@@ -461,4 +461,12 @@ export class CartService {
 
     return finalUserCart;
   }
+
+  async findAllByUserId(userId: string): Promise<CartEntity[]> {
+    this.logger.log(`Finding all carts for user ${userId}`);
+    return this.cartRepository.find({
+      where: { user: { id: userId } },
+      relations: ['store', 'items', 'items.product'],
+    });
+  }
 }

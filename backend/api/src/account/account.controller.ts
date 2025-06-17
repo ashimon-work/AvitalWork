@@ -8,6 +8,7 @@ import { OrdersService } from '../orders/orders.service';
 import { AddressesService } from '../addresses/addresses.service';
 import { StoreContextGuard } from '../core/guards/store-context.guard';
 import { UpdatePersonalInfoDto } from '../users/dto/update-personal-info.dto'; // Import UpdatePersonalInfoDto
+import { CartService } from '../cart/cart.service';
 
 @UseGuards(JwtAuthGuard) // Protect all routes in this controller
 @Controller('account') // Base path for account-related endpoints
@@ -17,8 +18,9 @@ export class AccountController {
     private readonly authService: AuthService,
     private readonly ordersService: OrdersService,
     private readonly addressesService: AddressesService,
+    private readonly cartService: CartService,
     // TODO: Inject PaymentMethodsService later
-  ) {}
+  ) { }
 
   @Get('profile') // Endpoint: GET /api/account/profile
   getProfile(@Req() req: AuthenticatedRequest) {
@@ -115,6 +117,12 @@ export class AccountController {
       throw new NotFoundException(`Order with ID "${orderId}" not found for this user.`);
     }
     return order;
+  }
+
+  @Get('carts')
+  async getAccountCarts(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.id;
+    return this.cartService.findAllByUserId(userId);
   }
 
   // TODO: Add endpoints for payment methods later

@@ -19,6 +19,7 @@ export class ProductsController {
       description: product.description,
       price: product.price,
       imageUrls: product.imageUrls,
+      store: product.store,
       categories: product.categories,
       tags: product.tags,
       stockLevel: product.stockLevel,

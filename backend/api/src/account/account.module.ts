@@ -6,6 +6,7 @@ import { StoresService } from 'src/stores/stores.service';
 import { AddressesModule } from 'src/addresses/addresses.module';
 import { UsersModule } from 'src/users/users.module';
 import { OrdersModule } from 'src/orders/orders.module';
+import { CartModule } from 'src/cart/cart.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { OrdersModule } from 'src/orders/orders.module';
     UsersModule,
     OrdersModule,
     AddressesModule,
+    CartModule,
   ],
   controllers: [AccountController],
   providers: [StoresService, Logger],

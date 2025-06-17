@@ -227,6 +227,7 @@ export class ManagerController {
       price: product.price,
       imageUrls: product.imageUrls,
       categoryIds: product.categories ? product.categories.map(cat => cat.id) : [],
+      store: product.store,
       categories: product.categories || [],
       tags: product.tags,
       stockLevel: product.stockLevel,
