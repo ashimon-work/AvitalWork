@@ -5,6 +5,7 @@ import 'package:global_marketplace_app/models/product.dart';
 import 'package:global_marketplace_app/screens/store_screen.dart';
 import 'package:global_marketplace_app/widgets/product_grid.dart';
 import 'package:global_marketplace_app/widgets/common_app_bar.dart';
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,9 +69,11 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
-      appBar: const CommonAppBar(title: 'Global Marketplace'),
+      appBar: CommonAppBar(title: l10n.appTitle),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -78,23 +81,23 @@ class HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 1. Search Bar
-              _buildSearchBar(),
+              _buildSearchBar(l10n),
               const SizedBox(height: 24),
 
               // 2. Featured Categories
-              _buildSectionTitle('Featured Categories'),
+              _buildSectionTitle(l10n.categories),
               const SizedBox(height: 16),
               _buildFeaturedCategories(),
               const SizedBox(height: 24),
 
               // 3. Featured Products
-              _buildSectionTitle('Featured Products'),
+              _buildSectionTitle(l10n.featured),
               const SizedBox(height: 16),
               _buildFeaturedProducts(),
               const SizedBox(height: 24),
 
               // 4. Top Stores
-              _buildSectionTitle('Top Stores'),
+              _buildSectionTitle(l10n.stores),
               const SizedBox(height: 16),
               _buildTopStores(),
             ],
@@ -104,7 +107,7 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -123,7 +126,7 @@ class HomeScreenState extends State<HomeScreen> {
         style: const TextStyle(fontFamily: 'Lato'),
         decoration: InputDecoration(
           icon: const Icon(Icons.search_outlined),
-          hintText: 'Discover unique, handcrafted goods...',
+          hintText: l10n.searchProducts,
           hintStyle: const TextStyle(fontFamily: 'Lato'),
           border: InputBorder.none,
         ),

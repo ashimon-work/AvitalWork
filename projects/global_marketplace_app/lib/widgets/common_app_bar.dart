@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/providers.dart';
 import '../screens/shopping_cart_screen.dart';
 import '../screens/login_screen.dart';
+import '../widgets/language_switcher_button.dart';
+import '../l10n/app_localizations.dart';
 
 class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -50,6 +52,8 @@ class _CommonAppBarState extends State<CommonAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Consumer2<AuthProvider, CartProvider>(
       builder: (context, authProvider, cartProvider, child) {
         final cartItemCount = cartProvider.getTotalItemCount();
@@ -68,6 +72,8 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 )
               : null,
           actions: [
+            // Language Switcher
+            const LanguageSwitcherButton(),
             // Login/Logout Button
             IconButton(
               onPressed: isLoggedIn ? _logout : _navigateToLogin,
@@ -75,7 +81,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 Icons.person,
                 color: Colors.white,
               ),
-              tooltip: isLoggedIn ? 'Logout' : 'Login',
+              tooltip: isLoggedIn ? l10n.logout : l10n.login,
             ),
             // Cart Button
             Stack(

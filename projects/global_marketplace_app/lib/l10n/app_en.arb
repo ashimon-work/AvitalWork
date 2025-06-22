@@ -1,0 +1,231 @@
+{
+  "@@locale": "en",
+  "appTitle": "Global Marketplace",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "General welcome text"
+  },
+  "changeLanguage": "Change Language",
+  "@changeLanguage": {
+    "description": "Button text to change language"
+  },
+  "en": "English",
+  "@en": {
+    "description": "English language name"
+  },
+  "he": "Hebrew",
+  "@he": {
+    "description": "Hebrew language name"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home screen title"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  "loginButton": "Log In",
+  "@loginButton": {
+    "description": "Login button text"
+  },
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "Create account button text"
+  },
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up button text"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "cart": "Cart",
+  "@cart": {
+    "description": "Cart screen title"
+  },
+  "addToCart": "Add to Cart",
+  "@addToCart": {
+    "description": "Add to cart button text"
+  },
+  "products": "Products",
+  "@products": {
+    "description": "Products screen title"
+  },
+  "productDetails": "Product Details",
+  "@productDetails": {
+    "description": "Product details screen title"
+  },
+  "price": "Price",
+  "@price": {
+    "description": "Price label"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Description label"
+  },
+  "categories": "Categories",
+  "@categories": {
+    "description": "Categories screen title"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search placeholder text"
+  },
+  "searchProducts": "Search products...",
+  "@searchProducts": {
+    "description": "Search products placeholder text"
+  },
+  "noProducts": "No products found",
+  "@noProducts": {
+    "description": "No products message"
+  },
+  "checkout": "Checkout",
+  "@checkout": {
+    "description": "Checkout button text"
+  },
+  "total": "Total",
+  "@total": {
+    "description": "Total price label"
+  },
+  "quantity": "Quantity",
+  "@quantity": {
+    "description": "Quantity label"
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Remove button text"
+  },
+  "shippingAddress": "Shipping Address",
+  "@shippingAddress": {
+    "description": "Shipping address screen title"
+  },
+  "paymentMethod": "Payment Method",
+  "@paymentMethod": {
+    "description": "Payment method screen title"
+  },
+  "placeOrder": "Place Order",
+  "@placeOrder": {
+    "description": "Place order button text"
+  },
+  "orderConfirmation": "Order Confirmation",
+  "@orderConfirmation": {
+    "description": "Order confirmation screen title"
+  },
+  "thankYou": "Thank you for your order!",
+  "@thankYou": {
+    "description": "Order confirmation message"
+  },
+  "orders": "Orders",
+  "@orders": {
+    "description": "Orders screen title"
+  },
+  "orderHistory": "Order History",
+  "@orderHistory": {
+    "description": "Order history screen title"
+  },
+  "stores": "Stores",
+  "@stores": {
+    "description": "Stores screen title"
+  },
+  "storeDetails": "Store Details",
+  "@storeDetails": {
+    "description": "Store details screen title"
+  },
+  "featured": "Featured",
+  "@featured": {
+    "description": "Featured section title"
+  },
+  "newArrivals": "New Arrivals",
+  "@newArrivals": {
+    "description": "New arrivals section title"
+  },
+  "popularProducts": "Popular Products",
+  "@popularProducts": {
+    "description": "Popular products section title"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button text"
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": "Yes button text"
+  },
+  "no": "No",
+  "@no": {
+    "description": "No button text"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error title"
+  },
+  "networkError": "Network error. Please check your connection.",
+  "@networkError": {
+    "description": "Network error message"
+  },
+  "generalError": "Something went wrong. Please try again.",
+  "@generalError": {
+    "description": "General error message"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading text"
+  },
+  "noInternetConnection": "No internet connection",
+  "@noInternetConnection": {
+    "description": "No internet connection message"
+  },
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Try again button text"
+  },
+  "emptyCart": "Your cart is empty",
+  "@emptyCart": {
+    "description": "Empty cart message"
+  },
+  "continueShopping": "Continue Shopping",
+  "@continueShopping": {
+    "description": "Continue shopping button text"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "confirmLogout": "Are you sure you want to logout?",
+  "@confirmLogout": {
+    "description": "Logout confirmation message"
+  }
+} 
