@@ -28,7 +28,6 @@ class AuthService {
         return false;
       }
     } catch (e) {
-      print('Error during login: $e');
       return false;
     }
   }

@@ -115,7 +115,7 @@ class HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(25),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -147,6 +147,7 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFeaturedCategories() {
+    final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<HomeData>(
       future: _homeDataFuture,
       builder: (context, snapshot) {
@@ -156,7 +157,7 @@ class HomeScreenState extends State<HomeScreen> {
             child: Center(child: CircularProgressIndicator()),
           );
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text(l10n.errorLoading(snapshot.error.toString())));
         } else if (snapshot.hasData) {
           final categories = snapshot.data!.featuredCategories;
           if (categories.isEmpty) {
@@ -192,7 +193,7 @@ class HomeScreenState extends State<HomeScreen> {
           
           // Add "All" option at the beginning for real categories
           final allCategories = [
-            {'id': null, 'name': 'All'},
+            {'id': null, 'name': l10n.all},
             ...categories.map((cat) => {'id': cat.id, 'name': cat.name})
           ];
           
@@ -203,7 +204,7 @@ class HomeScreenState extends State<HomeScreen> {
               itemCount: allCategories.length,
               itemBuilder: (context, index) {
                 final categoryData = allCategories[index];
-                final categoryId = categoryData['id'] as String?;
+                final categoryId = categoryData['id'];
                 final categoryName = categoryData['name'] as String;
                 final isSelected = _selectedCategoryId == categoryId;
                 
@@ -225,20 +226,21 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           );
         } else {
-          return const Center(child: Text('No categories available'));
+          return Center(child: Text(l10n.noCategoriesAvailable));
         }
       },
     );
   }
 
   Widget _buildFeaturedProducts() {
+    final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<HomeData>(
       future: _homeDataFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text(l10n.errorLoading(snapshot.error.toString())));
         } else if (snapshot.hasData) {
           final products = snapshot.data!.featuredProducts
               .map((p) => Product(
@@ -270,20 +272,21 @@ class HomeScreenState extends State<HomeScreen> {
 
           return ProductGrid(products: displayProducts);
         } else {
-          return const Center(child: Text('No products available'));
+          return Center(child: Text(l10n.noProductsAvailable));
         }
       },
     );
   }
 
   Widget _buildTopStores() {
+    final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<HomeData>(
       future: _homeDataFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text(l10n.errorLoading(snapshot.error.toString())));
         } else if (snapshot.hasData) {
           final stores = snapshot.data!.featuredStores;
           return SizedBox(
@@ -326,7 +329,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           );
         } else {
-          return const Center(child: Text('No stores available'));
+          return Center(child: Text(l10n.noStoresAvailable));
         }
       },
     );

@@ -178,4 +178,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmLogout => 'Are you sure you want to logout?';
+
+  @override
+  String get paymentScreenTitle => 'Payment';
+
+  @override
+  String get addNewPaymentMethod => 'Add New Payment Method';
+
+  @override
+  String get orderConfirmed => 'Order Confirmed';
+
+  @override
+  String get orderPlacedSuccessfully => 'Order Placed Successfully!';
+
+  @override
+  String errorPlacingOrder(Object error) {
+    return 'Error placing order: $error';
+  }
+
+  @override
+  String anErrorOccurred(Object error) {
+    return 'An error occurred: $error';
+  }
+
+  @override
+  String paymentMethodDisplay(Object brand, Object last4) {
+    return '$brand ending in $last4';
+  }
+
+  @override
+  String get storePageTitle => 'Store Page';
+
+  @override
+  String errorLoading(Object error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get storeNotFound => 'Store not found';
+
+  @override
+  String get featuredProducts => 'Featured Products';
+
+  @override
+  String get allProducts => 'All Products';
+
+  @override
+  String get noCategoriesAvailable => 'No categories available';
+
+  @override
+  String get noProductsAvailable => 'No products available';
+
+  @override
+  String get noStoresAvailable => 'No stores available';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get product => 'Product';
+
+  @override
+  String get noProductDataFound => 'No product data found.';
+
+  @override
+  String get noDescriptionAvailable => 'No description available.';
+
+  @override
+  String get productAddedToCart => 'Product added to cart!';
+
+  @override
+  String get pleaseLogInToAdd => 'Please log in to add items to your cart';
+
+  @override
+  String get shoppingCart => 'Shopping Cart';
+
+  @override
+  String failedToLoadCart(Object error) {
+    return 'Failed to load cart: $error';
+  }
+
+  @override
+  String get yourCartIsEmpty => 'Your Cart is Empty.';
+
+  @override
+  String subtotal(Object subtotal) {
+    return 'Subtotal: \$$subtotal';
+  }
+
+  @override
+  String get proceedToCheckout => 'Proceed to Checkout';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get noSavedAddressesFound => 'No saved addresses found.';
+
+  @override
+  String get youAreNotLoggedIn => 'You are not logged in.';
+
+  @override
+  String failedToLoadAddresses(Object statusCode) {
+    return 'Failed to load addresses: $statusCode';
+  }
+
+  @override
+  String get continueToPayment => 'Continue to Payment';
+
+  @override
+  String get addPaymentMethod => 'Add Payment Method';
+
+  @override
+  String get failedToAddPaymentMethod => 'Failed to add payment method.';
+
+  @override
+  String get shippingMethod => 'Shipping Method';
 }

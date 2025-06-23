@@ -439,6 +439,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to logout?'**
   String get confirmLogout;
+
+  /// No description provided for @paymentScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentScreenTitle;
+
+  /// No description provided for @addNewPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Payment Method'**
+  String get addNewPaymentMethod;
+
+  /// No description provided for @orderConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Confirmed'**
+  String get orderConfirmed;
+
+  /// No description provided for @orderPlacedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Placed Successfully!'**
+  String get orderPlacedSuccessfully;
+
+  /// No description provided for @errorPlacingOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Error placing order: {error}'**
+  String errorPlacingOrder(Object error);
+
+  /// No description provided for @anErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred: {error}'**
+  String anErrorOccurred(Object error);
+
+  /// No description provided for @paymentMethodDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'{brand} ending in {last4}'**
+  String paymentMethodDisplay(Object brand, Object last4);
+
+  /// No description provided for @storePageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Store Page'**
+  String get storePageTitle;
+
+  /// No description provided for @errorLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String errorLoading(Object error);
+
+  /// No description provided for @storeNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Store not found'**
+  String get storeNotFound;
+
+  /// No description provided for @featuredProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Products'**
+  String get featuredProducts;
+
+  /// No description provided for @allProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'All Products'**
+  String get allProducts;
+
+  /// No description provided for @noCategoriesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories available'**
+  String get noCategoriesAvailable;
+
+  /// No description provided for @noProductsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No products available'**
+  String get noProductsAvailable;
+
+  /// No description provided for @noStoresAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No stores available'**
+  String get noStoresAvailable;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @product.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get product;
+
+  /// No description provided for @noProductDataFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No product data found.'**
+  String get noProductDataFound;
+
+  /// No description provided for @noDescriptionAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No description available.'**
+  String get noDescriptionAvailable;
+
+  /// No description provided for @productAddedToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Product added to cart!'**
+  String get productAddedToCart;
+
+  /// No description provided for @pleaseLogInToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to add items to your cart'**
+  String get pleaseLogInToAdd;
+
+  /// No description provided for @shoppingCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping Cart'**
+  String get shoppingCart;
+
+  /// No description provided for @failedToLoadCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load cart: {error}'**
+  String failedToLoadCart(Object error);
+
+  /// No description provided for @yourCartIsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Cart is Empty.'**
+  String get yourCartIsEmpty;
+
+  /// No description provided for @subtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal: \${subtotal}'**
+  String subtotal(Object subtotal);
+
+  /// No description provided for @proceedToCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed to Checkout'**
+  String get proceedToCheckout;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// No description provided for @noSavedAddressesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved addresses found.'**
+  String get noSavedAddressesFound;
+
+  /// No description provided for @youAreNotLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not logged in.'**
+  String get youAreNotLoggedIn;
+
+  /// No description provided for @failedToLoadAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load addresses: {statusCode}'**
+  String failedToLoadAddresses(Object statusCode);
+
+  /// No description provided for @continueToPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to Payment'**
+  String get continueToPayment;
+
+  /// No description provided for @addPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Payment Method'**
+  String get addPaymentMethod;
+
+  /// No description provided for @failedToAddPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add payment method.'**
+  String get failedToAddPaymentMethod;
+
+  /// No description provided for @shippingMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping Method'**
+  String get shippingMethod;
 }
 
 class _AppLocalizationsDelegate

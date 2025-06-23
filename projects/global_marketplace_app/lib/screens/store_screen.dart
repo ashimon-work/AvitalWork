@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 import 'package:global_marketplace_app/models/store_data.dart';
 import 'package:global_marketplace_app/services/api_service.dart';
 import 'package:global_marketplace_app/widgets/product_grid.dart';
@@ -24,15 +25,16 @@ class StoreScreenState extends State<StoreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-             appBar: const CommonAppBar(title: 'Store Page', showBackButton: true),
+             appBar: CommonAppBar(title: l10n.storePageTitle, showBackButton: true),
       body: FutureBuilder<StoreData>(
         future: _storeDataFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text(l10n.errorLoading(snapshot.error.toString())));
           } else if (snapshot.hasData) {
             final storeData = snapshot.data!;
             return SingleChildScrollView(
@@ -51,14 +53,14 @@ class StoreScreenState extends State<StoreScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Featured Products',
+                    l10n.featuredProducts,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
                   ProductGrid(products: storeData.featuredProducts),
                   const SizedBox(height: 24),
                   Text(
-                    'All Products',
+                    l10n.allProducts,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
@@ -67,7 +69,7 @@ class StoreScreenState extends State<StoreScreen> {
               ),
             );
           } else {
-            return const Center(child: Text('Store not found'));
+            return Center(child: Text(l10n.storeNotFound));
           }
         },
       ),

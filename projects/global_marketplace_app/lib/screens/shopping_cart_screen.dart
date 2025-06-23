@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/cart_item.dart';
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import 'shipping_address_screen.dart';
 import '../theme/app_theme.dart';
@@ -16,10 +17,11 @@ class ShoppingCartScreen extends StatefulWidget {
 class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppTheme.neutralOffWhite,
-      appBar: const CommonAppBar(
-        title: 'Shopping Cart',
+      appBar: CommonAppBar(
+        title: l10n.shoppingCart,
         showBackButton: true,
       ),
       body: Consumer<CartProvider>(
@@ -27,18 +29,18 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
           if (cartProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (cartProvider.error != null) {
-            return Center(child: Text('Failed to load cart: ${cartProvider.error}'));
+            return Center(child: Text(l10n.failedToLoadCart(cartProvider.error!)));
           } else if (cartProvider.isEmpty) {
-            return _buildEmptyState();
+            return _buildEmptyState(l10n);
           } else {
-            return _buildMultiStoreCart(cartProvider);
+            return _buildMultiStoreCart(cartProvider, l10n);
           }
         },
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -50,7 +52,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
           ),
           const SizedBox(height: 16.0),
           Text(
-            'Your Cart is Empty.',
+            l10n.yourCartIsEmpty,
             style: TextStyle(
               fontFamily: 'Lato',
               fontSize: 18.0,
@@ -62,7 +64,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
     );
   }
 
-  Widget _buildMultiStoreCart(CartProvider cartProvider) {
+  Widget _buildMultiStoreCart(CartProvider cartProvider, AppLocalizations l10n) {
     final stores = cartProvider.carts.keys.toList();
     return ListView.builder(
       padding: const EdgeInsets.all(8.0),
@@ -82,7 +84,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                 const SizedBox(height: 12.0),
                 _buildCartItemsList(cartItems),
                 const Divider(),
-                _buildSubtotalAndCheckout(context, subtotal, storeName),
+                _buildSubtotalAndCheckout(context, subtotal, storeName, l10n),
               ],
             ),
           ),
@@ -116,12 +118,12 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
     );
   }
 
-  Widget _buildSubtotalAndCheckout(BuildContext context, double subtotal, String storeName) {
+  Widget _buildSubtotalAndCheckout(BuildContext context, double subtotal, String storeName, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Subtotal: \$${subtotal.toStringAsFixed(2)}',
+          l10n.subtotal(subtotal.toStringAsFixed(2)),
           style: const TextStyle(
             fontFamily: 'Lato',
             fontSize: 16.0,
@@ -137,7 +139,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
               ),
             );
           },
-          child: const Text('Proceed to Checkout'),
+          child: Text(l10n.proceedToCheckout),
         ),
       ],
     );

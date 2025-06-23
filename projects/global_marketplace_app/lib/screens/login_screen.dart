@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:global_marketplace_app/providers/providers.dart';
 import 'package:global_marketplace_app/widgets/common_app_bar.dart';
@@ -46,8 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: const CommonAppBar(title: 'Login', showBackButton: true),
+      appBar: CommonAppBar(title: l10n.login, showBackButton: true),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Consumer<AuthProvider>(
@@ -56,14 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 TextField(
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: InputDecoration(labelText: l10n.email),
                   keyboardType: TextInputType.emailAddress,
                   enabled: !authProvider.isLoading,
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(labelText: l10n.password),
                   obscureText: true,
                   enabled: !authProvider.isLoading,
                 ),
@@ -76,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Login'),
+                      : Text(l10n.loginButton),
                 ),
               ],
             );

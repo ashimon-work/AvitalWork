@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'shipping_method_screen.dart';
 import '../widgets/common_app_bar.dart';
@@ -8,7 +9,7 @@ import '../widgets/common_app_bar.dart';
 class ShippingAddressScreen extends StatefulWidget {
   final String storeSlug;
 
-  const ShippingAddressScreen({Key? key, required this.storeSlug}) : super(key: key);
+  const ShippingAddressScreen({super.key, required this.storeSlug});
 
   @override
   State<ShippingAddressScreen> createState() => _ShippingAddressScreenState();
@@ -27,13 +28,14 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
   }
 
   Future<void> _fetchAddresses() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
 
       if (token == null) {
         setState(() {
-          _error = 'You are not logged in.';
+          _error = l10n.youAreNotLoggedIn;
           _isLoading = false;
         });
         return;
@@ -70,13 +72,13 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
         });
       } else {
         setState(() {
-          _error = 'Failed to load addresses: ${response.statusCode}';
+          _error = l10n.failedToLoadAddresses(response.statusCode.toString());
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'An error occurred: $e';
+        _error = l10n.anErrorOccurred(e.toString());
         _isLoading = false;
       });
     }
@@ -84,9 +86,10 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: const CommonAppBar(title: 'Shipping Address', showBackButton: true),
-      body: _buildBody(),
+      appBar: CommonAppBar(title: l10n.shippingAddress, showBackButton: true),
+      body: _buildBody(l10n),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
@@ -106,13 +109,13 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
                   );
                 }
               : null,
-          child: const Text('Continue'),
+          child: Text(l10n.continueButton),
         ),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(AppLocalizations l10n) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -122,7 +125,7 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
     }
 
     if (_addresses.isEmpty) {
-      return const Center(child: Text('No saved addresses found.'));
+      return Center(child: Text(l10n.noSavedAddressesFound));
     }
 
     return ListView.builder(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
@@ -52,14 +53,14 @@ class AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> {
               Navigator.of(context).pop(true); // Pop with a success result
             } else if (url.contains('failure')) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Failed to add payment method.')),
+                SnackBar(content: Text(AppLocalizations.of(context)!.failedToAddPaymentMethod)),
               );
               Navigator.of(context).pop(false);
             }
           },
           onWebResourceError: (WebResourceError error) {
              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: ${error.description}')),
+                SnackBar(content: Text(AppLocalizations.of(context)!.errorLoading(error.description))),
               );
              Navigator.of(context).pop(false);
           },
@@ -70,8 +71,9 @@ class AddPaymentMethodScreenState extends State<AddPaymentMethodScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Payment Method')),
+      appBar: AppBar(title: Text(l10n.addPaymentMethod)),
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),

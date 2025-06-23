@@ -37,7 +37,6 @@ class AppTheme {
       primary: primaryColor,
       secondary: accentColor,
       surface: neutralOffWhite,
-      background: neutralOffWhite,
     ),
     scaffoldBackgroundColor: neutralOffWhite,
     textTheme: textTheme,

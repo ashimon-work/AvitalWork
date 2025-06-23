@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -60,10 +61,11 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
-             appBar: const CommonAppBar(
-         title: 'Product',
+             appBar: CommonAppBar(
+         title: l10n.product,
          showBackButton: true,
        ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -73,7 +75,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
             return const Center(
                 child: CircularProgressIndicator(color: primaryColor));
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text(l10n.errorLoading(snapshot.error.toString())));
           } else if (snapshot.hasData) {
             final product = snapshot.data!;
             final imageUrls = (product['imageUrls'] as List).isNotEmpty
@@ -114,9 +116,9 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         const SizedBox(height: 24),
                         _buildAddToCartButton(product),
                         const SizedBox(height: 24),
-                        const Text(
-                          'Description',
-                           style: TextStyle(
+                        Text(
+                          l10n.description,
+                           style: const TextStyle(
                             fontFamily: fontName,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -124,7 +126,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          product['description'] ?? 'No description available.',
+                          product['description'] ?? l10n.noDescriptionAvailable,
                           style: const TextStyle(
                             fontFamily: fontName,
                             fontSize: 16,
@@ -139,7 +141,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             );
           } else {
-            return const Center(child: Text('No product data found.'));
+            return Center(child: Text(l10n.noProductDataFound));
           }
         },
       ),
@@ -187,7 +189,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                     shape: BoxShape.circle,
                     color: value == index
                         ? primaryColor
-                        : Colors.grey.withOpacity(0.5),
+                        : Colors.grey.withAlpha(128),
                   ),
                 );
               }),
@@ -228,6 +230,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildAddToCartButton(Map<String, dynamic> productData) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -248,9 +251,9 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
             
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Product added to cart!', style: TextStyle(fontFamily: fontName)),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(l10n.productAddedToCart, style: const TextStyle(fontFamily: fontName)),
+                  duration: const Duration(seconds: 2),
                   backgroundColor: accentColor,
                 ),
               );
@@ -259,7 +262,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
             if (mounted) {
               String errorMessage = e.toString();
               if (errorMessage.contains('log in')) {
-                errorMessage = 'Please log in to add items to your cart';
+                errorMessage = l10n.pleaseLogInToAdd;
               }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -271,9 +274,9 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
             }
           }
         },
-        child: const Text(
-          'Add to Cart',
-          style: TextStyle(
+        child: Text(
+          l10n.addToCart,
+          style: const TextStyle(
             fontFamily: fontName,
             fontSize: 18,
             fontWeight: FontWeight.bold,

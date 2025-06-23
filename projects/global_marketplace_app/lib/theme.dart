@@ -10,7 +10,6 @@ final ThemeData globalMarketplaceTheme = ThemeData(
   colorScheme: ColorScheme.fromSwatch().copyWith(
     primary: primaryColor,
     secondary: accentColor,
-    background: backgroundColor,
     surface: lightGrayColor,
   ),
   scaffoldBackgroundColor: backgroundColor,
@@ -62,7 +61,7 @@ final ThemeData globalMarketplaceTheme = ThemeData(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12.0),
     ),
-    shadowColor: Colors.black.withOpacity(0.1),
+    shadowColor: Colors.black.withAlpha(25),
     margin: const EdgeInsets.all(8.0),
   ),
   iconTheme: const IconThemeData(

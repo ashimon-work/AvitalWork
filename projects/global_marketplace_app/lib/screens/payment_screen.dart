@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 import 'package:global_marketplace_app/screens/shipping_method_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -114,29 +115,38 @@ class PaymentScreenState extends State<PaymentScreen> {
 
       if (response.statusCode == 201) {
         cartProvider.clearCartForStore(widget.storeSlug);
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const OrderConfirmationScreen()),
-          (Route<dynamic> route) => false,
-        );
+        if(mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const OrderConfirmationScreen()),
+            (Route<dynamic> route) => false,
+          );
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error placing order: ${response.body}')),
-        );
+        if(mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context)!.errorPlacingOrder(response.body))),
+          );
+        }
       }
     } catch (e) {
-       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
-      );
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.anErrorOccurred(e.toString()))),
+        );
+      }
     } finally {
-      setState(() => _isPlacingOrder = false);
+      if(mounted) {
+        setState(() => _isPlacingOrder = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payment'),
+        title: Text(l10n.paymentMethod),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -148,7 +158,7 @@ class PaymentScreenState extends State<PaymentScreen> {
                     itemBuilder: (context, index) {
                       final method = _paymentMethods[index];
                       return RadioListTile<PaymentMethodEntity>(
-                        title: Text('${method.brand} ending in ${method.last4}'),
+                        title: Text(l10n.paymentMethodDisplay(method.brand, method.last4)),
                         value: method,
                         groupValue: _selectedPaymentMethod,
                         onChanged: (PaymentMethodEntity? value) {
@@ -169,7 +179,7 @@ class PaymentScreenState extends State<PaymentScreen> {
                       else
                         ElevatedButton(
                           onPressed: _selectedPaymentMethod != null ? _placeOrder : null,
-                          child: const Text('Place Order'),
+                          child: Text(l10n.placeOrder),
                         ),
                       TextButton(
                         onPressed: () async {
@@ -182,7 +192,7 @@ class PaymentScreenState extends State<PaymentScreen> {
                             _fetchPaymentMethods();
                           }
                         },
-                        child: const Text('Add New Payment Method'),
+                        child: Text(l10n.addNewPaymentMethod),
                       )
                     ],
                   )
@@ -198,12 +208,13 @@ class OrderConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Confirmed'),
+        title: Text(l10n.orderConfirmed),
       ),
-      body: const Center(
-        child: Text('Order Placed Successfully!'),
+      body: Center(
+        child: Text(l10n.orderPlacedSuccessfully),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:global_marketplace_app/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'payment_screen.dart';
@@ -112,9 +113,10 @@ class ShippingMethodScreenState extends State<ShippingMethodScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shipping Method'),
+        title: Text(l10n.shippingMethod),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -155,7 +157,7 @@ class ShippingMethodScreenState extends State<ShippingMethodScreen> {
                             );
                           }
                         : null,
-                    child: const Text('Continue to Payment'),
+                    child: Text(l10n.continueToPayment),
                   ),
                 ),
               ],
