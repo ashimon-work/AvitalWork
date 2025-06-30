@@ -20,15 +20,19 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
   bool _isLoading = true;
   String? _error;
   String? _selectedAddressId;
+  bool _hasInitialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    _fetchAddresses();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasInitialized) {
+      _hasInitialized = true;
+      final l10n = AppLocalizations.of(context)!;
+      _fetchAddresses(l10n);
+    }
   }
 
-  Future<void> _fetchAddresses() async {
-    final l10n = AppLocalizations.of(context)!;
+  Future<void> _fetchAddresses(AppLocalizations l10n) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('jwt_token');
