@@ -1,6 +1,10 @@
 codebase.md
 .aidigestignore
+test
+migrations
+*.md
 README.md
+devcontainer.json
 .flutter-plugins
 .flutter-plugins-dependencies
 vite.config.js
@@ -13,7 +17,7 @@ ios/
 linux/
 macos/
 web/
-
+translations
 lib/lang/he.dart
 .gitignore
 .metadata
