@@ -15,10 +15,14 @@ export class ShippingService {
     private storeRepository: Repository<StoreEntity>,
   ) {}
 
-  async getShippingMethodsByStoreSlug(storeSlug: string): Promise<ShippingMethodEntity[]> {
+  async getShippingMethodsByStoreSlug(
+    storeSlug: string,
+  ): Promise<ShippingMethodEntity[]> {
     this.logger.log(`Fetching shipping methods for store slug: ${storeSlug}`);
 
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
     }

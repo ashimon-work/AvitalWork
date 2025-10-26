@@ -10,7 +10,12 @@ import { StoresModule } from '../stores/stores.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ReviewEntity, ProductEntity, UserEntity, StoreEntity]),
+    TypeOrmModule.forFeature([
+      ReviewEntity,
+      ProductEntity,
+      UserEntity,
+      StoreEntity,
+    ]),
     StoresModule,
   ],
   providers: [ReviewsService],

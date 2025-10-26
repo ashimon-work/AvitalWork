@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsNumberString, IsIn, IsBooleanString } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsNumberString,
+  IsIn,
+  IsBooleanString,
+} from 'class-validator';
 
 export class FindAllManagerProductsDto {
   @IsOptional()
@@ -7,7 +13,16 @@ export class FindAllManagerProductsDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(['price-asc', 'price-desc', 'name-asc', 'name-desc', 'newest', 'oldest', 'stock-asc', 'stock-desc']) // Added manager-specific sort options
+  @IsIn([
+    'price-asc',
+    'price-desc',
+    'name-asc',
+    'name-desc',
+    'newest',
+    'oldest',
+    'stock-asc',
+    'stock-desc',
+  ]) // Added manager-specific sort options
   sort?: string;
 
   @IsOptional()

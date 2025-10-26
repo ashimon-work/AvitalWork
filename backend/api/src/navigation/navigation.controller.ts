@@ -7,8 +7,13 @@ export class NavigationController {
   constructor(private readonly navigationService: NavigationService) {}
 
   @Get('popular')
-  async getPopularNavigation(@Query('storeSlug') storeSlug?: string): Promise<PopularLink[]> { // Add explicit return type
-    this.logger.log(`Fetching popular navigation for store: ${storeSlug || 'all'}`);
+  async getPopularNavigation(
+    @Query('storeSlug') storeSlug?: string,
+  ): Promise<PopularLink[]> {
+    // Add explicit return type
+    this.logger.log(
+      `Fetching popular navigation for store: ${storeSlug || 'all'}`,
+    );
     return this.navigationService.getPopularLinks(storeSlug);
   }
 }

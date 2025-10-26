@@ -1,4 +1,13 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber, IsArray, ValidateNested, IsPositive, IsBoolean } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsArray,
+  ValidateNested,
+  IsPositive,
+  IsBoolean,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class AddressDataDto {
@@ -95,4 +104,4 @@ export class CheckoutOrderDto {
   @IsOptional()
   @IsNumber()
   total?: number;
-} 
+}

@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, CreateDateColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  Column,
+  Relation,
+} from 'typeorm';
 import { WishlistEntity } from './wishlist.entity';
 import { ProductEntity } from '../../products/entities/product.entity';
 
@@ -7,14 +15,21 @@ export class WishlistItemEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => WishlistEntity, (wishlist) => wishlist.items, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => WishlistEntity, (wishlist) => wishlist.items, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'wishlistId' })
-  wishlist: WishlistEntity;
+  wishlist: Relation<WishlistEntity>;
 
   @Column()
   wishlistId: string;
 
-  @ManyToOne(() => ProductEntity, { nullable: false, eager: true, onDelete: 'CASCADE' }) // Cascade delete if product removed? Or Restrict? Let's cascade for now.
+  @ManyToOne(() => ProductEntity, {
+    nullable: false,
+    eager: true,
+    onDelete: 'CASCADE',
+  }) // Cascade delete if product removed? Or Restrict? Let's cascade for now.
   @JoinColumn({ name: 'productId' })
   product: ProductEntity;
 

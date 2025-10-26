@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsDate, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDate,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 import { CartItemDto } from './cart-item.dto';
 import { StoreDto } from '../../stores/dto/store.dto';
 import { Expose } from 'class-transformer';
@@ -57,4 +65,4 @@ export class CartDto {
   @Expose()
   @IsDate()
   updatedAt: Date;
-} 
+}

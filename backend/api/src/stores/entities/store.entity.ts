@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   Index,
   OneToMany,
+  Relation,
 } from 'typeorm';
 import { ProductEntity } from '../../products/entities/product.entity';
 import { CategoryEntity } from '../../categories/entities/category.entity';
@@ -37,21 +38,27 @@ export class StoreEntity /* implements IStore */ {
   @Column({ default: false })
   isFeaturedInMarketplace: boolean;
 
+  @Column('simple-array', { nullable: true })
+  authorizedPhoneNumbers?: string[];
+
   // Relation: A store can have many products
   @OneToMany(() => ProductEntity, (product) => product.store)
-  products: ProductEntity[];
+  products: Relation<ProductEntity[]>;
 
   // Relation: A store can have many categories
   @OneToMany(() => CategoryEntity, (category) => category.store)
-  categories: CategoryEntity[];
+  categories: Relation<CategoryEntity[]>;
 
   // Relation: A store can have many carousel items
   @OneToMany(() => CarouselItem, (carouselItem) => carouselItem.store)
-  carouselItems: CarouselItem[];
+  carouselItems: Relation<CarouselItem[]>;
 
   // Relation: A store can have many shipping methods
-  @OneToMany(() => ShippingMethodEntity, (shippingMethod) => shippingMethod.store)
-  shippingMethods: ShippingMethodEntity[];
+  @OneToMany(
+    () => ShippingMethodEntity,
+    (shippingMethod) => shippingMethod.store,
+  )
+  shippingMethods: Relation<ShippingMethodEntity[]>;
 
   @CreateDateColumn()
   createdAt: Date;

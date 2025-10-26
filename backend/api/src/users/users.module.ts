@@ -6,8 +6,11 @@ import { UsersService } from './users.service';
 import { StoreEntity } from 'src/stores/entities/store.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, StoreEntity]), LoginHistoryModule],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity, StoreEntity]),
+    LoginHistoryModule,
+  ],
   providers: [UsersService],
-  exports: [UsersService] // Export UsersService so other modules can use it
+  exports: [UsersService], // Export UsersService so other modules can use it
 })
 export class UsersModule {}

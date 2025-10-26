@@ -10,11 +10,16 @@ import { StoresModule } from 'src/stores/stores.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProductEntity, StoreEntity, CategoryEntity, ProductVariantEntity]),
+    TypeOrmModule.forFeature([
+      ProductEntity,
+      StoreEntity,
+      CategoryEntity,
+      ProductVariantEntity,
+    ]),
     StoresModule,
   ],
   controllers: [ProductsController],
   providers: [ProductsService, Logger],
-  exports: [ProductsService, TypeOrmModule]
+  exports: [ProductsService, TypeOrmModule],
 })
 export class ProductsModule {}

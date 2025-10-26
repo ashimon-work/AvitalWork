@@ -14,7 +14,7 @@ export class MarketplaceService {
     private readonly categoryRepository: Repository<CategoryEntity>,
     @InjectRepository(StoreEntity)
     private readonly storeRepository: Repository<StoreEntity>,
-  ) { }
+  ) {}
 
   async getHomePageData() {
     const featuredProducts = await this.productRepository.find({

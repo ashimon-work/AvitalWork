@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Relation,
+} from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
 
 @Entity('addresses')
@@ -6,8 +14,11 @@ export class AddressEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.addresses, { nullable: false, onDelete: 'CASCADE' })
-  user: UserEntity;
+  @ManyToOne(() => UserEntity, (user) => user.addresses, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  user: Relation<UserEntity>;
 
   @Column({ length: 100 })
   fullName: string;
@@ -23,7 +34,6 @@ export class AddressEntity {
 
   @Column({ length: 100 })
   // state: string; // Removed state
-
   @Column({ length: 20 })
   postalCode: string;
 

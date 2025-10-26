@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+} from 'typeorm';
 
 export enum NotificationType {
   NEW_ORDER = 'NEW_ORDER',
@@ -22,7 +29,10 @@ export class NotificationEntity {
   id: string;
 
   @Index()
-  @Column({ type: 'uuid', comment: 'ID of the user (manager) this notification is for' })
+  @Column({
+    type: 'uuid',
+    comment: 'ID of the user (manager) this notification is for',
+  })
   userId: string; // Assuming manager users have UUIDs
 
   @Column({
@@ -38,16 +48,32 @@ export class NotificationEntity {
   @Column({ type: 'text', comment: 'Detailed message of the notification' })
   message: string;
 
-  @Column({ default: false, comment: 'Indicates if the notification has been read' })
+  @Column({
+    default: false,
+    comment: 'Indicates if the notification has been read',
+  })
   isRead: boolean;
 
-  @CreateDateColumn({ type: 'timestamp with time zone', comment: 'Timestamp when the notification was created' })
+  @CreateDateColumn({
+    type: 'timestamp with time zone',
+    comment: 'Timestamp when the notification was created',
+  })
   createdAt: Date;
 
-  @Column({ type: 'timestamp with time zone', nullable: true, comment: 'Timestamp when the notification was read' })
+  @Column({
+    type: 'timestamp with time zone',
+    nullable: true,
+    comment: 'Timestamp when the notification was read',
+  })
   readAt?: Date | null;
 
-  @Column({ type: 'varchar', length: 512, nullable: true, comment: 'Optional link related to the notification (e.g., to an order or product)' })
+  @Column({
+    type: 'varchar',
+    length: 512,
+    nullable: true,
+    comment:
+      'Optional link related to the notification (e.g., to an order or product)',
+  })
   link?: string;
 
   @Column({

@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsOptional, IsBoolean, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsBoolean,
+  IsDate,
+} from 'class-validator';
 import { Type, Expose } from 'class-transformer';
 
 export class StoreDto {
@@ -41,4 +47,4 @@ export class StoreDto {
   @IsDate()
   @Type(() => Date)
   updatedAt: Date;
-} 
+}

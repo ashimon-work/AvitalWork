@@ -1,4 +1,18 @@
-import { Controller, Get, Post, Body, Req, UseGuards, HttpCode, HttpStatus, BadRequestException, NotFoundException, Param, Query, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Req,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+  NotFoundException,
+  Param,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { StoreContextGuard } from '../core/guards/store-context.guard';
 import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface';
@@ -16,27 +30,37 @@ export class CheckoutController {
     private readonly checkoutService: CheckoutService,
     @InjectRepository(CreditCardEntity)
     private readonly creditCardRepository: Repository<CreditCardEntity>,
-    ) {}
+  ) {}
 
   @Get('tax/estimate')
   async getTaxEstimate(
     @Req() req: AuthenticatedRequest,
-    @Query(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true })) query: TaxEstimateQueryDto
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    )
+    query: TaxEstimateQueryDto,
   ) {
-     const storeSlug = req.storeSlug;
-     if (!storeSlug) {
-         throw new BadRequestException('Store context is missing.');
-     }
-     return this.checkoutService.getTaxEstimate(storeSlug, query);
+    const storeSlug = req.storeSlug;
+    if (!storeSlug) {
+      throw new BadRequestException('Store context is missing.');
+    }
+    return this.checkoutService.getTaxEstimate(storeSlug, query);
   }
 
   @Post('orders') // Path: /api/checkout/orders or /api/orders
   @HttpCode(HttpStatus.CREATED)
-  async processOrder(@Req() req: AuthenticatedRequest, @Body() createOrderDto: CheckoutOrderDto) {
+  async processOrder(
+    @Req() req: AuthenticatedRequest,
+    @Body() createOrderDto: CheckoutOrderDto,
+  ) {
     const userId = req.user.id;
     const storeSlug = req.storeSlug;
-     if (!storeSlug) {
-        throw new BadRequestException('Store context is missing.');
+    if (!storeSlug) {
+      throw new BadRequestException('Store context is missing.');
     }
     // TODO: Add validation pipe for createOrderDto
     return this.checkoutService.processOrder(userId, storeSlug, createOrderDto);
@@ -44,18 +68,18 @@ export class CheckoutController {
 
   @Get('tranzila/me/credit-card')
   @UseGuards(JwtAuthGuard, StoreContextGuard)
-    async getMyCreditCard(@Req() req: AuthenticatedRequest) {
-        const userId = req.user.id;
-        const creditCard = await this.creditCardRepository.findOne({
-          where: { user: { id: userId } },
-        });
-        if (!creditCard) {
-          return {};
-        }
-        return {
-          lastFour: creditCard.lastFour,
-          expdate: creditCard.expdate,
-          isDefault: creditCard.isDefault,
-        };
+  async getMyCreditCard(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.id;
+    const creditCard = await this.creditCardRepository.findOne({
+      where: { user: { id: userId } },
+    });
+    if (!creditCard) {
+      return {};
     }
+    return {
+      lastFour: creditCard.lastFour,
+      expdate: creditCard.expdate,
+      isDefault: creditCard.isDefault,
+    };
+  }
 }

@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NewsletterSubscription } from './entities/newsletter-subscription.entity';
@@ -11,10 +15,14 @@ export class NewsletterService {
     private readonly subscriptionRepository: Repository<NewsletterSubscription>,
   ) {}
 
-  async addSubscription(subscribeNewsletterDto: SubscribeNewsletterDto): Promise<NewsletterSubscription> {
+  async addSubscription(
+    subscribeNewsletterDto: SubscribeNewsletterDto,
+  ): Promise<NewsletterSubscription> {
     const { email, source } = subscribeNewsletterDto;
 
-    const existingSubscription = await this.subscriptionRepository.findOne({ where: { email } });
+    const existingSubscription = await this.subscriptionRepository.findOne({
+      where: { email },
+    });
 
     if (existingSubscription) {
       if (existingSubscription.isActive) {
@@ -30,7 +38,9 @@ export class NewsletterService {
           return await this.subscriptionRepository.save(existingSubscription);
         } catch (error) {
           console.error(`Error reactivating subscription for ${email}:`, error);
-          throw new InternalServerErrorException('Could not reactivate subscription.');
+          throw new InternalServerErrorException(
+            'Could not reactivate subscription.',
+          );
         }
       }
     }
@@ -45,7 +55,8 @@ export class NewsletterService {
     } catch (error) {
       // Catch potential unique constraint violation if a race condition occurs,
       // though the initial check should prevent most cases.
-      if (error.code === '23505') { // PostgreSQL unique violation error code
+      if (error.code === '23505') {
+        // PostgreSQL unique violation error code
         throw new ConflictException('This email is already subscribed.');
       }
       console.error(`Error creating new subscription for ${email}:`, error);
@@ -54,16 +65,22 @@ export class NewsletterService {
   }
 
   async unsubscribe(email: string): Promise<void> {
-    const subscription = await this.subscriptionRepository.findOne({ where: { email } });
+    const subscription = await this.subscriptionRepository.findOne({
+      where: { email },
+    });
 
     if (!subscription) {
       // Optionally, you could throw a NotFoundException or just return silently
-      console.warn(`[NewsletterService] Attempted to unsubscribe non-existent email: ${email}`);
+      console.warn(
+        `[NewsletterService] Attempted to unsubscribe non-existent email: ${email}`,
+      );
       return;
     }
 
     if (!subscription.isActive) {
-      console.log(`[NewsletterService] Email ${email} is already unsubscribed.`);
+      console.log(
+        `[NewsletterService] Email ${email} is already unsubscribed.`,
+      );
       return;
     }
 

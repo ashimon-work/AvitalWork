@@ -35,7 +35,10 @@ export class CreateUserDto {
 
   @IsOptional()
   // Replace IsPhoneNumber with a regex for Israeli numbers (05X-XXXXXXX or 0X-XXXXXXX)
-  @Matches(/^0\d{1,2}-?\d{7}$/, { message: 'Please provide a valid Israeli phone number (e.g., 05X-XXXXXXX or 0X-XXXXXXX)' })
+  @Matches(/^0\d{1,2}-?\d{7}$/, {
+    message:
+      'Please provide a valid Israeli phone number (e.g., 05X-XXXXXXX or 0X-XXXXXXX)',
+  })
   @MaxLength(20) // Keep max length just in case
   phone?: string;
 

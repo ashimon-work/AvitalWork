@@ -1,4 +1,26 @@
-import { Controller, Get, Query, Param, Post, Body, UsePipes, ValidationPipe, HttpCode, HttpStatus, UnauthorizedException, UseGuards, Req, Patch, Delete, Header, Res, UseInterceptors, UploadedFile, Put, BadRequestException } from '@nestjs/common'; // Added Put, UseInterceptors, UploadedFile, BadRequestException
+import {
+  Controller,
+  Get,
+  Query,
+  Param,
+  Post,
+  Body,
+  UsePipes,
+  ValidationPipe,
+  HttpCode,
+  HttpStatus,
+  UnauthorizedException,
+  UseGuards,
+  Req,
+  Patch,
+  Delete,
+  Header,
+  Res,
+  UseInterceptors,
+  UploadedFile,
+  Put,
+  BadRequestException,
+} from '@nestjs/common'; // Added Put, UseInterceptors, UploadedFile, BadRequestException
 import { FileInterceptor } from '@nestjs/platform-express'; // Added
 import { Response } from 'express';
 import { SendCustomerEmailDto } from 'src/users/dto/send-customer-email.dto';
@@ -47,7 +69,7 @@ export class ManagerController {
     private readonly ordersService: OrdersService,
     private readonly usersService: UsersService,
     private readonly settingsService: SettingsService,
-  ) { }
+  ) {}
 
   @Get('profile')
   async getManagerProfile(@Req() req: AuthenticatedRequest) {
@@ -73,7 +95,10 @@ export class ManagerController {
     @Body() changeManagerPasswordDto: ChangeManagerPasswordDto,
   ) {
     const userId = req.user.id;
-    return this.usersService.changeManagerPassword(userId, changeManagerPasswordDto);
+    return this.usersService.changeManagerPassword(
+      userId,
+      changeManagerPasswordDto,
+    );
   }
 
   @Post('profile/2fa/enable')
@@ -147,7 +172,10 @@ export class ManagerController {
     @Body() notificationPreferencesDto: NotificationPreferencesDto,
   ) {
     const userId = req.user.id;
-    return this.usersService.updateNotificationPreferences(userId, notificationPreferencesDto);
+    return this.usersService.updateNotificationPreferences(
+      userId,
+      notificationPreferencesDto,
+    );
   }
 
   @Get('profile/login-history')
@@ -206,27 +234,36 @@ export class ManagerController {
     @Req() req: AuthenticatedRequest,
     @Param('storeSlug') storeSlug: string,
     @Query() queryParams: FindAllManagerProductsDto,
-  ): Promise<{ products: ProductDto[], total: number }> {
+  ): Promise<{ products: ProductDto[]; total: number }> {
     const serviceParams = {
       ...queryParams,
       page: queryParams.page ? parseInt(queryParams.page, 10) : undefined,
       limit: queryParams.limit ? parseInt(queryParams.limit, 10) : undefined,
-      price_min: queryParams.price_min ? parseFloat(queryParams.price_min) : undefined,
-      price_max: queryParams.price_max ? parseFloat(queryParams.price_max) : undefined,
-      isActive: queryParams.isActive ? queryParams.isActive === 'true' : undefined,
+      price_min: queryParams.price_min
+        ? parseFloat(queryParams.price_min)
+        : undefined,
+      price_max: queryParams.price_max
+        ? parseFloat(queryParams.price_max)
+        : undefined,
+      isActive: queryParams.isActive
+        ? queryParams.isActive === 'true'
+        : undefined,
       storeSlug: storeSlug,
     };
 
-    const { products, total } = await this.productsService.findAll(serviceParams);
+    const { products, total } =
+      await this.productsService.findAll(serviceParams);
 
-    const productDtos: ProductDto[] = products.map(product => ({
+    const productDtos: ProductDto[] = products.map((product) => ({
       id: product.id,
       sku: product.sku,
       name: product.name,
       description: product.description,
       price: product.price,
       imageUrls: product.imageUrls,
-      categoryIds: product.categories ? product.categories.map(cat => cat.id) : [],
+      categoryIds: product.categories
+        ? product.categories.map((cat) => cat.id)
+        : [],
       store: product.store,
       categories: product.categories || [],
       tags: product.tags,
@@ -234,14 +271,16 @@ export class ManagerController {
       isActive: product.isActive,
       isFeaturedInMarketplace: product.isFeaturedInMarketplace,
       options: product.options,
-      variants: product.variants ? product.variants.map(variant => ({
-        id: variant.id,
-        sku: variant.sku,
-        options: variant.options,
-        price: variant.price,
-        stockLevel: variant.stockLevel,
-        imageUrl: variant.imageUrl,
-      })) : [],
+      variants: product.variants
+        ? product.variants.map((variant) => ({
+            id: variant.id,
+            sku: variant.sku,
+            options: variant.options,
+            price: variant.price,
+            stockLevel: variant.stockLevel,
+            imageUrl: variant.imageUrl,
+          }))
+        : [],
     }));
 
     return { products: productDtos, total };
@@ -269,7 +308,11 @@ export class ManagerController {
     @Param('id') id: string,
     @Body() updateManagerCustomerDto: UpdateManagerCustomerDto,
   ) {
-    return this.usersService.updateForManager(storeSlug, id, updateManagerCustomerDto);
+    return this.usersService.updateForManager(
+      storeSlug,
+      id,
+      updateManagerCustomerDto,
+    );
   }
 
   @Post(':storeSlug/customers/:id/notes')
@@ -279,7 +322,11 @@ export class ManagerController {
     @Param('id') id: string,
     @Body() addCustomerNoteDto: AddCustomerNoteDto,
   ) {
-    return this.usersService.addNoteForManager(storeSlug, id, addCustomerNoteDto);
+    return this.usersService.addNoteForManager(
+      storeSlug,
+      id,
+      addCustomerNoteDto,
+    );
   }
 
   @Post(':storeSlug/customers/:id/email')
@@ -290,11 +337,21 @@ export class ManagerController {
     @Param('id') id: string,
     @Body() sendCustomerEmailDto: SendCustomerEmailDto,
   ): Promise<{ success: boolean; message: string }> {
-    return this.usersService.sendEmailToCustomerForManager(storeSlug, id, sendCustomerEmailDto);
+    return this.usersService.sendEmailToCustomerForManager(
+      storeSlug,
+      id,
+      sendCustomerEmailDto,
+    );
   }
 
   @Get(':storeSlug/customers/:customerId/orders')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   async getCustomerOrderHistory(
     @Param('storeSlug') storeSlug: string,
     @Param('customerId') customerId: string,
@@ -302,15 +359,16 @@ export class ManagerController {
     @Query('limit') limit = 10,
     @Query('sortBy') sortBy = 'createdAt',
     @Query('sortDirection') sortDirection: 'ASC' | 'DESC' = 'DESC',
-  ): Promise<{ orders: OrderDto[], total: number }> {
+  ): Promise<{ orders: OrderDto[]; total: number }> {
     const pageNum = parseInt(page as any, 10);
     const limitNum = parseInt(limit as any, 10);
     // We'll need a new service method in OrdersService for this
-    return this.ordersService.findAllForCustomerInStore(
-      storeSlug,
-      customerId,
-      { page: pageNum, limit: limitNum, sortBy, sortDirection }
-    );
+    return this.ordersService.findAllForCustomerInStore(storeSlug, customerId, {
+      page: pageNum,
+      limit: limitNum,
+      sortBy,
+      sortDirection,
+    });
   }
 
   @Post(':storeSlug/products')
@@ -328,7 +386,11 @@ export class ManagerController {
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    return this.productsService.updateForManager(storeSlug, id, updateProductDto);
+    return this.productsService.updateForManager(
+      storeSlug,
+      id,
+      updateProductDto,
+    );
   }
 
   @Delete(':storeSlug/products/:id')
@@ -345,7 +407,10 @@ export class ManagerController {
     @Param('storeSlug') storeSlug: string,
     @Body() bulkDeleteProductsDto: BulkDeleteProductsDto,
   ) {
-    return this.productsService.bulkDeleteForManager(storeSlug, bulkDeleteProductsDto.productIds);
+    return this.productsService.bulkDeleteForManager(
+      storeSlug,
+      bulkDeleteProductsDto.productIds,
+    );
   }
   @Post(':storeSlug/products/bulk-update-status')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -354,14 +419,24 @@ export class ManagerController {
     @Param('storeSlug') storeSlug: string,
     @Body() bulkUpdateProductStatusDto: BulkUpdateProductStatusDto,
   ) {
-    return this.productsService.bulkUpdateStatusForManager(storeSlug, bulkUpdateProductStatusDto.productIds, bulkUpdateProductStatusDto.status);
+    return this.productsService.bulkUpdateStatusForManager(
+      storeSlug,
+      bulkUpdateProductStatusDto.productIds,
+      bulkUpdateProductStatusDto.status,
+    );
   }
   @Get(':storeSlug/orders')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   async findAllOrdersForManager(
     @Param('storeSlug') storeSlug: string,
     @Query() queryParams: FindAllManagerOrdersDto,
-  ): Promise<{ orders: OrderDto[], total: number }> {
+  ): Promise<{ orders: OrderDto[]; total: number }> {
     return this.ordersService.findAllForManager(storeSlug, queryParams);
   }
 
@@ -390,8 +465,12 @@ export class ManagerController {
     @Param('storeSlug') storeSlug: string,
     @Param('id') id: string,
     @Body() sendOrderEmailDto: SendOrderEmailDto,
-  ): Promise<{ success: boolean, message: string }> {
-    return this.ordersService.sendEmailToCustomerForManager(storeSlug, id, sendOrderEmailDto);
+  ): Promise<{ success: boolean; message: string }> {
+    return this.ordersService.sendEmailToCustomerForManager(
+      storeSlug,
+      id,
+      sendOrderEmailDto,
+    );
   }
 
   @Post(':storeSlug/orders/:id/shipping')
@@ -401,7 +480,11 @@ export class ManagerController {
     @Param('id') id: string,
     @Body() addOrderShippingDto: AddOrderShippingDto,
   ): Promise<OrderDto> {
-    return this.ordersService.addShippingForManager(storeSlug, id, addOrderShippingDto);
+    return this.ordersService.addShippingForManager(
+      storeSlug,
+      id,
+      addOrderShippingDto,
+    );
   }
   @Get(':storeSlug/orders/:id/packing-slip')
   @HttpCode(HttpStatus.OK)
@@ -434,7 +517,10 @@ export class ManagerController {
     @Param('storeSlug') storeSlug: string,
     @Param('orderId') orderId: string,
   ): Promise<OrderDto> {
-    return this.ordersService.markOrderAsFulfilledForManager(storeSlug, orderId);
+    return this.ordersService.markOrderAsFulfilledForManager(
+      storeSlug,
+      orderId,
+    );
   }
 
   @Get(':storeSlug/orders/:orderId/shipping-label')
@@ -444,12 +530,23 @@ export class ManagerController {
     @Param('orderId') orderId: string,
   ): Promise<{ message: string }> {
     // Placeholder implementation
-    console.log(`Shipping label requested for order ${orderId} in store ${storeSlug}`);
-    return this.ordersService.requestShippingLabelForManager(storeSlug, orderId);
+    console.log(
+      `Shipping label requested for order ${orderId} in store ${storeSlug}`,
+    );
+    return this.ordersService.requestShippingLabelForManager(
+      storeSlug,
+      orderId,
+    );
   }
 
   @Get(':storeSlug/orders/export')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   @HttpCode(HttpStatus.OK)
   @Header('Content-Type', 'text/csv')
   @Header('Content-Disposition', 'attachment; filename="orders.csv"')
@@ -508,16 +605,29 @@ export class ManagerController {
   }
 
   @Get(':storeSlug/customers')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   async findAllCustomersForManager(
     @Param('storeSlug') storeSlug: string,
     @Query() queryParams: FindAllManagerCustomersDto,
-  ): Promise<{ customers: any[], total: number }> { // Use any[] for now due to added select fields in service
+  ): Promise<{ customers: any[]; total: number }> {
+    // Use any[] for now due to added select fields in service
     return this.usersService.findAllForManager(storeSlug, queryParams);
   }
 
   @Get(':storeSlug/customers/export')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   @HttpCode(HttpStatus.OK)
   @Header('Content-Type', 'text/csv')
   @Header('Content-Disposition', 'attachment; filename="customers.csv"')

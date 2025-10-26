@@ -24,7 +24,9 @@ export class ManagerService {
   ) {}
 
   async getDashboardData(storeSlug: string) {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -52,11 +54,13 @@ export class ManagerService {
 
     // Count Orders Today for the store using QueryBuilder
     const ordersTodayCount = await this.orderRepository
-        .createQueryBuilder('order')
-        .where('order.storeId = :storeId', { storeId }) // Filter by store
-        .andWhere('"order"."orderDate" >= :startOfToday', { startOfToday: today }) // Filter by date (start of today)
-        .andWhere('"order"."orderDate" <= :endOfToday', { endOfToday: new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1) }) // Filter by date (end of today)
-        .getCount(); // Use getCount() for the count
+      .createQueryBuilder('order')
+      .where('order.storeId = :storeId', { storeId }) // Filter by store
+      .andWhere('"order"."orderDate" >= :startOfToday', { startOfToday: today }) // Filter by date (start of today)
+      .andWhere('"order"."orderDate" <= :endOfToday', {
+        endOfToday: new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1),
+      }) // Filter by date (end of today)
+      .getCount(); // Use getCount() for the count
 
     // Count Low Stock Items for the store
     // This requires checking both products (if no variants) and product variants
@@ -65,29 +69,34 @@ export class ManagerService {
     // Count low stock products without variants
     // Count low stock products without variants using QueryBuilder
     const lowStockProductsCount = await this.productRepository
-        .createQueryBuilder('product')
-        .leftJoin('product.variants', 'variant') // Left join with variants
-        .where('product.storeId = :storeId', { storeId }) // Filter by store
-        .andWhere('product.stockLevel < :threshold', { threshold: lowStockThreshold }) // Filter by stock level
-        .andWhere('variant.id IS NULL') // Filter where variant ID is null (no variants)
-        .getCount();
+      .createQueryBuilder('product')
+      .leftJoin('product.variants', 'variant') // Left join with variants
+      .where('product.storeId = :storeId', { storeId }) // Filter by store
+      .andWhere('product.stockLevel < :threshold', {
+        threshold: lowStockThreshold,
+      }) // Filter by stock level
+      .andWhere('variant.id IS NULL') // Filter where variant ID is null (no variants)
+      .getCount();
 
     // Count low stock product variants
     const lowStockVariantsCount = await this.productVariantRepository.count({
-        where: {
-            product: { store: { id: storeId } }, // Filter variants by product's store
-            stockLevel: LessThan(lowStockThreshold),
-        },
+      where: {
+        product: { store: { id: storeId } }, // Filter variants by product's store
+        stockLevel: LessThan(lowStockThreshold),
+      },
     });
 
     const lowStockItems = lowStockProductsCount + lowStockVariantsCount;
 
-
     // Placeholder for Sales Chart Data (requires more complex aggregation)
-    const salesChartData = [/* real data based on period */]; // TODO: Implement real sales chart data fetching
+    const salesChartData = [
+      /* real data based on period */
+    ]; // TODO: Implement real sales chart data fetching
 
     // Placeholder for Inventory Alerts (requires more detailed logic)
-    const inventoryAlerts = [/* real alerts */]; // TODO: Implement real inventory alerts
+    const inventoryAlerts = [
+      /* real alerts */
+    ]; // TODO: Implement real inventory alerts
 
     // Placeholder for Store Health Score (requires various metrics)
     const storeHealthScore = 0; // TODO: Implement real store health score calculation
@@ -110,7 +119,9 @@ export class ManagerService {
     sortColumn: string = 'orderDate', // Change default to orderDate
     sortDirection: 'asc' | 'desc',
   ) {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -120,7 +131,7 @@ export class ManagerService {
     const skip = (page - 1) * limit;
 
     // Fetch recent orders with user relation for customer name
-    let order: any = {};
+    const order: any = {};
     if (sortColumn === 'createdAt' || sortColumn === 'date') {
       order.orderDate = sortDirection;
     } else {
@@ -150,7 +161,9 @@ export class ManagerService {
   }
 
   async getSalesChartData(storeSlug: string, period: string): Promise<any> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -170,7 +183,7 @@ export class ManagerService {
     const salesData: { [key: string]: number } = {};
     const labels: string[] = [];
 
-    deliveredOrders.forEach(order => {
+    deliveredOrders.forEach((order) => {
       const orderDate = new Date(order.orderDate);
       let key: string;
       let label: string;
@@ -190,7 +203,10 @@ export class ManagerService {
           break;
         case 'monthly':
           key = `${orderDate.getFullYear()}-${orderDate.getMonth() + 1}`; // YYYY-MM
-          label = orderDate.toLocaleString('default', { month: 'short', year: 'numeric' }); // e.g., 'Jan 2023'
+          label = orderDate.toLocaleString('default', {
+            month: 'short',
+            year: 'numeric',
+          }); // e.g., 'Jan 2023'
           break;
         case 'all':
         default:
@@ -205,34 +221,48 @@ export class ManagerService {
       salesData[key] += order.totalAmount;
 
       if (!labels.includes(label) && period !== 'all') {
-         labels.push(label);
+        labels.push(label);
       }
     });
 
     // Sort labels chronologically for daily, weekly, monthly
     if (period !== 'all') {
-       labels.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+      labels.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
     } else {
-       labels.push('All Time'); // Add 'All Time' label for the single data point
+      labels.push('All Time'); // Add 'All Time' label for the single data point
     }
-
 
     const datasets = [
       {
-        data: labels.map(label => {
-           if (period === 'all') {
-              return salesData['all'] || 0;
-           }
-           // Find the corresponding key for the label (reverse mapping for daily/weekly/monthly)
-           const key = deliveredOrders.find(order => {
-              const orderDate = new Date(order.orderDate);
-              if (period === 'daily' && orderDate.toISOString().split('T')[0] === label) return true;
-              if (period === 'monthly' && orderDate.toLocaleString('default', { month: 'short', year: 'numeric' }) === label) return true;
-              // TODO: Add weekly key mapping
-              return false;
-           })?.orderDate.toISOString().split('T')[0] || label; // Fallback to label if key not found (might need refinement)
+        data: labels.map((label) => {
+          if (period === 'all') {
+            return salesData['all'] || 0;
+          }
+          // Find the corresponding key for the label (reverse mapping for daily/weekly/monthly)
+          const key =
+            deliveredOrders
+              .find((order) => {
+                const orderDate = new Date(order.orderDate);
+                if (
+                  period === 'daily' &&
+                  orderDate.toISOString().split('T')[0] === label
+                )
+                  return true;
+                if (
+                  period === 'monthly' &&
+                  orderDate.toLocaleString('default', {
+                    month: 'short',
+                    year: 'numeric',
+                  }) === label
+                )
+                  return true;
+                // TODO: Add weekly key mapping
+                return false;
+              })
+              ?.orderDate.toISOString()
+              .split('T')[0] || label; // Fallback to label if key not found (might need refinement)
 
-           return salesData[key] || 0;
+          return salesData[key] || 0;
         }),
         label: 'Total Sales',
         borderColor: '#28A745', // Primary Accent Green
@@ -241,34 +271,39 @@ export class ManagerService {
       // Add dataset for comparison period if needed
     ];
 
-     // Refine data extraction for labels and datasets
-     const aggregatedData = Object.entries(salesData).map(([key, total]) => ({ key, total }));
+    // Refine data extraction for labels and datasets
+    const aggregatedData = Object.entries(salesData).map(([key, total]) => ({
+      key,
+      total,
+    }));
 
-     // Sort aggregated data by key (date/month/etc.)
-     aggregatedData.sort((a, b) => {
-        if (period === 'daily' || period === 'weekly' || period === 'monthly') {
-           return new Date(a.key).getTime() - new Date(b.key).getTime();
-        }
-        return 0; // No specific sort for 'all'
-     });
+    // Sort aggregated data by key (date/month/etc.)
+    aggregatedData.sort((a, b) => {
+      if (period === 'daily' || period === 'weekly' || period === 'monthly') {
+        return new Date(a.key).getTime() - new Date(b.key).getTime();
+      }
+      return 0; // No specific sort for 'all'
+    });
 
-     const finalLabels = aggregatedData.map(item => {
-        if (period === 'daily') return item.key;
-        if (period === 'monthly') {
-           const [year, month] = item.key.split('-');
-           return new Date(parseInt(year), parseInt(month) - 1).toLocaleString('default', { month: 'short', year: 'numeric' });
-        }
-        // TODO: Add weekly label formatting
-        return item.key; // Fallback
-     });
+    const finalLabels = aggregatedData.map((item) => {
+      if (period === 'daily') return item.key;
+      if (period === 'monthly') {
+        const [year, month] = item.key.split('-');
+        return new Date(parseInt(year), parseInt(month) - 1).toLocaleString(
+          'default',
+          { month: 'short', year: 'numeric' },
+        );
+      }
+      // TODO: Add weekly label formatting
+      return item.key; // Fallback
+    });
 
-     const finalDataset = {
-        data: aggregatedData.map(item => item.total),
-        label: 'Total Sales',
-        borderColor: '#28A745',
-        backgroundColor: 'rgba(40, 167, 69, 0.2)',
-     };
-
+    const finalDataset = {
+      data: aggregatedData.map((item) => item.total),
+      label: 'Total Sales',
+      borderColor: '#28A745',
+      backgroundColor: 'rgba(40, 167, 69, 0.2)',
+    };
 
     return {
       labels: finalLabels,
@@ -277,7 +312,9 @@ export class ManagerService {
   }
 
   async getInventoryAlerts(storeSlug: string): Promise<any[]> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -291,7 +328,9 @@ export class ManagerService {
       .createQueryBuilder('product')
       .leftJoin('product.variants', 'variant')
       .where('product.storeId = :storeId', { storeId })
-      .andWhere('product.stockLevel < :threshold', { threshold: lowStockThreshold })
+      .andWhere('product.stockLevel < :threshold', {
+        threshold: lowStockThreshold,
+      })
       .andWhere('variant.id IS NULL')
       .select(['product.sku', 'product.name', 'product.stockLevel'])
       .getMany();
@@ -309,7 +348,7 @@ export class ManagerService {
     // Format alerts
     const alerts: any[] = [];
 
-    lowStockProducts.forEach(p => {
+    lowStockProducts.forEach((p) => {
       alerts.push({
         type: 'Low Stock',
         sku: p.sku,
@@ -319,13 +358,13 @@ export class ManagerService {
       });
     });
 
-    lowStockVariants.forEach(v => {
+    lowStockVariants.forEach((v) => {
       alerts.push({
         type: 'Low Stock Variant',
         sku: v.sku,
-        name: `${v.product.name} - ${v.options.map(opt => opt.value).join('/')}`, // Include variant options in name
+        name: `${v.product.name} - ${v.options.map((opt) => opt.value).join('/')}`, // Include variant options in name
         stock: v.stockLevel,
-        message: `Product variant "${v.product.name}" (${v.options.map(opt => opt.value).join('/')}, SKU: ${v.sku}) is low in stock (${v.stockLevel}).`,
+        message: `Product variant "${v.product.name}" (${v.options.map((opt) => opt.value).join('/')}, SKU: ${v.sku}) is low in stock (${v.stockLevel}).`,
       });
     });
 

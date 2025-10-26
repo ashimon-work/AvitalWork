@@ -2,7 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 // Import CategoryService if needed later to fetch dynamic categories
 // import { CategoriesService } from '../categories/categories.service';
 
-export interface PopularLink { // Export the interface
+export interface PopularLink {
+  // Export the interface
   name: string;
   path: string; // Path relative to the store slug (e.g., 'shop', 'category/electronics')
 }
@@ -15,7 +16,9 @@ export class NavigationService {
   constructor() {}
 
   async getPopularLinks(storeSlug?: string): Promise<PopularLink[]> {
-    this.logger.log(`Generating popular links for store: ${storeSlug || 'all'}`);
+    this.logger.log(
+      `Generating popular links for store: ${storeSlug || 'all'}`,
+    );
 
     // TODO: Implement dynamic logic later (e.g., fetch top categories)
     // For now, return hardcoded examples
@@ -30,7 +33,10 @@ export class NavigationService {
     ];
 
     // Example adding a specific category known to exist
-    links.push({ name: 'Featured Gadgets', path: 'category/d7a7f5e4-1b9e-4a8c-9c1f-8e5d7b3a2d1b' }); // Replace with actual ID if needed
+    links.push({
+      name: 'Featured Gadgets',
+      path: 'category/d7a7f5e4-1b9e-4a8c-9c1f-8e5d7b3a2d1b',
+    }); // Replace with actual ID if needed
 
     return links;
   }

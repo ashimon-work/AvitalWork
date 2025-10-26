@@ -28,6 +28,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Use environment variable
       POSTGRES_DB: ${POSTGRES_DB:-magic_store_prod}
       JWT_SECRET: ${JWT_SECRET} # Pass JWT_SECRET from .env file
+      WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN}
     depends_on:
       - db
     restart: unless-stopped

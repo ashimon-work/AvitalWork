@@ -5,7 +5,6 @@ import { GREEN_JEWELRY_STORE_ID } from './green-jewelry.data'; // Assuming this 
 export const AWESOME_GADGETS_STORE_ID = '11111111-1111-1111-1111-111111111111';
 export const FASHION_FUN_STORE_ID = '22222222-2222-2222-2222-222222222222';
 
-
 interface RawShippingMethodData {
   id?: string; // Optional for seeding, can be auto-generated
   name: string;
@@ -21,7 +20,7 @@ export const shippingMethodData: RawShippingMethodData[] = [
   {
     name: 'משלוח רגיל',
     description: 'משלוח עד 7 ימי עסקים לכל הארץ',
-    cost: 25.00,
+    cost: 25.0,
     estimatedDeliveryDays: 7,
     isActive: true,
     storeId: GREEN_JEWELRY_STORE_ID,
@@ -29,7 +28,7 @@ export const shippingMethodData: RawShippingMethodData[] = [
   {
     name: 'משלוח אקספרס',
     description: 'משלוח עד 3 ימי עסקים (לערים מרכזיות)',
-    cost: 50.00,
+    cost: 50.0,
     estimatedDeliveryDays: 3,
     isActive: true,
     storeId: GREEN_JEWELRY_STORE_ID,
@@ -37,7 +36,7 @@ export const shippingMethodData: RawShippingMethodData[] = [
   {
     name: 'איסוף עצמי',
     description: 'זמין לאיסוף מהחנות בתיאום מראש תוך יום עסקים אחד',
-    cost: 0.00,
+    cost: 0.0,
     estimatedDeliveryDays: 1,
     isActive: true,
     storeId: GREEN_JEWELRY_STORE_ID,
@@ -63,7 +62,7 @@ export const shippingMethodData: RawShippingMethodData[] = [
   {
     name: 'Free Shipping (Orders over $50)',
     description: '5-7 business days, applies to orders over $50',
-    cost: 0.00,
+    cost: 0.0,
     estimatedDeliveryDays: 7,
     isActive: true,
     storeId: AWESOME_GADGETS_STORE_ID, // Note: Logic for "orders over $50" would be in cart/checkout, not here directly
@@ -73,7 +72,7 @@ export const shippingMethodData: RawShippingMethodData[] = [
   {
     name: 'Economy Shipping',
     description: '7-10 business days',
-    cost: 4.50,
+    cost: 4.5,
     estimatedDeliveryDays: 10,
     isActive: true,
     storeId: FASHION_FUN_STORE_ID,

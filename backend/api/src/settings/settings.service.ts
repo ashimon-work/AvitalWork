@@ -17,8 +17,13 @@ export class SettingsService {
     private storeRepository: Repository<StoreEntity>,
   ) {}
 
-  async getSettingsByCategory(storeSlug: string, category: string): Promise<Setting[]> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async getSettingsByCategory(
+    storeSlug: string,
+    category: string,
+  ): Promise<Setting[]> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -37,7 +42,9 @@ export class SettingsService {
     category: string,
     updateSettingsDto: UpdateSettingsDto,
   ): Promise<Setting[]> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -70,8 +77,8 @@ export class SettingsService {
             key: key,
             value: value,
           });
-            await this.settingsRepository.save(setting);
-            updatedSettings.push(setting);
+          await this.settingsRepository.save(setting);
+          updatedSettings.push(setting);
         }
       }
     }
@@ -79,8 +86,13 @@ export class SettingsService {
     return updatedSettings;
   }
 
-  async resetSettingsByCategory(storeSlug: string, category: string): Promise<{ success: boolean; message: string }> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async resetSettingsByCategory(
+    storeSlug: string,
+    category: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -94,14 +106,25 @@ export class SettingsService {
     });
 
     if (deleteResult.affected && deleteResult.affected > 0) {
-      return { success: true, message: `Settings for category "${category}" have been reset.` };
+      return {
+        success: true,
+        message: `Settings for category "${category}" have been reset.`,
+      };
     } else {
-      return { success: false, message: `No settings found for category "${category}" to reset or reset failed.` };
+      return {
+        success: false,
+        message: `No settings found for category "${category}" to reset or reset failed.`,
+      };
     }
   }
 
-  async testEmail(storeSlug: string, testEmailDto: TestEmailDto): Promise<{ success: boolean; message: string }> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async testEmail(
+    storeSlug: string,
+    testEmailDto: TestEmailDto,
+  ): Promise<{ success: boolean; message: string }> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -126,8 +149,13 @@ export class SettingsService {
     return { success: true, message: 'Test email simulation successful.' };
   }
 
-  async testPayment(storeSlug: string, testPaymentDto: TestPaymentDto): Promise<{ success: boolean; message: string }> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async testPayment(
+    storeSlug: string,
+    testPaymentDto: TestPaymentDto,
+  ): Promise<{ success: boolean; message: string }> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -142,8 +170,12 @@ export class SettingsService {
       },
     });
 
-    console.log(`Simulating testing payment configuration for store "${storeSlug}"`);
-    console.log(`Amount: ${testPaymentDto.amount}, Currency: ${testPaymentDto.currency}`);
+    console.log(
+      `Simulating testing payment configuration for store "${storeSlug}"`,
+    );
+    console.log(
+      `Amount: ${testPaymentDto.amount}, Currency: ${testPaymentDto.currency}`,
+    );
     console.log('Payment Configuration:', paymentSettings);
 
     // Placeholder for actual payment gateway testing logic
@@ -153,7 +185,9 @@ export class SettingsService {
   }
 
   async backupSettings(storeSlug: string): Promise<string> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -165,18 +199,26 @@ export class SettingsService {
 
     // Format settings by category
     const backupData: { [category: string]: any } = {};
-    settings.forEach(setting => {
+    settings.forEach((setting) => {
       if (!backupData[setting.category]) {
         backupData[setting.category] = [];
       }
-      backupData[setting.category].push({ key: setting.key, value: setting.value });
+      backupData[setting.category].push({
+        key: setting.key,
+        value: setting.value,
+      });
     });
 
     return JSON.stringify(backupData, null, 2);
   }
 
-  async restoreSettings(storeSlug: string, restoreSettingsDto: RestoreSettingsDto): Promise<{ success: boolean; message: string }> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async restoreSettings(
+    storeSlug: string,
+    restoreSettingsDto: RestoreSettingsDto,
+  ): Promise<{ success: boolean; message: string }> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
@@ -189,13 +231,19 @@ export class SettingsService {
     const settingsToCreate: Setting[] = [];
     if (restoreSettingsDto && restoreSettingsDto.settings) {
       for (const settingItem of restoreSettingsDto.settings) {
-        if (settingItem.key && settingItem.value !== undefined && settingItem.category) {
-          settingsToCreate.push(this.settingsRepository.create({
-            store: store,
-            category: settingItem.category,
-            key: settingItem.key,
-            value: settingItem.value,
-          }));
+        if (
+          settingItem.key &&
+          settingItem.value !== undefined &&
+          settingItem.category
+        ) {
+          settingsToCreate.push(
+            this.settingsRepository.create({
+              store: store,
+              category: settingItem.category,
+              key: settingItem.key,
+              value: settingItem.value,
+            }),
+          );
         }
       }
     }
@@ -204,6 +252,9 @@ export class SettingsService {
       await this.settingsRepository.save(settingsToCreate);
     }
 
-    return { success: true, message: `Settings for store "${storeSlug}" restored successfully.` };
+    return {
+      success: true,
+      message: `Settings for store "${storeSlug}" restored successfully.`,
+    };
   }
 }

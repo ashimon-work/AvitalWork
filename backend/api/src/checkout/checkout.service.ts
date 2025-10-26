@@ -1,7 +1,17 @@
-import { Injectable, Logger, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, DeepPartial } from 'typeorm';
-import { OrderEntity, OrderStatus, PaymentStatus } from '../orders/entities/order.entity';
+import {
+  OrderEntity,
+  OrderStatus,
+  PaymentStatus,
+} from '../orders/entities/order.entity';
 import { OrderItemEntity } from '../orders/entities/order-item.entity';
 import { CartEntity } from '../cart/entities/cart.entity';
 import { ProductEntity } from '../products/entities/product.entity';
@@ -12,7 +22,11 @@ import { CreateOrderDto } from '../orders/dto/create-order.dto';
 import { CartItemEntity } from '../cart/entities/cart-item.entity';
 import { TaxEstimateQueryDto } from './dto/tax-estimate.dto';
 import { CheckoutOrderDto } from './dto/checkout-order.dto';
-import { TranzilaService, TranzilaPaymentRequest, TranzilaDocumentRequest } from '../tranzila/tranzila.service';
+import {
+  TranzilaService,
+  TranzilaPaymentRequest,
+  TranzilaDocumentRequest,
+} from '../tranzila/tranzila.service';
 import { CreditCardEntity } from '../tranzila/entities/credit-card.entity';
 import { TranzilaDocumentEntity } from '../tranzila/entities/tranzila-document.entity';
 import { ConfigService } from '@nestjs/config';
@@ -46,8 +60,13 @@ export class CheckoutService {
   ) {}
 
   // Placeholder method for GET /api/tax/estimate
-  async getTaxEstimate(storeSlug: string, query: TaxEstimateQueryDto): Promise<{ estimatedTax: number }> {
-    this.logger.log(`Estimating tax for store ${storeSlug} with query ${JSON.stringify(query)}`);
+  async getTaxEstimate(
+    storeSlug: string,
+    query: TaxEstimateQueryDto,
+  ): Promise<{ estimatedTax: number }> {
+    this.logger.log(
+      `Estimating tax for store ${storeSlug} with query ${JSON.stringify(query)}`,
+    );
 
     const { state, cartSubtotal } = query;
     let taxRate = 0.05; // Default 5%
@@ -73,20 +92,30 @@ export class CheckoutService {
   }
 
   // Method for POST /api/orders
-  async processOrder(userId: string, storeSlug: string, checkoutOrderDto: CheckoutOrderDto): Promise<OrderEntity> {
+  async processOrder(
+    userId: string,
+    storeSlug: string,
+    checkoutOrderDto: CheckoutOrderDto,
+  ): Promise<OrderEntity> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      this.logger.log(`Processing order for user ${userId} in store ${storeSlug}`);
+      this.logger.log(
+        `Processing order for user ${userId} in store ${storeSlug}`,
+      );
 
-      const user = await queryRunner.manager.findOneBy(UserEntity, { id: userId });
+      const user = await queryRunner.manager.findOneBy(UserEntity, {
+        id: userId,
+      });
       if (!user) {
         throw new NotFoundException('User not found.');
       }
 
-      const store = await queryRunner.manager.findOneBy(StoreEntity, { slug: storeSlug });
+      const store = await queryRunner.manager.findOneBy(StoreEntity, {
+        slug: storeSlug,
+      });
       if (!store) {
         throw new NotFoundException('Store not found.');
       }
@@ -123,9 +152,13 @@ export class CheckoutService {
       let subtotal = 0;
       for (const item of checkoutOrderDto.cartItems) {
         subtotal += item.price * item.quantity;
-        const product = await queryRunner.manager.findOne(ProductEntity, { where: { id: item.productId } });
+        const product = await queryRunner.manager.findOne(ProductEntity, {
+          where: { id: item.productId },
+        });
         if (!product || product.stockLevel < item.quantity) {
-          throw new BadRequestException(`Insufficient stock for product ${item.productId}`);
+          throw new BadRequestException(
+            `Insufficient stock for product ${item.productId}`,
+          );
         }
         product.stockLevel -= item.quantity;
         await queryRunner.manager.save(ProductEntity, product);
@@ -134,7 +167,8 @@ export class CheckoutService {
       // Use provided totals from frontend (they should match our calculations)
       const shippingCost = checkoutOrderDto.shippingCost || 0;
       const taxAmount = checkoutOrderDto.taxAmount || 0;
-      const totalAmount = checkoutOrderDto.total || (subtotal + shippingCost + taxAmount);
+      const totalAmount =
+        checkoutOrderDto.total || subtotal + shippingCost + taxAmount;
 
       // Create the order entity
       const order = this.orderRepository.create({
@@ -161,7 +195,9 @@ export class CheckoutService {
       // Create order items from cart items data
       for (const item of checkoutOrderDto.cartItems) {
         // Fetch product details for the order item
-        const product = await queryRunner.manager.findOne(ProductEntity, { where: { id: item.productId } });
+        const product = await queryRunner.manager.findOne(ProductEntity, {
+          where: { id: item.productId },
+        });
         if (!product) {
           throw new BadRequestException(`Product ${item.productId} not found`);
         }
@@ -191,14 +227,21 @@ export class CheckoutService {
 
       await queryRunner.commitTransaction();
 
-      this.logger.log(`Order ${order.orderReference} processed successfully for user ${userId}.`);
+      this.logger.log(
+        `Order ${order.orderReference} processed successfully for user ${userId}.`,
+      );
       return order;
-
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      this.logger.error(`Error processing order for user ${userId}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error processing order for user ${userId}: ${error.message}`,
+        error.stack,
+      );
       // Re-throw specific exceptions or a generic one
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException('Failed to process order.');
@@ -207,14 +250,20 @@ export class CheckoutService {
     }
   }
 
-  private async processPaymentWithTranzila(queryRunner: any, order: OrderEntity, user: UserEntity): Promise<void> {
+  private async processPaymentWithTranzila(
+    queryRunner: any,
+    order: OrderEntity,
+    user: UserEntity,
+  ): Promise<void> {
     // Get user's stored credit card
     const creditCard = await queryRunner.manager.findOne(CreditCardEntity, {
       where: { user: { id: user.id } },
     });
 
     if (!creditCard) {
-      this.logger.warn(`No credit card found for user ${user.id}. Skipping payment processing.`);
+      this.logger.warn(
+        `No credit card found for user ${user.id}. Skipping payment processing.`,
+      );
       return;
     }
 
@@ -233,19 +282,26 @@ export class CheckoutService {
     };
 
     try {
-      const paymentResult = await this.tranzilaService.processPayment(paymentRequest);
+      const paymentResult =
+        await this.tranzilaService.processPayment(paymentRequest);
 
       if (paymentResult.success) {
         order.paymentStatus = PaymentStatus.COMPLETED;
         order.status = OrderStatus.PROCESSING;
         order.tranzilaTransactionId = paymentResult.tranzilaTransactionId;
-        this.logger.log(`Payment successful for order ${order.orderReference}. Transaction ID: ${paymentResult.tranzilaTransactionId}`);
+        this.logger.log(
+          `Payment successful for order ${order.orderReference}. Transaction ID: ${paymentResult.tranzilaTransactionId}`,
+        );
       } else {
         order.paymentStatus = PaymentStatus.FAILED;
         order.status = OrderStatus.CANCELLED;
         order.paymentErrorMessage = paymentResult.message;
-        this.logger.warn(`Payment failed for order ${order.orderReference}: ${paymentResult.message}`);
-        throw new BadRequestException(`Payment failed: ${paymentResult.message}`);
+        this.logger.warn(
+          `Payment failed for order ${order.orderReference}: ${paymentResult.message}`,
+        );
+        throw new BadRequestException(
+          `Payment failed: ${paymentResult.message}`,
+        );
       }
 
       await queryRunner.manager.save(OrderEntity, order);
@@ -258,12 +314,24 @@ export class CheckoutService {
     }
   }
 
-  private async createTranzilaDocument(queryRunner: any, order: OrderEntity, user: UserEntity): Promise<void> {
-    const defaultVatPercent = this.configService.get<string>('DEFAULT_VAT_PERCENT', '18.0');
-    const terminalName = this.configService.get<string>('TRANZILA_TERMINAL_NAME', '');
+  private async createTranzilaDocument(
+    queryRunner: any,
+    order: OrderEntity,
+    user: UserEntity,
+  ): Promise<void> {
+    const defaultVatPercent = this.configService.get<string>(
+      'DEFAULT_VAT_PERCENT',
+      '18.0',
+    );
+    const terminalName = this.configService.get<string>(
+      'TRANZILA_TERMINAL_NAME',
+      '',
+    );
 
     if (!terminalName) {
-      this.logger.warn('TRANZILA_TERMINAL_NAME not configured. Skipping document creation.');
+      this.logger.warn(
+        'TRANZILA_TERMINAL_NAME not configured. Skipping document creation.',
+      );
       return;
     }
 
@@ -278,10 +346,11 @@ export class CheckoutService {
       action: 1, // Debit
       documentCurrencyCode: 'ILS',
       vatPercent: defaultVatPercent,
-      clientName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email,
+      clientName:
+        `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email,
       clientEmail: user.email,
       clientId: user.id,
-      items: order.items.map(item => ({
+      items: order.items.map((item) => ({
         name: item.productName,
         type: 'I', // Item
         unitsNumber: item.quantity.toString(),
@@ -290,34 +359,47 @@ export class CheckoutService {
         priceType: 'G', // Gross price
         currencyCode: 'ILS',
       })),
-      payments: [{
-        paymentMethod: 1, // Credit Card
-        paymentDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD
-        ccLast4Digits: creditCard?.lastFour,
-        amount: Math.round(order.totalAmount * 100), // Amount in cents
-        currencyCode: 'ILS',
-      }],
+      payments: [
+        {
+          paymentMethod: 1, // Credit Card
+          paymentDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+          ccLast4Digits: creditCard?.lastFour,
+          amount: Math.round(order.totalAmount * 100), // Amount in cents
+          currencyCode: 'ILS',
+        },
+      ],
     };
 
     try {
-      const documentResult = await this.tranzilaService.createFinancialDocument(documentRequest);
+      const documentResult =
+        await this.tranzilaService.createFinancialDocument(documentRequest);
 
       if (documentResult.document) {
-        const tranzilaDocument = queryRunner.manager.create(TranzilaDocumentEntity, {
-          order,
-          transactionId: order.tranzilaTransactionId,
-          tranzilaDocumentId: documentResult.document.id,
-          tranzilaDocumentNumber: documentResult.document.number,
-          tranzilaRetrievalKey: documentResult.document.retrievalKey,
-          metadata: documentResult,
-        });
+        const tranzilaDocument = queryRunner.manager.create(
+          TranzilaDocumentEntity,
+          {
+            order,
+            transactionId: order.tranzilaTransactionId,
+            tranzilaDocumentId: documentResult.document.id,
+            tranzilaDocumentNumber: documentResult.document.number,
+            tranzilaRetrievalKey: documentResult.document.retrievalKey,
+            metadata: documentResult,
+          },
+        );
 
-        await queryRunner.manager.save(TranzilaDocumentEntity, tranzilaDocument);
-        this.logger.log(`Financial document created for order ${order.orderReference}. Document ID: ${documentResult.document.id}`);
+        await queryRunner.manager.save(
+          TranzilaDocumentEntity,
+          tranzilaDocument,
+        );
+        this.logger.log(
+          `Financial document created for order ${order.orderReference}. Document ID: ${documentResult.document.id}`,
+        );
       }
     } catch (error) {
       // Don't fail the order if document creation fails
-      this.logger.error(`Failed to create financial document for order ${order.orderReference}: ${error.message}`);
+      this.logger.error(
+        `Failed to create financial document for order ${order.orderReference}: ${error.message}`,
+      );
     }
   }
 }

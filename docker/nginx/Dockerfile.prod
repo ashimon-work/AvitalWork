@@ -1,4 +1,15 @@
-# Stage 1: Build the Storefront Angular application
+# Stage 1: Build the shared-i18n library
+FROM node:20-alpine AS shared_i18n_builder
+
+WORKDIR /usr/src/app
+
+COPY package.json package-lock.json* ./
+RUN npm install
+COPY angular.json tsconfig.json ./
+COPY projects/shared-i18n ./projects/shared-i18n
+RUN npx ng build shared-i18n
+
+# Stage 2: Build the Storefront Angular application
 FROM node:20-alpine AS storefront_builder
 
 WORKDIR /usr/src/app
@@ -9,13 +20,14 @@ COPY angular.json tsconfig.json ./
 COPY projects/storefront/tsconfig.app.json ./projects/storefront/
 COPY projects/storefront/tsconfig.spec.json ./projects/storefront/
 COPY projects/shared-types ./projects/shared-types
+COPY --from=shared_i18n_builder /usr/src/app/dist/shared-i18n ./dist/shared-i18n
 COPY projects/storefront/src ./projects/storefront/src
 COPY projects/storefront/public ./projects/storefront/public
 
 RUN npx ng build shared-types
 RUN npx ng build storefront --configuration production --source-map
 
-# Stage 2: Build the Store Management Angular application
+# Stage 3: Build the Store Management Angular application
 FROM node:20-alpine AS store_management_builder
 
 WORKDIR /usr/src/app
@@ -26,6 +38,7 @@ COPY angular.json tsconfig.json ./
 COPY projects/store-management/tsconfig.app.json ./projects/store-management/
 COPY projects/store-management/tsconfig.spec.json ./projects/store-management/
 COPY projects/shared-types ./projects/shared-types
+COPY --from=shared_i18n_builder /usr/src/app/dist/shared-i18n ./dist/shared-i18n
 COPY projects/store-management/src ./projects/store-management/src
 COPY projects/store-management/public ./projects/store-management/public
 

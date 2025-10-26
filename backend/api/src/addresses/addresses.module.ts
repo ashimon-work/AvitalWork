@@ -10,4 +10,4 @@ import { AddressesService } from './addresses.service';
   providers: [AddressesService],
   exports: [AddressesService],
 })
-export class AddressesModule { }
+export class AddressesModule {}

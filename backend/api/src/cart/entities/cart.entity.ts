@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
   Column,
   Index,
+  Relation,
 } from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
 import { StoreEntity } from '../../stores/entities/store.entity';
@@ -35,7 +36,7 @@ export class CartEntity {
   store: StoreEntity;
 
   @OneToMany(() => CartItemEntity, (item) => item.cart, { cascade: true })
-  items: CartItemEntity[];
+  items: Relation<CartItemEntity[]>;
 
   @Column({ type: 'varchar', nullable: true })
   appliedPromoCode?: string;

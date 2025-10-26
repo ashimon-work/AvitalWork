@@ -8,7 +8,7 @@ export class CarouselService {
   constructor(
     @InjectRepository(CarouselItem)
     private carouselRepository: Repository<CarouselItem>,
-  ) { }
+  ) {}
 
   async findAll(storeSlug?: string): Promise<CarouselItem[]> {
     if (!storeSlug) {

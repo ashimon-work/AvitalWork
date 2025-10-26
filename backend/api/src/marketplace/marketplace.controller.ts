@@ -3,7 +3,7 @@ import { MarketplaceService } from './marketplace.service';
 
 @Controller('marketplace')
 export class MarketplaceController {
-  constructor(private readonly marketplaceService: MarketplaceService) { }
+  constructor(private readonly marketplaceService: MarketplaceService) {}
 
   @Get('home')
   getHomePageData() {

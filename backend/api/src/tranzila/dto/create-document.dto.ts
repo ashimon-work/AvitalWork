@@ -1,4 +1,10 @@
-import { IsString, IsNumber, IsArray, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsArray,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class DocumentItemDto {
@@ -80,4 +86,4 @@ export class CreateDocumentDto {
   @ValidateNested({ each: true })
   @Type(() => DocumentPaymentDto)
   payments: DocumentPaymentDto[];
-} 
+}

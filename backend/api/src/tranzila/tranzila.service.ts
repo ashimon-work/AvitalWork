@@ -65,8 +65,9 @@ export interface TranzilaDocumentResponse {
 @Injectable()
 export class TranzilaService {
   private readonly logger = new Logger(TranzilaService.name);
-  
-  private readonly apiUrlCreateDocument = 'https://billing5.tranzila.com/api/documents_db/create_document';
+
+  private readonly apiUrlCreateDocument =
+    'https://billing5.tranzila.com/api/documents_db/create_document';
   private readonly apiUrlInitiatePayment: string;
   private readonly publicKey: string;
   private readonly privateKey: string;
@@ -77,18 +78,23 @@ export class TranzilaService {
     private readonly configService: ConfigService,
     @InjectRepository(CreditCardEntity)
     private readonly creditCardRepository: Repository<CreditCardEntity>,
-    ) {
+  ) {
     this.apiUrlInitiatePayment = this.configService.get<string>(
       'TRANZILA_PAYMENT_API_URL',
-      'https://secure5.tranzila.com/cgi-bin/tranzila71u.cgi'
+      'https://secure5.tranzila.com/cgi-bin/tranzila71u.cgi',
     );
-    this.publicKey = this.configService.get<string>('TRANZILA_PUBLIC_KEY') || '';
-    this.privateKey = this.configService.get<string>('TRANZILA_PRIVATE_KEY') || '';
-    this.terminalName = this.configService.get<string>('TRANZILA_TERMINAL_NAME') || '';
+    this.publicKey =
+      this.configService.get<string>('TRANZILA_PUBLIC_KEY') || '';
+    this.privateKey =
+      this.configService.get<string>('TRANZILA_PRIVATE_KEY') || '';
+    this.terminalName =
+      this.configService.get<string>('TRANZILA_TERMINAL_NAME') || '';
     this.tranzilaPw = this.configService.get<string>('TRANZILA_PW') || '';
 
     if (!this.publicKey || !this.privateKey) {
-      this.logger.warn('WARNING: Tranzila public or private key not fully configured. Billing API operations might fail.');
+      this.logger.warn(
+        'WARNING: Tranzila public or private key not fully configured. Billing API operations might fail.',
+      );
     }
   }
 
@@ -97,7 +103,9 @@ export class TranzilaService {
    */
   private generateTranzilaHeaders(): Record<string, string> {
     if (!this.publicKey || !this.privateKey) {
-      throw new Error('Tranzila public or private key not configured for Billing API.');
+      throw new Error(
+        'Tranzila public or private key not configured for Billing API.',
+      );
     }
 
     const timestamp = Math.floor(Date.now() / 1000);
@@ -122,11 +130,18 @@ export class TranzilaService {
   /**
    * Process payment using Tranzila CGI API
    */
-  async processPayment(request: TranzilaPaymentRequest): Promise<TranzilaPaymentResponse> {
-    this.logger.log(`Processing payment for user ${request.userId}, amount ${request.amount} cents`);
+  async processPayment(
+    request: TranzilaPaymentRequest,
+  ): Promise<TranzilaPaymentResponse> {
+    this.logger.log(
+      `Processing payment for user ${request.userId}, amount ${request.amount} cents`,
+    );
 
     if (!request.creditCardToken || !request.expdate) {
-      throw new HttpException('Credit card token and expiry date are required', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Credit card token and expiry date are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     // Use configured credentials or fallback to hardcoded ones (for backward compatibility)
@@ -151,10 +166,12 @@ export class TranzilaService {
 
     try {
       this.logger.debug(`Tranzila payment payload: ${JSON.stringify(payload)}`);
-      
-      const response = await axios.get(this.apiUrlInitiatePayment, { params: payload });
+
+      const response = await axios.get(this.apiUrlInitiatePayment, {
+        params: payload,
+      });
       const responseData = response.data;
-      
+
       this.logger.log(`Tranzila raw response: ${responseData}`);
 
       // Parse Tranzila's key-value response string
@@ -168,7 +185,9 @@ export class TranzilaService {
             }
           });
         } catch (error) {
-          this.logger.error(`Could not parse Tranzila response: ${responseData}`);
+          this.logger.error(
+            `Could not parse Tranzila response: ${responseData}`,
+          );
           return {
             success: false,
             message: 'Error parsing Tranzila response',
@@ -178,8 +197,12 @@ export class TranzilaService {
       }
 
       if (responseParams.Response === '000') {
-        const confirmationCode = responseParams.ConfirmationCode || `tranzila_cgi_${request.internalOrderId}`;
-        this.logger.log(`Payment successful for user ${request.userId}. Tranzila ConfirmationCode: ${confirmationCode}`);
+        const confirmationCode =
+          responseParams.ConfirmationCode ||
+          `tranzila_cgi_${request.internalOrderId}`;
+        this.logger.log(
+          `Payment successful for user ${request.userId}. Tranzila ConfirmationCode: ${confirmationCode}`,
+        );
         return {
           success: true,
           message: 'Payment processed successfully',
@@ -187,9 +210,14 @@ export class TranzilaService {
           rawResponse: responseParams,
         };
       } else {
-        const errorMessage = responseParams.ErrorMessage || responseParams.tranmode_error || 'Unknown Tranzila Error';
+        const errorMessage =
+          responseParams.ErrorMessage ||
+          responseParams.tranmode_error ||
+          'Unknown Tranzila Error';
         const responseCode = responseParams.Response || 'N/A';
-        this.logger.warn(`Payment failed for user ${request.userId}. Tranzila Response Code: ${responseCode}, Message: ${errorMessage}`);
+        this.logger.warn(
+          `Payment failed for user ${request.userId}. Tranzila Response Code: ${responseCode}, Message: ${errorMessage}`,
+        );
         return {
           success: false,
           message: `Tranzila Error (Code: ${responseCode}): ${errorMessage}`,
@@ -197,7 +225,10 @@ export class TranzilaService {
         };
       }
     } catch (error) {
-      this.logger.error(`Tranzila API request error: ${error.message}`, error.stack);
+      this.logger.error(
+        `Tranzila API request error: ${error.message}`,
+        error.stack,
+      );
       return {
         success: false,
         message: `API request error: ${error.message}`,
@@ -208,9 +239,13 @@ export class TranzilaService {
   /**
    * Create a financial document (invoice/receipt) using Tranzila Billing API
    */
-  async createFinancialDocument(payload: TranzilaDocumentRequest): Promise<TranzilaDocumentResponse> {
+  async createFinancialDocument(
+    payload: TranzilaDocumentRequest,
+  ): Promise<TranzilaDocumentResponse> {
     if (!this.publicKey || !this.privateKey) {
-      this.logger.error('ERROR: Tranzila public or private key not configured for document creation.');
+      this.logger.error(
+        'ERROR: Tranzila public or private key not configured for document creation.',
+      );
       throw new HttpException(
         'Tranzila document creation is not configured correctly (missing API keys).',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -219,14 +254,20 @@ export class TranzilaService {
 
     try {
       const headers = this.generateTranzilaHeaders();
-      
-      this.logger.debug(`Tranzila document payload: ${JSON.stringify(payload)}`);
-      
-      const response = await axios.post(this.apiUrlCreateDocument, payload, { headers });
+
+      this.logger.debug(
+        `Tranzila document payload: ${JSON.stringify(payload)}`,
+      );
+
+      const response = await axios.post(this.apiUrlCreateDocument, payload, {
+        headers,
+      });
       const result: TranzilaDocumentResponse = response.data;
 
       if (result.statusCode !== 0) {
-        this.logger.error(`Tranzila API Error (create_document): Code ${result.statusCode}, Msg: ${result.statusMsg}`);
+        this.logger.error(
+          `Tranzila API Error (create_document): Code ${result.statusCode}, Msg: ${result.statusMsg}`,
+        );
         throw new HttpException(
           `Tranzila document creation failed: ${result.statusMsg || 'Unknown error'}`,
           HttpStatus.BAD_REQUEST,
@@ -241,14 +282,18 @@ export class TranzilaService {
       }
 
       if (axios.isAxiosError(error)) {
-        this.logger.error(`Network error calling Tranzila API (create_document): ${error.message}`);
+        this.logger.error(
+          `Network error calling Tranzila API (create_document): ${error.message}`,
+        );
         throw new HttpException(
           `Could not connect to Tranzila service: ${error.message}`,
           HttpStatus.SERVICE_UNAVAILABLE,
         );
       }
 
-      this.logger.error(`Unexpected error during Tranzila document creation: ${error.message}`);
+      this.logger.error(
+        `Unexpected error during Tranzila document creation: ${error.message}`,
+      );
       throw new HttpException(
         `An unexpected error occurred during document creation: ${error.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,

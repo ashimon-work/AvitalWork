@@ -10,6 +10,7 @@ import {
   OneToMany, // Import OneToMany for variants
   ManyToMany, // Import ManyToMany for categories
   JoinTable, // Import JoinTable for ManyToMany
+  Relation,
 } from 'typeorm';
 // import { Product as IProduct } from '@shared-types'; // No longer implementing directly
 import { StoreEntity } from '../../stores/entities/store.entity';
@@ -17,7 +18,8 @@ import { ProductVariantEntity } from './product-variant.entity'; // Import Varia
 import { CategoryEntity } from '../../categories/entities/category.entity'; // Import Category Entity
 
 @Entity('products')
-export class ProductEntity { // Remove implements clause
+export class ProductEntity {
+  // Remove implements clause
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -75,7 +77,7 @@ export class ProductEntity { // Remove implements clause
     onDelete: 'CASCADE', // Optional: Delete products if store is deleted
   })
   @JoinColumn({ name: 'storeId' }) // Explicitly define the foreign key column name
-  store: StoreEntity;
+  store: Relation<StoreEntity>;
 
   @Column() // Add the foreign key column explicitly if needed for queries without relation loading
   storeId: string;
@@ -85,7 +87,7 @@ export class ProductEntity { // Remove implements clause
     cascade: true, // Automatically save/update/remove variants when product is saved/removed
     eager: false, // Load variants explicitly when needed
   })
-  variants: ProductVariantEntity[];
+  variants: Relation<ProductVariantEntity[]>;
 
   // Add other relations later (e.g., reviews)
 }

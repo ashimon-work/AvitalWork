@@ -11,33 +11,40 @@ export class CategoriesService {
   constructor(
     @InjectRepository(CategoryEntity)
     private readonly categoriesRepository: Repository<CategoryEntity>,
-  ) { }
+  ) {}
 
-
-  async findAll(options?: FindManyOptions<CategoryEntity>): Promise<CategoryEntity[]> {
+  async findAll(
+    options?: FindManyOptions<CategoryEntity>,
+  ): Promise<CategoryEntity[]> {
     return this.categoriesRepository.find(options);
   }
 
-  async getFeaturedCategories(storeSlug?: string): Promise<CategoryEntity[]> { // Add storeSlug parameter
+  async getFeaturedCategories(storeSlug?: string): Promise<CategoryEntity[]> {
+    // Add storeSlug parameter
     const where: FindOptionsWhere<CategoryEntity> = {};
     if (storeSlug) {
       where.store = { slug: storeSlug }; // Filter by store slug if provided
     }
 
-    const findOptions: FindManyOptions<CategoryEntity> = { // Explicitly type findOptions
+    const findOptions: FindManyOptions<CategoryEntity> = {
+      // Explicitly type findOptions
       where,
       take: 4,
       order: { name: 'ASC' }, // TypeORM should now infer 'ASC' correctly
       relations: ['store'],
     };
-    this.logger.log(`Finding featured categories with options: ${JSON.stringify(findOptions)}`);
+    this.logger.log(
+      `Finding featured categories with options: ${JSON.stringify(findOptions)}`,
+    );
     const categories = await this.categoriesRepository.find(findOptions);
     this.logger.log(`Found ${categories.length} featured categories.`);
     return categories;
   }
 
-
-  async findOne(id: string, storeSlug?: string): Promise<CategoryEntity | null> {
+  async findOne(
+    id: string,
+    storeSlug?: string,
+  ): Promise<CategoryEntity | null> {
     const where: FindOptionsWhere<CategoryEntity> = { id };
     if (storeSlug) {
       where.store = { slug: storeSlug };

@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Relation,
 } from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
 import { StoreEntity } from '../../stores/entities/store.entity';
@@ -41,14 +42,14 @@ export class OrderEntity {
 
   @ManyToOne(() => UserEntity, { nullable: false, eager: false }) // Don't eager load user by default
   @JoinColumn({ name: 'userId' }) // Explicit join column name
-  user: UserEntity;
+  user: Relation<UserEntity>;
 
   @Column() // Store userId directly for easier querying if needed
   userId: string;
 
   @ManyToOne(() => StoreEntity, { nullable: false, eager: false }) // Orders belong to a store
   @JoinColumn({ name: 'storeId' })
-  store: StoreEntity;
+  store: Relation<StoreEntity>;
 
   @Column()
   storeId: string;
@@ -67,7 +68,8 @@ export class OrderEntity {
     type: 'decimal',
     precision: 10,
     scale: 2,
-    comment: 'Total amount including tax and shipping, excluding discounts applied via promo codes',
+    comment:
+      'Total amount including tax and shipping, excluding discounts applied via promo codes',
   })
   totalAmount: number;
 
@@ -99,12 +101,12 @@ export class OrderEntity {
   // Link to the Address entity used for shipping
   @ManyToOne(() => AddressEntity, { nullable: true, eager: true }) // Eager load address details
   @JoinColumn({ name: 'shippingAddressId' })
-  shippingAddress: AddressEntity;
+  shippingAddress: Relation<AddressEntity>;
 
   // Optional: Store billing address separately if needed, or assume same as shipping/user default
   @ManyToOne(() => AddressEntity, { nullable: true, eager: true })
   @JoinColumn({ name: 'billingAddressId' })
-  billingAddress: AddressEntity;
+  billingAddress: Relation<AddressEntity>;
 
   @Column({ length: 100, nullable: true })
   shippingMethod?: string;
@@ -128,17 +130,28 @@ export class OrderEntity {
   })
   paymentStatus: PaymentStatus;
 
-  @Column({ length: 100, nullable: true, comment: 'Tranzila transaction/confirmation ID' })
+  @Column({
+    length: 100,
+    nullable: true,
+    comment: 'Tranzila transaction/confirmation ID',
+  })
   tranzilaTransactionId?: string;
 
-  @Column({ type: 'text', nullable: true, comment: 'Payment error message if payment failed' })
+  @Column({
+    type: 'text',
+    nullable: true,
+    comment: 'Payment error message if payment failed',
+  })
   paymentErrorMessage?: string;
 
   @Column({ length: 100, nullable: true })
   trackingNumber?: string;
 
-  @OneToMany(() => OrderItemEntity, (item) => item.order, { cascade: true, eager: true }) // Cascade saves/updates, eager load items
-  items: OrderItemEntity[];
+  @OneToMany(() => OrderItemEntity, (item) => item.order, {
+    cascade: true,
+    eager: true,
+  }) // Cascade saves/updates, eager load items
+  items: Relation<OrderItemEntity[]>;
 
   @UpdateDateColumn()
   updatedAt: Date;

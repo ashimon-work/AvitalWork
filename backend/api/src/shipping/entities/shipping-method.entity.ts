@@ -1,5 +1,14 @@
 import { StoreEntity } from '../../stores/entities/store.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  Relation,
+} from 'typeorm';
 
 @Entity('shipping_methods')
 export class ShippingMethodEntity {
@@ -21,9 +30,12 @@ export class ShippingMethodEntity {
   @Column({ default: true })
   isActive: boolean;
 
-  @ManyToOne(() => StoreEntity, (store) => store.shippingMethods, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(() => StoreEntity, (store) => store.shippingMethods, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   @JoinColumn({ name: 'storeId' })
-  store: StoreEntity;
+  store: Relation<StoreEntity>;
 
   @Column()
   storeId: string;

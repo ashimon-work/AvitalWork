@@ -8,13 +8,15 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany, // Import ManyToMany
+  Relation,
 } from 'typeorm';
 // import { Category as ICategory } from '@shared-types'; // Remove implements
 import { StoreEntity } from '../../stores/entities/store.entity';
 import { ProductEntity } from '../../products/entities/product.entity'; // Import ProductEntity
 
 @Entity('categories')
-export class CategoryEntity { // Remove implements
+export class CategoryEntity {
+  // Remove implements
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -36,7 +38,7 @@ export class CategoryEntity { // Remove implements
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'storeId' })
-  store: StoreEntity;
+  store: Relation<StoreEntity>;
 
   @Column()
   storeId: string;

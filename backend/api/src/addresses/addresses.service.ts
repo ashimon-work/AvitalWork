@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { AddressEntity } from './entities/address.entity';
@@ -11,7 +15,7 @@ export class AddressesService {
   constructor(
     @InjectRepository(AddressEntity)
     private addressesRepository: Repository<AddressEntity>,
-  ) { }
+  ) {}
 
   async findAllForUser(userId: string): Promise<AddressEntity[]> {
     return this.addressesRepository.find({
@@ -20,15 +24,25 @@ export class AddressesService {
     });
   }
 
-  async findOneByIdAndUser(addressId: string, userId: string): Promise<AddressEntity> {
-    const address = await this.addressesRepository.findOne({ where: { id: addressId, user: { id: userId } } }); // Query by relation ID
+  async findOneByIdAndUser(
+    addressId: string,
+    userId: string,
+  ): Promise<AddressEntity> {
+    const address = await this.addressesRepository.findOne({
+      where: { id: addressId, user: { id: userId } },
+    }); // Query by relation ID
     if (!address) {
-      throw new NotFoundException(`Address with ID "${addressId}" not found for this user.`);
+      throw new NotFoundException(
+        `Address with ID "${addressId}" not found for this user.`,
+      );
     }
     return address;
   }
 
-  async create(userId: string, createAddressDto: CreateAddressDto): Promise<AddressEntity> {
+  async create(
+    userId: string,
+    createAddressDto: CreateAddressDto,
+  ): Promise<AddressEntity> {
     // If setting default, unset other defaults first
     if (createAddressDto.isDefaultShipping) {
       await this.unsetDefaults(userId, 'shipping');
@@ -44,7 +58,11 @@ export class AddressesService {
     return this.addressesRepository.save(newAddress);
   }
 
-  async update(addressId: string, userId: string, updateAddressDto: UpdateAddressDto): Promise<AddressEntity> {
+  async update(
+    addressId: string,
+    userId: string,
+    updateAddressDto: UpdateAddressDto,
+  ): Promise<AddressEntity> {
     const address = await this.findOneByIdAndUser(addressId, userId); // Ensures address exists and belongs to user
 
     // If setting default, unset other defaults first
@@ -73,7 +91,11 @@ export class AddressesService {
     // Consider logic to auto-assign a new default if required.
   }
 
-  async setDefault(addressId: string, userId: string, type: 'shipping' | 'billing'): Promise<void> {
+  async setDefault(
+    addressId: string,
+    userId: string,
+    type: 'shipping' | 'billing',
+  ): Promise<void> {
     const address = await this.findOneByIdAndUser(addressId, userId); // Check ownership
 
     await this.unsetDefaults(userId, type, addressId); // Unset others first
@@ -85,13 +107,21 @@ export class AddressesService {
       updateData.isDefaultBilling = true;
     }
 
-    await this.addressesRepository.update({ id: addressId, user: { id: userId } }, updateData); // Query by relation ID
+    await this.addressesRepository.update(
+      { id: addressId, user: { id: userId } },
+      updateData,
+    ); // Query by relation ID
   }
 
   // Helper to unset default flags for a user
-  private async unsetDefaults(userId: string, type: 'shipping' | 'billing', excludeAddressId?: string): Promise<void> { // Return void as update result isn't strictly needed here
+  private async unsetDefaults(
+    userId: string,
+    type: 'shipping' | 'billing',
+    excludeAddressId?: string,
+  ): Promise<void> {
+    // Return void as update result isn't strictly needed here
     const updateData: Partial<AddressEntity> = {};
-    let whereClause: any = { user: { id: userId } };
+    const whereClause: any = { user: { id: userId } };
 
     if (type === 'shipping') {
       whereClause.isDefaultShipping = true;
@@ -121,9 +151,9 @@ export class AddressesService {
     //   .andWhere(type === 'shipping' ? "isDefaultShipping = true" : "isDefaultBilling = true")
     //   .execute();
 
-  //   // Use QueryBuilder as commented before
-  // } else {
-  //   await this.addressesRepository.update(whereClause, updateData);
-  // }
+    //   // Use QueryBuilder as commented before
+    // } else {
+    //   await this.addressesRepository.update(whereClause, updateData);
+    // }
   }
 }

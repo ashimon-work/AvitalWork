@@ -14,13 +14,18 @@ export class StoresService {
     private readonly aboutContentRepository: Repository<AboutContentEntity>,
     @InjectRepository(TestimonialEntity)
     private readonly testimonialRepository: Repository<TestimonialEntity>,
-  ) { }
+  ) {}
 
-  async findAll(options?: FindManyOptions<StoreEntity>): Promise<StoreEntity[]> {
+  async findAll(
+    options?: FindManyOptions<StoreEntity>,
+  ): Promise<StoreEntity[]> {
     return this.storesRepository.find(options);
   }
 
-  async searchStores(query: string, limit: number = 10): Promise<StoreEntity[]> {
+  async searchStores(
+    query: string,
+    limit: number = 10,
+  ): Promise<StoreEntity[]> {
     const where: FindOptionsWhere<StoreEntity> = {
       name: ILike(`%${query}%`), // Case-insensitive partial match on name
       // Add other conditions if needed, e.g., isActive: true if that field exists
@@ -50,20 +55,32 @@ export class StoresService {
     return this.storesRepository.findOne({ where: { id } });
   }
 
-  async getAboutContentByStoreSlug(storeSlug: string): Promise<AboutContentEntity | null> {
-    const store = await this.storesRepository.findOne({ where: { slug: storeSlug } });
+  async getAboutContentByStoreSlug(
+    storeSlug: string,
+  ): Promise<AboutContentEntity | null> {
+    const store = await this.storesRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
     }
     // Assuming there's only one about content entry per store
-    return this.aboutContentRepository.findOne({ where: { store: { id: store.id } } });
+    return this.aboutContentRepository.findOne({
+      where: { store: { id: store.id } },
+    });
   }
 
-  async getTestimonialsByStoreSlug(storeSlug: string): Promise<TestimonialEntity[]> {
-    const store = await this.storesRepository.findOne({ where: { slug: storeSlug } });
+  async getTestimonialsByStoreSlug(
+    storeSlug: string,
+  ): Promise<TestimonialEntity[]> {
+    const store = await this.storesRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
     }
-    return this.testimonialRepository.find({ where: { store: { id: store.id } } });
+    return this.testimonialRepository.find({
+      where: { store: { id: store.id } },
+    });
   }
 }

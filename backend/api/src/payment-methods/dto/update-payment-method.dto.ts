@@ -2,13 +2,19 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, IsString, IsNotEmpty } from 'class-validator';
 
 export class UpdatePaymentMethodDto {
-  @ApiPropertyOptional({ description: 'New billing address ID for this payment method', example: 'new-uuid-of-address' })
+  @ApiPropertyOptional({
+    description: 'New billing address ID for this payment method',
+    example: 'new-uuid-of-address',
+  })
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   billingAddressId?: string;
 
-  @ApiPropertyOptional({ description: 'Set as default payment method', example: true })
+  @ApiPropertyOptional({
+    description: 'Set as default payment method',
+    example: true,
+  })
   @IsOptional()
   @IsBoolean()
   isDefault?: boolean;

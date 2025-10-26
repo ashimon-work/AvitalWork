@@ -1,13 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsCreditCard, IsInt, Min, Max, IsBoolean, IsOptional, Length } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsCreditCard,
+  IsInt,
+  Min,
+  Max,
+  IsBoolean,
+  IsOptional,
+  Length,
+} from 'class-validator';
 
 export class CreatePaymentMethodDto {
-  @ApiProperty({ description: 'Type of the payment method (e.g., "card")', example: 'card' })
+  @ApiProperty({
+    description: 'Type of the payment method (e.g., "card")',
+    example: 'card',
+  })
   @IsString()
   @IsNotEmpty()
   type: string; // 'card', 'paypal', etc.
 
-  @ApiProperty({ description: 'Details of the payment method (e.g., token from payment gateway)', example: 'tok_visa' })
+  @ApiProperty({
+    description:
+      'Details of the payment method (e.g., token from payment gateway)',
+    example: 'tok_visa',
+  })
   @IsString()
   @IsNotEmpty()
   paymentGatewayToken: string; // This would be the token from Stripe, Braintree, etc.
@@ -41,12 +58,19 @@ export class CreatePaymentMethodDto {
   // @Length(3,4)
   // cvv?: string; // NEVER store CVV
 
-  @ApiProperty({ description: 'Billing address ID associated with this payment method', example: 'uuid-of-address' })
+  @ApiProperty({
+    description: 'Billing address ID associated with this payment method',
+    example: 'uuid-of-address',
+  })
   @IsString()
   @IsNotEmpty()
   billingAddressId: string;
 
-  @ApiProperty({ description: 'Is this the default payment method?', example: false, required: false })
+  @ApiProperty({
+    description: 'Is this the default payment method?',
+    example: false,
+    required: false,
+  })
   @IsOptional()
   @IsBoolean()
   isDefault?: boolean;

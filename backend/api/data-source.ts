@@ -24,6 +24,7 @@ import { NotificationEntity } from './src/notifications/entities/notification.en
 import { CreditCardEntity } from './src/tranzila/entities/credit-card.entity';
 import { TranzilaDocumentEntity } from './src/tranzila/entities/tranzila-document.entity';
 import { ShippingMethodEntity } from './src/shipping/entities/shipping-method.entity';
+import { ConversationStateEntity } from './src/whatsapp/entities/conversation-state.entity';
 dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions = {
@@ -58,6 +59,7 @@ export const dataSourceOptions: DataSourceOptions = {
     CreditCardEntity,
     TranzilaDocumentEntity,
     ShippingMethodEntity,
+    ConversationStateEntity,
     // Add other entities here
     // __dirname + '/../**/*.entity{.ts,.js}', // Alternative: Use glob pattern
   ],

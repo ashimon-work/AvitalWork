@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsNumberString, IsIn, IsDateString } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsNumberString,
+  IsIn,
+  IsDateString,
+} from 'class-validator';
 
 export class FindAllManagerCustomersDto {
   @IsOptional()
@@ -11,7 +17,16 @@ export class FindAllManagerCustomersDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(['name-asc', 'name-desc', 'signup-asc', 'signup-desc', 'last-order-asc', 'last-order-desc', 'total-spent-asc', 'total-spent-desc'])
+  @IsIn([
+    'name-asc',
+    'name-desc',
+    'signup-asc',
+    'signup-desc',
+    'last-order-asc',
+    'last-order-desc',
+    'total-spent-asc',
+    'total-spent-desc',
+  ])
   sort?: string;
 
   @IsOptional()

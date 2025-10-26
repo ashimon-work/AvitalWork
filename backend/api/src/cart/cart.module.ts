@@ -12,7 +12,13 @@ import { PromoCodesModule } from 'src/promo-codes/promo-codes.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CartEntity, CartItemEntity, ProductEntity, StoreEntity, UserEntity]),
+    TypeOrmModule.forFeature([
+      CartEntity,
+      CartItemEntity,
+      ProductEntity,
+      StoreEntity,
+      UserEntity,
+    ]),
     StoresModule,
     PromoCodesModule,
   ],

@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
   Unique,
   Column,
+  Relation,
 } from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
 import { StoreEntity } from '../../stores/entities/store.entity';
@@ -21,7 +22,7 @@ export class WishlistEntity {
 
   @ManyToOne(() => UserEntity, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
-  user: UserEntity;
+  user: Relation<UserEntity>;
 
   @Column()
   userId: string;
@@ -33,8 +34,11 @@ export class WishlistEntity {
   @Column()
   storeId: string;
 
-  @OneToMany(() => WishlistItemEntity, (item) => item.wishlist, { cascade: true, eager: true })
-  items: WishlistItemEntity[];
+  @OneToMany(() => WishlistItemEntity, (item) => item.wishlist, {
+    cascade: true,
+    eager: true,
+  })
+  items: Relation<WishlistItemEntity[]>;
 
   @CreateDateColumn()
   createdAt: Date;

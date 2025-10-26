@@ -13,6 +13,9 @@ export class GuestController {
     if (!guestSessionId) {
       return [];
     }
-    return this.cartService.findAllByUserIdOrGuestSessionId(undefined, guestSessionId);
+    return this.cartService.findAllByUserIdOrGuestSessionId(
+      undefined,
+      guestSessionId,
+    );
   }
 }

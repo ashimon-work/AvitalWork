@@ -1,7 +1,17 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
-import { OrderEntity, OrderStatus, PaymentStatus } from './entities/order.entity';
+import {
+  OrderEntity,
+  OrderStatus,
+  PaymentStatus,
+} from './entities/order.entity';
 import { OrderItemEntity } from './entities/order-item.entity';
 import { OrderDto } from './dto/order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -35,10 +45,15 @@ export class OrdersService {
     private readonly productsService: ProductsService,
     private readonly cartService: CartService,
     private readonly dataSource: DataSource,
-  ) { }
+  ) {}
 
-  async createOrder(createOrderDto: CreateOrderDto, userId: string): Promise<OrderDto> {
-    this.logger.log(`Attempting to create order for user ${userId} with DTO: ${JSON.stringify(createOrderDto)}`);
+  async createOrder(
+    createOrderDto: CreateOrderDto,
+    userId: string,
+  ): Promise<OrderDto> {
+    this.logger.log(
+      `Attempting to create order for user ${userId} with DTO: ${JSON.stringify(createOrderDto)}`,
+    );
     const queryRunner = this.dataSource.createQueryRunner();
 
     await queryRunner.connect();
@@ -54,24 +69,42 @@ export class OrdersService {
       const store = await this.storesService.findById(createOrderDto.storeId);
       if (!store) {
         this.logger.error(`Store not found: ${createOrderDto.storeId}`);
-        throw new NotFoundException(`Store with ID "${createOrderDto.storeId}" not found.`);
+        throw new NotFoundException(
+          `Store with ID "${createOrderDto.storeId}" not found.`,
+        );
       }
 
-      const shippingAddress = await this.addressesService.findOneByIdAndUser(createOrderDto.shippingAddressId, userId);
+      const shippingAddress = await this.addressesService.findOneByIdAndUser(
+        createOrderDto.shippingAddressId,
+        userId,
+      );
       if (!shippingAddress) {
-        this.logger.error(`Shipping address not found: ${createOrderDto.shippingAddressId} for user ${userId}`);
-        throw new NotFoundException(`Shipping address with ID "${createOrderDto.shippingAddressId}" not found for this user.`);
+        this.logger.error(
+          `Shipping address not found: ${createOrderDto.shippingAddressId} for user ${userId}`,
+        );
+        throw new NotFoundException(
+          `Shipping address with ID "${createOrderDto.shippingAddressId}" not found for this user.`,
+        );
       }
 
       let billingAddress: AddressEntity | undefined = undefined;
       if (createOrderDto.billingAddressId) {
-        if (createOrderDto.billingAddressId === createOrderDto.shippingAddressId) {
+        if (
+          createOrderDto.billingAddressId === createOrderDto.shippingAddressId
+        ) {
           billingAddress = shippingAddress;
         } else {
-          billingAddress = await this.addressesService.findOneByIdAndUser(createOrderDto.billingAddressId, userId);
+          billingAddress = await this.addressesService.findOneByIdAndUser(
+            createOrderDto.billingAddressId,
+            userId,
+          );
           if (!billingAddress) {
-            this.logger.error(`Billing address not found: ${createOrderDto.billingAddressId} for user ${userId}`);
-            throw new NotFoundException(`Billing address with ID "${createOrderDto.billingAddressId}" not found for this user.`);
+            this.logger.error(
+              `Billing address not found: ${createOrderDto.billingAddressId} for user ${userId}`,
+            );
+            throw new NotFoundException(
+              `Billing address with ID "${createOrderDto.billingAddressId}" not found for this user.`,
+            );
           }
         }
       } else {
@@ -115,24 +148,34 @@ export class OrdersService {
         // Fetch product details to set productName and variantDetails
         // This assumes ProductsService has a method to get basic product info
         // For simplicity, we might need to adjust this if product details are complex
-        const product = await this.productsService.findOne(itemDto.productId, store.id); // Assuming findOne takes productId and storeId
+        const product = await this.productsService.findOne(
+          itemDto.productId,
+          store.id,
+        ); // Assuming findOne takes productId and storeId
         if (!product) {
-            this.logger.error(`Product not found during order item creation: ${itemDto.productId}`);
-            throw new NotFoundException(`Product with ID "${itemDto.productId}" not found.`);
+          this.logger.error(
+            `Product not found during order item creation: ${itemDto.productId}`,
+          );
+          throw new NotFoundException(
+            `Product with ID "${itemDto.productId}" not found.`,
+          );
         }
         orderItem.productName = product.name;
 
         if (itemDto.variantId) {
-            const variant = product.variants?.find(v => v.id === itemDto.variantId);
-            if (variant && variant.options) {
-              orderItem.variantDetails = variant.options.map(opt => `${opt.name}: ${opt.value}`).join(', ');
-            } else {
-              orderItem.variantDetails = 'N/A';
-            }
-        } else {
+          const variant = product.variants?.find(
+            (v) => v.id === itemDto.variantId,
+          );
+          if (variant && variant.options) {
+            orderItem.variantDetails = variant.options
+              .map((opt) => `${opt.name}: ${opt.value}`)
+              .join(', ');
+          } else {
             orderItem.variantDetails = 'N/A';
+          }
+        } else {
+          orderItem.variantDetails = 'N/A';
         }
-
 
         // Decrease stock
         try {
@@ -141,15 +184,22 @@ export class OrdersService {
             itemDto.productId,
             itemDto.variantId,
             itemDto.quantity,
-            store.id
+            store.id,
           );
-          this.logger.log(`Stock decreased for product ${itemDto.productId}, variant ${itemDto.variantId}`);
+          this.logger.log(
+            `Stock decreased for product ${itemDto.productId}, variant ${itemDto.variantId}`,
+          );
         } catch (error) {
-          this.logger.error(`Failed to decrease stock for product ${itemDto.productId}: ${error.message}`);
-          if (error.message.includes('Insufficient stock')) { // More specific error check if possible
+          this.logger.error(
+            `Failed to decrease stock for product ${itemDto.productId}: ${error.message}`,
+          );
+          if (error.message.includes('Insufficient stock')) {
+            // More specific error check if possible
             throw new BadRequestException(error.message);
           }
-          throw new InternalServerErrorException(`Failed to update stock for product ${itemDto.productId}.`);
+          throw new InternalServerErrorException(
+            `Failed to update stock for product ${itemDto.productId}.`,
+          );
         }
         orderItems.push(orderItem);
       }
@@ -159,19 +209,25 @@ export class OrdersService {
       savedOrder.items = orderItems; // Link items back to the order for the return DTO
 
       // Placeholder: Payment Processing
-      this.logger.log(`Placeholder: Simulating payment processing for order ${savedOrder.id}...`);
+      this.logger.log(
+        `Placeholder: Simulating payment processing for order ${savedOrder.id}...`,
+      );
       // Simulate payment success
       savedOrder.paymentStatus = PaymentStatus.PAID;
       savedOrder.status = OrderStatus.PROCESSING;
       await queryRunner.manager.save(savedOrder);
-      this.logger.log(`Placeholder: Payment processed successfully for order ${savedOrder.id}. Status updated to ${savedOrder.status}.`);
+      this.logger.log(
+        `Placeholder: Payment processed successfully for order ${savedOrder.id}. Status updated to ${savedOrder.status}.`,
+      );
 
       // Clear cart
       try {
         await this.cartService.clearCart(userId, store.id, queryRunner.manager); // Pass transaction manager
         this.logger.log(`Cart cleared for user ${userId} in store ${store.id}`);
       } catch (error) {
-        this.logger.error(`Failed to clear cart for user ${userId}: ${error.message}`);
+        this.logger.error(
+          `Failed to clear cart for user ${userId}: ${error.message}`,
+        );
         // Decide if this should roll back the transaction or just log.
         // For now, we'll let it roll back if it throws.
         throw new InternalServerErrorException('Failed to clear user cart.');
@@ -182,25 +238,45 @@ export class OrdersService {
       // Re-fetch the order with all relations for the DTO mapping
       const completeOrder = await this.ordersRepository.findOne({
         where: { id: savedOrder.id },
-        relations: ['items', 'items.product', 'shippingAddress', 'billingAddress', 'user', 'store'],
+        relations: [
+          'items',
+          'items.product',
+          'shippingAddress',
+          'billingAddress',
+          'user',
+          'store',
+        ],
       });
       if (!completeOrder) {
-        this.logger.error(`Failed to re-fetch complete order ${savedOrder.id} after transaction.`);
-        throw new InternalServerErrorException('Order created but could not be retrieved.');
+        this.logger.error(
+          `Failed to re-fetch complete order ${savedOrder.id} after transaction.`,
+        );
+        throw new InternalServerErrorException(
+          'Order created but could not be retrieved.',
+        );
       }
       return this.mapOrderToDto(completeOrder);
-
     } catch (error) {
-      this.logger.error(`Error during order creation: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error during order creation: ${error.message}`,
+        error.stack,
+      );
       await queryRunner.rollbackTransaction();
       this.logger.warn(`Order creation transaction rolled back due to error.`);
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
-      throw new InternalServerErrorException(`Failed to create order: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Failed to create order: ${error.message}`,
+      );
     } finally {
       await queryRunner.release();
-      this.logger.log(`Query runner released for order creation of user ${userId}.`);
+      this.logger.log(
+        `Query runner released for order creation of user ${userId}.`,
+      );
     }
   }
 
@@ -220,7 +296,9 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this store.`,
+      );
     }
 
     order.trackingNumber = addOrderShippingDto.trackingNumber;
@@ -231,7 +309,10 @@ export class OrdersService {
     return this.mapOrderToDto(updatedOrder);
   }
   // Method to generate a packing slip for a specific order for a specific store
-  async generatePackingSlipForManager(storeSlug: string, orderId: string): Promise<string> {
+  async generatePackingSlipForManager(
+    storeSlug: string,
+    orderId: string,
+  ): Promise<string> {
     const store = await this.storesService.findBySlug(storeSlug);
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
@@ -243,7 +324,9 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this store.`,
+      );
     }
 
     // Generate simple text packing slip
@@ -268,7 +351,7 @@ export class OrdersService {
 
     packingSlipContent += `Items:\n`;
     if (order.items && order.items.length > 0) {
-      order.items.forEach(item => {
+      order.items.forEach((item) => {
         packingSlipContent += `- ${item.quantity} x ${item.productName} (SKU: ${item.product?.sku || 'N/A'}) - ${item.variantDetails || 'No variant'}\n`;
       });
     } else {
@@ -284,12 +367,15 @@ export class OrdersService {
 
     packingSlipContent += `--- End of Packing Slip ---\n`;
 
-
     return packingSlipContent;
   }
 
   // Method to find orders for a specific user (Storefront customer view)
-  async findAllForUser(userId: string, page: number = 1, limit: number = 10): Promise<{ orders: OrderDto[], total: number }> {
+  async findAllForUser(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ orders: OrderDto[]; total: number }> {
     const skip = (page - 1) * limit;
     const [orders, total] = await this.ordersRepository.findAndCount({
       where: { user: { id: userId } },
@@ -300,7 +386,7 @@ export class OrdersService {
     });
 
     // Map entities to DTOs
-    const orderDtos = orders.map(order => this.mapOrderToDto(order));
+    const orderDtos = orders.map((order) => this.mapOrderToDto(order));
 
     return { orders: orderDtos, total };
   }
@@ -309,11 +395,23 @@ export class OrdersService {
   async findAllForCustomerInStore(
     storeSlug: string,
     customerId: string,
-    options: { page?: number; limit?: number; sortBy?: string; sortDirection?: 'ASC' | 'DESC' },
-  ): Promise<{ orders: OrderDto[], total: number }> {
-    this.logger.log(`Finding orders for customer ${customerId} in store ${storeSlug} with options: ${JSON.stringify(options)}`);
+    options: {
+      page?: number;
+      limit?: number;
+      sortBy?: string;
+      sortDirection?: 'ASC' | 'DESC';
+    },
+  ): Promise<{ orders: OrderDto[]; total: number }> {
+    this.logger.log(
+      `Finding orders for customer ${customerId} in store ${storeSlug} with options: ${JSON.stringify(options)}`,
+    );
 
-    const { page = 1, limit = 10, sortBy = 'orderDate', sortDirection = 'DESC' } = options;
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'orderDate',
+      sortDirection = 'DESC',
+    } = options;
     const skip = (page - 1) * limit;
 
     const store = await this.storesService.findBySlug(storeSlug);
@@ -324,8 +422,10 @@ export class OrdersService {
 
     const customer = await this.usersService.findOneById(customerId);
     if (!customer) {
-        this.logger.error(`Customer not found: ${customerId}`);
-        throw new NotFoundException(`Customer with ID "${customerId}" not found.`);
+      this.logger.error(`Customer not found: ${customerId}`);
+      throw new NotFoundException(
+        `Customer with ID "${customerId}" not found.`,
+      );
     }
 
     const queryBuilder = this.ordersRepository.createQueryBuilder('order');
@@ -340,7 +440,14 @@ export class OrdersService {
       .andWhere('order.user.id = :userId', { userId: customerId });
 
     // Validate sortBy field to prevent SQL injection if it's directly used
-    const validSortFields = ['orderDate', 'totalAmount', 'status', 'createdAt', 'updatedAt', 'orderReference']; // Add more as needed
+    const validSortFields = [
+      'orderDate',
+      'totalAmount',
+      'status',
+      'createdAt',
+      'updatedAt',
+      'orderReference',
+    ]; // Add more as needed
     const safeSortBy = validSortFields.includes(sortBy) ? sortBy : 'orderDate';
 
     queryBuilder
@@ -349,9 +456,11 @@ export class OrdersService {
       .take(limit);
 
     const [orders, total] = await queryBuilder.getManyAndCount();
-    this.logger.log(`Found ${total} orders for customer ${customerId} in store ${storeSlug}. Returning page ${page} of ${Math.ceil(total / limit)}.`);
+    this.logger.log(
+      `Found ${total} orders for customer ${customerId} in store ${storeSlug}. Returning page ${page} of ${Math.ceil(total / limit)}.`,
+    );
 
-    const orderDtos = orders.map(order => this.mapOrderToDto(order));
+    const orderDtos = orders.map((order) => this.mapOrderToDto(order));
 
     return { orders: orderDtos, total };
   }
@@ -360,8 +469,17 @@ export class OrdersService {
   async findAllForManager(
     storeSlug: string,
     query: FindAllManagerOrdersDto,
-  ): Promise<{ orders: OrderDto[], total: number }> {
-    const { page = 1, limit = 10, search, status, startDate, endDate, sortBy = OrderSortField.createdAt, sortOrder = SortOrder.DESC } = query;
+  ): Promise<{ orders: OrderDto[]; total: number }> {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      status,
+      startDate,
+      endDate,
+      sortBy = OrderSortField.createdAt,
+      sortOrder = SortOrder.DESC,
+    } = query;
     const skip = (page - 1) * limit;
 
     const store = await this.storesService.findBySlug(storeSlug);
@@ -379,17 +497,20 @@ export class OrdersService {
       .leftJoinAndSelect('order.user', 'user')
       .where('order.store.id = :storeId', { storeId });
 
-
     if (status) {
       queryBuilder.andWhere('order.status = :status', { status });
     }
 
     if (startDate) {
-      queryBuilder.andWhere('order.orderDate >= :startDate', { startDate: new Date(startDate) });
+      queryBuilder.andWhere('order.orderDate >= :startDate', {
+        startDate: new Date(startDate),
+      });
     }
 
     if (endDate) {
-      queryBuilder.andWhere('order.orderDate <= :endDate', { endDate: new Date(endDate) });
+      queryBuilder.andWhere('order.orderDate <= :endDate', {
+        endDate: new Date(endDate),
+      });
     }
 
     if (search) {
@@ -399,15 +520,12 @@ export class OrdersService {
       );
     }
 
-    queryBuilder
-      .orderBy(`order.${sortBy}`, sortOrder)
-      .skip(skip)
-      .take(limit);
+    queryBuilder.orderBy(`order.${sortBy}`, sortOrder).skip(skip).take(limit);
 
     const [orders, total] = await queryBuilder.getManyAndCount();
 
     // Map entities to DTOs
-    const orderDtos = orders.map(order => this.mapOrderToDto(order));
+    const orderDtos = orders.map((order) => this.mapOrderToDto(order));
 
     return { orders: orderDtos, total };
   }
@@ -417,7 +535,14 @@ export class OrdersService {
     storeSlug: string,
     query: FindAllManagerOrdersDto,
   ): Promise<string> {
-    const { search, status, startDate, endDate, sortBy = OrderSortField.createdAt, sortOrder = SortOrder.DESC } = query;
+    const {
+      search,
+      status,
+      startDate,
+      endDate,
+      sortBy = OrderSortField.createdAt,
+      sortOrder = SortOrder.DESC,
+    } = query;
 
     const store = await this.storesService.findBySlug(storeSlug);
     if (!store) {
@@ -434,17 +559,20 @@ export class OrdersService {
       .leftJoinAndSelect('order.user', 'user')
       .where('order.store.id = :storeId', { storeId });
 
-
     if (status) {
       queryBuilder.andWhere('order.status = :status', { status });
     }
 
     if (startDate) {
-      queryBuilder.andWhere('order.orderDate >= :startDate', { startDate: new Date(startDate) });
+      queryBuilder.andWhere('order.orderDate >= :startDate', {
+        startDate: new Date(startDate),
+      });
     }
 
     if (endDate) {
-      queryBuilder.andWhere('order.orderDate <= :endDate', { endDate: new Date(endDate) });
+      queryBuilder.andWhere('order.orderDate <= :endDate', {
+        endDate: new Date(endDate),
+      });
     }
 
     if (search) {
@@ -454,36 +582,49 @@ export class OrdersService {
       );
     }
 
-    queryBuilder
-      .orderBy(`order.${sortBy}`, sortOrder);
+    queryBuilder.orderBy(`order.${sortBy}`, sortOrder);
     // No pagination for export - get all results
 
     const orders = await queryBuilder.getMany();
 
     // Format data as CSV
-    let csvContent = "Order ID,Order Reference,Order Date,Status,Total Amount,Subtotal,Shipping Cost,Tax Amount,Shipping Address,Shipping Method,Payment Status,Tracking Number,Customer Name,Customer Email,Items,Notes\n";
+    let csvContent =
+      'Order ID,Order Reference,Order Date,Status,Total Amount,Subtotal,Shipping Cost,Tax Amount,Shipping Address,Shipping Method,Payment Status,Tracking Number,Customer Name,Customer Email,Items,Notes\n';
 
-    orders.forEach(order => {
-      const shippingAddress = order.shippingAddress ?
-        `${order.shippingAddress.fullName}, ${order.shippingAddress.street1}, ${order.shippingAddress.street2 ? order.shippingAddress.street2 + ', ' : ''}${order.shippingAddress.city}, ${order.shippingAddress.postalCode}, ${order.shippingAddress.country}`
+    orders.forEach((order) => {
+      const shippingAddress = order.shippingAddress
+        ? `${order.shippingAddress.fullName}, ${order.shippingAddress.street1}, ${order.shippingAddress.street2 ? order.shippingAddress.street2 + ', ' : ''}${order.shippingAddress.city}, ${order.shippingAddress.postalCode}, ${order.shippingAddress.country}`
         : 'N/A';
 
-      const customerName = order.user ? `${order.user.firstName} ${order.user.lastName}` : 'N/A';
+      const customerName = order.user
+        ? `${order.user.firstName} ${order.user.lastName}`
+        : 'N/A';
       const customerEmail = order.user ? order.user.email : 'N/A';
 
-      const items = order.items && order.items.length > 0 ?
-        order.items.map(item => `${item.quantity}x ${item.productName} (SKU: ${item.product?.sku || 'N/A'})`).join('; ')
-        : 'No items';
+      const items =
+        order.items && order.items.length > 0
+          ? order.items
+              .map(
+                (item) =>
+                  `${item.quantity}x ${item.productName} (SKU: ${item.product?.sku || 'N/A'})`,
+              )
+              .join('; ')
+          : 'No items';
 
-      const notes = order.notes && order.notes.length > 0 ?
-        order.notes.join('; ').replace(/"/g, '""') // Escape double quotes for CSV
-        : 'N/A';
+      const notes =
+        order.notes && order.notes.length > 0
+          ? order.notes.join('; ').replace(/"/g, '""') // Escape double quotes for CSV
+          : 'N/A';
 
       // Basic CSV escaping for fields that might contain commas or quotes
       const escapeCsv = (value: any) => {
         if (value === null || value === undefined) return '';
-        let stringValue = String(value);
-        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+        const stringValue = String(value);
+        if (
+          stringValue.includes(',') ||
+          stringValue.includes('"') ||
+          stringValue.includes('\n')
+        ) {
           return `"${stringValue.replace(/"/g, '""')}"`;
         }
         return stringValue;
@@ -495,7 +636,6 @@ export class OrdersService {
     return csvContent;
   }
 
-
   // Method to find a single order by ID for a specific user (Storefront customer view)
   async findOneByIdAndUser(orderId: string, userId: string): Promise<OrderDto> {
     const order = await this.ordersRepository.findOne({
@@ -504,14 +644,19 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this user.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this user.`,
+      );
     }
 
     return this.mapOrderToDto(order);
   }
 
   // Method to find a single order by ID for a specific store (Store Management view)
-  async findOneForManager(storeSlug: string, orderId: string): Promise<OrderDto> {
+  async findOneForManager(
+    storeSlug: string,
+    orderId: string,
+  ): Promise<OrderDto> {
     const store = await this.storesService.findBySlug(storeSlug);
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
@@ -523,14 +668,20 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this store.`,
+      );
     }
 
     return this.mapOrderToDto(order);
   }
 
   // Method to update the status of an order for a specific store
-  async updateStatusForManager(storeSlug: string, orderId: string, updateOrderStatusDto: UpdateOrderStatusDto): Promise<OrderDto> {
+  async updateStatusForManager(
+    storeSlug: string,
+    orderId: string,
+    updateOrderStatusDto: UpdateOrderStatusDto,
+  ): Promise<OrderDto> {
     const store = await this.storesService.findBySlug(storeSlug);
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
@@ -542,7 +693,9 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this store.`,
+      );
     }
 
     order.status = updateOrderStatusDto.status;
@@ -552,9 +705,12 @@ export class OrdersService {
     return this.mapOrderToDto(updatedOrder);
   }
 
-
   // Method to add a note to an order for a specific store
-  async addNoteForManager(storeSlug: string, orderId: string, addOrderNoteDto: AddOrderNoteDto): Promise<OrderDto> {
+  async addNoteForManager(
+    storeSlug: string,
+    orderId: string,
+    addOrderNoteDto: AddOrderNoteDto,
+  ): Promise<OrderDto> {
     const store = await this.storesService.findBySlug(storeSlug);
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
@@ -566,7 +722,9 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this store.`,
+      );
     }
 
     // Add the new note to the notes array
@@ -580,7 +738,11 @@ export class OrdersService {
     return this.mapOrderToDto(updatedOrder);
   }
   // Method to send an email to the customer for a specific order (Store Management view)
-  async sendEmailToCustomerForManager(storeSlug: string, orderId: string, sendOrderEmailDto: SendOrderEmailDto): Promise<{ success: boolean, message: string }> {
+  async sendEmailToCustomerForManager(
+    storeSlug: string,
+    orderId: string,
+    sendOrderEmailDto: SendOrderEmailDto,
+  ): Promise<{ success: boolean; message: string }> {
     const store = await this.storesService.findBySlug(storeSlug);
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
@@ -592,11 +754,15 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this store.`,
+      );
     }
 
     if (!order.user || !order.user.email) {
-      throw new NotFoundException(`Customer email not available for order with ID "${orderId}".`);
+      throw new NotFoundException(
+        `Customer email not available for order with ID "${orderId}".`,
+      );
     }
 
     const customerEmail = order.user.email;
@@ -610,12 +776,17 @@ export class OrdersService {
     // In a real implementation, integrate with an email service here.
     // Example: await this.emailService.sendEmail(customerEmail, subject, body);
 
-    return { success: true, message: `Email scheduled to be sent to ${customerEmail}.` };
+    return {
+      success: true,
+      message: `Email scheduled to be sent to ${customerEmail}.`,
+    };
   }
 
-
   // Method to cancel an order for a specific store
-  async cancelOrderForManager(storeSlug: string, orderId: string): Promise<OrderDto> {
+  async cancelOrderForManager(
+    storeSlug: string,
+    orderId: string,
+  ): Promise<OrderDto> {
     const store = await this.storesService.findBySlug(storeSlug);
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
@@ -627,7 +798,9 @@ export class OrdersService {
     });
 
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this store.`,
+      );
     }
 
     // Update the status to 'Cancelled'
@@ -638,8 +811,13 @@ export class OrdersService {
     return this.mapOrderToDto(updatedOrder);
   }
 
-  async markOrderAsFulfilledForManager(storeSlug: string, orderId: string): Promise<OrderDto> {
-    this.logger.log(`Attempting to mark order ${orderId} as fulfilled for store ${storeSlug}`);
+  async markOrderAsFulfilledForManager(
+    storeSlug: string,
+    orderId: string,
+  ): Promise<OrderDto> {
+    this.logger.log(
+      `Attempting to mark order ${orderId} as fulfilled for store ${storeSlug}`,
+    );
     const store = await this.storesService.findBySlug(storeSlug);
     if (!store) {
       this.logger.error(`Store not found: ${storeSlug}`);
@@ -653,27 +831,40 @@ export class OrdersService {
 
     if (!order) {
       this.logger.error(`Order not found: ${orderId} for store ${storeSlug}`);
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this store.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this store.`,
+      );
     }
 
-    if (order.status === OrderStatus.DELIVERED
-       || order.status === OrderStatus.SHIPPED) {
-        this.logger.warn(`Order ${orderId} is already in status ${order.status}. No action taken.`);
-        // Optionally, throw new BadRequestException(`Order is already ${order.status}.`);
-        // For now, let's return the order as is if it's already in a final state.
-        // Or, we can still update fulfilledAt if it's not set.
+    if (
+      order.status === OrderStatus.DELIVERED ||
+      order.status === OrderStatus.SHIPPED
+    ) {
+      this.logger.warn(
+        `Order ${orderId} is already in status ${order.status}. No action taken.`,
+      );
+      // Optionally, throw new BadRequestException(`Order is already ${order.status}.`);
+      // For now, let's return the order as is if it's already in a final state.
+      // Or, we can still update fulfilledAt if it's not set.
     }
 
     order.status = OrderStatus.DELIVERED;
     order.fulfilledAt = new Date();
 
     const updatedOrder = await this.ordersRepository.save(order);
-    this.logger.log(`Order ${orderId} marked as fulfilled. Status: ${updatedOrder.status}, FulfilledAt: ${updatedOrder.fulfilledAt}`);
+    this.logger.log(
+      `Order ${orderId} marked as fulfilled. Status: ${updatedOrder.status}, FulfilledAt: ${updatedOrder.fulfilledAt}`,
+    );
     return this.mapOrderToDto(updatedOrder);
   }
 
-  async requestShippingLabelForManager(storeSlug: string, orderId: string): Promise<{ message: string }> {
-    this.logger.log(`Placeholder: Shipping label requested for order ${orderId} in store ${storeSlug}.`);
+  async requestShippingLabelForManager(
+    storeSlug: string,
+    orderId: string,
+  ): Promise<{ message: string }> {
+    this.logger.log(
+      `Placeholder: Shipping label requested for order ${orderId} in store ${storeSlug}.`,
+    );
     // In a real scenario, you might find the order to ensure it exists:
     // const store = await this.storesService.findBySlug(storeSlug);
     // if (!store) {
@@ -685,7 +876,9 @@ export class OrdersService {
     // }
     // Then, interact with a shipping service API.
 
-    return { message: `Shipping label generation for order ${orderId} is a placeholder and not yet implemented.` };
+    return {
+      message: `Shipping label generation for order ${orderId} is a placeholder and not yet implemented.`,
+    };
   }
 
   // Helper method to map OrderEntity to OrderDto
@@ -703,7 +896,8 @@ export class OrdersService {
       shippingMethod: order.shippingMethod,
       paymentStatus: order.paymentStatus,
       trackingNumber: order.trackingNumber,
-      items: order.items.map(item => ({ // Map items to OrderItemDto
+      items: order.items.map((item) => ({
+        // Map items to OrderItemDto
         id: item.id,
         productId: item.productId,
         productName: item.productName,
@@ -716,7 +910,14 @@ export class OrdersService {
       updatedAt: order.updatedAt,
       notes: order.notes, // Include notes in the DTO
       // Include user info for manager view
-      user: order.user ? { id: order.user.id, firstName: order.user.firstName, lastName: order.user.lastName, email: order.user.email } : undefined,
+      user: order.user
+        ? {
+            id: order.user.id,
+            firstName: order.user.firstName,
+            lastName: order.user.lastName,
+            email: order.user.email,
+          }
+        : undefined,
     };
   }
 }

@@ -1,9 +1,8 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddLoginHistoryEntity1746113777816 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS "login_history" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "user_id" uuid NOT NULL,
@@ -15,19 +14,18 @@ export class AddLoginHistoryEntity1746113777816 implements MigrationInterface {
             );
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "login_history" ADD CONSTRAINT "FK_user_login_history" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             ALTER TABLE "login_history" DROP CONSTRAINT "FK_user_login_history";
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "login_history";
         `);
-    }
-
+  }
 }

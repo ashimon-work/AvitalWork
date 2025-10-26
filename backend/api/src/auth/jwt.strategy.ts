@@ -13,7 +13,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const jwtSecret = configService.get<string>('JWT_SECRET');
     if (!jwtSecret) {
       // Throw an error during initialization if the secret is missing
-      throw new Error('JWT_SECRET environment variable is not set. Please check your .env file.');
+      throw new Error(
+        'JWT_SECRET environment variable is not set. Please check your .env file.',
+      );
     }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

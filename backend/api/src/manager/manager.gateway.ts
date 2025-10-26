@@ -1,4 +1,10 @@
-import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
@@ -24,7 +30,10 @@ export class ManagerGateway {
   }
 
   @SubscribeMessage('message') // Example message handler
-  handleMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket): string {
+  handleMessage(
+    @MessageBody() data: string,
+    @ConnectedSocket() client: Socket,
+  ): string {
     this.logger.log(`Message from client ${client.id}: ${data}`);
     // Example: Echo message back to the client
     client.emit('message', `Server received: ${data}`);

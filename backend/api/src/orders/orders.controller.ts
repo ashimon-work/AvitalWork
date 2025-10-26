@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { StoreContextGuard } from '../core/guards/store-context.guard'; // Import StoreContextGuard
-import { FindAllManagerOrdersDto, OrderSortField, SortOrder } from './dto/find-all-manager-orders.dto';
+import {
+  FindAllManagerOrdersDto,
+  OrderSortField,
+  SortOrder,
+} from './dto/find-all-manager-orders.dto';
 
 // Define the shape of the request object after guard validation
 interface ManagerAuthenticatedRequest extends Request {
@@ -30,7 +34,8 @@ export class OrdersController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('sortColumn', new DefaultValuePipe('orderDate')) sortColumn: string,
-    @Query('sortDirection', new DefaultValuePipe('desc')) sortDirection: 'asc' | 'desc',
+    @Query('sortDirection', new DefaultValuePipe('desc'))
+    sortDirection: 'asc' | 'desc',
   ) {
     const storeId = req.storeId;
     // Ensure limit is reasonable
@@ -50,7 +55,10 @@ export class OrdersController {
 
   // Endpoint to get a single order by ID (for manager)
   @Get(':id')
-  findOneForManager(@Request() req: ManagerAuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
+  findOneForManager(
+    @Request() req: ManagerAuthenticatedRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     const storeId = req.storeId;
     // The service method is findOneForManager, not findOneByIdAndStore
     return this.ordersService.findOneForManager(storeId, id);

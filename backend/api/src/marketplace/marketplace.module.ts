@@ -13,4 +13,4 @@ import { StoreEntity } from '../stores/entities/store.entity';
   controllers: [MarketplaceController],
   providers: [MarketplaceService],
 })
-export class MarketplaceModule { }
+export class MarketplaceModule {}

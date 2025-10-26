@@ -1,4 +1,18 @@
-import { Controller, Post, Param, UseGuards, UseInterceptors, UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, Body, Patch, Get, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Param,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  Body,
+  Patch,
+  Get,
+  Req,
+} from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { StoreContextGuard } from './core/guards/store-context.guard';
 import { ProductsService } from './products/products.service';
@@ -20,7 +34,7 @@ export class ManagerController {
     private readonly managerService: ManagerService,
     private readonly settingsService: SettingsService,
     private readonly loginHistoryService: LoginHistoryService,
-  ) { }
+  ) {}
 
   @Post('products/import')
   @UseInterceptors(FileInterceptor('file'))
@@ -50,7 +64,11 @@ export class ManagerController {
     @Param('id') orderId: string,
     @Body() updateOrderStatusDto: UpdateOrderStatusDto,
   ) {
-    return this.ordersService.updateStatusForManager(storeSlug, orderId, updateOrderStatusDto);
+    return this.ordersService.updateStatusForManager(
+      storeSlug,
+      orderId,
+      updateOrderStatusDto,
+    );
   }
   @Post('error-report')
   async reportError(@Body() reportErrorDto: ReportErrorDto) {
@@ -71,4 +89,3 @@ export class ManagerController {
     return this.loginHistoryService.getLoginHistoryForManager(userId);
   }
 }
-

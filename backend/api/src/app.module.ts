@@ -24,6 +24,7 @@ import { TranzilaModule } from './tranzila/tranzila.module';
 import { ShippingModule } from './shipping/shipping.module';
 import { CheckoutModule } from './checkout/checkout.module';
 import { GuestModule } from './guest/guest.module';
+import { WhatsappModule } from './whatsapp/whatsapp.module';
 
 // Import all entities used in the seed script
 import { StoreEntity } from './stores/entities/store.entity';
@@ -104,6 +105,7 @@ import { MarketplaceModule } from './marketplace/marketplace.module';
     CheckoutModule,
     MarketplaceModule,
     GuestModule,
+    WhatsappModule,
   ],
   controllers: [AppController, ManagerController],
   providers: [AppService, ManagerService],

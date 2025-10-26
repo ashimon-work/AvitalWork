@@ -1,4 +1,12 @@
-import { Controller, Get, Put, Post, Param, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Param,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
 import { SettingsService } from './settings.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateSettingsDto } from './dto/update-settings.dto';
@@ -28,7 +36,11 @@ export class SettingsController {
     @Body() updateSettingsDto: UpdateSettingsDto,
   ) {
     // TODO: Implement logic to update settings by category
-    return this.settingsService.updateSettingsByCategory(storeSlug, category, updateSettingsDto);
+    return this.settingsService.updateSettingsByCategory(
+      storeSlug,
+      category,
+      updateSettingsDto,
+    );
   }
 
   @Post(':category/reset')
@@ -49,16 +61,16 @@ export class SettingsController {
     // TODO: Implement logic to send a test email
     return this.settingsService.testEmail(storeSlug, testEmailDto);
   }
-@Post('test-payment')
-async testPayment(
-  @Param('storeSlug') storeSlug: string,
-  @Body() testPaymentDto: TestPaymentDto,
-) {
-  // TODO: Implement logic to test payment
-  return this.settingsService.testPayment(storeSlug, testPaymentDto);
-}
+  @Post('test-payment')
+  async testPayment(
+    @Param('storeSlug') storeSlug: string,
+    @Body() testPaymentDto: TestPaymentDto,
+  ) {
+    // TODO: Implement logic to test payment
+    return this.settingsService.testPayment(storeSlug, testPaymentDto);
+  }
 
-@Get('backup')
+  @Get('backup')
   @Get('backup')
   async backupSettings(@Param('storeSlug') storeSlug: string) {
     // TODO: Implement logic to backup settings

@@ -1,4 +1,16 @@
-import { Controller, Post, Body, Get, Req, UseGuards, HttpCode, HttpStatus, BadRequestException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Req,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactSubmissionDto } from './dto/create-contact-submission.dto';
 import { StoreContextGuard } from '../core/guards/store-context.guard';
@@ -31,27 +43,36 @@ export class ContactController {
         if (store) {
           storeId = store.id;
         } else {
-          this.logger.warn(`Store with slug "${slugToLookup}" not found for contact submission.`);
+          this.logger.warn(
+            `Store with slug "${slugToLookup}" not found for contact submission.`,
+          );
           // Optionally, you could throw NotFoundException here if storeSlug is mandatory from DTO
           // but the problem states storeId is nullable on the entity.
         }
       } catch (error) {
-        this.logger.error(`Error looking up store with slug "${slugToLookup}": ${error.message}`);
+        this.logger.error(
+          `Error looking up store with slug "${slugToLookup}": ${error.message}`,
+        );
         // Decide if this should be a BadRequest or allow submission without storeId
       }
     } else {
-        // if no storeSlug is provided in DTO and not in req (e.g. global contact form not tied to a specific store context)
-        this.logger.log('No storeSlug provided for contact submission. Proceeding without storeId.');
+      // if no storeSlug is provided in DTO and not in req (e.g. global contact form not tied to a specific store context)
+      this.logger.log(
+        'No storeSlug provided for contact submission. Proceeding without storeId.',
+      );
     }
-    
-    return this.contactService.createSubmission(createContactSubmissionDto, storeId);
+
+    return this.contactService.createSubmission(
+      createContactSubmissionDto,
+      storeId,
+    );
   }
 
   @Get('/faq')
   async findFaqByStore(@Req() req: AuthenticatedRequest) {
     const storeSlug = req.storeSlug;
     if (!storeSlug) {
-        throw new BadRequestException('Store context is missing.');
+      throw new BadRequestException('Store context is missing.');
     }
     return this.contactService.findFaqByStore(storeSlug);
   }

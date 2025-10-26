@@ -1,4 +1,8 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
@@ -9,7 +13,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (err || !user) {
       // Log the error/info for debugging if needed
       console.error('JwtAuthGuard Error:', err || info?.message);
-      throw err || new UnauthorizedException('Authentication token is invalid or expired.');
+      throw (
+        err ||
+        new UnauthorizedException('Authentication token is invalid or expired.')
+      );
     }
     // If authentication is successful, Passport attaches the user object to the request.
     return user; // Return the user object to be attached to req.user

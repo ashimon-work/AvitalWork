@@ -1,4 +1,13 @@
-import { Controller, Post, Body, UsePipes, ValidationPipe, HttpCode, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UsePipes,
+  ValidationPipe,
+  HttpCode,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -20,8 +29,8 @@ export class AuthController {
     const user = await this.usersService.create(createUserDto);
     // Return the created user (without password hash)
     return {
-       message: 'Registration successful',
-       user: user
+      message: 'Registration successful',
+      user: user,
     };
   }
 
@@ -29,7 +38,10 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @HttpCode(HttpStatus.OK) // Return 200 OK on success
   async login(@Body() loginUserDto: LoginUserDto) {
-    const user = await this.authService.validateUser(loginUserDto.email, loginUserDto.password);
+    const user = await this.authService.validateUser(
+      loginUserDto.email,
+      loginUserDto.password,
+    );
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -41,7 +53,10 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @HttpCode(HttpStatus.OK)
   async managerLogin(@Body() loginManagerDto: LoginManagerDto) {
-    const manager = await this.authService.validateManager(loginManagerDto.email, loginManagerDto.password);
+    const manager = await this.authService.validateManager(
+      loginManagerDto.email,
+      loginManagerDto.password,
+    );
     if (!manager) {
       throw new UnauthorizedException('Invalid manager credentials');
     }

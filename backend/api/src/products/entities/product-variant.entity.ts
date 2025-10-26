@@ -7,6 +7,7 @@ import {
   Index,
   CreateDateColumn,
   UpdateDateColumn,
+  Relation,
 } from 'typeorm';
 import { ProductEntity } from './product.entity';
 import { ProductVariantOptionDto } from '../dto/product-variant-option.dto';
@@ -22,7 +23,7 @@ export class ProductVariantEntity {
     onDelete: 'CASCADE', // If product is deleted, delete its variants
   })
   @JoinColumn({ name: 'productId' }) // Foreign key column
-  product: ProductEntity;
+  product: Relation<ProductEntity>;
 
   @Column() // Store the productId explicitly for easier querying if needed
   productId: string;
@@ -37,6 +38,9 @@ export class ProductVariantEntity {
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
   price?: number; // Overrides product base price if set
+
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  costPrice?: number;
 
   @Column('int')
   stockLevel: number;

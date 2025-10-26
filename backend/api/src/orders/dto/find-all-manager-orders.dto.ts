@@ -1,7 +1,14 @@
-import { IsOptional, IsString, IsInt, Min, Max, IsEnum, IsDateString } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsInt,
+  Min,
+  Max,
+  IsEnum,
+  IsDateString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { OrderStatus } from '../entities/order.entity';
-
 
 export enum OrderSortField {
   createdAt = 'createdAt',

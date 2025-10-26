@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  Relation,
+} from 'typeorm';
 import { UserEntity } from '../../users/entities/user.entity';
 
 @Entity('login_history')
@@ -9,9 +16,9 @@ export class LoginHistoryEntity {
   @Column({ name: 'user_id' })
   userId: string;
 
-  @ManyToOne(() => UserEntity, user => user.loginHistory)
+  @ManyToOne(() => UserEntity, (user) => user.loginHistory)
   @JoinColumn({ name: 'user_id' })
-  user: UserEntity;
+  user: Relation<UserEntity>;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   loginTime: Date;

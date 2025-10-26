@@ -21,7 +21,14 @@ import { LoginHistoryModule } from '../login-history/login-history.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([StoreEntity, OrderEntity, ProductEntity, ProductVariantEntity, UserEntity, CategoryEntity]),
+    TypeOrmModule.forFeature([
+      StoreEntity,
+      OrderEntity,
+      ProductEntity,
+      ProductVariantEntity,
+      UserEntity,
+      CategoryEntity,
+    ]),
     MulterModule.register({}),
     OrdersModule,
     SettingsModule,
@@ -31,6 +38,12 @@ import { LoginHistoryModule } from '../login-history/login-history.module';
     LoginHistoryModule,
   ],
   controllers: [ManagerController],
-  providers: [ManagerService, ManagerGateway, ProductsService, UsersService, Logger],
+  providers: [
+    ManagerService,
+    ManagerGateway,
+    ProductsService,
+    UsersService,
+    Logger,
+  ],
 })
-export class ManagerModule { }
+export class ManagerModule {}

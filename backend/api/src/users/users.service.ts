@@ -1,4 +1,11 @@
-import { Injectable, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SendCustomerEmailDto } from './dto/send-customer-email.dto';
 import * as speakeasy from 'speakeasy';
 import { Enable2faDto } from './dto/enable-2fa.dto';
@@ -28,9 +35,11 @@ export class UsersService {
     @InjectRepository(StoreEntity)
     private readonly storeRepository: Repository<StoreEntity>,
     private readonly loginHistoryService: LoginHistoryService, // Added
-  ) { }
+  ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<Omit<UserEntity, 'passwordHash'>> {
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<Omit<UserEntity, 'passwordHash'>> {
     const { email, password, firstName, lastName, phone } = createUserDto;
 
     // Check if user already exists
@@ -80,7 +89,9 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  async getManagerProfile(id: string): Promise<Omit<UserEntity, 'passwordHash'>> {
+  async getManagerProfile(
+    id: string,
+  ): Promise<Omit<UserEntity, 'passwordHash'>> {
     const user = await this.usersRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`Manager with ID "${id}" not found.`);
@@ -92,13 +103,20 @@ export class UsersService {
 
   // Method specifically for updating the password hash
   async updatePassword(userId: string, newPasswordHash: string): Promise<void> {
-    const result = await this.usersRepository.update(userId, { passwordHash: newPasswordHash });
+    const result = await this.usersRepository.update(userId, {
+      passwordHash: newPasswordHash,
+    });
     if (result.affected === 0) {
-      throw new NotFoundException(`User with ID "${userId}" not found for password update.`);
+      throw new NotFoundException(
+        `User with ID "${userId}" not found for password update.`,
+      );
     }
   }
 
-  async updatePersonalInfo(userId: string, updatePersonalInfoDto: UpdatePersonalInfoDto): Promise<Omit<UserEntity, 'passwordHash'>> {
+  async updatePersonalInfo(
+    userId: string,
+    updatePersonalInfoDto: UpdatePersonalInfoDto,
+  ): Promise<Omit<UserEntity, 'passwordHash'>> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ID "${userId}" not found.`);
@@ -121,31 +139,47 @@ export class UsersService {
       const { passwordHash: _, ...result } = updatedUser; // Exclude password hash from result
       return result;
     } catch (error) {
-      throw new InternalServerErrorException('Error updating user personal information.');
+      throw new InternalServerErrorException(
+        'Error updating user personal information.',
+      );
     }
   }
-async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeManagerPasswordDto): Promise<{ success: boolean }> {
+  async changeManagerPassword(
+    userId: string,
+    changeManagerPasswordDto: ChangeManagerPasswordDto,
+  ): Promise<{ success: boolean }> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`Manager with ID "${userId}" not found.`);
     }
 
     // Verify current password
-    const isPasswordValid = await bcrypt.compare(changeManagerPasswordDto.currentPassword, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      changeManagerPasswordDto.currentPassword,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid current password.');
     }
 
     // Verify new password and confirm new password match
-    if (changeManagerPasswordDto.newPassword !== changeManagerPasswordDto.confirmNewPassword) {
-      throw new BadRequestException('New password and confirm new password do not match.');
+    if (
+      changeManagerPasswordDto.newPassword !==
+      changeManagerPasswordDto.confirmNewPassword
+    ) {
+      throw new BadRequestException(
+        'New password and confirm new password do not match.',
+      );
     }
 
     // Hash the new password
     const saltRounds = 10; // Or configure via ConfigService
     let newPasswordHash: string;
     try {
-      newPasswordHash = await bcrypt.hash(changeManagerPasswordDto.newPassword, saltRounds);
+      newPasswordHash = await bcrypt.hash(
+        changeManagerPasswordDto.newPassword,
+        saltRounds,
+      );
     } catch (error) {
       throw new InternalServerErrorException('Error hashing new password');
     }
@@ -157,12 +191,20 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
       await this.usersRepository.save(user);
       return { success: true };
     } catch (error) {
-      throw new InternalServerErrorException('Error updating manager password.');
+      throw new InternalServerErrorException(
+        'Error updating manager password.',
+      );
     }
   }
 
-  async updateForManager(storeSlug: string, id: string, updateManagerCustomerDto: UpdateManagerCustomerDto): Promise<Omit<UserEntity, 'passwordHash'>> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async updateForManager(
+    storeSlug: string,
+    id: string,
+    updateManagerCustomerDto: UpdateManagerCustomerDto,
+  ): Promise<Omit<UserEntity, 'passwordHash'>> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
     }
@@ -177,10 +219,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     }
 
     // Verify user is associated with the store by checking if they have any orders linked to the store
-    const hasOrderInStore = user.orders.some(order => order.storeId === store.id);
+    const hasOrderInStore = user.orders.some(
+      (order) => order.storeId === store.id,
+    );
 
     if (!hasOrderInStore) {
-      throw new NotFoundException(`Customer with ID "${id}" not found for store "${storeSlug}"`);
+      throw new NotFoundException(
+        `Customer with ID "${id}" not found for store "${storeSlug}"`,
+      );
     }
 
     // Update fields if they are provided in the DTO
@@ -201,19 +247,28 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
       const { passwordHash: _, ...result } = updatedUser; // Exclude password hash from result
       return result;
     } catch (error) {
-      throw new InternalServerErrorException('Error updating customer information for manager.');
+      throw new InternalServerErrorException(
+        'Error updating customer information for manager.',
+      );
     }
   }
 
   async findOneForManager(storeSlug: string, id: string): Promise<UserEntity> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
     }
 
     const user = await this.usersRepository.findOne({
       where: { id },
-      relations: ['addresses', 'orders', 'orders.items', 'orders.items.product'], // Eager load necessary relations
+      relations: [
+        'addresses',
+        'orders',
+        'orders.items',
+        'orders.items.product',
+      ], // Eager load necessary relations
     });
 
     if (!user) {
@@ -221,10 +276,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     }
 
     // Verify user is associated with the store by checking if they have any orders linked to the store
-    const hasOrderInStore = user.orders.some(order => order.storeId === store.id);
+    const hasOrderInStore = user.orders.some(
+      (order) => order.storeId === store.id,
+    );
 
     if (!hasOrderInStore) {
-      throw new NotFoundException(`Customer with ID "${id}" not found for store "${storeSlug}"`);
+      throw new NotFoundException(
+        `Customer with ID "${id}" not found for store "${storeSlug}"`,
+      );
     }
 
     // Exclude password hash from the returned user object
@@ -233,19 +292,39 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     return result as UserEntity; // Cast back to UserEntity after removing passwordHash
   }
 
-  async findAllForManager(storeSlug: string, queryDto: FindAllManagerCustomersDto): Promise<{ customers: UserEntity[], total: number }> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async findAllForManager(
+    storeSlug: string,
+    queryDto: FindAllManagerCustomersDto,
+  ): Promise<{ customers: UserEntity[]; total: number }> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
     }
 
-    const { page, limit, sort, q, signup_date_min, signup_date_max, total_spent_min, total_spent_max, status } = queryDto;
+    const {
+      page,
+      limit,
+      sort,
+      q,
+      signup_date_min,
+      signup_date_max,
+      total_spent_min,
+      total_spent_max,
+      status,
+    } = queryDto;
 
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
 
     // Join with orders to filter by store and potentially calculate aggregates
     queryBuilder
-      .innerJoin(OrderEntity, 'order', 'order.userId = user.id AND order.storeId = :storeId', { storeId: store.id })
+      .innerJoin(
+        OrderEntity,
+        'order',
+        'order.userId = user.id AND order.storeId = :storeId',
+        { storeId: store.id },
+      )
       .groupBy('user.id'); // Group by user to get distinct users who have ordered from the store
 
     // Apply search filter
@@ -258,10 +337,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
 
     // Apply signup date filters
     if (signup_date_min) {
-      queryBuilder.andWhere('user.createdAt >= :signup_date_min', { signup_date_min });
+      queryBuilder.andWhere('user.createdAt >= :signup_date_min', {
+        signup_date_min,
+      });
     }
     if (signup_date_max) {
-      queryBuilder.andWhere('user.createdAt <= :signup_date_max', { signup_date_max });
+      queryBuilder.andWhere('user.createdAt <= :signup_date_max', {
+        signup_date_max,
+      });
     }
 
     // Apply total spent filters (requires calculating total spent per user for the store)
@@ -272,10 +355,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     queryBuilder.addSelect('SUM(order.totalAmount)', 'totalSpent');
 
     if (total_spent_min) {
-      queryBuilder.andHaving('SUM(order.totalAmount) >= :total_spent_min', { total_spent_min: parseFloat(total_spent_min) });
+      queryBuilder.andHaving('SUM(order.totalAmount) >= :total_spent_min', {
+        total_spent_min: parseFloat(total_spent_min),
+      });
     }
     if (total_spent_max) {
-      queryBuilder.andHaving('SUM(order.totalAmount) <= :total_spent_max', { total_spent_max: parseFloat(total_spent_max) });
+      queryBuilder.andHaving('SUM(order.totalAmount) <= :total_spent_max', {
+        total_spent_max: parseFloat(total_spent_max),
+      });
     }
 
     // Apply status filter (assuming a status can be derived or exists on UserEntity - currently it doesn't based on the provided UserEntity)
@@ -287,10 +374,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     if (sort) {
       switch (sort) {
         case 'name-asc':
-          queryBuilder.orderBy('user.lastName', 'ASC').addOrderBy('user.firstName', 'ASC');
+          queryBuilder
+            .orderBy('user.lastName', 'ASC')
+            .addOrderBy('user.firstName', 'ASC');
           break;
         case 'name-desc':
-          queryBuilder.orderBy('user.lastName', 'DESC').addOrderBy('user.firstName', 'DESC');
+          queryBuilder
+            .orderBy('user.lastName', 'DESC')
+            .addOrderBy('user.firstName', 'DESC');
           break;
         case 'signup-asc':
           queryBuilder.orderBy('user.createdAt', 'ASC');
@@ -322,7 +413,6 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
       queryBuilder.orderBy('user.createdAt', 'DESC');
     }
 
-
     // Apply pagination
     const pageNum = parseInt(page ?? '1', 10);
     const limitNum = parseInt(limit ?? '10', 10);
@@ -341,8 +431,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     return { customers: customers as any, total }; // Cast to any for now due to added select fields
   }
 
-  async addNoteForManager(storeSlug: string, id: string, addCustomerNoteDto: AddCustomerNoteDto): Promise<Omit<UserEntity, 'passwordHash'>> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async addNoteForManager(
+    storeSlug: string,
+    id: string,
+    addCustomerNoteDto: AddCustomerNoteDto,
+  ): Promise<Omit<UserEntity, 'passwordHash'>> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
     }
@@ -357,10 +453,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     }
 
     // Verify user is associated with the store by checking if they have any orders linked to the store
-    const hasOrderInStore = user.orders.some(order => order.storeId === store.id);
+    const hasOrderInStore = user.orders.some(
+      (order) => order.storeId === store.id,
+    );
 
     if (!hasOrderInStore) {
-      throw new NotFoundException(`Customer with ID "${id}" not found for store "${storeSlug}"`);
+      throw new NotFoundException(
+        `Customer with ID "${id}" not found for store "${storeSlug}"`,
+      );
     }
 
     // Add the note to the user's notes array
@@ -385,8 +485,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     }
   }
 
-  async sendEmailToCustomerForManager(storeSlug: string, id: string, sendCustomerEmailDto: SendCustomerEmailDto): Promise<{ success: boolean; message: string }> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async sendEmailToCustomerForManager(
+    storeSlug: string,
+    id: string,
+    sendCustomerEmailDto: SendCustomerEmailDto,
+  ): Promise<{ success: boolean; message: string }> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
     }
@@ -401,10 +507,14 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     }
 
     // Verify user is associated with the store by checking if they have any orders linked to the store
-    const hasOrderInStore = user.orders.some(order => order.storeId === store.id);
+    const hasOrderInStore = user.orders.some(
+      (order) => order.storeId === store.id,
+    );
 
     if (!hasOrderInStore) {
-      throw new NotFoundException(`Customer with ID "${id}" not found for store "${storeSlug}"`);
+      throw new NotFoundException(
+        `Customer with ID "${id}" not found for store "${storeSlug}"`,
+      );
     }
 
     // Placeholder email sending logic
@@ -417,8 +527,13 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     return { success: true, message: 'Email scheduled for sending.' };
   }
 
-  async exportForManager(storeSlug: string, queryDto: FindAllManagerCustomersDto): Promise<string> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async exportForManager(
+    storeSlug: string,
+    queryDto: FindAllManagerCustomersDto,
+  ): Promise<string> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found`);
     }
@@ -427,7 +542,12 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
 
     queryBuilder
-      .innerJoin(OrderEntity, 'order', 'order.userId = user.id AND order.storeId = :storeId', { storeId: store.id })
+      .innerJoin(
+        OrderEntity,
+        'order',
+        'order.userId = user.id AND order.storeId = :storeId',
+        { storeId: store.id },
+      )
       .leftJoinAndSelect('user.addresses', 'address') // Include addresses
       .groupBy('user.id');
 
@@ -447,28 +567,40 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
 
     // Apply signup date filters
     if (queryDto.signup_date_min) {
-      queryBuilder.andWhere('user.createdAt >= :signup_date_min', { signup_date_min: queryDto.signup_date_min });
+      queryBuilder.andWhere('user.createdAt >= :signup_date_min', {
+        signup_date_min: queryDto.signup_date_min,
+      });
     }
     if (queryDto.signup_date_max) {
-      queryBuilder.andWhere('user.createdAt <= :signup_date_max', { signup_date_max: queryDto.signup_date_max });
+      queryBuilder.andWhere('user.createdAt <= :signup_date_max', {
+        signup_date_max: queryDto.signup_date_max,
+      });
     }
 
     // Apply total spent filters
     if (queryDto.total_spent_min) {
-      queryBuilder.andHaving('SUM(order.totalAmount) >= :total_spent_min', { total_spent_min: parseFloat(queryDto.total_spent_min) });
+      queryBuilder.andHaving('SUM(order.totalAmount) >= :total_spent_min', {
+        total_spent_min: parseFloat(queryDto.total_spent_min),
+      });
     }
     if (queryDto.total_spent_max) {
-      queryBuilder.andHaving('SUM(order.totalAmount) <= :total_spent_max', { total_spent_max: parseFloat(queryDto.total_spent_max) });
+      queryBuilder.andHaving('SUM(order.totalAmount) <= :total_spent_max', {
+        total_spent_max: parseFloat(queryDto.total_spent_max),
+      });
     }
 
     // Apply sorting (optional for export, but good to maintain consistency)
     if (queryDto.sort) {
       switch (queryDto.sort) {
         case 'name-asc':
-          queryBuilder.orderBy('user.lastName', 'ASC').addOrderBy('user.firstName', 'ASC');
+          queryBuilder
+            .orderBy('user.lastName', 'ASC')
+            .addOrderBy('user.firstName', 'ASC');
           break;
         case 'name-desc':
-          queryBuilder.orderBy('user.lastName', 'DESC').addOrderBy('user.firstName', 'DESC');
+          queryBuilder
+            .orderBy('user.lastName', 'DESC')
+            .addOrderBy('user.firstName', 'DESC');
           break;
         case 'signup-asc':
           queryBuilder.orderBy('user.createdAt', 'ASC');
@@ -499,12 +631,19 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     const customers = await queryBuilder.getRawMany(); // Use getRawMany to get the selected aggregate fields
 
     // Format data as CSV
-    let csv = '"Customer ID","First Name","Last Name","Email","Phone","Signup Date","Total Spent","Number of Orders","Last Order Date","Notes"\n';
+    let csv =
+      '"Customer ID","First Name","Last Name","Email","Phone","Signup Date","Total Spent","Number of Orders","Last Order Date","Notes"\n';
 
-    customers.forEach(customer => {
-      const notes = Array.isArray(customer.user_notes) ? customer.user_notes.join('; ') : ''; // Assuming notes is a JSON array
-      const signupDate = customer.user_createdAt ? new Date(customer.user_createdAt).toISOString() : '';
-      const lastOrderDate = customer.lastOrderDate ? new Date(customer.lastOrderDate).toISOString() : '';
+    customers.forEach((customer) => {
+      const notes = Array.isArray(customer.user_notes)
+        ? customer.user_notes.join('; ')
+        : ''; // Assuming notes is a JSON array
+      const signupDate = customer.user_createdAt
+        ? new Date(customer.user_createdAt).toISOString()
+        : '';
+      const lastOrderDate = customer.lastOrderDate
+        ? new Date(customer.lastOrderDate).toISOString()
+        : '';
 
       csv += `"${customer.user_id}","${customer.user_firstName}","${customer.user_lastName}","${customer.user_email}","${customer.user_phone}","${signupDate}","${customer.totalSpent || 0}","${customer.orderCount || 0}","${lastOrderDate}","${notes}"\n`;
     });
@@ -512,7 +651,10 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     return csv;
   }
 
-  async enable2faForManager(userId: string, enable2faDto: Enable2faDto): Promise<{ qrCodeUrl: string }> {
+  async enable2faForManager(
+    userId: string,
+    enable2faDto: Enable2faDto,
+  ): Promise<{ qrCodeUrl: string }> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`Manager with ID "${userId}" not found.`);
@@ -545,20 +687,28 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     return { qrCodeUrl };
   }
 
-  async disable2faForManager(userId: string, disable2faDto: Disable2faDto): Promise<{ success: boolean }> {
+  async disable2faForManager(
+    userId: string,
+    disable2faDto: Disable2faDto,
+  ): Promise<{ success: boolean }> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`Manager with ID "${userId}" not found.`);
     }
 
     // Verify current password before disabling 2FA
-    const isPasswordValid = await bcrypt.compare(disable2faDto.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      disable2faDto.password,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password.');
     }
 
     if (!user.isTwoFactorEnabled) {
-      throw new BadRequestException('Two-factor authentication is not enabled for this account.');
+      throw new BadRequestException(
+        'Two-factor authentication is not enabled for this account.',
+      );
     }
 
     // Disable 2FA and clear the secret
@@ -569,17 +719,24 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
       await this.usersRepository.save(user);
       return { success: true };
     } catch (error) {
-      throw new InternalServerErrorException('Error disabling 2FA for manager.');
+      throw new InternalServerErrorException(
+        'Error disabling 2FA for manager.',
+      );
     }
   }
 
-  async confirm2faSetup(userId: string, confirm2faDto: Confirm2faDto): Promise<{ success: boolean }> {
+  async confirm2faSetup(
+    userId: string,
+    confirm2faDto: Confirm2faDto,
+  ): Promise<{ success: boolean }> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ID "${userId}" not found.`);
     }
     if (!user.twoFactorSecret) {
-      throw new BadRequestException('2FA secret not found. Please enable 2FA first.');
+      throw new BadRequestException(
+        '2FA secret not found. Please enable 2FA first.',
+      );
     }
 
     const isValidToken = speakeasy.totp.verify({
@@ -604,18 +761,25 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
   async get2faBackupCodes(userId: string): Promise<string[]> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user || !user.isTwoFactorEnabled || !user.twoFactorSecret) {
-      throw new BadRequestException('2FA is not enabled or setup for this user.');
+      throw new BadRequestException(
+        '2FA is not enabled or setup for this user.',
+      );
     }
     // This is a simplified example. In a real application, you would generate
     // and store unique, one-time backup codes securely.
     // For this example, we'll generate some pseudo-random codes.
-    const backupCodes = Array.from({ length: 10 }, () => Math.random().toString(36).substring(2, 10).toUpperCase());
+    const backupCodes = Array.from({ length: 10 }, () =>
+      Math.random().toString(36).substring(2, 10).toUpperCase(),
+    );
     // You would typically store these codes (hashed) and mark them as used.
     // This part is highly dependent on the specific 2FA library and security requirements.
     return backupCodes;
   }
 
-  async updateProfilePictureUrl(userId: string, profilePictureUrl: string): Promise<Omit<UserEntity, 'passwordHash'>> {
+  async updateProfilePictureUrl(
+    userId: string,
+    profilePictureUrl: string,
+  ): Promise<Omit<UserEntity, 'passwordHash'>> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ID "${userId}" not found.`);
@@ -627,11 +791,15 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
       const { passwordHash: _, ...result } = updatedUser;
       return result;
     } catch (error) {
-      throw new InternalServerErrorException('Error updating profile picture URL.');
+      throw new InternalServerErrorException(
+        'Error updating profile picture URL.',
+      );
     }
   }
 
-  async getNotificationPreferences(userId: string): Promise<NotificationPreferencesDto> {
+  async getNotificationPreferences(
+    userId: string,
+  ): Promise<NotificationPreferencesDto> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ID "${userId}" not found.`);
@@ -639,21 +807,33 @@ async changeManagerPassword(userId: string, changeManagerPasswordDto: ChangeMana
     return user.notificationPreferences || {};
   }
 
-  async updateNotificationPreferences(userId: string, preferencesDto: NotificationPreferencesDto): Promise<NotificationPreferencesDto> {
+  async updateNotificationPreferences(
+    userId: string,
+    preferencesDto: NotificationPreferencesDto,
+  ): Promise<NotificationPreferencesDto> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ID "${userId}" not found.`);
     }
-    user.notificationPreferences = { ...user.notificationPreferences, ...preferencesDto };
+    user.notificationPreferences = {
+      ...user.notificationPreferences,
+      ...preferencesDto,
+    };
     try {
       await this.usersRepository.save(user);
       return user.notificationPreferences;
     } catch (error) {
-      throw new InternalServerErrorException('Error updating notification preferences.');
+      throw new InternalServerErrorException(
+        'Error updating notification preferences.',
+      );
     }
   }
 
-  async getLoginHistory(userId: string, page = 1, limit = 10): Promise<{ history: LoginHistoryEntity[], total: number }> {
+  async getLoginHistory(
+    userId: string,
+    page = 1,
+    limit = 10,
+  ): Promise<{ history: LoginHistoryEntity[]; total: number }> {
     const user = await this.usersRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ID "${userId}" not found.`);

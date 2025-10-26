@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../product/product.service';
 import { Product, ProductVariant, ProductVariantOption } from '@shared-types'; // Import variant types
 import { StoreContextService } from '../../core/services/store-context.service';
-import { NotificationService } from 'projects/storefront/src/app/core/services/notification.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { T, TranslatePipe } from '@shared/i18n';
 
 import { Subject, combineLatest, Subscription, Observable } from 'rxjs';

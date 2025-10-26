@@ -7,7 +7,13 @@ import { StoresController } from './stores.controller';
 import { StoresService } from './stores.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([StoreEntity, AboutContentEntity, TestimonialEntity])],
+  imports: [
+    TypeOrmModule.forFeature([
+      StoreEntity,
+      AboutContentEntity,
+      TestimonialEntity,
+    ]),
+  ],
   controllers: [StoresController],
   providers: [StoresService],
   exports: [TypeOrmModule, StoresService],

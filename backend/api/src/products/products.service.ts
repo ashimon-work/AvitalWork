@@ -1,6 +1,17 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, ILike, MoreThanOrEqual, LessThanOrEqual, In, FindOptionsOrder, Between, Not } from 'typeorm';
+import {
+  Repository,
+  FindOptionsWhere,
+  ILike,
+  MoreThan,
+  MoreThanOrEqual,
+  LessThanOrEqual,
+  In,
+  FindOptionsOrder,
+  Between,
+  Not,
+} from 'typeorm';
 import { ProductVariantEntity } from './entities/product-variant.entity';
 import { ProductEntity } from './entities/product.entity';
 import { CategoryEntity } from '../categories/entities/category.entity';
@@ -19,10 +30,12 @@ export interface FindAllProductsParams {
   limit?: number;
   price_min?: number;
   price_max?: number;
+  stockLevel?: number;
   tags?: string;
   q?: string;
   storeSlug?: string;
   isFeaturedInMarketplace?: boolean;
+  inStockOnly?: boolean;
 }
 
 @Injectable()
@@ -35,16 +48,18 @@ export class ProductsService {
     @InjectRepository(CategoryEntity)
     private readonly categoryRepository: Repository<CategoryEntity>,
     private readonly logger: Logger,
-  ) { }
+  ) {}
 
   async decreaseStock(
     transactionManager: import('typeorm').EntityManager,
     productId: string,
     variantId: string | null | undefined,
     quantity: number,
-    storeId: string // Added storeId for context, though product/variant should be unique
+    storeId: string, // Added storeId for context, though product/variant should be unique
   ): Promise<void> {
-    this.logger.log(`Attempting to decrease stock for product ${productId}, variant ${variantId}, quantity ${quantity}`);
+    this.logger.log(
+      `Attempting to decrease stock for product ${productId}, variant ${variantId}, quantity ${quantity}`,
+    );
 
     if (variantId) {
       const variant = await transactionManager.findOne(ProductVariantEntity, {
@@ -53,40 +68,65 @@ export class ProductsService {
       });
 
       if (!variant) {
-        this.logger.error(`Variant with ID "${variantId}" for product "${productId}" not found.`);
-        throw new NotFoundException(`Variant with ID "${variantId}" for product "${productId}" not found.`);
+        this.logger.error(
+          `Variant with ID "${variantId}" for product "${productId}" not found.`,
+        );
+        throw new NotFoundException(
+          `Variant with ID "${variantId}" for product "${productId}" not found.`,
+        );
       }
       // Optional: Check if variant.product.storeId === storeId if variant.product is loaded
 
       if (variant.stockLevel < quantity) {
-        this.logger.warn(`Insufficient stock for variant ${variantId}. Available: ${variant.stockLevel}, Requested: ${quantity}`);
-        throw new Error(`Insufficient stock for variant ${variant.sku || variantId}. Available: ${variant.stockLevel}, Requested: ${quantity}`);
+        this.logger.warn(
+          `Insufficient stock for variant ${variantId}. Available: ${variant.stockLevel}, Requested: ${quantity}`,
+        );
+        throw new Error(
+          `Insufficient stock for variant ${variant.sku || variantId}. Available: ${variant.stockLevel}, Requested: ${quantity}`,
+        );
       }
       variant.stockLevel -= quantity;
       await transactionManager.save(variant);
-      this.logger.log(`Stock for variant ${variantId} updated to ${variant.stockLevel}`);
+      this.logger.log(
+        `Stock for variant ${variantId} updated to ${variant.stockLevel}`,
+      );
     } else {
       const product = await transactionManager.findOne(ProductEntity, {
         where: { id: productId, store: { id: storeId } },
       });
 
       if (!product) {
-        this.logger.error(`Product with ID "${productId}" not found in store "${storeId}".`);
-        throw new NotFoundException(`Product with ID "${productId}" not found.`);
+        this.logger.error(
+          `Product with ID "${productId}" not found in store "${storeId}".`,
+        );
+        throw new NotFoundException(
+          `Product with ID "${productId}" not found.`,
+        );
       }
 
       if (product.stockLevel < quantity) {
-        this.logger.warn(`Insufficient stock for product ${productId}. Available: ${product.stockLevel}, Requested: ${quantity}`);
-        throw new Error(`Insufficient stock for product ${product.name}. Available: ${product.stockLevel}, Requested: ${quantity}`);
+        this.logger.warn(
+          `Insufficient stock for product ${productId}. Available: ${product.stockLevel}, Requested: ${quantity}`,
+        );
+        throw new Error(
+          `Insufficient stock for product ${product.name}. Available: ${product.stockLevel}, Requested: ${quantity}`,
+        );
       }
       product.stockLevel -= quantity;
       await transactionManager.save(product);
-      this.logger.log(`Stock for product ${productId} updated to ${product.stockLevel}`);
+      this.logger.log(
+        `Stock for product ${productId} updated to ${product.stockLevel}`,
+      );
     }
   }
 
-  async createForManager(storeSlug: string, createProductDto: CreateProductDto): Promise<ProductEntity> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async createForManager(
+    storeSlug: string,
+    createProductDto: CreateProductDto,
+  ): Promise<ProductEntity> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
@@ -140,7 +180,10 @@ export class ProductsService {
 
     return product;
   }
-  async findOneForManager(storeSlug: string, id: string): Promise<ProductEntity> {
+  async findOneForManager(
+    storeSlug: string,
+    id: string,
+  ): Promise<ProductEntity> {
     const product = await this.productsRepository.findOne({
       where: {
         id: id,
@@ -150,14 +193,21 @@ export class ProductsService {
     });
 
     if (!product) {
-      throw new NotFoundException(`Product with ID "${id}" not found for store "${storeSlug}".`);
+      throw new NotFoundException(
+        `Product with ID "${id}" not found for store "${storeSlug}".`,
+      );
     }
 
     return product;
   }
 
-  async findAll(params: FindAllProductsParams): Promise<{ products: ProductEntity[], total: number }> {
-    console.log('[ProductsService] findAll received params:', JSON.stringify(params));
+  async findAll(
+    params: FindAllProductsParams,
+  ): Promise<{ products: ProductEntity[]; total: number }> {
+    console.log(
+      '[ProductsService] findAll received params:',
+      JSON.stringify(params),
+    );
     const page = params.page ? +params.page : 1;
     const limit = params.limit ? +params.limit : 12;
     const skip = (page - 1) * limit;
@@ -174,6 +224,9 @@ export class ProductsService {
     if (params.q) {
       where.name = ILike(`%${params.q}%`);
     }
+    if (params.inStockOnly) {
+      where.stockLevel = MoreThan(0);
+    }
     if (params.price_min !== undefined && params.price_max !== undefined) {
       where.price = Between(params.price_min, params.price_max);
     } else if (params.price_min !== undefined) {
@@ -184,7 +237,9 @@ export class ProductsService {
     if (params.tags) {
     }
     if (params.category_id) {
-      where.categories = { id: params.category_id } as FindOptionsWhere<CategoryEntity>;
+      where.categories = {
+        id: params.category_id,
+      } as FindOptionsWhere<CategoryEntity>;
     }
 
     const order: FindOptionsOrder<ProductEntity> = {};
@@ -205,7 +260,10 @@ export class ProductsService {
         order.name = 'ASC';
         break;
     }
-    console.log('[ProductsService] Constructed order object:', JSON.stringify(order));
+    console.log(
+      '[ProductsService] Constructed order object:',
+      JSON.stringify(order),
+    );
 
     const [results, total] = await this.productsRepository.findAndCount({
       where,
@@ -218,7 +276,11 @@ export class ProductsService {
     return { products: results, total };
   }
 
-  async getSearchSuggestions(query: string, storeSlug?: string, limit: number = 5): Promise<ProductEntity[]> {
+  async getSearchSuggestions(
+    query: string,
+    storeSlug?: string,
+    limit: number = 5,
+  ): Promise<ProductEntity[]> {
     const where: FindOptionsWhere<ProductEntity> = {
       name: ILike(`%${query}%`),
       isActive: true,
@@ -233,16 +295,25 @@ export class ProductsService {
       take: limit,
       select: ['id', 'name', 'imageUrls', 'price'],
       relations: ['store'],
-      order: { name: 'ASC' }
+      order: { name: 'ASC' },
     });
   }
 
-  async findRecommendedByOrderId(orderId: string, storeSlug: string): Promise<ProductEntity[]> {
-    this.logger.log(`Fetching recommended products for order ${orderId} in store ${storeSlug}`);
+  async findRecommendedByOrderId(
+    orderId: string,
+    storeSlug: string,
+  ): Promise<ProductEntity[]> {
+    this.logger.log(
+      `Fetching recommended products for order ${orderId} in store ${storeSlug}`,
+    );
     return this.getFeaturedProducts(storeSlug);
   }
 
-  async updateForManager(storeSlug: string, id: string, updateProductDto: UpdateProductDto): Promise<ProductEntity> {
+  async updateForManager(
+    storeSlug: string,
+    id: string,
+    updateProductDto: UpdateProductDto,
+  ): Promise<ProductEntity> {
     const product = await this.productsRepository.findOne({
       where: {
         id: id,
@@ -252,7 +323,9 @@ export class ProductsService {
     });
 
     if (!product) {
-      throw new NotFoundException(`Product with ID "${id}" not found for store "${storeSlug}".`);
+      throw new NotFoundException(
+        `Product with ID "${id}" not found for store "${storeSlug}".`,
+      );
     }
 
     // Apply partial updates from DTO
@@ -284,13 +357,18 @@ export class ProductsService {
     });
 
     if (!product) {
-      throw new NotFoundException(`Product with ID "${id}" not found for store "${storeSlug}".`);
+      throw new NotFoundException(
+        `Product with ID "${id}" not found for store "${storeSlug}".`,
+      );
     }
 
     await this.productsRepository.delete(id);
   }
 
-  async bulkDeleteForManager(storeSlug: string, productIds: string[]): Promise<{ deletedCount: number }> {
+  async bulkDeleteForManager(
+    storeSlug: string,
+    productIds: string[],
+  ): Promise<{ deletedCount: number }> {
     // Verify that all product IDs exist and belong to the store
     const productsToDelete = await this.productsRepository.find({
       where: {
@@ -300,9 +378,13 @@ export class ProductsService {
     });
 
     if (productsToDelete.length !== productIds.length) {
-      const foundProductIds = productsToDelete.map(p => p.id);
-      const notFoundIds = productIds.filter(id => !foundProductIds.includes(id));
-      throw new NotFoundException(`Products with IDs "${notFoundIds.join(', ')}" not found or do not belong to store "${storeSlug}".`);
+      const foundProductIds = productsToDelete.map((p) => p.id);
+      const notFoundIds = productIds.filter(
+        (id) => !foundProductIds.includes(id),
+      );
+      throw new NotFoundException(
+        `Products with IDs "${notFoundIds.join(', ')}" not found or do not belong to store "${storeSlug}".`,
+      );
     }
 
     // Perform bulk deletion
@@ -311,7 +393,11 @@ export class ProductsService {
     return { deletedCount: deleteResult.affected || 0 };
   }
 
-  async bulkUpdateStatusForManager(storeSlug: string, productIds: string[], status: string): Promise<{ updatedCount: number }> {
+  async bulkUpdateStatusForManager(
+    storeSlug: string,
+    productIds: string[],
+    status: string,
+  ): Promise<{ updatedCount: number }> {
     // Verify that all product IDs exist and belong to the store
     const productsToUpdate = await this.productsRepository.find({
       where: {
@@ -321,13 +407,19 @@ export class ProductsService {
     });
 
     if (productsToUpdate.length !== productIds.length) {
-      const foundProductIds = productsToUpdate.map(p => p.id);
-      const notFoundIds = productIds.filter(id => !foundProductIds.includes(id));
-      throw new NotFoundException(`Products with IDs "${notFoundIds.join(', ')}" not found or do not belong to store "${storeSlug}".`);
+      const foundProductIds = productsToUpdate.map((p) => p.id);
+      const notFoundIds = productIds.filter(
+        (id) => !foundProductIds.includes(id),
+      );
+      throw new NotFoundException(
+        `Products with IDs "${notFoundIds.join(', ')}" not found or do not belong to store "${storeSlug}".`,
+      );
     }
 
     // Perform bulk update
-    const updateResult = await this.productsRepository.update(productIds, { isActive: status === 'active' });
+    const updateResult = await this.productsRepository.update(productIds, {
+      isActive: status === 'active',
+    });
 
     return { updatedCount: updateResult.affected || 0 };
   }
@@ -345,13 +437,22 @@ export class ProductsService {
     }
 
     // Define CSV headers
-    const headers = ['ID', 'Name', 'SKU', 'Price', 'Stock', 'Status', 'Tags', 'Categories'];
+    const headers = [
+      'ID',
+      'Name',
+      'SKU',
+      'Price',
+      'Stock',
+      'Status',
+      'Tags',
+      'Categories',
+    ];
     let csvContent = headers.join(',') + '\n';
 
     // Format product data into CSV rows
-    products.forEach(product => {
+    products.forEach((product) => {
       const status = product.isActive ? 'Active' : 'Inactive';
-      const categoryNames = product.categories.map(cat => cat.name).join(';'); // Join multiple categories with a semicolon
+      const categoryNames = product.categories.map((cat) => cat.name).join(';'); // Join multiple categories with a semicolon
       const row = [
         product.id,
         `"${product.name.replace(/"/g, '""')}"`, // Handle quotes in names
@@ -368,8 +469,18 @@ export class ProductsService {
     return csvContent;
   }
 
-  async importForManager(storeSlug: string, file: Express.Multer.File): Promise<{ created: number, updated: number, failed: number, errors: any[] }> {
-    const store = await this.storeRepository.findOne({ where: { slug: storeSlug } });
+  async importForManager(
+    storeSlug: string,
+    file: Express.Multer.File,
+  ): Promise<{
+    created: number;
+    updated: number;
+    failed: number;
+    errors: any[];
+  }> {
+    const store = await this.storeRepository.findOne({
+      where: { slug: storeSlug },
+    });
 
     if (!store) {
       throw new NotFoundException(`Store with slug "${storeSlug}" not found.`);
@@ -403,13 +514,15 @@ export class ProductsService {
 
       for (const item of productsToImport) {
         try {
-          let product = await this.productsRepository.findOne({
+          const product = await this.productsRepository.findOne({
             where: { sku: item.sku, store: { slug: storeSlug } },
           });
 
-          const categories = item.categoryIds ? await this.categoryRepository.findBy({
-            id: In(item.categoryIds.split(',').map(id => id.trim())),
-          }) : [];
+          const categories = item.categoryIds
+            ? await this.categoryRepository.findBy({
+                id: In(item.categoryIds.split(',').map((id) => id.trim())),
+              })
+            : [];
 
           if (product) {
             // Update existing product
@@ -417,10 +530,14 @@ export class ProductsService {
             product.description = item.description;
             product.price = parseFloat(item.price);
             if (item.imageUrls !== undefined) {
-              product.imageUrls = item.imageUrls ? item.imageUrls.split(',').map(url => url.trim()) : [];
+              product.imageUrls = item.imageUrls
+                ? item.imageUrls.split(',').map((url) => url.trim())
+                : [];
             }
             if (item.tags !== undefined) {
-              product.tags = item.tags ? item.tags.split(',').map(tag => tag.trim()) : [];
+              product.tags = item.tags
+                ? item.tags.split(',').map((tag) => tag.trim())
+                : [];
             }
             product.stockLevel = parseInt(item.stockLevel, 10);
             if (item.isActive !== undefined) {
@@ -440,10 +557,17 @@ export class ProductsService {
               name: item.name,
               description: item.description,
               price: parseFloat(item.price),
-              imageUrls: item.imageUrls ? item.imageUrls.split(',').map(url => url.trim()) : [],
-              tags: item.tags ? item.tags.split(',').map(tag => tag.trim()) : [],
+              imageUrls: item.imageUrls
+                ? item.imageUrls.split(',').map((url) => url.trim())
+                : [],
+              tags: item.tags
+                ? item.tags.split(',').map((tag) => tag.trim())
+                : [],
               stockLevel: parseInt(item.stockLevel, 10),
-              isActive: item.isActive !== undefined ? item.isActive.toLowerCase() === 'true' : true,
+              isActive:
+                item.isActive !== undefined
+                  ? item.isActive.toLowerCase() === 'true'
+                  : true,
               store: store,
               categories: categories,
               // TODO: Handle options and variants creation
@@ -454,28 +578,45 @@ export class ProductsService {
         } catch (itemError) {
           failedCount++;
           errors.push({ sku: item.sku, error: itemError.message });
-          this.logger.error(`Failed to import product with SKU ${item.sku} for store ${storeSlug}: ${itemError.message}`, itemError.stack);
+          this.logger.error(
+            `Failed to import product with SKU ${item.sku} for store ${storeSlug}: ${itemError.message}`,
+            itemError.stack,
+          );
         }
       }
-
     } catch (parseError) {
       failedCount = productsToImport.length; // Mark all as failed if parsing fails
       errors.push({ error: `File parsing failed: ${parseError.message}` });
-      this.logger.error(`Failed to parse import file for store ${storeSlug}: ${parseError.message}`, parseError.stack);
+      this.logger.error(
+        `Failed to parse import file for store ${storeSlug}: ${parseError.message}`,
+        parseError.stack,
+      );
     }
 
-    return { created: createdCount, updated: updatedCount, failed: failedCount, errors };
+    return {
+      created: createdCount,
+      updated: updatedCount,
+      failed: failedCount,
+      errors,
+    };
   }
 
-  async findRelatedByProductId(productId: string, storeSlug: string): Promise<ProductEntity[]> {
-    this.logger.log(`Finding related products for productId: ${productId} in store: ${storeSlug}`);
+  async findRelatedByProductId(
+    productId: string,
+    storeSlug: string,
+  ): Promise<ProductEntity[]> {
+    this.logger.log(
+      `Finding related products for productId: ${productId} in store: ${storeSlug}`,
+    );
     // Placeholder implementation:
     // Actual logic could involve finding products in the same category, with similar tags,
     // or based on collaborative filtering, etc.
     // For now, let's return a few other products from the same store, excluding the product itself.
     const store = await this.storeRepository.findOneBy({ slug: storeSlug });
     if (!store) {
-      this.logger.warn(`Store with slug ${storeSlug} not found when finding related products.`);
+      this.logger.warn(
+        `Store with slug ${storeSlug} not found when finding related products.`,
+      );
       return [];
     }
 
@@ -483,12 +624,12 @@ export class ProductsService {
       where: {
         store: { id: store.id },
         isActive: true,
-        id: Not(productId)
+        id: Not(productId),
       },
       take: 5, // Limit to 5 related products
       relations: ['store', 'categories', 'variants'],
     });
     // Filter out the original product if it was somehow included
-    return products.filter(p => p.id !== productId);
+    return products.filter((p) => p.id !== productId);
   }
 }

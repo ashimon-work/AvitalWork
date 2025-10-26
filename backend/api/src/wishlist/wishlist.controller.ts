@@ -49,7 +49,11 @@ export class WishlistController {
     if (!storeId) {
       throw new Error('Store context not found');
     }
-    return this.wishlistService.addItemToWishlist(userId, storeId, addWishlistItemDto);
+    return this.wishlistService.addItemToWishlist(
+      userId,
+      storeId,
+      addWishlistItemDto,
+    );
   }
 
   // Use wishlistItemId for deletion

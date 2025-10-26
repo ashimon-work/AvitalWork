@@ -24,6 +24,8 @@ services:
     volumes:
       - .:/usr/src/app
       - api_node_modules:/usr/src/app/backend/api/node_modules
+    ports:
+      - "9229:9229" # Expose debug port
     environment:
       NODE_ENV: development
       PORT: 3000 # NestJS listens on this port internally
@@ -33,7 +35,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-magic_store_dev}
       JWT_SECRET: ${JWT_SECRET:-SOME_DEFAULT_DEV_SECRET}
-    command: sh -c "cd backend/api && npm install && npm run start:dev"
+      WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN}
+    command: sh -c "cd backend/api && npm install && npm run start:debug"
     depends_on:
       db:
         condition: service_healthy

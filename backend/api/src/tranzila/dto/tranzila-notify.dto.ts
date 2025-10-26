@@ -23,4 +23,4 @@ export class TranzilaNotifyDto {
 
   // Allow additional fields that Tranzila might send
   [key: string]: any;
-} 
+}

@@ -1,4 +1,11 @@
-import { Controller, Get, Req, UseGuards, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  UseGuards,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { StoreContextGuard } from '../core/guards/store-context.guard';
 import { AuthenticatedRequest } from '../auth/interfaces/authenticated-request.interface'; // Using AuthenticatedRequest for storeSlug
 import { ShippingService } from './shipping.service';
@@ -12,13 +19,19 @@ export class ShippingController {
   constructor(private readonly shippingService: ShippingService) {}
 
   @Get('methods') // Full path: GET /api/shipping/methods
-  async getShippingMethods(@Req() req: AuthenticatedRequest): Promise<ShippingMethodEntity[]> {
+  async getShippingMethods(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<ShippingMethodEntity[]> {
     const storeSlug = req.storeSlug;
-    this.logger.log(`Received request for shipping methods for store: ${storeSlug}`);
+    this.logger.log(
+      `Received request for shipping methods for store: ${storeSlug}`,
+    );
 
     if (!storeSlug) {
       // This should ideally be caught by StoreContextGuard, but as a fallback:
-      throw new BadRequestException('Store context is missing. Cannot determine store slug.');
+      throw new BadRequestException(
+        'Store context is missing. Cannot determine store slug.',
+      );
     }
     return this.shippingService.getShippingMethodsByStoreSlug(storeSlug);
   }

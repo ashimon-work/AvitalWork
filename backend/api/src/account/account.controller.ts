@@ -1,4 +1,22 @@
-import { Controller, Get, Post, Body, UsePipes, ValidationPipe, HttpCode, HttpStatus, UnauthorizedException, Req, UseGuards, BadRequestException, NotFoundException, Patch, Query, ParseIntPipe, Param } from '@nestjs/common'; // Add Query, ParseIntPipe, Param
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UsePipes,
+  ValidationPipe,
+  HttpCode,
+  HttpStatus,
+  UnauthorizedException,
+  Req,
+  UseGuards,
+  BadRequestException,
+  NotFoundException,
+  Patch,
+  Query,
+  ParseIntPipe,
+  Param,
+} from '@nestjs/common'; // Add Query, ParseIntPipe, Param
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthService } from '../auth/auth.service';
 import { ChangePasswordDto } from '../auth/dto/change-password.dto';
@@ -20,7 +38,7 @@ export class AccountController {
     private readonly addressesService: AddressesService,
     private readonly cartService: CartService,
     // TODO: Inject PaymentMethodsService later
-  ) { }
+  ) {}
 
   @Get('profile') // Endpoint: GET /api/account/profile
   getProfile(@Req() req: AuthenticatedRequest) {
@@ -69,10 +87,12 @@ export class AccountController {
     @Body() updatePersonalInfoDto: UpdatePersonalInfoDto,
   ) {
     const userId = req.user.id;
-    const updatedUser = await this.usersService.updatePersonalInfo(userId, updatePersonalInfoDto);
+    const updatedUser = await this.usersService.updatePersonalInfo(
+      userId,
+      updatePersonalInfoDto,
+    );
     return updatedUser; // Return the updated user profile (excluding password hash)
   }
-
 
   @Post('change-password')
   @HttpCode(HttpStatus.NO_CONTENT) // Return 204 No Content on success
@@ -114,7 +134,9 @@ export class AccountController {
     // the service method would need to be adapted.
     const order = await this.ordersService.findOneByIdAndUser(userId, orderId);
     if (!order) {
-      throw new NotFoundException(`Order with ID "${orderId}" not found for this user.`);
+      throw new NotFoundException(
+        `Order with ID "${orderId}" not found for this user.`,
+      );
     }
     return order;
   }
@@ -122,7 +144,7 @@ export class AccountController {
   @Get('carts')
   async getAccountCarts(@Req() req: AuthenticatedRequest) {
     const userId = req.user.id;
-    return this.cartService.findAllByUserIdOrGuestId(userId);
+    return this.cartService.findAllByUserIdOrGuestSessionId(userId);
   }
 
   // TODO: Add endpoints for payment methods later

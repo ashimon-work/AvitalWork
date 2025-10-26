@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, MaxLength, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
 
 export class CreateAddressDto {
   @IsString()
@@ -25,7 +31,6 @@ export class CreateAddressDto {
   @IsNotEmpty()
   @MaxLength(100)
   // state: string; // Removed state
-
   @IsString()
   @IsNotEmpty()
   @MaxLength(20)
@@ -34,7 +39,6 @@ export class CreateAddressDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-
   @IsString()
   @IsOptional()
   @MaxLength(20)

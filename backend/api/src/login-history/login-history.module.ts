@@ -4,8 +4,8 @@ import { LoginHistoryService } from './login-history.service';
 import { LoginHistoryEntity } from './entities/login-history.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([LoginHistoryEntity])],
-    providers: [LoginHistoryService],
-    exports: [LoginHistoryService],
+  imports: [TypeOrmModule.forFeature([LoginHistoryEntity])],
+  providers: [LoginHistoryService],
+  exports: [LoginHistoryService],
 })
-export class LoginHistoryModule { }
+export class LoginHistoryModule {}

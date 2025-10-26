@@ -15,14 +15,21 @@ import { JwtStrategy } from './jwt.strategy';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const secret = configService.get<string>('JWT_SECRET');
-        const expiresIn = configService.get<string>('JWT_EXPIRATION_TIME', '1d');
+        const expiresIn = configService.get<string>(
+          'JWT_EXPIRATION_TIME',
+          '1d',
+        );
 
         console.log('JWT Secret Loaded Status:', secret ? 'Loaded' : 'MISSING');
         console.log('JWT ExpiresIn:', expiresIn);
 
         if (!secret) {
-          console.error('FATAL ERROR: JWT_SECRET environment variable is not set.');
-          throw new Error('FATAL ERROR: JWT_SECRET environment variable is not set. Application cannot start.');
+          console.error(
+            'FATAL ERROR: JWT_SECRET environment variable is not set.',
+          );
+          throw new Error(
+            'FATAL ERROR: JWT_SECRET environment variable is not set. Application cannot start.',
+          );
         }
 
         return {

@@ -31,7 +31,10 @@ export class AddressesController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Request() req: AuthenticatedRequest, @Body() createAddressDto: CreateAddressDto) {
+  create(
+    @Request() req: AuthenticatedRequest,
+    @Body() createAddressDto: CreateAddressDto,
+  ) {
     const userId = req.user.id;
     return this.addressesService.create(userId, createAddressDto);
   }
@@ -61,7 +64,10 @@ export class AddressesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Request() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
+  remove(
+    @Request() req: AuthenticatedRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     const userId = req.user.id;
     return this.addressesService.remove(id, userId);
   }
@@ -69,7 +75,10 @@ export class AddressesController {
   // Endpoint to set default shipping address
   @Put(':id/default/shipping')
   @HttpCode(HttpStatus.NO_CONTENT)
-  setDefaultShipping(@Request() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
+  setDefaultShipping(
+    @Request() req: AuthenticatedRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     const userId = req.user.id;
     return this.addressesService.setDefault(id, userId, 'shipping');
   }
@@ -77,7 +86,10 @@ export class AddressesController {
   // Endpoint to set default billing address
   @Put(':id/default/billing')
   @HttpCode(HttpStatus.NO_CONTENT)
-  setDefaultBilling(@Request() req: AuthenticatedRequest, @Param('id', ParseUUIDPipe) id: string) {
+  setDefaultBilling(
+    @Request() req: AuthenticatedRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     const userId = req.user.id;
     return this.addressesService.setDefault(id, userId, 'billing');
   }

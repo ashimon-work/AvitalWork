@@ -1,4 +1,10 @@
-import { Injectable, Logger, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ReviewEntity } from './entities/review.entity';
@@ -23,17 +29,27 @@ export class ReviewsService {
   ) {}
 
   // Method to get reviews for a specific product
-  async findByProductId(productId: string, storeSlug: string): Promise<ReviewEntity[]> {
-    this.logger.log(`Fetching reviews for product ${productId} in store ${storeSlug}`);
+  async findByProductId(
+    productId: string,
+    storeSlug: string,
+  ): Promise<ReviewEntity[]> {
+    this.logger.log(
+      `Fetching reviews for product ${productId} in store ${storeSlug}`,
+    );
 
     const store = await this.storeRepository.findOneBy({ slug: storeSlug });
     if (!store) {
       throw new NotFoundException('Store not found.');
     }
 
-    const product = await this.productRepository.findOneBy({ id: productId, store: { id: store.id } });
+    const product = await this.productRepository.findOneBy({
+      id: productId,
+      store: { id: store.id },
+    });
     if (!product) {
-      throw new NotFoundException(`Product with ID ${productId} not found in store ${storeSlug}.`);
+      throw new NotFoundException(
+        `Product with ID ${productId} not found in store ${storeSlug}.`,
+      );
     }
 
     return this.reviewRepository.find({
@@ -44,8 +60,14 @@ export class ReviewsService {
   }
 
   // Method to create a new review
-  async create(userId: string, storeSlug: string, createReviewDto: CreateReviewDto): Promise<ReviewEntity> {
-    this.logger.log(`Creating review for product ${createReviewDto.productId} by user ${userId} in store ${storeSlug}`);
+  async create(
+    userId: string,
+    storeSlug: string,
+    createReviewDto: CreateReviewDto,
+  ): Promise<ReviewEntity> {
+    this.logger.log(
+      `Creating review for product ${createReviewDto.productId} by user ${userId} in store ${storeSlug}`,
+    );
 
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
@@ -57,18 +79,29 @@ export class ReviewsService {
       throw new NotFoundException('Store not found.');
     }
 
-    const product = await this.productRepository.findOneBy({ id: createReviewDto.productId, store: { id: store.id } });
+    const product = await this.productRepository.findOneBy({
+      id: createReviewDto.productId,
+      store: { id: store.id },
+    });
     if (!product) {
-      throw new NotFoundException(`Product with ID ${createReviewDto.productId} not found in store ${storeSlug}.`);
+      throw new NotFoundException(
+        `Product with ID ${createReviewDto.productId} not found in store ${storeSlug}.`,
+      );
     }
 
     // Check if the user has already reviewed this product in this store
     const existingReview = await this.reviewRepository.findOne({
-      where: { user: { id: userId }, product: { id: product.id }, store: { id: store.id } },
+      where: {
+        user: { id: userId },
+        product: { id: product.id },
+        store: { id: store.id },
+      },
     });
 
     if (existingReview) {
-      throw new BadRequestException('User has already reviewed this product in this store.');
+      throw new BadRequestException(
+        'User has already reviewed this product in this store.',
+      );
     }
 
     const newReview = this.reviewRepository.create({

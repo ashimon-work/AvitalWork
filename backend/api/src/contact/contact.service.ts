@@ -1,4 +1,10 @@
-import { Injectable, Logger, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FaqEntity } from './entities/faq.entity';
@@ -33,8 +39,13 @@ export class ContactService {
       });
       return await this.contactSubmissionRepository.save(newSubmission);
     } catch (error) {
-      this.logger.error(`Failed to create contact submission: ${error.message}`, error.stack);
-      throw new InternalServerErrorException('Failed to save contact submission.');
+      this.logger.error(
+        `Failed to create contact submission: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to save contact submission.',
+      );
     }
   }
 

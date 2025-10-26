@@ -24,4 +24,4 @@ export class CartItemDto {
   @Expose()
   @IsDate()
   updatedAt: Date;
-} 
+}

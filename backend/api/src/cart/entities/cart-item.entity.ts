@@ -5,6 +5,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  Relation,
 } from 'typeorm';
 import { CartEntity } from './cart.entity';
 import { ProductEntity } from '../../products/entities/product.entity';
@@ -18,7 +19,7 @@ export class CartItemEntity {
   quantity: number;
 
   @ManyToOne(() => CartEntity, (cart) => cart.items, { onDelete: 'CASCADE' })
-  cart: CartEntity;
+  cart: Relation<CartEntity>;
 
   @ManyToOne(() => ProductEntity, { onDelete: 'CASCADE' })
   product: ProductEntity;
