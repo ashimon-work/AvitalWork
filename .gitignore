@@ -1,8 +1,12 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
+.vscode-server
 # Environment variables
 .env
-
+.cache
+.ssh
+.bash_history
+.wget-hsts
+.dotnet
 # Compiled output
 /dist
 /tmp
