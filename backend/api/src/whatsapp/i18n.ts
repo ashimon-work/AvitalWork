@@ -9,7 +9,7 @@ What can I do?
 
 Ready to start? Just choose an option below:`,
     mainMenu:
-      '1. ➕ Add New Product\n2. 🏪 Manage Store\n3. 📊 Reports & Settings',
+      '1. ➕ Add New Product\n2. 🏪 Manage Store\n3. 📊 Reports & Settings\n4. 🗑️ Delete a Product',
     addProduct_awaitingName:
       "Great, let's add a new product. First, what is the product's name? (e.g., Nike Air Max 90)",
     addProduct_awaitingCategory:
@@ -122,7 +122,8 @@ Ready to start? Just choose an option below:`,
     manager_store_selected: `You are now managing the store. What would you like to do?
 1. ➕ Add New Product
 2. 📝 Manage Existing Product
-3. 📊 View Reports`,
+3. 📊 View Reports
+4. 🗑️ Delete a Product`,
     invalid_store: "Sorry, that's not a valid store number. Please try again.",
     language_selection: 'Please select your preferred language:',
     language_updated: 'Language updated successfully.',
@@ -162,6 +163,14 @@ Ready to start? Just choose an option below:`,
     back_to_main_menu: 'Back to Main Menu',
     no_color_default: 'No Color',
     standard_size_default: 'Standard',
+    no_categories_found: "No categories found in your store.",
+    deleteProduct_selectCategory: "Please choose a category to delete a product from:\n{list}",
+    no_products_in_category: "No products were found in this category.",
+    deleteProduct_selectProduct: "Please select the product you want to delete:\n{list}",
+    deleteProduct_confirm: "Are you sure you want to delete the product \"{productName}\"?",
+    deleteProduct_success: "The product was successfully deleted ✅",
+    deleteProduct_cancelled: "Product deletion was cancelled ❌",
+
   },
   he: {
     welcome: `היי! ברוכים הבאים ל'סמארטי' 🤖. אני עוזר ניהול החנות האישי שלכם מבית SmartApp. אני כאן כדי לעזור לכם לחסוך זמן יקר על ידי ניהול החנות שלכם ישירות מהווטסאפ.
@@ -172,7 +181,7 @@ Ready to start? Just choose an option below:`,
 - להציג לכם דוחות מכירה ורווחיות בזמן אמת.
 
 מוכנים להתחיל? פשוט בחרו אפשרות למטה:`,
-    mainMenu: '1. ➕ הוספת מוצר חדש\n2. 🏪 ניהול חנות\n3. 📊 דוחות והגדרות',
+    mainMenu: '1. ➕ הוספת מוצר חדש\n2. 🏪 ניהול חנות\n3. 📊 דוחות והגדרות\n4. מחק מוצר 🗑️ ',
     addProduct_awaitingName:
       'מעולה, בואו נוסיף מוצר חדש. ראשית, מה שם המוצר? (לדוגמה, נייקי אייר מקס 90)',
     addProduct_awaitingCategory:
@@ -270,7 +279,8 @@ Ready to start? Just choose an option below:`,
     manager_store_selected: `כעת אתה מנהל את החנות. מה תרצה לעשות?
 1. ➕ הוספת מוצר חדש
 2. 📝 ניהול מוצר קיים
-3. 📊 צפייה בדוחות`,
+3. 📊 צפייה בדוחות
+4. 🗑️ מחק מוצר`,
     invalid_store: 'מצטער, זהו מספר חנות לא חוקי. אנא נסה שוב.',
     language_selection: 'אנא בחר את השפה המועדפת עליך:',
     language_updated: 'השפה עודכנה בהצלחה.',
@@ -309,5 +319,12 @@ Ready to start? Just choose an option below:`,
     back_to_main_menu: 'חזרה לתפריט הראשי',
     no_color_default: 'ללא צבע',
     standard_size_default: 'סטנדרטית',
+    no_categories_found: "לא נמצאו קטגוריות בחנות שלך.",
+    deleteProduct_selectCategory: "אנא בחר קטגוריה שממנה תרצה למחוק מוצר:\n{list}",
+    no_products_in_category: "לא נמצאו מוצרים בקטגוריה זו.",
+    deleteProduct_selectProduct: "אנא בחר את המוצר שברצונך למחוק:\n{list}",
+    deleteProduct_confirm: "האם אתה בטוח שברצונך למחוק את המוצר \"{productName}\"?",
+    deleteProduct_success: "המוצר נמחק בהצלחה ✅",
+    deleteProduct_cancelled: "המחיקה בוטלה ❌",
   },
 };

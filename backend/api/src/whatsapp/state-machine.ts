@@ -634,6 +634,8 @@ const handleMainMenu = async (
     case 'main_menu_2':
       return await handleManageStoreMain(service, state, messageText);
     case '3':
+    case '4':
+      return await handleDeleteProductStart(service, state);  
     case 'main_menu_3':
     case 'main_menu_4':
       return await handleReportsAndSettings(service, state, messageText);
@@ -1664,6 +1666,113 @@ const handleReportsAndSettings = async (
 
   return { ...state, currentState: 'reportsAndSettings' };
 };
+export const handleDeleteProductStart = async (
+  service: WhatsappService,
+  state: ConversationStateEntity,
+): Promise<ConversationStateEntity> => {
+  const { userId, context } = state;
+  const lang = getLang(state);
+
+  const categories = await service.categoryRepository.find({
+    where: { storeId: context.storeId },
+  });
+
+  if (!categories.length) {
+    await sendMessage(service, userId, lang, 'no_categories_found');
+    return await sendWelcomeMessage(service, state);
+  }
+
+  const categoryList = formatNumberedList(categories, (c) => c.name);
+  await sendMessage(service, userId, lang, 'deleteProduct_selectCategory', {
+    list: categoryList,
+  });
+
+  return createStateTransition(state, 'deleteProduct_awaitingCategory', {
+    categories: categories.map((c) => c.id),
+  });
+};
+export const handleDeleteProductAwaitingCategory = async (
+  service: WhatsappService,
+  state: ConversationStateEntity,
+  messageText: string,
+): Promise<ConversationStateEntity> => {
+  const { userId, context } = state;
+  const lang = getLang(state);
+
+  return handleListSelection(
+    service,
+    state,
+    messageText,
+    context.categories,
+    async (categoryId) => {
+      const category = await findEntityById(service.categoryRepository, categoryId);
+      const products = await  getProductsByCategory(service.productRepository, categoryId);
+
+      if (!products.length) {
+        await sendMessage(service, userId, lang, 'no_products_in_category');
+        return await sendWelcomeMessage(service, state);
+      }
+
+      const productList = formatNumberedList(products, (p) => p.name);
+      await sendMessage(service, userId, lang, 'deleteProduct_selectProduct', {
+        list: productList,
+      });
+
+      return createStateTransition(state, 'deleteProduct_awaitingProduct', {
+        selectedCategory: category,
+        products: products.map((p) => p.id),
+      });
+    },
+  );
+};
+export const handleDeleteProductAwaitingProduct = async (
+  service: WhatsappService,
+  state: ConversationStateEntity,
+  messageText: string,
+): Promise<ConversationStateEntity> => {
+  const { userId, context } = state;
+  const lang = getLang(state);
+
+  return handleListSelection(
+    service,
+    state,
+    messageText,
+    context.products,
+    async (productId) => {
+      const product = await findEntityById(service.productRepository, productId);
+
+      await sendMessage(service, userId, lang, 'deleteProduct_confirm', {
+        productName: product?.name||'',
+      });
+
+      return createStateTransition(state, 'deleteProduct_confirming', {
+        selectedProduct: product,
+      });
+    },
+  );
+};
+export const handleDeleteProductConfirming = async (
+  service: WhatsappService,
+  state: ConversationStateEntity,
+  messageText: string,
+): Promise<ConversationStateEntity> => {
+  const { userId, context } = state;
+  const lang = getLang(state);
+  const product = context.selectedProduct;
+
+  if (isYes(messageText)) {
+    await service.productRepository.delete(product.id);
+    await sendMessage(service, userId, lang, 'deleteProduct_success');
+  } else if (isNo(messageText)) {
+    await sendMessage(service, userId, lang, 'deleteProduct_cancelled');
+  } else {
+    await sendMessage(service, userId, lang, 'invalid_input');
+    return state;
+  }
+
+  return await sendWelcomeMessage(service, state);
+};
+
 
 const handleManageStoreCategoryOptions = async (
   service: WhatsappService,
