@@ -11,12 +11,15 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
     "moduleResolution": "bundler",
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "paths": {
       "shared-types": [
         "dist/shared-types/shared-types", // Adjust path based on ng-packagr output if needed
@@ -39,6 +42,14 @@
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true
   },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "out-tsc",
+    ".angular",
+    "coverage",
+    "**/*.spec.ts"
+  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
