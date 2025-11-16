@@ -54,7 +54,6 @@ services:
       - store_management_build:/app/store-management-build:ro
     depends_on:
       - frontend
-      - store-management-frontend-dev
       - api # Also depend on api for /api/ routing
     restart: unless-stopped
     networks:
