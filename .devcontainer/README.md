@@ -45,9 +45,35 @@ Each developer has been assigned a dedicated project directory with its own set 
 
 To stop and remove all the containers for your environment:
 ```bash
-# Make sure you are in your project directory (e.g., /home/ubuntu/dev1)
-docker-compose -f docker-compose.dev.yml down
+# Use the project name that matches your username (e.g., ayala, racheli, sivan)
+docker-compose -f docker-compose.dev.yml -p ayala down
 ```
+
+**For each developer:**
+```bash
+# Ayala
+docker-compose -f docker-compose.dev.yml -p ayala down
+
+# Racheli
+docker-compose -f docker-compose.dev.yml -p racheli down
+
+# Sivan
+docker-compose -f docker-compose.dev.yml -p sivan down
+```
+
+## Restarting with Fewer Resources
+
+If you need to restart your environment with fewer resources (without Store Management):
+
+```bash
+# Stop your environment first
+docker-compose -f docker-compose.dev.yml -p ayala down
+
+# Start without Store Management (saves CPU and memory)
+docker-compose -f docker-compose.dev.yml -p ayala up --build -d
+```
+
+This will start only: database, API, storefront, and nginx — excluding the store-management frontend to reduce resource usage.
 
 ## Accessing Your Application
 
