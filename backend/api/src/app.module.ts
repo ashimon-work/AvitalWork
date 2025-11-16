@@ -25,6 +25,7 @@ import { ShippingModule } from './shipping/shipping.module';
 import { CheckoutModule } from './checkout/checkout.module';
 import { GuestModule } from './guest/guest.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
+import { WebChatModule } from './web-chat/web-chat.module';
 
 // Import all entities used in the seed script
 import { StoreEntity } from './stores/entities/store.entity';
@@ -106,6 +107,7 @@ import { MarketplaceModule } from './marketplace/marketplace.module';
     MarketplaceModule,
     GuestModule,
     WhatsappModule,
+    WebChatModule,
   ],
   controllers: [AppController, ManagerController],
   providers: [AppService, ManagerService],

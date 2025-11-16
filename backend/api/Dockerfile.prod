@@ -45,6 +45,8 @@ COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/backend/api/node_modules ./backend/api/node_modules
 # Copy built application
 COPY --from=builder /usr/src/app/backend/api/dist ./backend/api/dist
+# Copy public folder for web chat simulator
+COPY --from=builder /usr/src/app/backend/api/public ./backend/api/public
 # Copy backend package.json for running the app
 COPY --from=builder /usr/src/app/backend/api/package.json ./backend/api/package.json
 
