@@ -77,6 +77,8 @@ services:
 
   store-management-frontend-dev:
     image: node:20-slim
+    profiles:
+      - store-management
     working_dir: /usr/src/app
     volumes:
       - .:/usr/src/app
