@@ -1,0 +1,86 @@
+2025-11-17 08:53:40.987 [info] Creating Indexing Repo client:  https://repo42.cursor.sh
+2025-11-17 08:53:40.987 [info] Creating repo client with backend url: https://repo42.cursor.sh
+2025-11-17 08:53:40.987 [warning] Failed to get symbolic ref: Failed to execute git
+2025-11-17 08:53:41.219 [info] Making keys for a new index
+2025-11-17 08:53:41.224 [info] Making keys for a new index
+2025-11-17 08:53:41.345 [info] Using the default key from the server for a new index
+2025-11-17 08:53:41.346 [info] InternalRepoInfo constructor with preferredEmbeddingModel 0
+2025-11-17 08:53:41.346 [info] Using the default key from the server for a new index
+2025-11-17 08:53:41.346 [info] InternalRepoInfo constructor with preferredEmbeddingModel 0
+2025-11-17 08:53:41.418 [info] Starting RepoIndexWatcher for repo: c5d353e8-f00f-458b-b08d-5fd717a793fd, owner: google-oauth2|user_01K88P8986YAHFEE6PR2X13JPM
+2025-11-17 08:53:41.418 [error] We currently do not allow indexing the home directory.
+2025-11-17 08:53:41.418 [info] Indexing job successfully done or aborted.
+2025-11-17 08:55:09.292 [error] Error getting submodules: A system error occurred (ENOENT: no such file or directory, open '/home/racheli/project/.gitmodules')
+2025-11-17 08:59:05.419 [info] multiCodebaseIndexingJob dispose
+2025-11-17 08:59:05.419 [info] Aborting indexing job.
+2025-11-17 08:59:05.419 [error] We currently do not allow indexing the home directory.
+2025-11-17 08:59:05.420 [info] Indexing job successfully done or aborted.
+2025-11-17 09:03:28.820 [info] Get user commits took 19.301748999976553ms for 10 commits
+2025-11-17 09:04:29.420 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:04:29.420 [info] Aborting indexing job.
+2025-11-17 09:04:29.420 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:04:29.420 [info] Indexing job successfully done or aborted.
+2025-11-17 09:09:53.418 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:09:53.418 [info] Aborting indexing job.
+2025-11-17 09:09:53.418 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:09:53.418 [info] Indexing job successfully done or aborted.
+2025-11-17 09:13:28.820 [info] Get user commits took 18.334586000069976ms for 10 commits
+2025-11-17 09:13:39.830 [error] Error getting submodules: A system error occurred (ENOENT: no such file or directory, open '/home/racheli/project/.gitmodules')
+2025-11-17 09:15:17.420 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:15:17.420 [info] Aborting indexing job.
+2025-11-17 09:15:17.420 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:15:17.420 [info] Indexing job successfully done or aborted.
+2025-11-17 09:19:40.038 [error] Error getting submodules: A system error occurred (ENOENT: no such file or directory, open '/home/racheli/project/.gitmodules')
+2025-11-17 09:20:41.421 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:20:41.421 [info] Aborting indexing job.
+2025-11-17 09:20:41.421 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:20:41.421 [info] Indexing job successfully done or aborted.
+2025-11-17 09:23:29.262 [info] Get user commits took 18.722261000191793ms for 10 commits
+2025-11-17 09:26:05.421 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:26:05.421 [info] Aborting indexing job.
+2025-11-17 09:26:05.421 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:26:05.421 [info] Indexing job successfully done or aborted.
+2025-11-17 09:31:29.422 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:31:29.422 [info] Aborting indexing job.
+2025-11-17 09:31:29.422 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:31:29.422 [info] Indexing job successfully done or aborted.
+2025-11-17 09:33:28.840 [info] Get user commits took 20.522973999846727ms for 10 commits
+2025-11-17 09:36:53.423 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:36:53.423 [info] Aborting indexing job.
+2025-11-17 09:36:53.423 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:36:53.423 [info] Indexing job successfully done or aborted.
+2025-11-17 09:42:17.423 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:42:17.423 [info] Aborting indexing job.
+2025-11-17 09:42:17.423 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:42:17.423 [info] Indexing job successfully done or aborted.
+2025-11-17 09:43:28.830 [info] Get user commits took 17.28081399993971ms for 10 commits
+2025-11-17 09:47:41.423 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:47:41.423 [info] Aborting indexing job.
+2025-11-17 09:47:41.423 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:47:41.423 [info] Indexing job successfully done or aborted.
+2025-11-17 09:53:05.423 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:53:05.423 [info] Aborting indexing job.
+2025-11-17 09:53:05.423 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:53:05.423 [info] Indexing job successfully done or aborted.
+2025-11-17 09:53:28.921 [info] Get user commits took 17.267370000015944ms for 10 commits
+2025-11-17 09:58:29.425 [info] multiCodebaseIndexingJob dispose
+2025-11-17 09:58:29.425 [info] Aborting indexing job.
+2025-11-17 09:58:29.425 [error] We currently do not allow indexing the home directory.
+2025-11-17 09:58:29.425 [info] Indexing job successfully done or aborted.
+2025-11-17 10:03:28.866 [info] Get user commits took 16.527948999777436ms for 10 commits
+2025-11-17 10:03:53.424 [info] multiCodebaseIndexingJob dispose
+2025-11-17 10:03:53.425 [info] Aborting indexing job.
+2025-11-17 10:03:53.425 [error] We currently do not allow indexing the home directory.
+2025-11-17 10:03:53.425 [info] Indexing job successfully done or aborted.
+2025-11-17 10:09:17.425 [info] multiCodebaseIndexingJob dispose
+2025-11-17 10:09:17.425 [info] Aborting indexing job.
+2025-11-17 10:09:17.425 [error] We currently do not allow indexing the home directory.
+2025-11-17 10:09:17.425 [info] Indexing job successfully done or aborted.
+2025-11-17 10:13:28.862 [info] Get user commits took 19.754904999397695ms for 10 commits
+2025-11-17 10:14:41.425 [info] multiCodebaseIndexingJob dispose
+2025-11-17 10:14:41.425 [info] Aborting indexing job.
+2025-11-17 10:14:41.425 [error] We currently do not allow indexing the home directory.
+2025-11-17 10:14:41.425 [info] Indexing job successfully done or aborted.
+2025-11-17 10:15:24.559 [error] Error getting submodules: A system error occurred (ENOENT: no such file or directory, open '/home/racheli/project/.gitmodules')
+2025-11-17 10:15:25.895 [info] multiCodebaseIndexingJob dispose
+2025-11-17 10:15:25.895 [info] Aborting indexing job.

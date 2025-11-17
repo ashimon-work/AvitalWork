@@ -1,0 +1,6 @@
+{
+    "window.commandCenter": true,
+    "remote.SSH.remotePlatform": {
+        "57.129.0.112": "linux"
+    }
+}

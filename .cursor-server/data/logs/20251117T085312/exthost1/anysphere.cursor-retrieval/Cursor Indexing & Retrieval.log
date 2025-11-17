@@ -1,0 +1,3 @@
+2025-11-17 08:53:18.960 [info] Creating Indexing Repo client:  https://repo42.cursor.sh
+2025-11-17 08:53:18.960 [info] Creating repo client with backend url: https://repo42.cursor.sh
+2025-11-17 08:53:19.208 [error] NoWorkspaceUriError
