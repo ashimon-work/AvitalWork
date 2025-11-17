@@ -5,15 +5,30 @@ import {
   NotFoundException,
   Query,
   Logger,
+  UseGuards,
 } from '@nestjs/common'; // Added Query, Logger
 import { CategoriesService } from './categories.service';
 import { CategoryEntity } from './entities/category.entity'; // Import CategoryEntity instead of Category interface
+import { StoreContextGuard } from '../core/guards/store-context.guard';
+
+
 
 @Controller('categories')
 export class CategoriesController {
   private readonly logger = new Logger(CategoriesController.name); // Instantiate Logger
   constructor(private readonly categoriesService: CategoriesService) {}
 
+@UseGuards(StoreContextGuard)
+   @Get()
+  async findCategoriesByStoreSlug(
+    @Query('storeSlug') storeSlug: string,
+  ): Promise<CategoryEntity[]> {
+    if (!storeSlug) {
+      throw new Error('Store slug is required');
+    }
+
+    return this.categoriesService.findAllForStoreBySlug(storeSlug);
+  }
   @Get('featured')
   async getFeaturedCategories(
     @Query('storeSlug') storeSlug?: string,

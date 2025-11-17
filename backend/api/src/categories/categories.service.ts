@@ -19,6 +19,15 @@ export class CategoriesService {
     return this.categoriesRepository.find(options);
   }
 
+  async findAllForStoreBySlug(storeSlug: string): Promise<CategoryEntity[]> {
+  const findOptions: FindManyOptions<CategoryEntity> = {
+    where: { store: { slug: storeSlug } },
+    relations: ['store'],
+    order: { name: 'ASC' },
+  };
+  return this.categoriesRepository.find(findOptions);
+}
+
   async getFeaturedCategories(storeSlug?: string): Promise<CategoryEntity[]> {
     // Add storeSlug parameter
     const where: FindOptionsWhere<CategoryEntity> = {};
