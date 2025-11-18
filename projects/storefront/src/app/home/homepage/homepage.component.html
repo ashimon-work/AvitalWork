@@ -3,8 +3,18 @@
   <app-carousel></app-carousel>
 </section>
 
-<!-- Category Navigation -->
+<!-- All Products Button and Category Navigation -->
 <section class="category-navigation-section">
+  <div class="all-products-button-container">
+    <button 
+      class="all-products-button" 
+      (click)="onShowAllProducts()"
+      [class.active]="selectedCategoryId === null"
+      aria-label="Show all products"
+    >
+      {{ tKeys.SF_HOMEPAGE_ALL_PRODUCTS | translate }}
+    </button>
+  </div>
   <app-category-navigation></app-category-navigation>
 </section>
 

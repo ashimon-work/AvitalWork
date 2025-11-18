@@ -4,7 +4,7 @@ import { FeaturedCategoryCardComponent } from '../../shared/components/featured-
 import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component';
 import { CategoryNavigationComponent } from '../../shared/components/category-navigation/category-navigation.component';
 import { Component, inject } from '@angular/core';
-import { startWith, tap, catchError, Observable, of } from 'rxjs';
+import { startWith, tap, catchError, Observable, of, switchMap } from 'rxjs';
 import { T, TranslatePipe } from '@shared/i18n';
 import { Category, Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
@@ -49,6 +49,8 @@ export class HomepageComponent {
   showErrorMessage = false;
   successMessage = '';
   errorMessage = '';
+  
+  selectedCategoryId: string | null = null;
 
   constructor() {
     console.log('<<<<< HomepageComponent Constructor Start >>>>>'); // Add this very first line
@@ -61,7 +63,38 @@ export class HomepageComponent {
       })
     );
 
-    this.featuredProducts$ = this.apiService.getFeaturedProducts();
+    // Initialize featuredProducts$ to be reactive to store slug changes
+    // This ensures products load when the store slug becomes available
+    this.featuredProducts$ = this.storeContext.currentStoreSlug$.pipe(
+      switchMap((storeSlug) => {
+        if (!storeSlug) {
+          console.warn(
+            '[HomepageComponent] Store slug not available yet, waiting...'
+          );
+          return of([] as Product[]);
+        }
+        console.log(
+          '[HomepageComponent] Fetching featured products for store:',
+          storeSlug
+        );
+        return this.apiService.getFeaturedProducts().pipe(
+          tap((products) =>
+            console.log(
+              '[HomepageComponent] Featured products fetched:',
+              products?.length || 0,
+              'products'
+            )
+          ),
+          catchError((error) => {
+            console.error(
+              '[HomepageComponent] Error fetching featured products on init:',
+              error
+            );
+            return of([] as Product[]);
+          })
+        );
+      })
+    );
     this.carouselSlides$ = this.apiService.getCarouselImages().pipe(startWith([]));
     
     // Initialize newsletter form
@@ -131,5 +164,38 @@ export class HomepageComponent {
         }
       });
     }
+  }
+  
+  /**
+   * Handle "All Products" button click - show all featured products
+   */
+  onShowAllProducts(): void {
+    console.log('[HomepageComponent] Showing all featured products');
+    this.selectedCategoryId = null;
+    
+    // Reset to show all featured products
+    this.featuredProducts$ = this.storeContext.currentStoreSlug$.pipe(
+      switchMap((storeSlug) => {
+        if (!storeSlug) {
+          return of([] as Product[]);
+        }
+        return this.apiService.getFeaturedProducts().pipe(
+          tap((products) =>
+            console.log(
+              '[HomepageComponent] All featured products fetched:',
+              products?.length || 0,
+              'products'
+            )
+          ),
+          catchError((error) => {
+            console.error(
+              '[HomepageComponent] Error fetching all featured products:',
+              error
+            );
+            return of([] as Product[]);
+          })
+        );
+      })
+    );
   }
 }

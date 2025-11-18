@@ -468,6 +468,7 @@ SF_CHECKOUT_TITLE: "קופה",
   SF_FAQ_PAGE_WORKS: "דף שאלות נפוצות עובד!",
   SF_HOMEPAGE_FEATURED_CATEGORIES_TITLE: "קטגוריות נבחרות",
   SF_HOMEPAGE_FEATURED_PRODUCTS_TITLE: "מוצרים נבחרים",
+  SF_HOMEPAGE_ALL_PRODUCTS: "כל המוצרים",
 
   // Login Page
   SF_LOGIN_PAGE_TITLE: "התחברות",

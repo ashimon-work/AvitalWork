@@ -187,12 +187,12 @@ export class ApiService {
   getStoreCategories(storeSlug: string): Observable<Category[]> {
   const url = `${this.apiUrl}/categories?storeSlug=${storeSlug}`;
 
-  console.log(`[ApiService] Fetching store categories from: ${url}`);
+  console.log(`[ApiService] Fetching ALL store categories from: ${url}`);
 
   return this.http.get<Category[]>(url).pipe(
-    tap((data) =>
-      console.log('[ApiService] Categories received:', data)
-    ),
+    tap((data) => {
+      console.log(`[ApiService] ALL Categories received (${data.length} items):`, data);
+    }),
     catchError((error) => {
       console.error('[ApiService] Error fetching store categories:', error);
       return of([]); // Return empty array on error

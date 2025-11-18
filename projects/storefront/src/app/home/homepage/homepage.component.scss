@@ -4,6 +4,48 @@
   display: block; // Ensure component takes up block space
 }
 
+// Category Navigation Section
+.category-navigation-section {
+  margin-bottom: var(--spacing-xxl);
+  
+  .all-products-button-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
+  }
+  
+  .all-products-button {
+    background: #ffffff;
+    border: 2px solid #007bff;
+    color: #007bff;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+    
+    &:hover {
+      background: #007bff;
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    &.active {
+      background: #007bff;
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    }
+  }
+}
+
 // Add vertical spacing between homepage sections
 .hero-carousel,
 .featured-categories,
@@ -172,6 +214,19 @@
 
 // Responsive design
 @media (max-width: 768px) {
+  .category-navigation-section {
+    .all-products-button-container {
+      margin-bottom: 1rem;
+      padding: 0 0.5rem;
+    }
+    
+    .all-products-button {
+      padding: 0.625rem 1.5rem;
+      font-size: 0.9rem;
+      min-width: 120px;
+    }
+  }
+  
   .category-grid,
   .product-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

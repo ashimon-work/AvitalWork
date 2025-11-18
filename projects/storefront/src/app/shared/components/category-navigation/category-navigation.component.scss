@@ -1,68 +1,290 @@
 .category-navigation {
   background: #ffffff;
   border-bottom: 1px solid #e0e0e0;
-  padding: 0;
-  
+  padding: 1rem 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  // Always centered - navigation is always in the center of the screen
+  &.centered {
+    justify-content: center;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  // Full width mode - still centered but allows for scrolling
+  &.full-width {
+    width: 100%;
+    justify-content: center;
+  }
+
+  // Scroll arrows
+  .scroll-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    flex-shrink: 0;
+
+    &:hover:not(:disabled) {
+      background: #e9ecef;
+      transform: scale(1.1);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .arrow-icon {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #495057;
+      user-select: none;
+    }
+
+    &.scroll-left {
+      margin-left: 1rem;
+    }
+
+    &.scroll-right {
+      margin-right: 1rem;
+    }
+  }
+
+  // Categories container
+  .categories-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+
+    // Centered content mode - always centered
+    &.centered-content {
+      flex: 0 1 auto;
+      display: flex;
+      justify-content: center;
+      overflow: visible;
+      max-width: 100%;
+    }
+
+    // Full width mode (>9 categories) - ensure it's scrollable but still centered
+    &:not(.centered-content) {
+      overflow-x: auto;
+      overflow-y: hidden;
+      display: flex;
+      justify-content: flex-start;
+      scrollbar-width: none; // Hide scrollbar for Firefox
+      -ms-overflow-style: none; // Hide scrollbar for IE/Edge
+      
+      &::-webkit-scrollbar {
+        display: none; // Hide scrollbar for Chrome/Safari
+      }
+    }
+  }
+
   .nav-list {
     display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    
-    &::-webkit-scrollbar {
-      height: 4px;
+
+    // Prevent text selection while scrolling
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    // When centered (≤9 categories), don't allow horizontal scroll
+    .centered-content & {
+      overflow-x: visible;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 3rem; // Larger gap for centered mode (≤9 categories)
     }
-    
-    &::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 2px;
+
+    // When not centered (>9 categories), scrollable mode
+    // The parent categories-container handles scrolling, so nav-list should not scroll
+    .categories-container:not(.centered-content) & {
+      overflow-x: visible;
+      overflow-y: visible;
+      justify-content: flex-start;
+      gap: 1.5rem; // Consistent gap for scrollable mode
+      flex-wrap: nowrap;
     }
   }
-  
+
   .nav-item {
-    white-space: nowrap;
-    
+    flex: 0 0 auto;
+    margin: 0 1.5rem;
+
+    // Larger spacing when in centered mode (≤9 categories)
+    .centered-content & {
+      margin: 0 1rem;
+    }
+
     .nav-link {
-      display: block;
-      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-decoration: none;
       color: #333;
       font-weight: 500;
       transition: all 0.3s ease;
-      border-bottom: 3px solid transparent;
-      
+      padding: 0.5rem;
+      border-radius: 8px;
+      min-width: 80px;
+      max-width: 120px;
+
       &:hover {
         color: #007bff;
         background-color: #f8f9fa;
         text-decoration: none;
+        transform: translateY(-2px);
       }
-      
+
       &.active {
         color: #007bff;
-        border-bottom-color: #007bff;
-        font-weight: 600;
+        background-color: #e3f2fd;
+        border: 1px solid #bbdefb;
+      }
+
+      // Category image
+      .category-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+        border: 2px solid #f0f0f0;
+        transition: all 0.3s ease;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+      }
+
+      &:hover .category-image {
+        border-color: #007bff;
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+      }
+
+      // Category name
+      .category-name {
+        font-size: 0.85rem;
+        text-align: center;
+        line-height: 1.2;
+        word-wrap: break-word;
+        max-width: 100%;
       }
     }
   }
-  
-  // Responsive design
-  @media (max-width: 768px) {
-    .nav-link {
-      padding: 0.75rem 1rem;
-      font-size: 0.9rem;
+
+  // Scroll progress bar
+  .scroll-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #f1f1f1;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+
+    .scroll-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #007bff, #0056b3);
+      transition: width 0.3s ease;
+      border-radius: 0 0 8px 8px;
     }
   }
-  
+
+  // Responsive design
+  @media (max-width: 768px) {
+    padding: 0.75rem 0;
+
+    .scroll-arrow {
+      width: 35px;
+      height: 35px;
+
+      &.scroll-left {
+        margin-left: 0.5rem;
+      }
+
+      &.scroll-right {
+        margin-right: 0.5rem;
+      }
+    }
+
+    .nav-item {
+      margin: 0 0.25rem;
+
+      // Maintain larger spacing in centered mode on mobile
+      .centered-content & {
+        margin: 0 0.75rem;
+      }
+
+      .nav-link {
+        min-width: 70px;
+        max-width: 100px;
+        padding: 0.25rem;
+
+        .category-image {
+          width: 50px;
+          height: 50px;
+        }
+
+        .category-name {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
   @media (max-width: 480px) {
-    .nav-link {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.85rem;
+    padding: 0.5rem 0;
+
+    .scroll-arrow {
+      width: 30px;
+      height: 30px;
+
+      .arrow-icon {
+        font-size: 1.2rem;
+      }
+    }
+
+    .nav-item {
+      margin: 0 0.2rem;
+
+      // Maintain larger spacing in centered mode on small mobile
+      .centered-content & {
+        margin: 0 0.5rem;
+      }
+
+      .nav-link {
+        min-width: 60px;
+        max-width: 80px;
+
+        .category-image {
+          width: 40px;
+          height: 40px;
+        }
+
+        .category-name {
+          font-size: 0.7rem;
+        }
+      }
     }
   }
 }
@@ -73,14 +295,32 @@
   gap: 1rem;
   padding: 1rem;
   overflow-x: auto;
-  
+
   .skeleton-item {
-    min-width: 100px;
-    height: 40px;
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-    border-radius: 4px;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 80px;
+
+    .skeleton-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    .skeleton-text {
+      width: 60px;
+      height: 12px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 2px;
+    }
   }
 }
 
@@ -101,17 +341,17 @@
   font-style: italic;
 }
 
-// Products Section
+// Products Section (keeping existing styles for compatibility)
 .category-products {
   padding: 2rem 0;
   background: #f8f9fa;
-  
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
   }
-  
+
   .category-title {
     font-size: 1.75rem;
     font-weight: 600;
@@ -119,30 +359,35 @@
     margin-bottom: 2rem;
     text-align: center;
   }
-  
+
   .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
   }
-  
+
   .products-loading {
     .loading-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.5rem;
-      
+
       .skeleton-product {
         height: 400px;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(
+          90deg,
+          #f0f0f0 25%,
+          #e0e0e0 50%,
+          #f0f0f0 75%
+        );
         background-size: 200% 100%;
         animation: loading 1.5s infinite;
         border-radius: 8px;
       }
     }
   }
-  
+
   .no-products {
     text-align: center;
     padding: 3rem;
@@ -151,7 +396,7 @@
     font-style: italic;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -163,7 +408,7 @@
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1rem;
     }
-    
+
     .category-title {
       font-size: 1.5rem;
       margin-bottom: 1.5rem;
@@ -174,13 +419,13 @@
 @media (max-width: 480px) {
   .category-products {
     padding: 1rem 0;
-    
+
     .product-grid,
     .products-loading .loading-grid {
       grid-template-columns: 1fr;
       gap: 1rem;
     }
-    
+
     .category-title {
       font-size: 1.25rem;
       margin-bottom: 1rem;

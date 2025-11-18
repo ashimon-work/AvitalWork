@@ -221,6 +221,55 @@ export const luxuryJewelryCategoryData: RawCategoryData[] = [
     imageUrl: 'https://picsum.photos/seed/luxury-watches/300/200',
     storeId: LUXURY_JEWELRY_STORE_ID,
   },
+  {
+    id: 'f000000c-e5f6-2222-2222-000000000006',
+    name: 'גברים יוקרה',
+    description: '  תכשיטי גברים',
+    imageUrl: 'https://picsum.photos/seed/luxury-watches/300/200',
+    storeId: LUXURY_JEWELRY_STORE_ID,
+  },
+  {
+    id: 'f000000c-e5f6-2222-2222-000000000007',
+    name: 'שעוני  נשים יוקרה',
+    description: 'שעונים יוקרתיים נשים',
+    imageUrl: 'https://picsum.photos/seed/luxury-watches/300/200',
+    storeId: LUXURY_JEWELRY_STORE_ID,
+  },
+  {
+    id: 'f000000c-e5f6-2222-2222-000000000008',
+    name: 'שעוני  ילדים יוקרה',
+    description: 'שעונים יוקרתיים לילדים ממותגים',
+    imageUrl: 'https://picsum.photos/seed/luxury-watches/300/200',
+    storeId: LUXURY_JEWELRY_STORE_ID,
+  },
+  {
+    id: 'f000000c-e5f6-2222-2222-000000000009',
+    name: 'שעוני  ילדות יוקרה',
+    description: 'שעונים יוקרתיים לילדות ממותגים',
+    imageUrl: 'https://picsum.photos/seed/luxury-watches/300/200',
+    storeId: LUXURY_JEWELRY_STORE_ID,
+  },
+  {
+    id: 'f000000c-e5f6-2222-2222-000000000010',
+    name: 'קופסאת תכשיטים   ',
+    description: ' קופסאת תכשיטים  לילדות ',
+    imageUrl: 'https://picsum.photos/seed/luxury-watches/300/200',
+    storeId: LUXURY_JEWELRY_STORE_ID,
+  },
+  {
+    id: 'f000000c-e5f6-2222-2222-000000000011',
+    name: ' נשים קופסאת תכשיטים   ',
+    description: ' קופסאת תכשיטים  נשים ',
+    imageUrl: 'https://picsum.photos/seed/luxury-watches/300/200',
+    storeId: LUXURY_JEWELRY_STORE_ID,
+  },
+  {
+    id: 'f000000c-e5f6-2222-2222-000000000012',
+    name: ' גברים קופסאת תכשיטים   ',
+    description: ' קופסאת תכשיטים  גברים ',
+    imageUrl: 'https://picsum.photos/seed/luxury-watches/300/200',
+    storeId: LUXURY_JEWELRY_STORE_ID,
+  },
 ];
 
 export const luxuryJewelryProductData: RawProductData[] = [
@@ -245,9 +294,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'טבעת זהב צהוב עם אבני חן',
     description: 'טבעת זהב צהוב 18 קראט משובצת אבני רובי וספיר',
     price: 8990.0,
-    imageUrls: [
-      'https://picsum.photos/seed/gold-ruby-ring/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/gold-ruby-ring/500/500'],
     tags: ['טבעת', 'אבני חן', 'זהב צהוב', 'רובי', 'ספיר'],
     stockLevel: 2,
     isActive: true,
@@ -259,9 +306,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'טבעת פלטינה עם יהלומים',
     description: 'טבעת פלטינה משובצת 12 יהלומים קטנים, עיצוב אלגנטי',
     price: 12500.0,
-    imageUrls: [
-      'https://picsum.photos/seed/platinum-diamond-ring/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/platinum-diamond-ring/500/500'],
     tags: ['טבעת', 'פלטינה', 'יהלומים', 'אלגנטי'],
     stockLevel: 1,
     isActive: true,
@@ -290,9 +335,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'שרשרת פנינים מפוארת',
     description: 'שרשרת פנינים טהירות מדרום ים, אורך 50 ס"מ',
     price: 6990.0,
-    imageUrls: [
-      'https://picsum.photos/seed/pearl-necklace/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/pearl-necklace/500/500'],
     tags: ['שרשרת', 'פנינים', 'אלגנטי', 'קלאסי'],
     stockLevel: 4,
     isActive: true,
@@ -304,9 +347,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'שרשרת זהב עם אבני חן צבעוניות',
     description: 'שרשרת זהב צהוב 18 קראט עם אבני חן צבעוניות בצבעי קשת',
     price: 9290.0,
-    imageUrls: [
-      'https://picsum.photos/seed/colored-gemstone-necklace/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/colored-gemstone-necklace/500/500'],
     tags: ['שרשרת', 'אבני חן', 'צבעוני', 'זהב צהוב'],
     stockLevel: 3,
     isActive: true,
@@ -320,9 +361,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'עגילי יהלום תלויים',
     description: 'עגילי זהב לבן 18 קראט עם יהלומים תלויים, עיצוב מרהיב',
     price: 7990.0,
-    imageUrls: [
-      'https://picsum.photos/seed/diamond-drop-earrings/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/diamond-drop-earrings/500/500'],
     tags: ['עגילים', 'יהלום', 'זהב לבן', 'תלויים'],
     stockLevel: 5,
     isActive: true,
@@ -334,9 +373,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'עגילי זהב עם אבני ספיר',
     description: 'עגילי זהב צהוב 18 קראט עם אבני ספיר כחולות',
     price: 4590.0,
-    imageUrls: [
-      'https://picsum.photos/seed/sapphire-gold-earrings/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/sapphire-gold-earrings/500/500'],
     tags: ['עגילים', 'ספיר', 'זהב צהוב', 'כחול'],
     stockLevel: 6,
     isActive: true,
@@ -348,9 +385,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'עגילי פנינים ויהלומים',
     description: 'עגילים משובצים פנינים טהירות ויהלומים קטנים',
     price: 5290.0,
-    imageUrls: [
-      'https://picsum.photos/seed/pearl-diamond-earrings/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/pearl-diamond-earrings/500/500'],
     tags: ['עגילים', 'פנינים', 'יהלומים', 'אלגנטי'],
     stockLevel: 4,
     isActive: true,
@@ -364,9 +399,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'צמיד זהב עם יהלומים',
     description: 'צמיד זהב לבן 18 קראט משובץ יהלומים קטנים',
     price: 11990.0,
-    imageUrls: [
-      'https://picsum.photos/seed/gold-diamond-bracelet/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/gold-diamond-bracelet/500/500'],
     tags: ['צמיד', 'יהלומים', 'זהב לבן', 'יוקרה'],
     stockLevel: 2,
     isActive: true,
@@ -378,9 +411,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'צמיד פלטינה פשוט',
     description: 'צמיד פלטינה עיצוב קלאסי ואלגנטי',
     price: 8990.0,
-    imageUrls: [
-      'https://picsum.photos/seed/platinum-bracelet/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/platinum-bracelet/500/500'],
     tags: ['צמיד', 'פלטינה', 'קלאסי', 'אלגנטי'],
     stockLevel: 3,
     isActive: true,
@@ -392,9 +423,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'צמיד זהב עם אבני חן',
     description: 'צמיד זהב צהוב 18 קראט עם אבני חן צבעוניות',
     price: 7290.0,
-    imageUrls: [
-      'https://picsum.photos/seed/gemstone-bracelet/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/gemstone-bracelet/500/500'],
     tags: ['צמיד', 'אבני חן', 'זהב צהוב', 'צבעוני'],
     stockLevel: 4,
     isActive: true,
@@ -423,9 +452,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'שעון קרטייה טנק',
     description: 'שעון קרטייה טנק קלאסי, מכני ידני',
     price: 32990.0,
-    imageUrls: [
-      'https://picsum.photos/seed/cartier-tank/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/cartier-tank/500/500'],
     tags: ['שעון', 'קרטייה', 'קלאסי', 'מכני'],
     stockLevel: 2,
     isActive: true,
@@ -437,9 +464,7 @@ export const luxuryJewelryProductData: RawProductData[] = [
     name: 'שעון אומגה סימסטר',
     description: 'שעון אומגה סימסטר כרונוגרף אוטומטי',
     price: 28990.0,
-    imageUrls: [
-      'https://picsum.photos/seed/omega-seamaster/500/500',
-    ],
+    imageUrls: ['https://picsum.photos/seed/omega-seamaster/500/500'],
     tags: ['שעון', 'אומגה', 'כרונוגרף', 'אוטומטי'],
     stockLevel: 1,
     isActive: true,
@@ -451,7 +476,8 @@ export const luxuryJewelryProductData: RawProductData[] = [
 export const luxuryJewelryAboutContentData: RawAboutContentData = {
   storeId: LUXURY_JEWELRY_STORE_ID,
   title: 'אודות Luxury Jewels',
-  content: 'Luxury Jewels היא בוטיק יוקרתי המתמחה בתכשיטים ושעונים יוקרתיים. אנו מציעים מבחר קפדני של מוצרים מהמותגים המובילים בעולם, עם דגש על איכות, אלגנטיות ושירות אישי לכל לקוח. כל פריט בקולקציה שלנו נבחר בקפידה כדי להבטיח את הסטנדרטים הגבוהים ביותר של יוקרה ואיכות.',
+  content:
+    'Luxury Jewels היא בוטיק יוקרתי המתמחה בתכשיטים ושעונים יוקרתיים. אנו מציעים מבחר קפדני של מוצרים מהמותגים המובילים בעולם, עם דגש על איכות, אלגנטיות ושירות אישי לכל לקוח. כל פריט בקולקציה שלנו נבחר בקפידה כדי להבטיח את הסטנדרטים הגבוהים ביותר של יוקרה ואיכות.',
   imageUrl: 'https://picsum.photos/seed/luxury-jewelry-store/800/400',
 };
 
@@ -488,7 +514,8 @@ export const luxuryJewelryFaqData: RawFaqData[] = [
   {
     storeId: LUXURY_JEWELRY_STORE_ID,
     question: 'מהי מדיניות ההחזרות?',
-    answer: 'ניתן להחזיר פריטים תוך 14 יום מהרכישה בתנאי שהם לא נעשו בהם שימוש ובמצבם המקורי.',
+    answer:
+      'ניתן להחזיר פריטים תוך 14 יום מהרכישה בתנאי שהם לא נעשו בהם שימוש ובמצבם המקורי.',
   },
   {
     storeId: LUXURY_JEWELRY_STORE_ID,
@@ -591,8 +618,12 @@ export const luxuryJewelryAddressData: RawAddressData[] = [
 ];
 
 // Orders for Luxury Jewelry
-const ljProductForOrder1 = luxuryJewelryProductData.find(p => p.sku === 'LJ-RNG-001');
-const ljProductForOrder2 = luxuryJewelryProductData.find(p => p.sku === 'LJ-NCK-001');
+const ljProductForOrder1 = luxuryJewelryProductData.find(
+  (p) => p.sku === 'LJ-RNG-001',
+);
+const ljProductForOrder2 = luxuryJewelryProductData.find(
+  (p) => p.sku === 'LJ-NCK-001',
+);
 
 const ljOrderItems1: RawOrderItemData[] = [];
 if (ljProductForOrder1) {
@@ -614,7 +645,10 @@ if (ljProductForOrder2) {
 
 export const luxuryJewelryOrderData: RawOrderData[] = [];
 if (ljProductForOrder1 && ljProductForOrder2 && ljOrderItems1.length === 2) {
-  const subtotal = ljOrderItems1.reduce((sum, item) => sum + item.pricePerUnit * item.quantity, 0);
+  const subtotal = ljOrderItems1.reduce(
+    (sum, item) => sum + item.pricePerUnit * item.quantity,
+    0,
+  );
   const shippingCost = 50.0;
   const taxRate = 0.17;
   const taxAmount = subtotal * taxRate;
@@ -640,7 +674,9 @@ if (ljProductForOrder1 && ljProductForOrder2 && ljOrderItems1.length === 2) {
 }
 
 // Wishlist for Luxury Jewelry
-const ljProductForWishlist = luxuryJewelryProductData.find(p => p.sku === 'LJ-WCH-001');
+const ljProductForWishlist = luxuryJewelryProductData.find(
+  (p) => p.sku === 'LJ-WCH-001',
+);
 export const luxuryJewelryWishlistData: RawWishlistData[] = [];
 if (ljProductForWishlist) {
   luxuryJewelryWishlistData.push({
@@ -652,7 +688,9 @@ if (ljProductForWishlist) {
 }
 
 // Reviews for Luxury Jewelry
-const ljProductForReview = luxuryJewelryProductData.find(p => p.sku === 'LJ-BRC-001');
+const ljProductForReview = luxuryJewelryProductData.find(
+  (p) => p.sku === 'LJ-BRC-001',
+);
 export const luxuryJewelryReviewData: RawReviewData[] = [];
 if (ljProductForReview) {
   luxuryJewelryReviewData.push(

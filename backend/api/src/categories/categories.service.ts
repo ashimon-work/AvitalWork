@@ -25,7 +25,14 @@ export class CategoriesService {
     relations: ['store'],
     order: { name: 'ASC' },
   };
-  return this.categoriesRepository.find(findOptions);
+  
+  this.logger.log(`Finding all categories for store slug: ${storeSlug} with options: ${JSON.stringify(findOptions)}`);
+  
+  const categories = await this.categoriesRepository.find(findOptions);
+  
+  this.logger.log(`Found ${categories.length} total categories for store: ${storeSlug}`);
+  
+  return categories;
 }
 
   async getFeaturedCategories(storeSlug?: string): Promise<CategoryEntity[]> {

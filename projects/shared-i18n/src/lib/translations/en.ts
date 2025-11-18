@@ -476,6 +476,7 @@ SF_CHECKOUT_TITLE: "Checkout",
   SF_FAQ_PAGE_WORKS: "faq-page works!",
   SF_HOMEPAGE_FEATURED_CATEGORIES_TITLE: "Featured Categories",
   SF_HOMEPAGE_FEATURED_PRODUCTS_TITLE: "Featured Products",
+  SF_HOMEPAGE_ALL_PRODUCTS: "All Products",
 
   // Login Page
   SF_LOGIN_PAGE_TITLE: "Login",
