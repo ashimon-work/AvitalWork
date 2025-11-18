@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { CarouselComponent } from '../components/carousel/carousel.component';
 import { FeaturedCategoryCardComponent } from '../../shared/components/featured-category-card/featured-category-card.component';
 import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component';
+import { CategoryNavigationComponent } from '../../shared/components/category-navigation/category-navigation.component';
 import { Component, inject } from '@angular/core';
 import { startWith, tap, catchError, Observable, of } from 'rxjs';
 import { T, TranslatePipe } from '@shared/i18n';
@@ -21,6 +22,7 @@ import { MaterialModule } from '../../shared/material.module';
     CarouselComponent,
     FeaturedCategoryCardComponent,
     FeaturedProductCardComponent,
+    CategoryNavigationComponent,
     TranslatePipe,
     ReactiveFormsModule,
     MaterialModule,

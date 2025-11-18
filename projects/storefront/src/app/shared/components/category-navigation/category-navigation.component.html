@@ -1,0 +1,71 @@
+<nav class="category-navigation" role="navigation" aria-label="Categories">
+  <!-- Loading state -->
+  <div *ngIf="categories$ | async as categories; else loadingTemplate">
+    <!-- Categories loaded -->
+    <ul *ngIf="categories.length > 0; else emptyTemplate" class="nav-list">
+      <li class="nav-item" *ngFor="let category of categories; trackBy: trackByCategoryId">
+        <a 
+          class="nav-link"
+          [attr.aria-label]="category.name"
+          (click)="onCategoryClick(category)"
+        >
+          {{ category.name }}
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Loading template -->
+  <ng-template #loadingTemplate>
+    <div class="loading-placeholder">
+      <div class="skeleton-item"></div>
+      <div class="skeleton-item"></div>
+      <div class="skeleton-item"></div>
+      <div class="skeleton-item"></div>
+    </div>
+  </ng-template>
+
+  <!-- Empty state template -->
+  <ng-template #emptyTemplate>
+    <div class="empty-state">
+      No categories available
+    </div>
+  </ng-template>
+</nav>
+
+<!-- Products Section -->
+<section *ngIf="selectedCategory" class="category-products">
+  <div class="container">
+    <h2 class="category-title">
+      Products in {{ selectedCategory.name }}
+    </h2>
+    
+    <!-- Products loading/loaded state -->
+    <div *ngIf="categoryProducts$ | async as productsData">
+      <div *ngIf="productsData && productsData.products.length > 0; else noProductsTemplate" class="product-grid">
+        <app-featured-product-card
+          *ngFor="let product of productsData.products; trackBy: trackByProductId"
+          [product]="product"
+        >
+        </app-featured-product-card>
+      </div>
+      
+      <!-- No products template -->
+      <ng-template #noProductsTemplate>
+        <div class="no-products">
+          No products found in this category.
+        </div>
+      </ng-template>
+    </div>
+    
+    <!-- Products loading state -->
+    <div *ngIf="isLoading" class="products-loading">
+      <div class="loading-grid">
+        <div class="skeleton-product"></div>
+        <div class="skeleton-product"></div>
+        <div class="skeleton-product"></div>
+        <div class="skeleton-product"></div>
+      </div>
+    </div>
+  </div>
+</section>
