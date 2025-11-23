@@ -5,9 +5,10 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0;
 
-  // Always centered - navigation is always in the center of the screen
+  // Always centered - navigation is always in the center of screen
   &.centered {
     justify-content: center;
     max-width: 100%;
@@ -34,10 +35,11 @@
     transition: all 0.3s ease;
     z-index: 10;
     flex-shrink: 0;
-
+    align-self: center;
     &:hover:not(:disabled) {
       background: #e9ecef;
       transform: scale(1.1);
+      border-color: #adb5bd;
     }
 
     &:disabled {
@@ -50,14 +52,22 @@
       font-weight: bold;
       color: #495057;
       user-select: none;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
     }
 
     &.scroll-left {
-      margin-left: 1rem;
+      margin-right: 1.5rem; // Space between left arrow and categories
+      margin-left: 0;
     }
 
     &.scroll-right {
-      margin-right: 1rem;
+      margin-left: 1.5rem; // Space between categories and right arrow
+      margin-right: 0;
     }
   }
 
@@ -66,6 +76,8 @@
     flex: 1;
     overflow: hidden;
     position: relative;
+    display: flex;
+    align-items: center;
 
     // Centered content mode - always centered
     &.centered-content {
@@ -74,6 +86,20 @@
       justify-content: center;
       overflow: visible;
       max-width: 100%;
+      align-items: center;
+
+      // When scrolling is enabled based on content overflow
+      &.scrollable {
+        overflow-x: auto;
+        overflow-y: hidden;
+        justify-content: flex-start; // Start from left instead of centering
+        scrollbar-width: none; // Hide scrollbar for Firefox
+        -ms-overflow-style: none; // Hide scrollbar for IE/Edge
+
+        &::-webkit-scrollbar {
+          display: none; // Hide scrollbar for Chrome/Safari
+        }
+      }
     }
 
     // Full width mode (>9 categories) - ensure it's scrollable but still centered
@@ -82,9 +108,10 @@
       overflow-y: hidden;
       display: flex;
       justify-content: flex-start;
+      align-items: center;
       scrollbar-width: none; // Hide scrollbar for Firefox
       -ms-overflow-style: none; // Hide scrollbar for IE/Edge
-      
+
       &::-webkit-scrollbar {
         display: none; // Hide scrollbar for Chrome/Safari
       }
@@ -108,7 +135,13 @@
       overflow-x: visible;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 3rem; // Larger gap for centered mode (≤9 categories)
+      gap: 3rem;
+
+      // When scrolling is enabled based on content overflow
+      .scrollable & {
+        flex-wrap: nowrap;
+        gap: 1.5rem;
+      }
     }
 
     // When not centered (>9 categories), scrollable mode
@@ -117,7 +150,7 @@
       overflow-x: visible;
       overflow-y: visible;
       justify-content: flex-start;
-      gap: 1.5rem; // Consistent gap for scrollable mode
+      gap: 1.5rem;
       flex-wrap: nowrap;
     }
   }
@@ -125,6 +158,8 @@
   .nav-item {
     flex: 0 0 auto;
     margin: 0 1.5rem;
+    display: flex;
+    align-items: center;
 
     // Larger spacing when in centered mode (≤9 categories)
     .centered-content & {
@@ -212,6 +247,9 @@
 
   // Responsive design
   @media (max-width: 768px) {
+    [class*='arrow'] {
+      display: none !important;
+    }
     padding: 0.75rem 0;
 
     .scroll-arrow {
@@ -219,11 +257,13 @@
       height: 35px;
 
       &.scroll-left {
-        margin-left: 0.5rem;
+        margin-right: 1rem; // Space between left arrow and categories
+        margin-left: 0;
       }
 
       &.scroll-right {
-        margin-right: 0.5rem;
+        margin-left: 1rem; // Space between categories and right arrow
+        margin-right: 0;
       }
     }
 
@@ -261,6 +301,16 @@
 
       .arrow-icon {
         font-size: 1.2rem;
+      }
+
+      &.scroll-left {
+        margin-right: 0.75rem; // Space between left arrow and categories
+        margin-left: 0;
+      }
+
+      &.scroll-right {
+        margin-left: 0.75rem; // Space between categories and right arrow
+        margin-right: 0;
       }
     }
 

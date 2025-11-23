@@ -19,6 +19,11 @@
       </ol>
     </nav>
 
+    <!-- Category Bar -->
+    <section class="category-bar-section animate-category-bar">
+      <app-category-navigation [currentCategoryId]="(currentCategoryId$ | async) || undefined"></app-category-navigation>
+    </section>
+
     <!-- Category Header -->
     <header class="category-title-header animate-category-header">
       <h1 class="category-name">{{ category.name }}</h1>

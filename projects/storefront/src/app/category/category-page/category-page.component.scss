@@ -51,6 +51,9 @@
 .animate-breadcrumb {
   animation: slideInDown 0.3s ease-out forwards;
 }
+.animate-category-bar {
+  animation: fadeIn 0.4s 0.05s ease-out forwards;
+}
 .animate-category-header {
   animation: slideInUp 0.4s 0.1s ease-out forwards; // delay 0.1s
 }
@@ -152,6 +155,12 @@
     color: var(--text-color, #111827); // text-foreground
     font-weight: var(--font-weight-medium, 500);
   }
+}
+
+// Category Bar
+.category-bar-section {
+  margin-bottom: var(--spacing-lg); // Space below category bar
+  animation: fadeIn 0.4s 0.05s ease-out forwards;
 }
 
 // Category Header
@@ -449,8 +458,8 @@
         outline: none;
       }
     }
-    // Ensure the .filter-select-wrapper and .icon-select-arrow are applied here too if not already
-    // This is for the sort select, which is outside the .filter-sidebar-content
+    // Ensure that .filter-select-wrapper and .icon-select-arrow are applied here too if not already
+    // This is for the sort select, which is outside of .filter-sidebar-content
     // So we need to duplicate or make .filter-select-wrapper global if used elsewhere.
     // For now, assuming it's within .sort-controls, let's add a specific wrapper if needed.
     // The HTML already has <div class="filter-select-wrapper"> for the sort select.

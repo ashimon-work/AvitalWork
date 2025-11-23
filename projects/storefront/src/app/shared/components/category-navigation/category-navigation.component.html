@@ -1,14 +1,14 @@
-<nav 
-  class="category-navigation" 
+<nav
+  class="category-navigation"
   [class.centered]="isCentered"
   [class.full-width]="!isCentered"
-  role="navigation" 
+  role="navigation"
   aria-label="Categories"
 >
   <!-- Scroll left arrow - only show if more than 9 categories -->
-  <button 
+  <button
     *ngIf="showArrows"
-    class="scroll-arrow scroll-left" 
+    class="scroll-arrow scroll-left"
     (click)="scroll('left')"
     [disabled]="!canScrollLeft"
     aria-label="Scroll categories left"
@@ -17,20 +17,31 @@
   </button>
 
   <!-- Categories container -->
-  <div class="categories-container" #scrollContainer [class.centered-content]="isCentered">
+  <div
+    class="categories-container"
+    #scrollContainer
+    [class.centered-content]="isCentered"
+    [class.scrollable]="enableScrolling"
+  >
     <!-- Loading state -->
     <div *ngIf="categories$ | async as categories; else loadingTemplate">
       <!-- Categories loaded -->
       <ul *ngIf="categories.length > 0; else emptyTemplate" class="nav-list">
-        <li class="nav-item" *ngFor="let category of categories; trackBy: trackByCategoryId">
-          <a 
+        <li
+          class="nav-item"
+          *ngFor="let category of categories; trackBy: trackByCategoryId"
+        >
+          <a
             class="nav-link"
+            [class.active]="currentCategoryId === category.id"
             [attr.aria-label]="category.name"
             (click)="onCategoryClick(category)"
           >
             <div class="category-image">
-              <img 
-                [src]="category.imageUrl || 'assets/images/default-category.jpg'" 
+              <img
+                [src]="
+                  category.imageUrl || 'assets/images/default-category.jpg'
+                "
                 [alt]="category.name"
                 (error)="onImageError($event)"
               />
@@ -44,7 +55,7 @@
     <!-- Loading template -->
     <ng-template #loadingTemplate>
       <div class="loading-placeholder">
-        <div class="skeleton-item" *ngFor="let i of [1,2,3,4]">
+        <div class="skeleton-item" *ngFor="let i of [1, 2, 3, 4]">
           <div class="skeleton-image"></div>
           <div class="skeleton-text"></div>
         </div>
@@ -53,16 +64,14 @@
 
     <!-- Empty state template -->
     <ng-template #emptyTemplate>
-      <div class="empty-state">
-        No categories available
-      </div>
+      <div class="empty-state">No categories available</div>
     </ng-template>
   </div>
 
   <!-- Scroll right arrow - only show if more than 9 categories -->
-  <button 
+  <button
     *ngIf="showArrows"
-    class="scroll-arrow scroll-right" 
+    class="scroll-arrow scroll-right"
     (click)="scroll('right')"
     [disabled]="!canScrollRight"
     aria-label="Scroll categories right"

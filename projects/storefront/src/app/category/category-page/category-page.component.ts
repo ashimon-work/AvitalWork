@@ -5,6 +5,7 @@ import { Category, Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component';
+import { CategoryNavigationComponent } from '../../shared/components/category-navigation/category-navigation.component';
 import { Observable, switchMap, tap, map, BehaviorSubject, combineLatest, Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, RouterLink, Router, Params } from '@angular/router';
 import { T, TranslatePipe } from '@shared/i18n';
@@ -44,6 +45,7 @@ interface PriceRangeFilterItem {
     FormsModule,
     RouterLink,
     FeaturedProductCardComponent,
+    CategoryNavigationComponent,
     TranslatePipe
   ],
   templateUrl: './category-page.component.html',
@@ -54,6 +56,7 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
   category$: Observable<Category | null> | undefined;
   products$: Observable<Product[]> | undefined;
   totalProducts$: Observable<number> | undefined;
+  currentCategoryId$?: Observable<string>;
 
   private filtersSubject = new BehaviorSubject<Filters>({});
   filters$ = this.filtersSubject.asObservable();
@@ -156,6 +159,8 @@ export class CategoryPageComponent implements OnInit, OnDestroy {
       map(id => id!),
       takeUntil(this.destroy$)
     );
+
+    this.currentCategoryId$ = categoryId$;
 
     this.category$ = categoryId$.pipe(
       switchMap(id => this.apiService.getCategoryDetails(id)),
