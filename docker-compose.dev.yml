@@ -1,7 +1,6 @@
 services:
   db:
     image: postgres:15
-    container_name: magic_store_db_dev
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-magic_store_dev} # Use a different DB name for dev
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -19,7 +18,6 @@ services:
 
   api:
     image: node:20-slim
-    container_name: magic_store_api_dev
     working_dir: /usr/src/app
     volumes:
       - .:/usr/src/app
@@ -48,7 +46,6 @@ services:
   # Nginx service to route requests to frontends based on hostname
   nginx:
     image: nginx:stable-alpine
-    container_name: magic_store_nginx_dev
     ports:
       - "${NGINX_PORT:-80}:80" # Expose port 80 to the host
     volumes:
@@ -57,7 +54,6 @@ services:
       - store_management_build:/app/store-management-build:ro
     depends_on:
       - frontend
-      - store-management-frontend-dev
       - api # Also depend on api for /api/ routing
     restart: unless-stopped
     networks:
@@ -65,14 +61,13 @@ services:
 
   frontend:
     image: node:20-slim
-    container_name: magic_store_frontend_dev
     working_dir: /usr/src/app
     volumes:
       - .:/usr/src/app
       - frontend_node_modules:/usr/src/app/node_modules
       - angular_cache:/usr/src/app/.angular
     # No ports exposed here, Nginx will proxy to it
-    command: sh -c "npm install && npx ng build shared-i18n && npx ng build shared-types && npx ng serve storefront --host 0.0.0.0 --allowed-hosts smartyapp.co.il --poll=1000"
+    command: sh -c "npm install && npx ng build shared-i18n && npx ng build shared-types && npx ng serve storefront --host 0.0.0.0 --allowed-hosts smartyapp.co.il --poll=3000"
     depends_on:
       - api
     restart: unless-stopped
@@ -81,7 +76,8 @@ services:
 
   store-management-frontend-dev:
     image: node:20-slim
-    container_name: magic_store_management_frontend_dev
+    profiles:
+      - store-management
     working_dir: /usr/src/app
     volumes:
       - .:/usr/src/app
@@ -89,7 +85,7 @@ services:
       - store_management_angular_cache:/usr/src/app/.angular
       - store_management_build:/usr/src/app/dist/store-management/browser
     # No ports exposed here, Nginx will proxy to it
-    command: sh -c "npm install && npx ng build shared-i18n && npx ng serve store-management --host 0.0.0.0 --allowed-hosts manager.smartyapp.co.il --poll=1000"
+    command: sh -c "npm install && npx ng build shared-i18n && npx ng serve store-management --host 0.0.0.0 --allowed-hosts manager.smartyapp.co.il --poll=3000"
     depends_on:
       - api
     restart: unless-stopped

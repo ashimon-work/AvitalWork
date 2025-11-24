@@ -24,5 +24,6 @@ import { OrderEntity } from 'src/orders/entities/order.entity';
   ],
   controllers: [WhatsappController],
   providers: [WhatsappService],
+  exports: [WhatsappService],
 })
 export class WhatsappModule {}
