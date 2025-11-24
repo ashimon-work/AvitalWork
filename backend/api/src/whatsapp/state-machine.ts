@@ -145,11 +145,7 @@ export const handleState = async (
           messageText,
         );
       case 'manageCategories_editName':
-        return await handleManageCategoriesEditName(
-          service,
-          state,
-          messageText,
-        );
+        return await handleCategoryEditName(service, state, messageText);
       case 'reportsAndSettings':
         return await handleReportsAndSettings(service, state, messageText);
       case 'addProduct_editName':
@@ -1206,7 +1202,7 @@ const handleManageCategoriesAskAction = async (
   }
 };
 
-const handleManageCategoriesEditName = async (
+const handleCategoryEditName = async (
   service: WhatsappService,
   state: ConversationStateEntity,
   messageText: string,
@@ -1227,7 +1223,11 @@ const handleManageCategoriesEditName = async (
     );
     return state;
   }
-
+  const exists = await categoryNameExists(service.categoryRepository, newName, context.storeId);
+  if (exists) {
+    await sendMessage(service, userId, lang, 'manageStore_categoryExists');
+    return state;
+  }
   // Update category name
   console.log(
     `Updating category ${context.selectedCategoryId} name from "${context.selectedCategoryName}" to "${newName}"`,
@@ -1254,7 +1254,7 @@ const handleManageCategoriesEditName = async (
     ],
   );
 
-  return { ...state, currentState: 'manageStore_selectCategory' };
+  return { ...state, currentState: 'manageStore_main' };
 };
 
 const handleManageStoreMain = async (
