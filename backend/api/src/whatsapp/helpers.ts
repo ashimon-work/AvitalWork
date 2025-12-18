@@ -7,10 +7,11 @@ type Language = 'en' | 'he';
 // Language and input utilities
 export const getLang = (state: ConversationStateEntity): Language =>
   (state.context?.language as Language) || 'en';
-
+//check if the the peson press for menu
 export const isMainMenuCommand = (text: string) =>
   ['main_menu', 'חזרה לתפריט הראשי'].includes(text);
 
+//check if the person press yes
 export const isYes = (text: string) =>
   [
     'yes',
@@ -22,6 +23,7 @@ export const isYes = (text: string) =>
     'has_variations_yes',
   ].includes(text.toLowerCase());
 
+  //check if the person press no
 export const isNo = (text: string) =>
   [
     'no',
@@ -32,6 +34,8 @@ export const isNo = (text: string) =>
     'add_variants_no',
     'has_variations_no',
   ].includes(text.toLowerCase());
+
+  //check if the person press for done
 
 export const isDoneMessage = (text?: string) =>
   ['done', 'סיום'].includes((text || '').toLowerCase());

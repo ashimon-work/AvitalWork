@@ -55,6 +55,6 @@
   </form>
 
   <div class="register-link">
-    {{ tKeys.SF_LOGIN_PAGE_NO_ACCOUNT_TEXT | translate }} <a routerLink="../register">{{ tKeys.SF_LOGIN_PAGE_SIGN_UP_LINK | translate }}</a>
+    {{ tKeys.SF_LOGIN_PAGE_NO_ACCOUNT_TEXT | translate }} <a [routerLink]="['../register']">{{ tKeys.SF_LOGIN_PAGE_SIGN_UP_LINK | translate }}</a>
   </div>
 </div>

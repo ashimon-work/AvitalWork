@@ -29,7 +29,7 @@ import { ShippingMethodComponent } from '../components/shipping-method/shipping-
   ],
   templateUrl: './checkout-page.component.html',
   styleUrls: ['./checkout-page.component.scss'],
-  providers: [TranslatePipe, I18nService]
+  providers: [I18nService]
 })
 export class CheckoutPageComponent implements OnInit {
   public tKeys = T;
@@ -59,7 +59,7 @@ export class CheckoutPageComponent implements OnInit {
     private storeContextService: StoreContextService,
     private notificationService: NotificationService,
     private router: Router,
-    private translatePipe: TranslatePipe
+    private i18nService: I18nService
   ) {
     this.cart$ = this.cartService.cartState$;
   }
@@ -75,7 +75,7 @@ export class CheckoutPageComponent implements OnInit {
     this.storeContextService.currentStoreSlug$.pipe(
       switchMap(storeSlug => {
         if (!storeSlug) {
-          const storeContextErrorMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_STORE_CONTEXT_ERROR);
+          const storeContextErrorMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_STORE_CONTEXT_ERROR);
           this.notificationService.showError(storeContextErrorMsg);
           return of([]);
         }
@@ -93,7 +93,7 @@ export class CheckoutPageComponent implements OnInit {
                  });
               }
             } else {
-        const noShippingInfoMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_NO_SHIPPING_METHODS);
+        const noShippingInfoMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_NO_SHIPPING_METHODS);
         this.notificationService.showInfo(noShippingInfoMsg); // Changed to showInfo
       }
     });
@@ -189,117 +189,117 @@ export class CheckoutPageComponent implements OnInit {
         total: this.orderTotal$.value
       };
   
-      this.apiService.placeOrder(orderData).subscribe({
-        next: (response: { orderId: string, orderNumber: string }) => {
-          this.isLoading = false;
-          const successMessage = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_ORDER_SUCCESS, { orderNumber: response.orderNumber } as any);
-          this.notificationService.showSuccess(successMessage);
-          this.cartService.loadInitialCart();
-          const storeSlug = this.storeContextService.getCurrentStoreSlug();
-          this.router.navigate(['/', storeSlug, 'order-confirmation', response.orderId]);
-        },
-        error: (error: any) => {
-          this.isLoading = false;
-          this.notificationService.showError(error.error?.message || 'Failed to place order.');
-          console.error('Error placing order:', error);
-        }
-      });
-  }
-
-  public get creditCardDisplay(): string {
-    const cardInfo = this.creditCardInfo$.value;
-    if (cardInfo && cardInfo.lastFour) {
-      return `•••• •••• •••• ${cardInfo.lastFour}`;
-    }
-    return '';
-  }
-
-  checkCreditCardStatus(): void {
-    this.isCheckingCard = true;
-    this.apiService.checkCreditCardStatus().subscribe({
-      next: (result) => {
-        const hasCard = result && result.hasCard;
-        this.hasCreditCard$.next(hasCard);
-        if (hasCard && result.cardInfo) {
-          this.creditCardInfo$.next(result.cardInfo);
-          this.storedCard = { last4: result.cardInfo.lastFour, brand: 'Visa' }; // Assuming Visa for now
-        }
-        this.isCheckingCard = false;
+    this.apiService.placeOrder(orderData).subscribe({
+      next: (response: { orderId: string, orderNumber: string }) => {
+        this.isLoading = false;
+        const successMessage = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_ORDER_SUCCESS, { orderNumber: response.orderNumber } as any);
+        this.notificationService.showSuccess(successMessage);
+        this.cartService.loadInitialCart();
+        const storeSlug = this.storeContextService.getCurrentStoreSlug();
+        this.router.navigate(['/', storeSlug, 'order-confirmation', response.orderId]);
       },
-      error: (error) => {
-        this.hasCreditCard$.next(false);
-        this.isCheckingCard = false;
-        console.log('Error checking credit card status:', error);
+      error: (error: any) => {
+        this.isLoading = false;
+        this.notificationService.showError(error.error?.message || 'Failed to place order.');
+        console.error('Error placing order:', error);
       }
     });
+}
+
+public get creditCardDisplay(): string {
+  const cardInfo = this.creditCardInfo$.value;
+  if (cardInfo && cardInfo.lastFour) {
+    return `•••• •••• •••• ${cardInfo.lastFour}`;
   }
+  return '';
+}
 
-  addCreditCard(): void {
-    this.isLoading = true;
-    this.apiService.getTranzilaTokenizationUrl().subscribe({
-      next: (response) => {
-        // Open Tranzila tokenization page in a new window with secure iframe
-        const tokenizationWindow = window.open(
-          response.tokenizationUrl,
-          'tranzila-tokenization',
-          'width=500,height=600,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no'
-        );
+checkCreditCardStatus(): void {
+  this.isCheckingCard = true;
+  this.apiService.checkCreditCardStatus().subscribe({
+    next: (result) => {
+      const hasCard = result && result.hasCard;
+      this.hasCreditCard$.next(hasCard);
+      if (hasCard && result.cardInfo) {
+        this.creditCardInfo$.next(result.cardInfo);
+        this.storedCard = { last4: result.cardInfo.lastFour, brand: 'Visa' }; // Assuming Visa for now
+      }
+      this.isCheckingCard = false;
+    },
+    error: (error) => {
+      this.hasCreditCard$.next(false);
+      this.isCheckingCard = false;
+      console.log('Error checking credit card status:', error);
+    }
+  });
+}
 
-        if (!tokenizationWindow) {
+addCreditCard(): void {
+  this.isLoading = true;
+  this.apiService.getTranzilaTokenizationUrl().subscribe({
+    next: (response) => {
+      // Open Tranzila tokenization page in a new window with secure iframe
+      const tokenizationWindow = window.open(
+        response.tokenizationUrl,
+        'tranzila-tokenization',
+        'width=500,height=600,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no'
+      );
+
+      if (!tokenizationWindow) {
+        this.isLoading = false;
+        const popupBlockedMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
+        this.notificationService.showError(popupBlockedMsg);
+        return;
+      }
+
+      // Listen for the window to close and refresh card status
+      const checkClosed = setInterval(() => {
+        if (tokenizationWindow?.closed) {
+          clearInterval(checkClosed);
           this.isLoading = false;
-          const popupBlockedMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
-          this.notificationService.showError(popupBlockedMsg);
-          return;
+          // Show success dialog and refresh card status after delay
+          setTimeout(() => {
+            this.showCardSavedDialog();
+            this.checkCreditCardStatus();
+          }, 1500);
         }
+      }, 1000);
 
-        // Listen for the window to close and refresh card status
-        const checkClosed = setInterval(() => {
-          if (tokenizationWindow?.closed) {
-            clearInterval(checkClosed);
-            this.isLoading = false;
-            // Show success dialog and refresh card status after delay
-            setTimeout(() => {
+      // Also listen for navigation events in the popup (if accessible)
+      try {
+        tokenizationWindow.addEventListener('beforeunload', () => {
+          setTimeout(() => {
+            if (tokenizationWindow.closed) {
+              clearInterval(checkClosed);
+              this.isLoading = false;
               this.showCardSavedDialog();
               this.checkCreditCardStatus();
-            }, 1500);
-          }
-        }, 1000);
-
-        // Also listen for navigation events in the popup (if accessible)
-        try {
-          tokenizationWindow.addEventListener('beforeunload', () => {
-            setTimeout(() => {
-              if (tokenizationWindow.closed) {
-                clearInterval(checkClosed);
-                this.isLoading = false;
-                this.showCardSavedDialog();
-                this.checkCreditCardStatus();
-              }
-            }, 1000);
-          });
-        } catch (error) {
-          // Cross-origin restrictions might prevent this - that's okay
-          console.log('Cross-origin restrictions prevent popup monitoring');
-        }
-      },
-      error: (error) => {
-        this.isLoading = false;
-        const errorMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
-        this.notificationService.showError(errorMsg);
-        console.error('Error getting tokenization URL:', error);
+            }
+          }, 1000);
+        });
+      } catch (error) {
+        // Cross-origin restrictions might prevent this - that's okay
+        console.log('Cross-origin restrictions prevent popup monitoring');
       }
-    });
-  }
+    },
+    error: (error) => {
+      this.isLoading = false;
+      const errorMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
+      this.notificationService.showError(errorMsg);
+      console.error('Error getting tokenization URL:', error);
+    }
+  });
+}
 
-  private showCardSavedDialog(): void {
-    // Use a simple success message for card saving
-    this.notificationService.showSuccess('Payment details saved successfully!');
-  }
+private showCardSavedDialog(): void {
+  // Use a simple success message for card saving
+  this.notificationService.showSuccess('Payment details saved successfully!');
+}
 
-  removeCreditCard(): void {
-    // For now, we'll just show a message that the user needs to contact support
-    // In a full implementation, you might want to add a backend endpoint to remove cards
-    const removeCardMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_REMOVE_CARD_CONTACT_SUPPORT);
-    this.notificationService.showInfo(removeCardMsg);
-  }
+removeCreditCard(): void {
+  // For now, we'll just show a message that the user needs to contact support
+  // In a full implementation, you might want to add a backend endpoint to remove cards
+  const removeCardMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_REMOVE_CARD_CONTACT_SUPPORT);
+  this.notificationService.showInfo(removeCardMsg);
+}
 }

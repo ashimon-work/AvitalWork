@@ -15,12 +15,18 @@ import { Expose } from 'class-transformer';
 export class CartDto {
   @Expose()
   @IsUUID()
-  id: string;
+  @IsOptional()
+  id?: string | null;
 
   @Expose()
   @IsUUID()
   @IsOptional()
   guestCartId?: string;
+
+  @Expose()
+  @IsUUID()
+  @IsOptional()
+  guest_session_id?: string;
 
   @Expose()
   @IsUUID()

@@ -111,6 +111,7 @@ export class I18nService {
       return (messageEntry as (...a: any[]) => string)(...args);
     }
     // If it's not a function, it must be a plain string (as per TranslationSchema)
-    return messageEntry as string;
+    // Return the key as fallback if translation is not found (e.g., during initial async load)
+    return (messageEntry as string) ?? key;
   }
 }

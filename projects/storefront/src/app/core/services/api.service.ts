@@ -334,7 +334,7 @@ export class ApiService {
         const url = `${this.apiUrl}/stores/${storeSlug}/cart/add`;
         let headers = new HttpHeaders();
         if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
         return this.http.post<Cart>(url, payload, { headers });
       }),
@@ -362,7 +362,7 @@ export class ApiService {
         const url = `${this.apiUrl}/stores/${storeSlug}/cart`;
         let headers = new HttpHeaders();
         if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
         // storeSlug is now part of the URL, not a query param for this endpoint
         return this.http.get<Cart | any>(url, { headers });
@@ -385,7 +385,7 @@ export class ApiService {
         const url = `${this.apiUrl}/stores/${storeSlug}/cart/${productId}`;
         let headers = new HttpHeaders();
         if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
         return this.http.patch<Cart>(url, { quantity }, { headers });
       }),
@@ -407,7 +407,7 @@ export class ApiService {
         const url = `${this.apiUrl}/stores/${storeSlug}/cart/${productId}`;
         let headers = new HttpHeaders();
         if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
         return this.http.delete<Cart>(url, { headers });
       }),
@@ -966,7 +966,7 @@ export class ApiService {
 
         let headers = new HttpHeaders();
         if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
 
         return this.http.post(url, payload, { headers });

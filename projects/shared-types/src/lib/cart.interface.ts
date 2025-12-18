@@ -12,6 +12,7 @@ export interface CartItem {
 export interface Cart {
   id: string | null; // CartEntity ID, can be null if it's a new guest cart structure not yet saved
   guestCartId?: string;
+  guest_session_id?: string; // Guest session ID for tracking guest carts
   userId?: string; // Foreign key
   user?: Partial<User>; // Optional user details
   storeId: string; // Foreign key

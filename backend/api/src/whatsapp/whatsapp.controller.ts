@@ -8,7 +8,6 @@ export class WhatsappController {
 
   @Post('webhook')
   async handleWebhook(@Body() body: any) {
-    // In a real-world scenario, you would validate the webhook signature here
     return this.whatsappService.handleIncomingMessage(body);
   }
 
@@ -19,7 +18,6 @@ export class WhatsappController {
     @Query('hub.verify_token') verifyToken: string,
     @Res() res: Response,
   ) {
-    // This is the verification step required by Meta
     const isVerified = this.whatsappService.verifyWebhook(
       mode,
       challenge,

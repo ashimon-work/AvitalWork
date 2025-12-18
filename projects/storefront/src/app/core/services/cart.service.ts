@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap, catchError, throwError, map, first, Subject } from 'rxjs';
-import { Product } from '@shared-types';
-import { Cart, CartItem } from 'projects/shared-types/src/lib/cart.interface';
+import { Product, Cart, CartItem } from '@shared-types';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service'; // For login/logout events
 // Removed incorrect NestJS Logger import
 
-export { type CartItem, type Cart as CartState } from 'projects/shared-types/src/lib/cart.interface';
+export { type CartItem, type Cart as CartState } from '@shared-types';
 // Interface for items in the cart (might evolve)
 // export interface CartItem { // Use CartItem from shared-types
 //   product: Product;
@@ -90,10 +89,19 @@ export class CartService {
     this.apiService.getCart(guestId).pipe(
       first(),
       tap((response: Cart | any) => { // Use 'any' for now due to potential new guest cart structure
-        if (response && response.guestCartId && !localStorage.getItem(this.GUEST_CART_ID_KEY)) {
-          console.log(`CartService: New guest cart ID received from backend: ${response.guestCartId}. Storing it.`);
-          localStorage.setItem(this.GUEST_CART_ID_KEY, response.guestCartId);
-          this.guestCartId = response.guestCartId;
+        // Backend returns guest_session_id field
+        const responseGuestId = response?.guest_session_id || response?.guestCartId;
+        if (response && responseGuestId) {
+          const storedGuestId = localStorage.getItem(this.GUEST_CART_ID_KEY);
+          // Update guest ID if backend returned one and it's different from stored value
+          if (!storedGuestId || storedGuestId !== responseGuestId) {
+            console.log(`CartService: Guest cart ID received from backend: ${responseGuestId}. ${storedGuestId ? 'Updating stored value.' : 'Storing it.'}`);
+            localStorage.setItem(this.GUEST_CART_ID_KEY, responseGuestId);
+            this.guestCartId = responseGuestId;
+          } else {
+            // Ensure this.guestCartId is synced even if localStorage already has it
+            this.guestCartId = responseGuestId;
+          }
         }
         this._updateStateFromBackendCart(response as Cart | null);
         console.log('Initial cart loaded/updated');
@@ -108,7 +116,7 @@ export class CartService {
 
   // Observable for just the total item count (for header)
   getItemCount(): Observable<number> {
-    return this.cartState$.pipe(map(cart => cart ? cart.items.length : 0)); // Map to items length for total count
+    return this.cartState$.pipe(map(cart => cart?.items?.length ?? 0)); // Map to items length for total count
   }
 
   // Add item to cart
@@ -162,6 +170,19 @@ export class CartService {
 
   // Helper to update local state from the backend's full Cart object
   private _updateStateFromBackendCart(backendCart: Cart | null): void {
+    // Sync guest_session_id if present in response
+    if (backendCart) {
+      const responseGuestId = (backendCart as any)?.guest_session_id || backendCart?.guestCartId;
+      if (responseGuestId) {
+        const storedGuestId = localStorage.getItem(this.GUEST_CART_ID_KEY);
+        if (!storedGuestId || storedGuestId !== responseGuestId) {
+          localStorage.setItem(this.GUEST_CART_ID_KEY, responseGuestId);
+          this.guestCartId = responseGuestId;
+        } else {
+          this.guestCartId = responseGuestId;
+        }
+      }
+    }
     this.cartStateSubject.next(backendCart);
     console.log('Cart state updated from backend response:', this.cartStateSubject.getValue()); // Replaced logger
   }

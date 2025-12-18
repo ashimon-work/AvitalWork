@@ -64,5 +64,10 @@ export class WebChatController {
       body.message,
     );
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('history')
+  async getHistory(@Request() req: AuthenticatedRequest) {
+    return this.webChatService.getHistory(req.user.id);
+  }
 }
 

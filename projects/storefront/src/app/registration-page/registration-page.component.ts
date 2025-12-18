@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, Validati
 import { Router, RouterModule } from '@angular/router'; // For navigation and routerLink
 import { ApiService } from '../core/services/api.service'; // Import ApiService
 import { HttpErrorResponse } from '@angular/common/http';
-import { T, TranslatePipe } from '@shared/i18n';
+import { T, I18nService, TranslatePipe } from '@shared/i18n';
 
 @Component({
   selector: 'app-registration-page',
@@ -23,7 +23,7 @@ export class RegistrationPageComponent implements OnInit {
   private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private router = inject(Router);
-  private translatePipe = inject(TranslatePipe);
+  private i18nService = inject(I18nService);
 
   registrationForm = this.fb.group({
     firstName: ['', [Validators.required, Validators.maxLength(50)]],
@@ -93,7 +93,7 @@ export class RegistrationPageComponent implements OnInit {
     this.apiService.register(formData).subscribe({
       next: (response) => {
         this.isSubmitting = false;
-        this.successMessage = response.message ? response.message : this.translatePipe.transform(T.SF_REGISTRATION_SUCCESS_MESSAGE_DEFAULT);
+        this.successMessage = response.message ? response.message : this.i18nService.translate(T.SF_REGISTRATION_SUCCESS_MESSAGE_DEFAULT);
         console.log('Registration successful:', response);
         // Optionally clear form or redirect after a delay
         this.registrationForm.reset();
@@ -102,10 +102,10 @@ export class RegistrationPageComponent implements OnInit {
       error: (error: HttpErrorResponse) => {
         this.isSubmitting = false;
         if (error.status === 409) { // Conflict - email likely exists
-          this.errorMessage = error.error?.message ? error.error.message : this.translatePipe.transform(T.SF_REGISTRATION_ERROR_EMAIL_EXISTS_DEFAULT);
+          this.errorMessage = error.error?.message ? error.error.message : this.i18nService.translate(T.SF_REGISTRATION_ERROR_EMAIL_EXISTS_DEFAULT);
           this.registrationForm.get('email')?.setErrors({ emailExists: true });
         } else {
-          this.errorMessage = error.error?.message ? error.error.message : this.translatePipe.transform(T.SF_REGISTRATION_ERROR_UNEXPECTED_DEFAULT);
+          this.errorMessage = error.error?.message ? error.error.message : this.i18nService.translate(T.SF_REGISTRATION_ERROR_UNEXPECTED_DEFAULT);
         }
         console.error('Registration failed:', error);
       }
