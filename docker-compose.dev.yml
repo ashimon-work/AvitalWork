@@ -44,30 +44,13 @@ services:
       - web_network
     # qBittorrent Seedbox Service
 
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent_seedbox
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=UTC
-      - WEBUI_PORT=9999
-      - TORRENTING_PORT=49152
-    volumes:
-      - ./seedbox/config:/config
-      - ./seedbox/downloads:/downloads
-    ports:
-      - "49152:49152"
-      - "49152:49152/udp"
-    restart: unless-stopped
-    networks:
-      - web_network # Connect to the network Nginx is on
 
   # Nginx service to route requests to frontends based on hostname
   nginx:
     image: nginx:stable-alpine
     ports:
       - "${NGINX_PORT:-80}:80" # Expose port 80 to the host
+      - "${NGINX_SSL_PORT:-443}:443"
     volumes:
       # Mount the custom Nginx configuration
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
