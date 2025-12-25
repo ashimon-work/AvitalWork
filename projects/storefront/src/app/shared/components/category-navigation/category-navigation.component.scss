@@ -1,3 +1,445 @@
+// .category-navigation {
+//   background: #ffffff;
+//   border-bottom: 1px solid #e0e0e0;
+//   padding: 1rem 0;
+//   position: relative;
+//   display: flex;
+//   align-items: center;
+//   justify-content: flex-start;;
+//   gap: 0;
+
+//   // Scroll arrows
+//   .scroll-arrow {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     width: 40px;
+//     height: 40px;
+//     background: #f8f9fa;
+//     border: 1px solid #dee2e6;
+//     border-radius: 50%;
+//     cursor: pointer;
+//     transition: all 0.3s ease;
+//     z-index: 10;
+//     flex-shrink: 0;
+//     align-self: center;
+//     &:hover:not(:disabled) {
+//       background: #e9ecef;
+//       transform: scale(1.1);
+//       border-color: #adb5bd;
+//     }
+
+//     &:disabled {
+//       opacity: 0.3;
+//       cursor: not-allowed;
+//     }
+
+//     .arrow-icon {
+//       font-size: 1.5rem;
+//       font-weight: bold;
+//       color: #495057;
+//       user-select: none;
+//       line-height: 1;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       height: 100%;
+//       width: 100%;
+//     }
+
+//     &.scroll-left {
+//       margin-right: 1.5rem; // Space between left arrow and categories
+//       margin-left: 0;
+//     }
+
+//     &.scroll-right {
+//       margin-left: 1.5rem; // Space between categories and right arrow
+//       margin-right: 0;
+//     }
+//   }
+
+//   // Categories container - always centered
+//   .categories-container {
+//     flex: 1;
+//     overflow-x: auto;
+//     overflow-y: hidden;
+//     position: relative;
+//     display: flex;
+//     align-items: center;
+//     justify-content: flex-start;
+//     max-width: 100%;
+//     direction: ltr;
+//     scrollbar-width: none; // Hide scrollbar for Firefox
+//     -ms-overflow-style: none; // Hide scrollbar for IE/Edge
+//     scroll-padding-inline: 0; // Ensure first and last categories are fully visible when scrolling
+
+//     &::-webkit-scrollbar {
+//       display: none; // Hide scrollbar for Chrome/Safari
+//     }
+
+//     // When scrolling is enabled based on content overflow
+//     &.scrollable {
+//       justify-content: flex-start; // Start from left when scrollable
+//     }
+//   }
+
+//   .nav-list {
+//     display: flex;
+//     list-style: none;
+//     margin: 0;
+//     padding-inline: 0;
+//     padding: 0;
+//     justify-content: flex-start;
+//     gap: 1.5rem;
+
+
+
+//     // Prevent text selection while scrolling
+//     -webkit-user-select: none;
+//     -moz-user-select: none;
+//     -ms-user-select: none;
+//     user-select: none;
+
+//     // Always in one line (no wrap)
+//     flex-wrap: nowrap;
+//     justify-content: center;
+//     gap: 3rem;
+//     overflow: visible;
+
+//     // When scrollable - start from left
+//     .scrollable & {
+//       justify-content: flex-start;
+//       gap: 1.5rem;
+//     }
+//   }
+
+//   .nav-item {
+//     flex: 0 0 auto;
+//     display: flex;
+//     align-items: flex-start;
+//     margin-inline-start: 1.5rem;
+//      &:first-child {
+//     margin-inline-start: 0;
+//   }
+
+
+
+//     .nav-link {
+//       display: flex;
+//       flex-direction: column;
+//       align-items: center;
+//       text-decoration: none;
+//       color: #333;
+//       font-weight: 500;
+//       transition: all 0.3s ease;
+//       padding: 0.5rem;
+//       border-radius: 8px;
+//       min-width: 80px;
+//       max-width: 120px;
+
+//       &:hover {
+//         color: #007bff;
+//         background-color: #f8f9fa;
+//         text-decoration: none;
+//         transform: translateY(-2px);
+//       }
+
+//       &.active {
+//         color: #007bff;
+//         background-color: #e3f2fd;
+//         border: 1px solid #bbdefb;
+//       }
+
+//       // Category image
+//       .category-image {
+//         width: 60px;
+//         height: 60px;
+//         border-radius: 50%;
+//         overflow: hidden;
+//         margin-bottom: 0.5rem;
+//         border: 2px solid #f0f0f0;
+//         transition: all 0.3s ease;
+
+//         img {
+//           width: 100%;
+//           height: 100%;
+//           object-fit: contain;
+//           display: block;
+//         }
+//       }
+
+//       &:hover .category-image {
+//         border-color: #007bff;
+//         box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+//       }
+
+//       // Category name
+//       .category-name {
+//         font-size: 0.85rem;
+//         text-align: center;
+//         line-height: 1.2;
+//         word-wrap: break-word;
+//         max-width: 100%;
+//       }
+//     }
+//   }
+
+//   // Scroll progress bar
+//   .scroll-progress {
+//     position: absolute;
+//     bottom: 0;
+//     left: 0;
+//     right: 0;
+//     height: 3px;
+//     background: #f1f1f1;
+//     border-radius: 0 0 8px 8px;
+//     overflow: hidden;
+
+//     .scroll-progress-bar {
+//       height: 100%;
+//       background: linear-gradient(90deg, #007bff, #0056b3);
+//       transition: width 0.3s ease;
+//       border-radius: 0 0 8px 8px;
+//     }
+//   }
+
+//   // Responsive design
+//   @media (max-width: 768px) {
+//     [class*='arrow'] {
+//       display: none !important;
+//     }
+//     padding: 0.75rem 0;
+
+//     .scroll-arrow {
+//       width: 35px;
+//       height: 35px;
+
+//       &.scroll-left {
+//         margin-right: 1rem; // Space between left arrow and categories
+//         margin-left: 0;
+//       }
+
+//       &.scroll-right {
+//         margin-left: 1rem; // Space between categories and right arrow
+//         margin-right: 0;
+//       }
+//     }
+
+//     .nav-item {
+//       margin: 0 0.25rem;
+
+//       // Larger margin when scrollable on mobile
+//       .scrollable & {
+//         margin: 0 0.75rem;
+//       }
+
+//       .nav-link {
+//         min-width: 70px;
+//         max-width: 100px;
+//         padding: 0.25rem;
+
+//         .category-image {
+//           width: 50px;
+//           height: 50px;
+//         }
+
+//         .category-name {
+//           font-size: 0.75rem;
+//         }
+//       }
+//     }
+//   }
+
+//   @media (max-width: 480px) {
+//     padding: 0.5rem 0;
+
+//     .scroll-arrow {
+//       width: 30px;
+//       height: 30px;
+
+//       .arrow-icon {
+//         font-size: 1.2rem;
+//       }
+
+//       &.scroll-left {
+//         margin-right: 0.75rem; // Space between left arrow and categories
+//         margin-left: 0;
+//       }
+
+//       &.scroll-right {
+//         margin-left: 0.75rem; // Space between categories and right arrow
+//         margin-right: 0;
+//       }
+//     }
+
+//     .nav-item {
+//       margin: 0 0.2rem;
+
+//       // Larger margin when scrollable on small mobile
+//       .scrollable & {
+//         margin: 0 0.5rem;
+//       }
+
+//       .nav-link {
+//         min-width: 60px;
+//         max-width: 80px;
+
+//         .category-image {
+//           width: 40px;
+//           height: 40px;
+//         }
+
+//         .category-name {
+//           font-size: 0.7rem;
+//         }
+//       }
+//     }
+//   }
+// }
+
+// // Loading state
+// .loading-placeholder {
+//   display: flex;
+//   gap: 1rem;
+//   padding: 1rem;
+//   overflow-x: auto;
+
+//   .skeleton-item {
+//     flex: 0 0 auto;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     gap: 0.5rem;
+//     min-width: 80px;
+
+//     .skeleton-image {
+//       width: 60px;
+//       height: 60px;
+//       border-radius: 50%;
+//       background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+//       background-size: 200% 100%;
+//       animation: loading 1.5s infinite;
+//     }
+
+//     .skeleton-text {
+//       width: 60px;
+//       height: 12px;
+//       background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+//       background-size: 200% 100%;
+//       animation: loading 1.5s infinite;
+//       border-radius: 2px;
+//     }
+//   }
+// }
+
+// @keyframes loading {
+//   0% {
+//     background-position: 200% 0;
+//   }
+//   100% {
+//     background-position: -200% 0;
+//   }
+// }
+
+// // Empty state
+// .empty-state {
+//   padding: 2rem;
+//   text-align: center;
+//   color: #666;
+//   font-style: italic;
+// }
+
+// // Products Section (keeping existing styles for compatibility)
+// .category-products {
+//   padding: 2rem 0;
+//   background: #f8f9fa;
+
+//   .container {
+//     max-width: 1200px;
+//     margin: 0 auto;
+//     padding: 0 1rem;
+//   }
+
+//   .category-title {
+//     font-size: 1.75rem;
+//     font-weight: 600;
+//     color: #333;
+//     margin-bottom: 2rem;
+//     text-align: center;
+//   }
+
+//   .product-grid {
+//     display: grid;
+//     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+//     gap: 1.5rem;
+//     margin-bottom: 2rem;
+//   }
+
+//   .products-loading {
+//     .loading-grid {
+//       display: grid;
+//       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+//       gap: 1.5rem;
+
+//       .skeleton-product {
+//         height: 400px;
+//         background: linear-gradient(
+//           90deg,
+//           #f0f0f0 25%,
+//           #e0e0e0 50%,
+//           #f0f0f0 75%
+//         );
+//         background-size: 200% 100%;
+//         animation: loading 1.5s infinite;
+//         border-radius: 8px;
+//       }
+//     }
+//   }
+
+//   .no-products {
+//     text-align: center;
+//     padding: 3rem;
+//     color: #666;
+//     font-size: 1.1rem;
+//     font-style: italic;
+//     background: white;
+//     border-radius: 8px;
+//     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//   }
+// }
+
+// // Responsive design for products
+// @media (max-width: 768px) {
+//   .category-products {
+//     .product-grid,
+//     .products-loading .loading-grid {
+//       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+//       gap: 1rem;
+//     }
+
+//     .category-title {
+//       font-size: 1.5rem;
+//       margin-bottom: 1.5rem;
+//     }
+//   }
+// }
+
+// @media (max-width: 480px) {
+//   .category-products {
+//     padding: 1rem 0;
+
+//     .product-grid,
+//     .products-loading .loading-grid {
+//       grid-template-columns: 1fr;
+//       gap: 1rem;
+//     }
+
+//     .category-title {
+//       font-size: 1.25rem;
+//       margin-bottom: 1rem;
+//     }
+//   }
+// }
 .category-navigation {
   background: #ffffff;
   border-bottom: 1px solid #e0e0e0;
@@ -8,21 +450,9 @@
   justify-content: center;
   gap: 0;
 
-  // Always centered - navigation is always in the center of screen
-  &.centered {
-    justify-content: center;
-    max-width: 100%;
-    margin: 0 auto;
-  }
-
-  // Full width mode - still centered but allows for scrolling
-  &.full-width {
-    width: 100%;
-    justify-content: center;
-  }
-
-  // Scroll arrows
+  /* ===== Scroll arrows ===== */
   .scroll-arrow {
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -34,11 +464,12 @@
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 10;
-    flex-shrink: 0;
-    align-self: center;
+    top: 50%;
+    transform: translateY(-50%);
+
     &:hover:not(:disabled) {
       background: #e9ecef;
-      transform: scale(1.1);
+      transform: translateY(-50%) scale(1.1);
       border-color: #adb5bd;
     }
 
@@ -61,110 +492,74 @@
     }
 
     &.scroll-left {
-      margin-right: 1.5rem; // Space between left arrow and categories
-      margin-left: 0;
+      left: 0.5rem;
     }
 
     &.scroll-right {
-      margin-left: 1.5rem; // Space between categories and right arrow
-      margin-right: 0;
+      right: 0.5rem;
     }
   }
 
-  // Categories container
+  /* ===== Categories container ===== */
   .categories-container {
     flex: 1;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    direction: ltr;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+    /* Add padding to ensure first/last categories are fully visible */
+    padding-left: 3rem;
+    padding-right: 3rem;
+    
+    /* Ensure scroll padding keeps first/last items visible */
+    scroll-padding-inline: 3rem;
 
-    // Centered content mode - always centered
-    &.centered-content {
-      flex: 0 1 auto;
-      display: flex;
-      justify-content: center;
-      overflow: visible;
-      max-width: 100%;
-      align-items: center;
-
-      // When scrolling is enabled based on content overflow
-      &.scrollable {
-        overflow-x: auto;
-        overflow-y: hidden;
-        justify-content: flex-start; // Start from left instead of centering
-        scrollbar-width: none; // Hide scrollbar for Firefox
-        -ms-overflow-style: none; // Hide scrollbar for IE/Edge
-
-        &::-webkit-scrollbar {
-          display: none; // Hide scrollbar for Chrome/Safari
-        }
-      }
+    &::-webkit-scrollbar {
+      display: none;
     }
 
-    // Full width mode (>9 categories) - ensure it's scrollable but still centered
-    &:not(.centered-content) {
-      overflow-x: auto;
-      overflow-y: hidden;
-      display: flex;
+    &.scrollable {
       justify-content: flex-start;
-      align-items: center;
-      scrollbar-width: none; // Hide scrollbar for Firefox
-      -ms-overflow-style: none; // Hide scrollbar for IE/Edge
-
-      &::-webkit-scrollbar {
-        display: none; // Hide scrollbar for Chrome/Safari
-      }
     }
   }
 
+  /* ===== List ===== */
   .nav-list {
     display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 3rem;
+    overflow: visible;
 
-    // Prevent text selection while scrolling
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 
-    // When centered (≤9 categories), don't allow horizontal scroll
-    .centered-content & {
-      overflow-x: visible;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 3rem;
-
-      // When scrolling is enabled based on content overflow
-      .scrollable & {
-        flex-wrap: nowrap;
-        gap: 1.5rem;
-      }
-    }
-
-    // When not centered (>9 categories), scrollable mode
-    // The parent categories-container handles scrolling, so nav-list should not scroll
-    .categories-container:not(.centered-content) & {
-      overflow-x: visible;
-      overflow-y: visible;
+    .scrollable & {
       justify-content: flex-start;
       gap: 1.5rem;
-      flex-wrap: nowrap;
     }
   }
 
+  /* ===== Item ===== */
   .nav-item {
     flex: 0 0 auto;
-    margin: 0 1.5rem;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 
-    // Larger spacing when in centered mode (≤9 categories)
-    .centered-content & {
-      margin: 0 1rem;
-    }
+    /* ❌ בוטל margin שגרם לחיתוך */
+    margin-inline-start: 0;
 
     .nav-link {
       display: flex;
@@ -182,7 +577,6 @@
       &:hover {
         color: #007bff;
         background-color: #f8f9fa;
-        text-decoration: none;
         transform: translateY(-2px);
       }
 
@@ -192,7 +586,6 @@
         border: 1px solid #bbdefb;
       }
 
-      // Category image
       .category-image {
         width: 60px;
         height: 60px;
@@ -205,7 +598,7 @@
         img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
           display: block;
         }
       }
@@ -215,7 +608,6 @@
         box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
       }
 
-      // Category name
       .category-name {
         font-size: 0.85rem;
         text-align: center;
@@ -226,7 +618,7 @@
     }
   }
 
-  // Scroll progress bar
+  /* ===== Scroll progress ===== */
   .scroll-progress {
     position: absolute;
     bottom: 0;
@@ -234,60 +626,34 @@
     right: 0;
     height: 3px;
     background: #f1f1f1;
-    border-radius: 0 0 8px 8px;
     overflow: hidden;
 
     .scroll-progress-bar {
       height: 100%;
       background: linear-gradient(90deg, #007bff, #0056b3);
       transition: width 0.3s ease;
-      border-radius: 0 0 8px 8px;
     }
   }
 
-  // Responsive design
+  /* ===== Responsive ===== */
   @media (max-width: 768px) {
     [class*='arrow'] {
       display: none !important;
     }
+
     padding: 0.75rem 0;
 
-    .scroll-arrow {
-      width: 35px;
-      height: 35px;
+    .nav-link {
+      min-width: 70px;
+      max-width: 100px;
 
-      &.scroll-left {
-        margin-right: 1rem; // Space between left arrow and categories
-        margin-left: 0;
+      .category-image {
+        width: 50px;
+        height: 50px;
       }
 
-      &.scroll-right {
-        margin-left: 1rem; // Space between categories and right arrow
-        margin-right: 0;
-      }
-    }
-
-    .nav-item {
-      margin: 0 0.25rem;
-
-      // Maintain larger spacing in centered mode on mobile
-      .centered-content & {
-        margin: 0 0.75rem;
-      }
-
-      .nav-link {
-        min-width: 70px;
-        max-width: 100px;
-        padding: 0.25rem;
-
-        .category-image {
-          width: 50px;
-          height: 50px;
-        }
-
-        .category-name {
-          font-size: 0.75rem;
-        }
+      .category-name {
+        font-size: 0.75rem;
       }
     }
   }
@@ -295,190 +661,19 @@
   @media (max-width: 480px) {
     padding: 0.5rem 0;
 
-    .scroll-arrow {
-      width: 30px;
-      height: 30px;
+    .nav-link {
+      min-width: 60px;
+      max-width: 80px;
 
-      .arrow-icon {
-        font-size: 1.2rem;
+      .category-image {
+        width: 40px;
+        height: 40px;
       }
 
-      &.scroll-left {
-        margin-right: 0.75rem; // Space between left arrow and categories
-        margin-left: 0;
-      }
-
-      &.scroll-right {
-        margin-left: 0.75rem; // Space between categories and right arrow
-        margin-right: 0;
-      }
-    }
-
-    .nav-item {
-      margin: 0 0.2rem;
-
-      // Maintain larger spacing in centered mode on small mobile
-      .centered-content & {
-        margin: 0 0.5rem;
-      }
-
-      .nav-link {
-        min-width: 60px;
-        max-width: 80px;
-
-        .category-image {
-          width: 40px;
-          height: 40px;
-        }
-
-        .category-name {
-          font-size: 0.7rem;
-        }
+      .category-name {
+        font-size: 0.7rem;
       }
     }
   }
 }
 
-// Loading state
-.loading-placeholder {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  overflow-x: auto;
-
-  .skeleton-item {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 80px;
-
-    .skeleton-image {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: loading 1.5s infinite;
-    }
-
-    .skeleton-text {
-      width: 60px;
-      height: 12px;
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: loading 1.5s infinite;
-      border-radius: 2px;
-    }
-  }
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-// Empty state
-.empty-state {
-  padding: 2rem;
-  text-align: center;
-  color: #666;
-  font-style: italic;
-}
-
-// Products Section (keeping existing styles for compatibility)
-.category-products {
-  padding: 2rem 0;
-  background: #f8f9fa;
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-
-  .category-title {
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .products-loading {
-    .loading-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-
-      .skeleton-product {
-        height: 400px;
-        background: linear-gradient(
-          90deg,
-          #f0f0f0 25%,
-          #e0e0e0 50%,
-          #f0f0f0 75%
-        );
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-        border-radius: 8px;
-      }
-    }
-  }
-
-  .no-products {
-    text-align: center;
-    padding: 3rem;
-    color: #666;
-    font-size: 1.1rem;
-    font-style: italic;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-}
-
-// Responsive design for products
-@media (max-width: 768px) {
-  .category-products {
-    .product-grid,
-    .products-loading .loading-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .category-title {
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .category-products {
-    padding: 1rem 0;
-
-    .product-grid,
-    .products-loading .loading-grid {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
-    .category-title {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-    }
-  }
-}

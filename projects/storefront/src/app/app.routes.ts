@@ -31,7 +31,7 @@ export const routes: Routes = [
 
   // Redirect /default specifically to /awesome-gadgets
   { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
-  { path: '', redirectTo: '/default-store', pathMatch: 'full' }, // Redirect root to a default store slug
+  { path: '', redirectTo: '/awesome-gadgets', pathMatch: 'full' }, // Redirect root to a default store slug
 
   // Explicit route for the generic 404 page
   { path: '404', component: NotFoundPageComponent },

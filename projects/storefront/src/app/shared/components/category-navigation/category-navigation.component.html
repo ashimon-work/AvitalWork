@@ -1,11 +1,9 @@
 <nav
   class="category-navigation"
-  [class.centered]="isCentered"
-  [class.full-width]="!isCentered"
   role="navigation"
   aria-label="Categories"
 >
-  <!-- Scroll left arrow - only show if more than 9 categories -->
+  <!-- Scroll left arrow - only show when content overflows -->
   <button
     *ngIf="showArrows"
     class="scroll-arrow scroll-left"
@@ -20,13 +18,12 @@
   <div
     class="categories-container"
     #scrollContainer
-    [class.centered-content]="isCentered"
     [class.scrollable]="enableScrolling"
   >
     <!-- Loading state -->
     <div *ngIf="categories$ | async as categories; else loadingTemplate">
       <!-- Categories loaded -->
-      <ul *ngIf="categories.length > 0; else emptyTemplate" class="nav-list">
+      <ul *ngIf="categories.length > 0; else emptyTemplate" class="nav-list" #navList>
         <li
           class="nav-item"
           *ngFor="let category of categories; trackBy: trackByCategoryId"
@@ -68,7 +65,7 @@
     </ng-template>
   </div>
 
-  <!-- Scroll right arrow - only show if more than 9 categories -->
+  <!-- Scroll right arrow - only show when content overflows -->
   <button
     *ngIf="showArrows"
     class="scroll-arrow scroll-right"
@@ -79,7 +76,7 @@
     <span class="arrow-icon">›</span>
   </button>
 
-  <!-- Scroll progress bar - only show if more than 9 categories -->
+  <!-- Scroll progress bar - only show when content overflows -->
   <div *ngIf="showProgressBar" class="scroll-progress">
     <div class="scroll-progress-bar" [style.width.%]="scrollProgress"></div>
   </div>

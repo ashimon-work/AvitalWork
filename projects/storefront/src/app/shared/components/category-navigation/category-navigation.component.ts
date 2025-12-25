@@ -25,8 +25,6 @@ import {
 import { ApiService } from '../../../core/services/api.service';
 import { StoreContextService } from '../../../core/services/store-context.service';
 
-const SCROLL_THRESHOLD = 9;
-
 @Component({
   selector: 'app-category-navigation',
   standalone: true,
@@ -39,13 +37,12 @@ export class CategoryNavigationComponent
 {
   public categories$!: Observable<Category[]>;
   public categories: Category[] = [];
-  public categoryCount = 0;
   public showArrows = false;
   public showProgressBar = false;
-  public isCentered = true; // true for ≤9 categories, false for >9 categories
   public enableScrolling = false;
 
   @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
+  @ViewChild('navList', { static: false }) navList!: ElementRef;
   @Input() currentCategoryId?: string; // Add input for current category ID
 
   canScrollLeft = false;
@@ -74,34 +71,23 @@ export class CategoryNavigationComponent
     // Subscribe to categories to update count and visibility
     this.categories$.pipe(takeUntil(this.destroy$)).subscribe((categories) => {
       this.categories = categories;
-      this.categoryCount = categories.length;
-
-      // Show arrows and progress bar only if more than 9 categories
-      this.showArrows = this.categoryCount >= SCROLL_THRESHOLD;
-      this.showProgressBar = this.categoryCount >= SCROLL_THRESHOLD;
 
       // Check if content overflows the container (will be determined after view is rendered)
       // For now, set to false and check after view is rendered
       this.enableScrolling = false;
 
-      // isCentered controls whether centered-content class is applied
-      // When false, scrolling is enabled (full-width mode)
-      this.isCentered = this.categoryCount < SCROLL_THRESHOLD;
-
       // Force change detection to update the view
       this.cdr.detectChanges();
 
       // Check for content overflow after view is rendered
-      setTimeout(() => {
-        this.checkContentOverflow();
+      this.checkContentOverflowAfterLoad();
 
-        // Reset scroll position to left when categories change (if scrolling is enabled)
-        if (this.enableScrolling && this.scrollContainer?.nativeElement) {
-          const container = this.scrollContainer.nativeElement;
-          container.scrollLeft = 0;
-          this.updateScrollState();
-        }
-      }, 100);
+      // Reset scroll position to left when categories change (if scrolling is enabled)
+      if (this.scrollContainer?.nativeElement) {
+        const container = this.scrollContainer.nativeElement;
+        container.scrollLeft = 0;
+        this.updateScrollState();
+      }
 
       // Re-setup scroll listener if needed (in case categories loaded after ngAfterViewInit)
       this.setupScrollListener();
@@ -151,7 +137,7 @@ export class CategoryNavigationComponent
           fromEvent(window, 'resize')
             .pipe(takeUntil(this.destroy$), debounceTime(200))
             .subscribe(() => {
-              this.checkContentOverflow();
+              this.checkContentOverflowAfterLoad();
             });
 
           this.scrollListenerSetup = true;
@@ -173,15 +159,30 @@ export class CategoryNavigationComponent
     const clientWidth = container.clientWidth;
 
     // Enable scrolling if content overflows the container
-    const hasOverflow = scrollWidth > clientWidth;
+    // Use a small threshold to account for floating point precision
+    const hasOverflow = scrollWidth > clientWidth + 1;
 
     // Only update if the scrolling state needs to change
     if (this.enableScrolling !== hasOverflow) {
       this.enableScrolling = hasOverflow;
 
+      // Show arrows and progress bar only when content overflows
+      this.showArrows = hasOverflow;
+      this.showProgressBar = hasOverflow;
+
       // Force change detection to update the view
       this.cdr.detectChanges();
     }
+  }
+
+  /**
+   * Check for content overflow after images are loaded
+   */
+  private checkContentOverflowAfterLoad(): void {
+    // Wait for images to load before checking overflow
+    setTimeout(() => {
+      this.checkContentOverflow();
+    }, 300);
   }
 
   ngOnDestroy() {
