@@ -1,11 +1,7 @@
-<nav
-  class="category-navigation"
-  role="navigation"
-  aria-label="Categories"
->
-  <!-- Scroll left arrow - only show when content overflows -->
+<nav class="category-navigation" role="navigation" aria-label="Categories">
+  <!-- Scroll left arrow -->
   <button
-    *ngIf="showArrows"
+    *ngIf="hasOverflow"
     class="scroll-arrow scroll-left"
     (click)="scroll('left')"
     [disabled]="!canScrollLeft"
@@ -18,12 +14,18 @@
   <div
     class="categories-container"
     #scrollContainer
-    [class.scrollable]="enableScrolling"
+    [class.scrollable]="hasOverflow"
   >
-    <!-- Loading state -->
-    <div *ngIf="categories$ | async as categories; else loadingTemplate">
-      <!-- Categories loaded -->
-      <ul *ngIf="categories.length > 0; else emptyTemplate" class="nav-list" #navList>
+    <!-- Categories / Loading -->
+    <ng-container
+      *ngIf="categories$ | async as categories; else loadingTemplate"
+    >
+      <!-- Categories list -->
+      <ul
+        *ngIf="categories.length > 0; else emptyTemplate"
+        class="nav-list"
+        #navList
+      >
         <li
           class="nav-item"
           *ngFor="let category of categories; trackBy: trackByCategoryId"
@@ -31,6 +33,9 @@
           <a
             class="nav-link"
             [class.active]="currentCategoryId === category.id"
+            [attr.aria-current]="
+              currentCategoryId === category.id ? 'true' : null
+            "
             [attr.aria-label]="category.name"
             (click)="onCategoryClick(category)"
           >
@@ -43,31 +48,34 @@
                 (error)="onImageError($event)"
               />
             </div>
-            <span class="category-name">{{ category.name }}</span>
+
+            <span class="category-name">
+              {{ category.name }}
+            </span>
           </a>
         </li>
       </ul>
-    </div>
+    </ng-container>
 
-    <!-- Loading template -->
+    <!-- Loading state -->
     <ng-template #loadingTemplate>
       <div class="loading-placeholder">
-        <div class="skeleton-item" *ngFor="let i of [1, 2, 3, 4]">
+        <div class="skeleton-item" *ngFor="let _ of [1, 2, 3, 4]">
           <div class="skeleton-image"></div>
           <div class="skeleton-text"></div>
         </div>
       </div>
     </ng-template>
 
-    <!-- Empty state template -->
+    <!-- Empty state -->
     <ng-template #emptyTemplate>
       <div class="empty-state">No categories available</div>
     </ng-template>
   </div>
 
-  <!-- Scroll right arrow - only show when content overflows -->
+  <!-- Scroll right arrow -->
   <button
-    *ngIf="showArrows"
+    *ngIf="hasOverflow"
     class="scroll-arrow scroll-right"
     (click)="scroll('right')"
     [disabled]="!canScrollRight"
@@ -76,8 +84,8 @@
     <span class="arrow-icon">›</span>
   </button>
 
-  <!-- Scroll progress bar - only show when content overflows -->
-  <div *ngIf="showProgressBar" class="scroll-progress">
+  <!-- Scroll progress -->
+  <div *ngIf="hasOverflow" class="scroll-progress">
     <div class="scroll-progress-bar" [style.width.%]="scrollProgress"></div>
   </div>
 </nav>
