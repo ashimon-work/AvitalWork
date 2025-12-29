@@ -195,26 +195,17 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     const storeSlug = await firstValueFrom(this.storeContext.currentStoreSlug$);
 
     if (suggestion.resultType === 'product') {
-      if (storeSlug && suggestion.name) { // Check for name to slugify
-         // Products are identified by ID (UUID) in the backend, but routes use slugs.
-         // We will generate a slug from the product name for navigation.
-        const productSlug = this.slugify(suggestion.name);
-        this.router.navigate(['/', storeSlug, 'product', productSlug]);
+      if (storeSlug && suggestion.id) {
+        // Products are identified by ID (UUID) in the backend
+        this.router.navigate(['/', storeSlug, 'product', suggestion.id]);
       } else {
-        console.error('Cannot navigate to product suggestion, missing store slug or product name for slug generation.');
+        console.error('Cannot navigate to product suggestion, missing store slug or product ID.');
       }
     } else if (suggestion.resultType === 'store' && suggestion.slug) {
       this.router.navigate(['/', suggestion.slug]);
     } else {
       console.error('Unknown or incomplete suggestion type selected:', suggestion);
     }
-  }
-  
-  private slugify(text: string): string {
-    return text.toString().toLowerCase().trim()
-      .replace(/\s+/g, '-') // Replace spaces with -
-      .replace(/[^\w-]+/g, '') // Remove all non-word chars
-      .replace(/--+/g, '-'); // Replace multiple - with single -
   }
 
   async submitSearch(): Promise<void> {
