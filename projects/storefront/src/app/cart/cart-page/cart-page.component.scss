@@ -1,883 +1,761 @@
 @use "sass:color";
-@use '../../../styles/variables' as variables; // Correct path relative to src/app
+@use '../../../styles/variables' as variables;
 
-// Local variables based on React example
-$cart-border-radius-xl: 0.75rem; // for rounded-xl
-$cart-shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(variables.$black, 0.05);
-$cart-shadow-xl: 0 20px 25px -5px rgba(variables.$black, 0.1), 0 10px 10px -5px rgba(variables.$black, 0.04);
-$cart-icon-size-sm: 1rem; // h-4 w-4
-$cart-icon-size-md: 1.25rem; // h-5 w-5
-
-$cart-icon-size-lg: 1.5rem; // h-6 w-6
-$cart-icon-stroke-width: 1.5; // Common stroke width from React example
-
-// --- General Icon Styles ---
-.icon {
-  display: inline-block;
-  vertical-align: middle;
-  width: $cart-icon-size-md;
-  height: $cart-icon-size-md;
-  stroke-width: $cart-icon-stroke-width;
-  fill: none; // Default for line icons
-  stroke: currentColor; // Default stroke color
-}
+// Local variables based on React design
+$border-radius-xl: 0.75rem;
+$border-radius-full: 9999px;
+$shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(variables.$black, 0.05);
 
 :host {
   display: block;
-  font-family: variables.$font-family-base; // Ensure consistent font
-  background-color: variables.$background-color-alt; // Matches React's bg-background (often a light gray)
-  color: variables.$text-color; // Matches React's text-foreground
+  font-family: variables.$font-family-base;
+  background-color: variables.$background-color-alt;
+  color: variables.$text-color;
+  min-height: 100vh;
 }
 
 .cart-page-container {
   width: 100%;
   max-width: variables.$container-max-width;
-  margin: 0 auto; // Removed top/bottom margin, handled by padding
-  padding: variables.$spacing-xl variables.$container-padding-x variables.$spacing-xxl; // py-8 md:py-12 (spacing-xl to spacing-xxl)
-
-  h1 {
-    font-size: variables.$h2-font-size; // text-3xl
-    font-weight: variables.$font-weight-bold;
-    letter-spacing: -0.025em; // tracking-tight
-    margin-bottom: variables.$spacing-xl; // mb-8
-    text-align: left; // Default, React example is left aligned
-
-    @media (min-width: 768px) { // md breakpoint
-      font-size: variables.$h1-font-size; // text-4xl
-      margin-bottom: variables.$spacing-xxl; // md:mb-12
-    }
-  }
+  margin: 0 auto;
+  padding-top: variables.$spacing-xxl; // py-12 from React (3rem = 48px)
+  padding-bottom: variables.$spacing-xxl;
+  padding-left: variables.$container-padding-x;
+  padding-right: variables.$container-padding-x;
 }
 
-.cart-layout {
+// Header Spacer
+.header-spacer {
+  height: 5rem; // h-20 from React code
+}
+
+// Breadcrumb
+.breadcrumb {
   display: flex;
-  flex-direction: column;
-  gap: variables.$spacing-xl; // gap-8
+  align-items: center;
+  gap: 0.5rem;
+  font-size: variables.$font-size-sm;
+  color: variables.$text-muted;
+  margin-bottom: variables.$spacing-lg;
 
-  @media (min-width: 1024px) { // lg breakpoint
-    flex-direction: row;
-    gap: variables.$spacing-xxl; // lg:gap-12
+  .breadcrumb-link {
+    color: variables.$text-muted;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: variables.$text-color;
+    }
+  }
+
+  .breadcrumb-separator {
+    color: variables.$text-muted;
+  }
+
+  .breadcrumb-current {
+    color: variables.$text-color;
   }
 }
 
-// --- Cart Items Section ---
+// Page Title
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 400;
+  font-family: 'Georgia', 'serif';
+  color: variables.$text-color;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+
+  @media (min-width: 1024px) {
+    font-size: 3rem;
+  }
+}
+
+// Cart Layout
+.cart-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+}
+
+// Cart Items Section
 .cart-items-section {
-  background-color: variables.$white; // bg-card
-  padding: variables.$spacing-lg; // p-6 (sm:p-6, using lg for base)
-  border-radius: $cart-border-radius-xl; // rounded-xl
-  box-shadow: $cart-shadow-lg; // shadow-lg
-  width: 100%;
-
-  @media (min-width: 1024px) { // lg breakpoint
-    width: 66.666667%; // lg:w-2/3
+  .cart-table {
+    border: 1px solid variables.$border-color;
+    border-radius: $border-radius-xl;
+    overflow: hidden;
   }
 
-  table {
-    width: 100%;
-    min-width: 600px; // To ensure table content doesn't wrap too aggressively
-    border-collapse: collapse; // Maintained
-    margin-bottom: variables.$spacing-lg; // Maintained
+  // Table Header
+  .table-header {
+    display: grid;
+    grid-template-columns: 5fr 4fr 3fr;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: rgba(variables.$neutral-light, 0.5);
+    border-bottom: 1px solid variables.$border-color;
 
-    thead {
-      tr {
-        border-bottom: 1px solid rgba(variables.$border-color, 0.5); // border-b-border/50
-      }
-      th {
+    .header-cell {
+      font-size: variables.$font-size-sm;
+      font-weight: 500;
+      color: variables.$text-color;
+
+      &.header-quantity {
         text-align: center;
-        padding: variables.$spacing-md variables.$spacing-sm; // Adjusted padding
-        font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-        color: variables.$text-muted; // text-muted-foreground
-        font-size: variables.$font-size-sm; // text-sm
-        text-transform: none; // React example is not uppercase
-
-        // &:first-child { // Product
-        //   width: 10%; // sm:w-1/12 (approx)
-        // }
-        // &:nth-child(2) { // Details
-        //   width: 35%; // sm:w-5/12 (approx)
-        // }
-        // &:nth-child(3) { // Price
-        //   width: 15%;
-        //   text-align: right;
-        // }
-        // &:nth-child(4) { // Quantity
-        //   width: 20%;
-        //   text-align: center;
-        // }
-        // &:nth-child(5) { // Subtotal
-        //   width: 15%;
-        //   text-align: right;
-        // }
-        // &:last-child { // Remove
-        //   width: 5%;
-        // }
       }
-    }
 
-    tbody {
-      tr.cart-item {
-        border-bottom: 1px solid rgba(variables.$border-color, 0.3); // border-b-border/30
-        transition: background-color 0.15s ease-in-out;
-        &:hover {
-          background-color: rgba(variables.$secondary-color, 0.1); // hover:bg-muted/30 (using secondary as muted)
-        }
-        td {
-          padding: variables.$spacing-lg variables.$spacing-sm; // py-4 pr-2 sm:pr-4
-          vertical-align: middle;
-          text-align: center;
-        }
+      &.header-total {
+        text-align: right;
       }
     }
   }
 
-  .item-image {
-    width: 80px; // w-20 (sm:w-20) - from React: w-16 sm:w-20
-    height: 80px; // h-20 (sm:h-20) - from React: h-16 sm:h-20
-    padding-right: variables.$spacing-md !important; // Add more space to the right of the image cell. From React: pr-2 sm:pr-4
-
-    img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: variables.$border-radius-md; // rounded-md
-      background-color: variables.$neutral-light; // bg-muted for placeholder
-    }
-  }
-
-  .item-details {
-    text-align: left;
-    .item-name {
-      font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-      color: variables.$text-color; // text-foreground
-      text-decoration: none;
-      margin-bottom: variables.$spacing-xs; // mb-1
-      display: block; // For margin-bottom to take effect
-      // Truncate handled by HTML/CSS if needed, or JS. Max-width set on td.
-      // max-width: 120px; // sm:max-w-xs
-      // @media (min-width: 640px) { max-width: 20rem; }
-
-      &:hover {
-        color: variables.$primary-color; // group-hover:text-primary
-      }
-    }
-    .item-variant { // New class for variants
-      font-size: variables.$font-size-sm * 0.9; // text-xs
-      color: variables.$text-muted; // text-muted-foreground
-      .variant-key {
-        text-transform: capitalize;
-      }
-    }
-  }
-
-  .item-price {
-    font-weight: variables.$font-weight-medium; // Maintained
-    font-size: variables.$font-size-sm; // text-sm
-    color: variables.$text-color; // text-foreground
-    text-align: right;
-    @media (min-width: 640px) { // sm breakpoint
-      font-size: variables.$font-size-base; // sm:text-base
-    }
-  }
-  .item-subtotal {
-    font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-    font-size: variables.$font-size-sm; // text-sm
-    color: variables.$text-color; // text-foreground
-    text-align: right;
-    @media (min-width: 640px) { // sm breakpoint
-      font-size: variables.$font-size-base; // sm:text-base
-    }
-  }
-
-  .item-quantity { // Ensure the parent td is centered
-    text-align: center;
-  }
-
-  .quantity-control {
-    display: flex;
+  // Cart Item
+  .cart-item {
+    display: grid;
+    grid-template-columns: 5fr 4fr 3fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid variables.$border-color;
     align-items: center;
-    justify-content: center; // Already centered
-    gap: variables.$spacing-xs; // gap-1
-    @media (min-width: 640px) { // sm breakpoint
-      gap: variables.$spacing-sm; // sm:gap-2
+
+    &:last-child {
+      border-bottom: none;
     }
 
-    button {
-      display: inline-flex;
+    &.gift-wrap-row {
+      border-top: 1px solid variables.$border-color;
+    }
+  }
+
+  // Product Info
+  .item-product {
+    display: flex;
+    gap: 1rem;
+
+    .item-image-link {
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .item-image {
+      width: 6rem;
+      height: 6rem;
+      background-color: variables.$neutral-light;
+      border: 1px solid variables.$border-color;
+      border-radius: variables.$border-radius-md;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &.gift-wrap-image {
+        background-color: variables.$neutral-light;
+      }
+    }
+
+    .item-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .item-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .item-price {
+        font-weight: 500;
+        color: variables.$text-color;
+      }
+
+      .item-original-price {
+        color: variables.$text-muted;
+        text-decoration: line-through;
+        font-size: variables.$font-size-sm;
+      }
+
+      .item-name {
+        font-weight: 500;
+        color: variables.$text-color;
+        text-decoration: none;
+        transition: text-decoration 0.2s ease;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  // Quantity
+  .item-quantity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      border: 1px solid variables.$border-color;
+      border-radius: variables.$border-radius-md;
+    }
+
+    .quantity-btn {
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 28px; // h-7 w-7
-      height: 28px;
-      border: 1px solid rgba(variables.$border-color, 0.7); // border-border/70
-      background-color: transparent;
-      color: variables.$text-muted; // text-muted-foreground for icon
-      border-radius: 50%; // rounded-full
+      width: 2rem;
+      height: 2rem;
+      background: none;
+      border: none;
       cursor: pointer;
-      transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+      transition: background-color 0.2s ease;
 
       &:hover:not(:disabled) {
-        background-color: variables.$neutral-light; // hover:bg-muted
+        background-color: variables.$neutral-light;
       }
-      &:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px variables.$white, 0 0 0 4px variables.$primary-color; // focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 (offset simulated with white)
-      }
+
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
       }
 
-      .icon-minus-circle, .icon-plus-circle {
-        width: $cart-icon-size-sm; // h-4 w-4
-        height: $cart-icon-size-sm;
-        color: variables.$text-muted; // text-muted-foreground
-      }
-
-      @media (min-width: 640px) { // sm breakpoint
-        width: 32px; // sm:h-8 sm:w-8
-        height: 32px;
+      svg {
+        width: 1rem;
+        height: 1rem;
       }
     }
 
-    input[type="number"] {
-      width: 40px; // w-10
-      height: 28px; // h-7
+    .quantity-value {
+      width: 2rem;
       text-align: center;
-      border: 1px solid rgba(variables.$border-color, 0.7); // border-border/70
-      border-radius: variables.$border-radius-md; // rounded-md
-      font-size: variables.$font-size-sm; // text-sm
-      padding: variables.$spacing-xs; // Minimal padding
-
-      &:focus {
-        outline: none;
-        border-color: variables.$primary-color; // focus:ring-1 focus:ring-primary (simulated with border)
-        box-shadow: 0 0 0 1px variables.$primary-color;
-      }
-      // Hide spinner buttons for a cleaner look like React example
-      -moz-appearance: textfield;
-      &::-webkit-outer-spin-button,
-      &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-      @media (min-width: 640px) { // sm breakpoint
-        width: 48px; // sm:w-12
-        height: 32px; // sm:h-8
-      }
+      font-size: variables.$font-size-base;
     }
-  }
 
-  .item-remove {
-    text-align: right; // Align button to the right of the cell
-    button.remove-item-btn { // More specific selector
-      display: inline-flex; // For centering icon
-      align-items: center;
-      justify-content: center;
+    .remove-btn {
       background: none;
       border: none;
-      color: variables.$text-muted; // text-muted-foreground
-      border-radius: 50%; // rounded-full
-      width: 32px; // Approx for icon button
-      height: 32px;
+      color: variables.$text-muted;
+      font-size: variables.$font-size-sm;
       cursor: pointer;
-      transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
-      padding: 0;
+      text-decoration: underline;
+      transition: color 0.2s ease;
 
       &:hover {
-        color: variables.$error-color; // hover:text-destructive
-        background-color: rgba(variables.$error-color, 0.1); // hover:bg-destructive/10
-      }
-      &:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px variables.$white, 0 0 0 4px variables.$error-color; // focus-visible:ring-2 focus-visible:ring-destructive
-      }
-      .icon-trash-2 {
-        width: $cart-icon-size-sm;
-        height: $cart-icon-size-sm;
-        @media (min-width: 640px) {
-          width: $cart-icon-size-md;
-          height: $cart-icon-size-md;
-        }
+        color: variables.$text-color;
       }
     }
   }
 
-  .cart-actions-lower {
+  // Total
+  .item-total {
+    text-align: right;
+
+    .item-total-price {
+      font-weight: 500;
+      color: variables.$text-color;
+    }
+
+    .item-original-total {
+      display: block;
+      color: variables.$text-muted;
+      text-decoration: line-through;
+      font-size: variables.$font-size-sm;
+    }
+  }
+
+  // Gift Wrap Checkbox
+  .gift-wrap-checkbox {
     display: flex;
-    flex-direction: column; // Stack on mobile first
-    justify-content: space-between;
     align-items: center;
-    margin-top: variables.$spacing-xl; // mt-6
-    gap: variables.$spacing-md; // gap-4
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    cursor: pointer;
 
-    @media (min-width: 640px) { // sm breakpoint
-      flex-direction: row; // Row on larger screens
-    }
-
-    .continue-shopping-btn, .update-cart-btn {
-      width: 100%; // w-full on mobile
-      padding: variables.$spacing-sm variables.$spacing-lg; // py-2.5 px-5
-      font-size: variables.$font-size-sm; // text-sm
-      font-weight: variables.$font-weight-medium; // font-medium
-      border-radius: variables.$border-radius-lg; // rounded-lg
-      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .checkbox-input {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: variables.$border-radius-md;
+      border: 1px solid variables.$border-color;
       cursor: pointer;
-
-      &:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px variables.$white, 0 0 0 4px variables.$primary-color;
-      }
-
-      @media (min-width: 640px) { // sm breakpoint
-         width: auto; // sm:w-auto
-      }
     }
 
-    .continue-shopping-btn { // Specific styles for continue shopping
-      border: 1px solid variables.$primary-color; // border-primary
-      color: variables.$primary-color; // text-primary
-      background-color: transparent;
-
-      .icon-arrow-left {
-        margin-right: variables.$spacing-xs; // mr-2 (h-4 w-4)
-        width: $cart-icon-size-sm;
-        height: $cart-icon-size-sm;
-      }
-
-      &:hover, &:focus { // :focus for consistency, though :focus-visible is usually preferred
-        background-color: rgba(variables.$primary-color, 0.1); // hover:bg-primary/10
-      }
-    }
-
-    .update-cart-btn { // Specific styles for update cart
-      background-color: variables.$neutral-light; // bg-muted
-      color: variables.$text-color; // text-muted-foreground (using text-color for better contrast on light bg)
-      border: 1px solid variables.$neutral-light; // Ensure border for consistency
-
-      &:hover, &:focus {
-        background-color: color.adjust(variables.$neutral-light, $blackness: 5%); // hover:bg-muted/80
-        border-color: color.adjust(variables.$neutral-light, $blackness: 5%);
-      }
-       &:focus-visible { // Override general focus for this button if needed
-        box-shadow: 0 0 0 2px variables.$white, 0 0 0 4px variables.$neutral-dark; // focus-visible:ring-ring
-      }
-      // No icon for update-cart-btn
+    .checkbox-label {
+      font-size: variables.$font-size-sm;
+      color: variables.$text-color;
     }
   }
 }
 
+// Sidebar
+.cart-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-// --- Order Summary Section ---
-.order-summary-section {
-  background-color: variables.$white; // bg-card
-  border-radius: $cart-border-radius-xl; // rounded-xl
-  box-shadow: $cart-shadow-xl; // shadow-xl
-  width: 100%;
-  align-self: flex-start; // align-self: start
-  position: sticky;
-  top: variables.$spacing-lg; // sticky top-8 (using lg for 16px)
-  overflow: hidden; // overflow-hidden for child rounded corners
+.sidebar-card {
+  border: 1px solid variables.$border-color;
+  border-radius: $border-radius-xl;
+  padding: 1.25rem;
 
-  @media (min-width: 1024px) { // lg breakpoint
-    width: 33.333333%; // lg:w-1/3
+  .sidebar-card-title {
+    font-size: variables.$font-size-base;
+    font-weight: 500;
+    margin: 0 0 1rem 0;
+    color: variables.$text-color;
+  }
+}
+
+// Free Shipping Banner
+.free-shipping-banner {
+  .banner-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
-  .summary-header { // Corresponds to CardHeader
-    background-color: rgba(variables.$secondary-color, 0.15); // bg-muted/30 (using secondary as muted)
-    padding: variables.$spacing-lg; // p-6
-    border-bottom: 1px solid rgba(variables.$border-color, 0.3); // Implicit border from React example
+  .banner-accent {
+    width: 0.25rem;
+    height: 1.25rem;
+    background-color: variables.$text-color;
+    flex-shrink: 0;
+  }
 
-    h2 { // Corresponds to CardTitle
-      font-size: variables.$font-size-lg * 1.1; // text-xl (approx)
-      font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-      color: variables.$text-color; // text-foreground
-      margin: 0; // Remove default margin
+  .banner-text {
+    font-size: variables.$font-size-sm;
+    color: variables.$text-color;
+    margin: 0;
+  }
+
+  .banner-divider {
+    width: 100%;
+    height: 1px;
+    background-color: variables.$text-color;
+    margin-top: 0.75rem;
+  }
+}
+
+// New Product Card
+.new-product-card {
+  .new-product-content {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .new-product-image {
+    width: 5rem;
+    height: 5rem;
+    background-color: variables.$neutral-light;
+    border-radius: variables.$border-radius-md;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
 
-  .summary-content { // Corresponds to CardContent
-    padding: variables.$spacing-lg; // p-6
+  .new-product-details {
     display: flex;
     flex-direction: column;
-    gap: variables.$spacing-md; // space-y-4 (using md for 12px)
-  }
+    justify-content: center;
 
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: variables.$font-size-sm; // text-sm
-    color: variables.$text-muted; // text-muted-foreground
-
-    span:last-child {
-      color: variables.$text-color; // text-foreground
-      font-weight: variables.$font-weight-medium; // font-medium
+    .new-product-price {
+      font-weight: 500;
+      color: variables.$text-color;
+      margin-bottom: 0.25rem;
     }
 
-    &.total {
-      font-size: variables.$font-size-lg; // text-lg
-      font-weight: variables.$font-weight-bold; // font-bold
-      color: variables.$text-color; // text-foreground
-      margin-top: variables.$spacing-xs; // Add a bit of space before total if after separator
-      padding-top: variables.$spacing-xs;
+    .new-product-name {
+      font-size: variables.$font-size-sm;
+      font-weight: 500;
+      color: variables.$text-color;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .add-to-cart-btn {
+      padding: 0.5rem 1rem;
+      background-color: variables.$text-color;
+      color: variables.$white;
+      border: none;
+      border-radius: $border-radius-full;
+      font-size: variables.$font-size-sm;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      width: fit-content;
+
+      &:hover {
+        opacity: 0.9;
+      }
     }
   }
+}
 
-  hr.summary-separator { // Corresponds to Separator
-    border: none;
-    border-top: 1px solid rgba(variables.$border-color, 0.5); // bg-border/50
-    margin: variables.$spacing-sm 0; // my-4 (using sm for top/bottom margin)
-  }
+// Order Summary Card
+.order-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 
-  .promo-code-section { // Corresponds to space-y-2 pt-2
-    padding-top: variables.$spacing-sm; // pt-2
+  .discount-section {
     display: flex;
     flex-direction: column;
-    gap: variables.$spacing-xs; // space-y-2
+    gap: 1rem;
 
-    label {
-      font-size: variables.$font-size-sm * 0.9; // text-xs
-      font-weight: variables.$font-weight-medium; // font-medium
-      color: variables.$text-muted; // text-muted-foreground
-    }
-
-    .promo-input-group {
+    .discount-input-group {
       display: flex;
-      gap: variables.$spacing-sm; // gap-2
+      gap: 0.5rem;
 
-      input[type="text"] {
-        flex-grow: 1;
-        border: 1px solid rgba(variables.$border-color, 0.7); // border-border/70
-        border-radius: variables.$border-radius-md; // rounded-md
-        height: 40px; // h-10
-        padding: 0 variables.$spacing-sm;
-        font-size: variables.$font-size-sm; // text-sm
+      .discount-input {
+        flex: 1;
+        padding: 0.5rem 1rem;
+        border: 1px solid variables.$border-color;
+        border-radius: variables.$border-radius-md;
+        font-size: variables.$font-size-sm;
 
         &:focus {
           outline: none;
-          border-color: variables.$primary-color; // focus:ring-1 focus:ring-primary (simulated)
-          box-shadow: 0 0 0 1px variables.$primary-color;
-        }
-        &::placeholder {
-          color: variables.$text-muted;
+          border-color: variables.$text-color;
+          box-shadow: 0 0 0 1px variables.$text-color;
         }
       }
 
-      .apply-promo-btn {
-        border: 1px solid variables.$primary-color; // border-primary
-        color: variables.$primary-color; // text-primary
-        background-color: transparent;
-        border-radius: variables.$border-radius-md; // rounded-md
-        font-size: variables.$font-size-sm; // text-sm
-        font-weight: variables.$font-weight-medium; // font-medium
-        height: 40px; // h-10
-        padding: 0 variables.$spacing-md; // px-4
+      .apply-btn {
+        padding: 0.5rem 1.5rem;
+        background-color: variables.$text-color;
+        color: variables.$white;
+        border: none;
+        border-radius: $border-radius-full;
+        font-size: variables.$font-size-sm;
+        font-weight: 500;
         cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
+        transition: opacity 0.2s ease;
 
         &:hover:not(:disabled) {
-          background-color: rgba(variables.$primary-color, 0.1); // hover:bg-primary/10
+          opacity: 0.9;
         }
-        &:focus-visible {
-          outline: none;
-          box-shadow: 0 0 0 2px variables.$white, 0 0 0 4px variables.$primary-color; // focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
-        }
+
         &:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }
       }
     }
+
+    .promo-message {
+      font-size: variables.$font-size-sm;
+      padding: 0.5rem;
+      border-radius: variables.$border-radius-md;
+
+      &.success {
+        color: variables.$success-color;
+        background-color: rgba(variables.$success-color, 0.1);
+      }
+
+      &.error {
+        color: variables.$error-color;
+        background-color: rgba(variables.$error-color, 0.1);
+      }
+
+      p {
+        margin: 0;
+      }
+    }
   }
 
-  .summary-footer { // Corresponds to CardFooter
-    padding: variables.$spacing-lg; // p-6
-    background-color: rgba(variables.$secondary-color, 0.075); // bg-muted/20
+  .total-section {
+    padding-top: 1rem;
+    border-top: 1px solid variables.$border-color;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .total-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+
+      .total-label {
+        font-size: variables.$font-size-base;
+        color: variables.$text-color;
+      }
+
+      .total-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: variables.$text-color;
+      }
+    }
+
+    .total-note {
+      font-size: variables.$font-size-sm;
+      color: variables.$text-muted;
+      margin: 0 0 1rem 0;
+    }
 
     .checkout-btn {
-      width: 100%; // w-full
-      background-color: variables.$primary-color; // bg-primary
-      color: variables.$white; // text-primary-foreground
-      font-size: variables.$font-size-base; // text-base
-      font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-      border-radius: variables.$border-radius-lg; // rounded-lg
-      box-shadow: $cart-shadow-lg; // shadow-md (using lg for consistency with card)
-      padding: variables.$spacing-md 0; // py-3
-      border: 1px solid transparent;
+      width: 100%;
+      padding: 0.75rem;
+      background-color: variables.$text-color;
+      color: variables.$white;
+      border: none;
+      border-radius: $border-radius-full;
+      font-size: variables.$font-size-base;
+      font-weight: 500;
       cursor: pointer;
-      transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      transition: opacity 0.2s ease;
 
       &:hover {
-        background-color: color.adjust(variables.$primary-color, $lightness: -10%); // hover:bg-primary/90
-        box-shadow: $cart-shadow-xl; // hover:shadow-lg (using xl for more pop)
+        opacity: 0.9;
       }
-      &:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px variables.$white, 0 0 0 4px variables.$neutral-dark; // focus-visible:ring-2 focus-visible:ring-ring
-      }
-    }
-  }
-  // Remove old .checkout-btn and .bordered-button if they were at the root of .order-summary-section
-}
-
-// Media queries for smaller screens
-@media (max-width: 768px) {
-  .cart-items-section {
-    table {
-      thead {
-        th {
-          font-size: 0.8rem;
-          padding: variables.$spacing-xs variables.$spacing-sm;
-        }
-      }
-      tbody {
-        tr.cart-item {
-          td {
-            padding: variables.$spacing-sm;
-            font-size: 0.9rem;
-          }
-        }
-      }
-    }
-  }
-
-  .order-summary-section {
-    padding: variables.$spacing-md;
-
-    h2 {
-      font-size: 1.2rem;
-      margin-bottom: variables.$spacing-md;
-      padding-bottom: variables.$spacing-sm;
-    }
-
-    .summary-row {
-      font-size: 0.9rem;
     }
   }
 }
 
-// --- Empty Cart ---
-.empty-cart-message {
-  text-align: center;
-  padding: variables.$spacing-xxl 0;
-  border: 1px dashed variables.$border-color;
-  border-radius: variables.$border-radius-md;
-  background-color: variables.$neutral-lightest;
+// Suggested Products Section
+.suggested-products-section {
+  margin-top: 6rem;
 
-  p {
-    font-size: 1.2rem;
-    color: variables.$text-color-light;
-    margin-bottom: variables.$spacing-lg;
+  @media (min-width: 768px) {
+    margin-top: 6rem;
   }
-  button {
-    // Use primary button style
+
+  .section-title {
+    font-size: 1.875rem;
+    font-weight: 300;
+    font-family: 'Georgia', 'serif';
+    color: variables.$text-color;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .section-subtitle {
+    color: variables.$text-muted;
+    margin: 0 0 2.5rem 0;
+  }
+
+  .suggested-products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .suggested-product-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  .suggested-product-card {
+    position: relative;
+    background-color: variables.$white;
+    border-radius: variables.$border-radius-md;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-lg;
+
+      .suggested-product-image img {
+        transform: scale(1.05);
+      }
+
+      .suggested-product-name {
+        text-decoration: underline;
+      }
+    }
+
+    .product-badges {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .product-badge {
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.25rem 0.75rem;
+      border-radius: $border-radius-full;
+
+      &.discount-badge {
+        background-color: #f59e0b;
+        color: #fff;
+      }
+
+      &.new-badge {
+        background-color: variables.$white;
+        color: variables.$text-color;
+        border: 1px solid variables.$border-color;
+      }
+    }
+
+    .suggested-product-image {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      background-color: variables.$neutral-light;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+    }
+
+    .suggested-product-info {
+      padding: 1rem;
+
+      .suggested-product-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .suggested-product-price {
+        color: variables.$text-color;
+        font-weight: 500;
+      }
+
+      .suggested-product-original-price {
+        color: variables.$text-muted;
+        text-decoration: line-through;
+        font-size: variables.$font-size-sm;
+      }
+
+      .suggested-product-name {
+        font-size: variables.$font-size-base;
+        font-weight: 500;
+        color: variables.$text-color;
+        margin: 0;
+        transition: text-decoration 0.2s ease;
+      }
+    }
   }
 }
 
-// Loading state
-p {
-  text-align: center;
-  padding: variables.$spacing-xl;
-  color: variables.$text-color-light;
-}
-// --- Empty Cart ---
-.empty-cart-illustration { // Matches updated class name from HTML
+// Empty Cart
+.empty-cart {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: variables.$spacing-xxl variables.$spacing-lg; // p-8 md:p-16
-  background-color: variables.$white; // bg-card
-  border-radius: $cart-border-radius-xl; // rounded-xl
-  box-shadow: $cart-shadow-lg; // shadow-lg
-  min-height: 400px; // To give it some space
-  margin: variables.$spacing-xl auto; // Center it like a card
+  padding: 3rem;
+  background-color: variables.$white;
+  border-radius: $border-radius-xl;
+  box-shadow: $shadow-lg;
+  min-height: 400px;
 
-  .empty-cart-icon-svg { // Specific class for the ShoppingBag SVG
-    width: 96px; // w-24
-    height: 96px; // h-24
-    color: variables.$primary-color; // text-primary
-    margin-bottom: variables.$spacing-xl; // mb-6
-    stroke-width: $cart-icon-stroke-width; // strokeWidth={1.5}
-    @media (min-width: 768px) { // md breakpoint
-      width: 128px; // md:w-32
-      height: 128px; // md:h-32
-    }
+  .empty-cart-text {
+    font-size: variables.$font-size-base;
+    color: variables.$text-muted;
+    margin-bottom: 1.5rem;
   }
 
-  .empty-cart-heading { // h2
-    font-size: variables.$h3-font-size; // text-2xl
-    font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-    color: variables.$text-color; // text-foreground
-    margin-bottom: variables.$spacing-sm; // mb-3
-
-    @media (min-width: 768px) { // md breakpoint
-      font-size: variables.$h2-font-size; // md:text-3xl
-    }
-  }
-
-  .empty-cart-text { // p
-    color: variables.$text-muted; // text-muted-foreground
-    margin-bottom: variables.$spacing-xl; // mb-8
-    max-width: 450px; // max-w-md
-    line-height: variables.$line-height-base;
-  }
-
-  .shop-now-btn {
-    background-color: variables.$primary-color; // bg-primary
-    color: variables.$white; // text-primary-foreground
-    padding: variables.$spacing-md variables.$spacing-xl; // px-8 py-3
-    font-size: variables.$font-size-lg * 0.9; // text-lg (approx)
-    font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-    border-radius: variables.$border-radius-lg; // rounded-lg
-    box-shadow: variables.$box-shadow-md; // shadow-md
-    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    border: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
+  .continue-shopping-link {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background-color: variables.$text-color;
+    color: variables.$white;
+    border-radius: $border-radius-full;
     text-decoration: none;
-
-    .icon-shopping-cart {
-      margin-right: variables.$spacing-sm; // mr-2
-      width: $cart-icon-size-md; // h-5 w-5
-      height: $cart-icon-size-md;
-    }
+    font-weight: 500;
+    transition: opacity 0.2s ease;
 
     &:hover {
-      background-color: color.adjust(variables.$primary-color, $lightness: -10%); // hover:bg-primary/90
-      box-shadow: $cart-shadow-lg; // hover:shadow-lg
-    }
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 2px variables.$white, 0 0 0 4px variables.$neutral-dark; // focus-visible:ring-2 focus-visible:ring-ring
+      opacity: 0.9;
     }
   }
 }
 
-// --- Recently Viewed Section ---
-.recently-viewed-section {
-  margin-top: variables.$spacing-xxl * 1.5; // mt-16
-  @media (min-width: 768px) { // md breakpoint
-    margin-top: variables.$spacing-xxl * 2; // md:mt-24
-  }
-
-  .recently-viewed-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: variables.$spacing-lg; // mb-6
-
-    h2 {
-      font-size: variables.$h3-font-size; // text-2xl
-      font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-      color: variables.$text-color; // text-foreground
-      margin: 0;
-    }
-
-    .view-all-btn {
-      background: none;
-      border: none;
-      color: variables.$primary-color; // text-primary
-      font-size: variables.$font-size-sm; // text-sm
-      font-weight: variables.$font-weight-medium; // font-medium
-      padding: 0;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      text-decoration: none;
-
-      &:hover {
-        color: color.adjust(variables.$primary-color, $lightness: -10%); // hover:text-primary/80
-      }
-      .icon-arrow-right { // Was ArrowLeft rotated
-        margin-left: variables.$spacing-xs; // ml-1
-        width: 0.875rem; // h-3.5 w-3.5
-        height: 0.875rem;
-        // No rotation needed as it's a dedicated right arrow SVG now
-      }
-    }
-  }
-
-  .recently-viewed-scroll-container {
-    position: relative;
-    overflow-x: auto;
-    padding-bottom: variables.$spacing-md; // pb-4 for scrollbar visibility
-    // Negative margins to allow cards to "bleed" to the edge of the container if container has padding
-    margin-left: -(variables.$container-padding-x);
-    margin-right: -(variables.$container-padding-x);
-    padding-left: variables.$container-padding-x;
-    padding-right: variables.$container-padding-x;
-
-
-    // Basic scrollbar styling
-    &::-webkit-scrollbar {
-      height: 8px; // scrollbar-thin
-    }
-    &::-webkit-scrollbar-track {
-      background: transparent; // scrollbar-track-transparent
-    }
-    &::-webkit-scrollbar-thumb {
-      background: rgba(variables.$text-muted, 0.2); // scrollbar-thumb-muted-foreground/20
-      border-radius: 4px; // scrollbar-thumb-rounded-full
-    }
-    // For Firefox
-    scrollbar-width: thin;
-    scrollbar-color: rgba(variables.$text-muted, 0.2) transparent;
-  }
-
-  .recently-viewed-list {
-    display: flex;
-    gap: variables.$spacing-md; // gap-4
-    min-width: max-content;
-    list-style: none;
-    padding: 0; // Remove default ul padding
-    margin: 0; // Remove default ul margin
-
-    @media (min-width: 768px) { // md breakpoint
-      gap: variables.$spacing-lg; // md:gap-6
-    }
-  }
-
-  .recently-viewed-item {
-    width: 150px; // w-[150px]
-    flex-shrink: 0;
-
-    @media (min-width: 640px) { // sm breakpoint
-      width: 192px; // sm:w-48
-    }
-    @media (min-width: 768px) { // md breakpoint
-      width: 224px; // md:w-56
-    }
-
-    // Styling for app-featured-product-card within this context
-    // This assumes app-featured-product-card renders a structure like the React example's Card
-    // These are example overrides/enhancements. The component itself should be styled.
-    ::ng-deep app-featured-product-card {
-      display: block;
-      height: 100%;
-      .card-link { // Assuming the card is wrapped in a link
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        text-decoration: none;
-      }
-      .card { // Assuming a root .card class within the component
-        background-color: variables.$white;
-        border-radius: variables.$border-radius-lg; // rounded-lg
-        box-shadow: variables.$box-shadow-md; // shadow-md
-        overflow: hidden; // overflow-hidden
-        transition: box-shadow 0.3s ease-in-out;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-
-
-        &:hover {
-          box-shadow: $cart-shadow-xl; // hover:shadow-xl
-          .product-image { // group-hover:scale-105
-            transform: scale(1.05);
-          }
-          .product-name { // group-hover:text-primary
-             color: variables.$primary-color;
-          }
-        }
-      }
-      .image-aspect-ratio-container { // Corresponds to AspectRatio
-        width: 100%;
-        padding-top: 75%; // 4/3 ratio (3 / 4 * 100%)
-        position: relative;
-        background-color: variables.$neutral-light; // bg-muted
-        overflow: hidden;
-      }
-      .product-image {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease-in-out;
-      }
-      .card-content { // Corresponds to CardContent
-        padding: variables.$spacing-sm; // p-3
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-
-        @media (min-width: 640px) { // sm breakpoint
-          padding: variables.$spacing-md; // sm:p-4
-        }
-      }
-      .product-name {
-        font-size: variables.$font-size-sm * 0.9; // text-xs
-        font-weight: variables.$font-weight-medium; // font-medium
-        color: variables.$text-color; // text-foreground
-        margin-bottom: variables.$spacing-xs / 2; // mb-1
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        transition: color 0.2s ease-in-out;
-
-        @media (min-width: 640px) { // sm breakpoint
-          font-size: variables.$font-size-sm; // sm:text-sm
-        }
-      }
-      .product-price {
-        font-size: variables.$font-size-sm; // text-sm
-        font-weight: variables.$font-weight-medium; // font-semibold (using medium as fallback)
-        color: variables.$primary-color; // text-primary
-        margin-bottom: variables.$spacing-sm; // mb-2
-
-         @media (min-width: 640px) { // sm breakpoint
-          font-size: variables.$font-size-base; // sm:text-base
-        }
-      }
-      .view-item-btn { // Corresponds to Button variant="outline" size="sm"
-        width: 100%;
-        margin-top: auto; // mt-auto
-        font-size: variables.$font-size-sm * 0.9; // text-xs
-        border: 1px solid rgba(variables.$border-color, 0.7); // border-border/70
-        color: variables.$text-color;
-        background-color: transparent;
-        border-radius: variables.$border-radius-md; // rounded-md
-        padding: (variables.$spacing-xs * 1.5) variables.$spacing-sm; // py-1.5 px-2
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: border-color 0.2s ease-in-out, color 0.2s ease-in-out;
-
-        .icon-eye { // For View Item button in featured product card
-          margin-right: variables.$spacing-xs / 2; // mr-1.5
-          width: 0.75rem; // h-3 w-3
-          height: 0.75rem;
-          @media (min-width: 640px) {
-            width: 0.875rem; // sm:h-3.5 sm:w-3.5
-            height: 0.875rem;
-          }
-        }
-
-        &:hover {
-          border-color: variables.$primary-color; // hover:border-primary
-          color: variables.$primary-color; // hover:text-primary
-        }
-        &:focus-visible {
-          outline: none;
-          box-shadow: 0 0 0 1px variables.$primary-color; // focus-visible:ring-1 focus-visible:ring-primary
-        }
-      }
-    }
-  }
-}
-
-// Loading state
-.cart-page-container > p { // Target p directly under container for loading message
+// Loading State
+.loading-text {
   text-align: center;
-  padding: variables.$spacing-xl;
-  color: variables.$text-color-light;
+  padding: 3rem;
+  color: variables.$text-muted;
   font-size: variables.$font-size-lg;
+}
+
+// Responsive adjustments
+@media (max-width: 767px) {
+  .cart-page-container {
+    padding: variables.$spacing-lg variables.$spacing-md;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .cart-items-section {
+    .table-header {
+      display: none; // Hide header on mobile
+    }
+
+    .cart-item {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .item-product {
+      flex-direction: row;
+    }
+
+    .item-quantity {
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+
+      .quantity-control {
+        flex: 1;
+      }
+    }
+
+    .item-total {
+      text-align: left;
+    }
+  }
+
+  .sidebar-card {
+    .new-product-content {
+      flex-direction: column;
+    }
+
+    .new-product-image {
+      width: 100%;
+      height: 200px;
+    }
+
+    .new-product-details {
+      .add-to-cart-btn {
+        width: 100%;
+      }
+    }
+  }
 }

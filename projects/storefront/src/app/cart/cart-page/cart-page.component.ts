@@ -1,18 +1,29 @@
-import { Component, inject, OnInit } from '@angular/core'; // Added OnInit
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Observable, firstValueFrom, take, of, switchMap, map } from 'rxjs'; // Added of, switchMap, map
+import { Observable, firstValueFrom, take, of, switchMap } from 'rxjs';
 import { CartService, CartState, CartItem } from '../../core/services/cart.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { ApiService } from '../../core/services/api.service';
 import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
 import { Product } from '@shared-types';
-import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component'; // Changed import
+import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { T } from '@shared/i18n';
 import { TranslatePipe } from '@shared/i18n';
 import { NotificationService } from '../../core/services/notification.service';
 import { I18nService } from '@shared/i18n';
+
+// Suggested products interface (matching React mock data)
+interface SuggestedProduct {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  discount?: number;
+  isNew?: boolean;
+}
 
 @Component({
   selector: 'app-cart-page',
@@ -21,31 +32,72 @@ import { I18nService } from '@shared/i18n';
     CommonModule,
     RouterModule,
     FormsModule,
-    FeaturedProductCardComponent,
+    ProductCardComponent,
     TranslatePipe
   ],
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss'
 })
-export class CartPageComponent implements OnInit { // Implemented OnInit
+export class CartPageComponent implements OnInit {
   private cartService = inject(CartService);
   private storeContextService = inject(StoreContextService);
   private location = inject(Location);
   private router = inject(Router);
   private apiService = inject(ApiService);
-  private recentlyViewedService = inject(RecentlyViewedService); // Added injection
-  private notificationService = inject(NotificationService); // Added
-  private i18nService = inject(I18nService); // Added
+  private recentlyViewedService = inject(RecentlyViewedService);
+  private notificationService = inject(NotificationService);
+  private i18nService = inject(I18nService);
 
   public tKeys = T;
   promoCode: string = '';
   appliedPromoCodeDetails: { code: string, discountAmount: number, message?: string } | null = null;
+  giftWrap: boolean = false;
+  readonly giftWrapCost: number = 33.00;
 
   // Expose the cart state observable directly to the template
   cartState$: Observable<CartState | null> = this.cartService.cartState$;
   // Expose the store slug observable
   currentStoreSlug$: Observable<string | null> = this.storeContextService.currentStoreSlug$;
-  recentlyViewedProducts$: Observable<Product[]> = of([]); // Added property
+  recentlyViewedProducts$: Observable<Product[]> = of([]);
+
+  // Suggested products (mock data matching React example)
+  suggestedProducts: SuggestedProduct[] = [
+    {
+      id: '3',
+      name: 'Woolen Blanket Bundle',
+      price: 2599.00,
+      originalPrice: 3249.00,
+      image: '/assets/images/placeholder.png',
+      discount: 20,
+    },
+    {
+      id: '4',
+      name: 'Wine Glass - Low 2pcs.',
+      price: 153.00,
+      image: '/assets/images/placeholder.png',
+    },
+    {
+      id: '5',
+      name: 'Wine Glass - High 2pcs.',
+      price: 173.00,
+      image: '/assets/images/placeholder.png',
+      isNew: true,
+    },
+    {
+      id: '6',
+      name: 'W&S Soft Candleholder',
+      price: 228.00,
+      image: '/assets/images/placeholder.png',
+    },
+  ];
+
+  // New product suggestion (mock data)
+  newProductSuggestion: SuggestedProduct = {
+    id: '7',
+    name: 'W&S Little Lion Sculpture',
+    price: 49.00,
+    image: '/assets/images/placeholder.png',
+  };
 
   ngOnInit(): void {
     const productIds = this.recentlyViewedService.getRecentlyViewedProductIds();
@@ -54,11 +106,9 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
         take(1),
         switchMap(storeSlug => {
           if (storeSlug) {
-            // storeSlug is no longer passed as an argument here,
-            // ApiService.getProductsByIds will get it from StoreContextService
             return this.apiService.getProductsByIds(productIds);
           }
-          return of([]); // No store slug, return empty
+          return of([]);
         })
       );
     }
@@ -68,12 +118,7 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
   }
   // Method to calculate item subtotal
   calculateItemSubtotal(item: CartItem): number {
-    // Need to handle the case where product details might be missing initially
-    // This assumes the product object on CartItem will eventually be populated
-    // or the price is fetched/available somehow.
-    // For now, using a placeholder or assuming price exists if item exists.
-    // A better approach might involve fetching product details if needed.
-    const price = item.product?.price || 0; // Use 0 if price is missing
+    const price = item.product?.price || 0;
     return price * item.quantity;
   }
 
@@ -82,18 +127,22 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
     return items.reduce((sum, item) => sum + this.calculateItemSubtotal(item), 0);
   }
 
+  // Method to calculate total including gift wrap
+  calculateTotal(items: CartItem[]): number {
+    const subtotal = this.calculateCartSubtotal(items);
+    const discount = this.appliedPromoCodeDetails?.discountAmount || 0;
+    return subtotal + (this.giftWrap ? this.giftWrapCost : 0) - discount;
+  }
+
   // Method to handle quantity updates from the input
   updateQuantity(item: CartItem, quantityString: string): void {
     const newQuantity = parseInt(quantityString, 10);
-    // Basic validation
     if (isNaN(newQuantity) || newQuantity < 0) {
       console.warn(`Invalid quantity input: ${quantityString}.`);
-      // TODO: Reset input to current quantity?
       return;
     }
 
     if (newQuantity === 0) {
-      // Treat setting quantity to 0 as removing the item
       this.removeItem(item);
     } else if (item.id) { // Ensure item ID exists
       console.log('CartPage: Updating quantity for item:', item);
@@ -118,13 +167,6 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
   decrementQuantity(item: CartItem): void {
     if (item.quantity > 1) {
       this.updateQuantity(item, (item.quantity - 1).toString());
-    } else if (item.quantity === 1) {
-      // Optionally, confirm before removing or just remove
-      // For now, let updateQuantity handle newQuantity === 0 logic if needed,
-      // or call removeItem directly if that's the desired UX for decrementing from 1.
-      // this.removeItem(item);
-      // Or, to prevent going to 0 via button, ensure updateQuantity handles it or do nothing.
-      // For now, this button won't go below 1 due to HTML [disabled] and this check.
     }
   }
 
@@ -141,12 +183,12 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
     }
   }
 
-  // Placeholder method for "Update Cart" button (might not be needed)
-  updateCart(): void {
-    console.log('Update Cart button clicked. Logic might be handled by quantity changes directly.');
-    // Potentially useful if batching updates or recalculating totals explicitly
+  // Toggle gift wrapping
+  toggleGiftWrap(): void {
+    this.giftWrap = !this.giftWrap;
   }
 
+  // Apply promo code
   applyPromoCode(): void {
     if (!this.promoCode.trim()) {
       this.appliedPromoCodeDetails = {
@@ -177,7 +219,7 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
               discountAmount: response.discountAmount,
               message: response.message || `Promo code "${response.code}" applied successfully! You saved ${response.discountAmount}.`
             };
-            this.promoCode = ''; // Clear input on success
+            this.promoCode = '';
           } else {
             this.appliedPromoCodeDetails = {
               code: this.promoCode,
@@ -191,14 +233,14 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
           this.appliedPromoCodeDetails = {
             code: this.promoCode,
             discountAmount: 0,
-            message: 'Invalid or expired promo code. Please try again.' // More generic error for UI
+            message: 'Invalid or expired promo code. Please try again.'
           };
         }
       });
     });
   }
 
-  // Placeholder method for "Proceed to Checkout" button
+  // Proceed to checkout
   async proceedToCheckout(): Promise<void> {
     console.log('Proceeding to checkout...');
     const storeSlug = await firstValueFrom(this.storeContextService.currentStoreSlug$);
@@ -206,40 +248,40 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
       this.router.navigate(['/', storeSlug, 'checkout']);
     } else {
       console.error('Store slug is not available. Cannot navigate to checkout.');
-      // Optionally, navigate to a generic error page or home
       this.router.navigate(['/']);
     }
   }
 
-  // Method to navigate back
+  // Navigate back
   goBack(): void {
     this.location.back();
   }
 
-  onAddToCartFromRecentlyViewed(product: Product): void {
-    if (!product || !product.id) {
-      console.error('Invalid product data received from recently viewed:', product);
-      this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
-      return;
-    }
+  // Add suggested product to cart
+  onAddSuggestedProductToCart(product: SuggestedProduct): void {
+    // Convert SuggestedProduct to Product interface
+    const productToAdd: Product = {
+      id: product.id,
+      sku: product.id,
+      name: product.name,
+      description: '',
+      price: product.price,
+      imageUrls: [product.image],
+      categories: [],
+      stockLevel: 10, // Default stock for suggested products
+      isActive: true,
+    };
 
-    this.cartService.addItem(product).subscribe({
+    this.cartService.addItem(productToAdd).subscribe({
       next: () => {
         this.notificationService.showSuccess(
-          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, 1, product.name) // Assuming quantity 1
+          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, 1, product.name)
         );
       },
       error: (error: any) => {
-        console.error('Error adding product to cart from recently viewed:', error);
+        console.error('Error adding suggested product to cart:', error);
         this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
       }
     });
-  }
-
-  navigateToRecentlyViewedAll(): void {
-    // Placeholder for navigation logic
-    console.log('Navigate to all recently viewed products page - TBD');
-    // Example: this.router.navigate(['/', storeSlug, 'products', 'recently-viewed']);
-    // This would require a new route and component.
   }
 }
