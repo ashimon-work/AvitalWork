@@ -63,7 +63,9 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
       );
     }
   }
-
+  trackByProductId(index: number, item: CartItem): string {
+    return item.product.id;
+  }
   // Method to calculate item subtotal
   calculateItemSubtotal(item: CartItem): number {
     // Need to handle the case where product details might be missing initially
@@ -93,12 +95,15 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
     if (newQuantity === 0) {
       // Treat setting quantity to 0 as removing the item
       this.removeItem(item);
-    } else if (item.product?.id) { // Ensure product ID exists
-      this.cartService.updateItemQuantity(item.product.id, newQuantity).subscribe({
-         next: () => console.log('Quantity update request sent.'),
-         error: (err) => console.error('Error updating quantity:', err)
-         // State update is handled within the service
-       });
+    } else if (item.id) { // Ensure item ID exists
+      console.log('CartPage: Updating quantity for item:', item);
+      console.log('CartPage: Item ID:', item.id);
+      console.log('CartPage: Full item object:', JSON.stringify(item));
+      this.cartService.updateItemQuantity(item.id, newQuantity).subscribe({
+        next: () => console.log('Quantity update request sent.'),
+        error: (err: any) => console.error('Error updating quantity:', err)
+        // State update is handled within the service
+      });
     } else {
       console.error('Cannot update quantity, product ID missing from item:', item);
     }
@@ -125,14 +130,14 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
 
   // Method to handle removing an item
   removeItem(item: CartItem): void {
-    if (item.product?.id) { // Ensure product ID exists
-      this.cartService.removeItem(item.product.id).subscribe({
-         next: () => console.log('Remove item request sent.'),
-         error: (err) => console.error('Error removing item:', err)
-         // State update is handled within the service
-       });
+    if (item?.id) { // Ensure product ID exists
+      this.cartService.removeItem(item.id).subscribe({
+        next: () => console.log('Remove item request sent.'),
+        error: (err: any) => console.error('Error removing item:', err)
+        // State update is handled within the service
+      });
     } else {
-       console.error('Cannot remove item, product ID missing from item:', item);
+      console.error('Cannot remove item, product ID missing from item:', item);
     }
   }
 
@@ -164,7 +169,7 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
       }
 
       this.apiService.applyPromoCodeToCart(storeSlug, this.promoCode).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           // Assuming API response: { success: boolean, code: string, discountAmount: number, message?: string, newTotal?: number }
           if (response && response.success) {
             this.appliedPromoCodeDetails = {
@@ -181,7 +186,7 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
             };
           }
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Error applying promo code:', err);
           this.appliedPromoCodeDetails = {
             code: this.promoCode,
