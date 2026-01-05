@@ -1,179 +1,361 @@
-@use "sass:color";
-@use '../../styles/variables' as variables;
 
-.login-container {
-  max-width: 450px;
-  margin: 4rem auto;
-  padding: 2rem;
-  border: 1px solid variables.$border-color;
-  border-radius: variables.$border-radius-md;
-  background-color: variables.$white;
-  box-shadow: variables.$box-shadow-sm;
+// @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap');
 
-  h2 {
-    text-align: center;
-    margin-bottom: 0.5rem;
-    color: variables.$primary-color;
+// .min-h-screen {
+//   font-family: 'Heebo', sans-serif;
+//   min-height: 100vh;
+//   direction: rtl; /* העברת כל העמוד למצב מימין לשמאל */
+//   text-align: right; /* יישור טקסט לימין */
+// }
+
+// .bg-background { 
+//   background-color: #ffffff; 
+// }
+
+// // קונטיינר ראשי עם רווח מה-Header
+// .container-inner {
+//   max-width: 1200px;
+//   margin: 0 auto;
+//   padding-top: 5rem;
+//   padding-left: 1.5rem;
+//   padding-right: 1.5rem;
+// }
+
+// // הגבלת רוחב הטופס
+// .max-w-2xl { 
+//   max-width: 42rem; 
+// }
+
+// // כותרת גדולה
+// .text-display {
+//   font-size: 3rem;
+//   font-weight: 400;
+//   color: #111827;
+//   margin-top: 1rem;
+//   margin-bottom: 0;
+// }
+
+// // line
+// .separator {
+//   width:55%;
+//   border: 0;
+//   border-bottom: 1px solid #e5e7eb;
+//   margin-top: 1.5rem;
+//   margin-bottom: 1.5rem;
+// }
+
+// // nav Breadcrumb
+// .breadcrumb {
+//   display: flex;
+//   gap: 0.5rem;
+//   font-size: 0.875rem;
+//   color: #6b7280;
+//   padding: 0;
+//   list-style: none;
+
+//   a {
+//     color: inherit;
+//     text-decoration: none;
+//     transition: color 0.2s;
+//     &:hover { color: #111827; }
+//   }
+
+//   .current{
+//     color: #111827 ;
+//   }
+// }
+
+// // group (Input+Label)
+// .form-group {
+//   position: relative;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.6rem;
+//   margin-bottom: 2rem;
+// }
+
+
+// .input-label {
+//   font-size: 0.875rem;
+//   font-weight: 500;
+//   color: #374151;
+//   display: block;
+//   padding-right: 0.25rem; /* רווח קטן מהצד הימני */
+// }
+
+// .custom-input {
+//   width: 65%;
+//   padding: 1rem 1.25rem;
+//   border: 1px solid #e5e7eb;
+//   background-color: #ffffff;
+//   color: #111827;
+//   border-radius: 1.5rem;
+//   font-size: 1rem;
+//   transition: all 0.2s ease;
+//   text-align: right; /* וודוא שההקלדה היא מימין */
+
+//   &::placeholder { 
+//     color: #9ca3af;
+//     text-align: right; 
+//   }
+
+//   &:focus {
+//     outline: none;
+//     border-color: #111827;
+//     box-shadow: 0 0 0 1px #111827;
+//   }
+
+//   &.is-invalid {
+//     border-color: #ef4444;
+//   }
+// }
+
+// // submit
+// .submit-button {
+//   display: flex;
+//   flex-direction: row-reverse; /* היפוך סדר הטקסט והחץ עבור עברית */
+//   align-items: center;
+//   justify-content: center;
+//   gap: 0.5rem;
+//   background-color: #111827;
+//   color: #ffffff;
+//   padding: 0.85rem 2.5rem;
+//   border-radius: 9999px;
+//   border: none;
+//   cursor: pointer;
+//   font-weight: 500;
+//   transition: all 0.3s ease;
+
+//   &:hover { opacity: 0.9; }
+//   &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+//   .arrow-icon {
+//     transition: all 0.3s ease;
+//     transform: scaleX(-1); /* הפיכת כיוון החץ שיפנה שמאלה בעברית */
+    
+//     &.hidden { 
+//       opacity: 0; 
+//       transform: scaleX(-1) translateX(8px); 
+//       width: 0; 
+//     }
+//     &.visible { 
+//       opacity: 1; 
+//       transform: scaleX(-1) translateX(0); 
+//       width: 16px; 
+//     }
+//   }
+// }
+
+// // פעולות הטופס (כפתור + לינקים)
+// .form-actions {
+//   display: flex;
+//   align-items: center;
+//   gap: 2rem;
+//   margin-top: 3rem;
+// }
+
+// .action-links {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.3rem;
+
+//   a { text-decoration: none; font-size: 0.875rem; transition: 0.2s; }
+//   .link-muted { color: #6b7280; &:hover { color: #111827; text-decoration: underline; } }
+//   .link-bold { color: #111827; font-weight: 600; &:hover { text-decoration: underline; } }
+// }
+
+// // הודעות שגיאה
+// .invalid-feedback {
+//   min-height: 1.25rem; /* גובה של שורה אחת בערך */
+//   color: #ef4444;
+//   font-size: 0.8rem;
+//   margin-top: 0.1rem;
+//     position: absolute;
+//   bottom: -1.4rem; /* ממקם את השגיאה בדיוק מתחת לאינפוט בלי לתפוס מקום */
+//   right: 0.25rem;
+
+//   text-align: right;
+// }
+
+// הגדרות כלליות
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap');
+
+.min-h-screen {
+  font-family: 'Heebo', sans-serif;
+  min-height: 100vh;
+  direction: rtl;
+  text-align: right;
+  background-color: #ffffff;
+}
+
+// קונטיינר ראשי
+.container-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 6.5rem;
+}
+
+.max-w-2xl { 
+  max-width: 42rem; 
+}
+
+.text-display {
+  font-size: 3rem;
+  font-weight: 400;
+  color: #111827;
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+.separator {
+  width: 60%;
+  border: 0;
+  border-bottom: 1px solid #d1d5db;  
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.breadcrumb {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #4b5563; 
+  padding: 0;
+  list-style: none;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+    &:hover { color: #111827; }
   }
 
-  p {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: variables.$text-muted;
+  .current {
+    color: #111827;
+    font-weight: 500;
+  }
+}
+
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 2.5rem;
+}
+
+.input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  display: block;
+  padding-right: 0.25rem;
+}
+
+.custom-input {
+  width: 65%;
+  padding: 1rem 1.25rem;
+  border: 1px solid #d1d5db; 
+  background-color: #ffffff;
+  color: #111827;
+  border-radius: 1.5rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  text-align: right;
+
+  &::placeholder { 
+    color: #6b7280; 
+    text-align: right; 
   }
 
-  .form-group {
-    margin-bottom: 1.5rem;
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: variables.$text-color;
-    }
-
-    // Specific styling for password input group
-    &.password-group {
-      .input-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-
-        input[type="password"],
-        input[type="text"] {
-          padding-right: 4rem;
-        }
-
-        .toggle-password {
-          position: absolute;
-          right: 0.5rem;
-          top: 50%;
-          transform: translateY(-50%);
-          background: none;
-          border: none;
-          color: variables.$text-muted;
-          cursor: pointer;
-          padding: 0.25rem 0.5rem;
-          font-size: 0.9em;
-
-          &:hover {
-            color: variables.$primary-color;
-          }
-        }
-      }
-    }
-
-
-    input[type="email"],
-    input[type="password"],
-    input[type="text"] {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 1px solid variables.$border-color;
-      border-radius: variables.$border-radius-sm;
-      font-size: 1rem;
-      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-
-      &:focus {
-        border-color: variables.$primary-color-light;
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(variables.$primary-color, 0.25);
-      }
-
-      &.is-invalid {
-        border-color: variables.$error-color;
-        &:focus {
-          box-shadow: 0 0 0 0.2rem rgba(variables.$error-color, 0.25);
-        }
-      }
-    }
-
-    .invalid-feedback {
-      color: variables.$error-color;
-      font-size: 0.875em;
-      margin-top: 0.25rem;
-    }
-
-    // Styling for Remember Me / Forgot Password row
-    &.form-check-inline {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-
-      .form-check-input {
-        margin-right: 0.5rem;
-        cursor: pointer;
-      }
-
-      .form-check-label {
-        margin-bottom: 0;
-        font-weight: normal;
-        color: variables.$text-muted;
-        cursor: pointer;
-        user-select: none;
-      }
-
-      .forgot-password-link {
-        font-size: 0.9rem;
-        color: variables.$primary-color;
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
+  &.focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 1px #111827;
   }
 
-  .error-message {
-    color: variables.$error-color;
-    background-color: rgba(variables.$error-color, 0.1);
-    border: 1px solid rgba(variables.$error-color, 0.2);
-    padding: 0.75rem 1rem;
-    border-radius: variables.$border-radius-sm;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    font-size: 0.9rem;
+  &.is-invalid {
+    border-color: #ef4444;
+  }
+}
+
+.submit-button {
+  display: flex;
+  flex-direction: row-reverse; 
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  /* צבע שחור כהה קבוע */
+  background-color: #000000; 
+  color: #ffffff;
+  
+  padding: 0.85rem 2.5rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  /* מצב שבו הכפתור תקין והעכבר מעליו - נשאר שחור כהה */
+  &:hover:not(:disabled) { 
+    opacity: 1;
+    background-color: #000000;
   }
 
-  .btn-primary {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    font-size: 1rem;
-    font-weight: 600;
-    background-color: variables.$primary-color;
-    border-color: variables.$primary-color;
-    color: variables.$white;
-    border-radius: variables.$border-radius-sm;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-
+  /* מצב שבו הכפתור חסום (Disabled) */
+  &:disabled { 
+    background-color: #111827; /* צבע כהה בבסיס */
+    cursor: not-allowed;
+    opacity: 1; /* מבטלים שקיפות כדי לשלוט בצבע ידנית */
+    
+    /* כשהעכבר עובר על כפתור חסום - הופך לאפור מעט */
     &:hover {
-      background-color: color.adjust(variables.$primary-color, $lightness: -10%);
-      border-color: color.adjust(variables.$primary-color, $lightness: -10%);
-    }
-
-    &:disabled {
-      background-color: color.adjust(variables.$primary-color, $lightness: 20%);
-      border-color: color.adjust(variables.$primary-color, $lightness: 20%);
-      cursor: not-allowed;
-      opacity: 0.65;
+      background-color: #4b5563; /* אפור בינוני-כהה */
     }
   }
 
-  .register-link {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: variables.$text-muted;
-    font-size: 0.9rem;
-
-    a {
-      color: variables.$primary-color;
-      font-weight: 500;
-      text-decoration: none;
-      &:hover {
-        text-decoration: underline;
-      }
+  .arrow-icon {
+    transition: all 0.3s ease;
+    transform: scaleX(-1);
+    
+    &.hidden { 
+      opacity: 0; 
+      transform: scaleX(-1) translateX(8px); 
+      width: 0; 
+    }
+    &.visible { 
+      opacity: 1; 
+      transform: scaleX(-1) translateX(0); 
+      width: 16px; 
     }
   }
+}
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.action-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  a { text-decoration: none; font-size: 0.875rem; transition: 0.2s; }
+  .link-muted { color: #4b5563; &:hover { color: #111827; text-decoration: underline; } }
+  .link-bold { color: #111827; font-weight: 600; &:hover { text-decoration: underline; } }
+}
+
+.invalid-feedback {
+  min-height: 1.25rem;
+  color: #ef4444;
+  font-size: 0.8rem;
+  position: absolute;
+  bottom: -1.4rem;
+  right: 0.25rem;
+  text-align: right;
 }
