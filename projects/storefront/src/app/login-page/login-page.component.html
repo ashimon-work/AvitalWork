@@ -89,28 +89,20 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
         
         <div class="form-group">
-          <label for="email" class="input-label">{{ tKeys.SF_LOGIN_PAGE_EMAIL_LABEL | translate }}</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            class="custom-input"
-            [placeholder]="tKeys.SF_LOGIN_PAGE_EMAIL_PLACEHOLDER | translate"
-            [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }"
-          />
+          <label for="email" class="input-label">{{ tKeys.SF_REGISTRATION_EMAIL_LABEL | translate }}</label>
+          <input id="email" type="email" formControlName="email" class="custom-input"
+            placeholder="אימייל"
+            [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }" />
           <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="invalid-feedback">
             <small>{{ tKeys.SF_LOGIN_PAGE_EMAIL_REQUIRED_ERROR | translate }}</small>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="password" class="input-label">{{ tKeys.SF_LOGIN_PAGE_PASSWORD_LABEL | translate }}</label>
-          <input
-            id="password"
-            [type]="passwordFieldType"
-            formControlName="password"
+          <label for="password" class="input-label">{{ tKeys.SF_REGISTRATION_PASSWORD_LABEL | translate }}</label>
+          <input id="password" [type]="passwordFieldType" formControlName="password"
             class="custom-input"
-            [placeholder]="tKeys.SF_LOGIN_PAGE_PASSWORD_PLACEHOLDER | translate"
+            placeholder="סיסמה"
             [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }"
           />
 
@@ -147,7 +139,6 @@
             </a>
           </div>
         </div>
-
       </form>
     </div>
   </div>
