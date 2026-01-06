@@ -6,6 +6,7 @@ import { Observable, switchMap, tap, map, of, filter, catchError, combineLatest 
 import { Product, Category, ProductVariant, ProductVariantOption } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { CartService } from '../../core/services/cart.service';
+import { CartDrawerService } from '../../core/services/cart-drawer.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -36,6 +37,7 @@ export class ProductPageComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private cartService = inject(CartService);
+  private cartDrawerService = inject(CartDrawerService);
   private storeContext = inject(StoreContextService);
   private wishlistService = inject(WishlistService);
   private authService = inject(AuthService);
@@ -333,6 +335,8 @@ export class ProductPageComponent implements OnInit {
         this.notificationService.showSuccess(
           this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, this.quantity, product.name)
         );
+        // Open the cart drawer when item is added
+        this.cartDrawerService.open();
         // TODO: Add button state change (e.g., temporarily disable or show added state)
       },
       error: (err: any) => {

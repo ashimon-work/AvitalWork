@@ -14,16 +14,6 @@ import { TranslatePipe } from '@shared/i18n';
 import { NotificationService } from '../../core/services/notification.service';
 import { I18nService } from '@shared/i18n';
 
-// Suggested products interface (matching React mock data)
-interface SuggestedProduct {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  discount?: number;
-  isNew?: boolean;
-}
 
 @Component({
   selector: 'app-cart-page',
@@ -51,52 +41,25 @@ export class CartPageComponent implements OnInit {
   public tKeys = T;
   promoCode: string = '';
   appliedPromoCodeDetails: { code: string, discountAmount: number, message?: string } | null = null;
-  giftWrap: boolean = false;
-  readonly giftWrapCost: number = 33.00;
 
   // Expose the cart state observable directly to the template
   cartState$: Observable<CartState | null> = this.cartService.cartState$;
   // Expose the store slug observable
   currentStoreSlug$: Observable<string | null> = this.storeContextService.currentStoreSlug$;
   recentlyViewedProducts$: Observable<Product[]> = of([]);
-
-  // Suggested products (mock data matching React example)
-  suggestedProducts: SuggestedProduct[] = [
-    {
-      id: '3',
-      name: 'Woolen Blanket Bundle',
-      price: 2599.00,
-      originalPrice: 3249.00,
-      image: '/assets/images/placeholder.png',
-      discount: 20,
-    },
-    {
-      id: '4',
-      name: 'Wine Glass - Low 2pcs.',
-      price: 153.00,
-      image: '/assets/images/placeholder.png',
-    },
-    {
-      id: '5',
-      name: 'Wine Glass - High 2pcs.',
-      price: 173.00,
-      image: '/assets/images/placeholder.png',
-      isNew: true,
-    },
-    {
-      id: '6',
-      name: 'W&S Soft Candleholder',
-      price: 228.00,
-      image: '/assets/images/placeholder.png',
-    },
-  ];
+  suggestedProducts$: Observable<Product[]> = of([]);
 
   // New product suggestion (mock data)
-  newProductSuggestion: SuggestedProduct = {
+  newProductSuggestion: Product = {
     id: '7',
+    sku: '7',
     name: 'W&S Little Lion Sculpture',
+    description: '',
     price: 49.00,
-    image: '/assets/images/placeholder.png',
+    imageUrls: ['/assets/images/placeholder.png'],
+    categories: [],
+    stockLevel: 10,
+    isActive: true,
   };
 
   ngOnInit(): void {
@@ -112,6 +75,9 @@ export class CartPageComponent implements OnInit {
         })
       );
     }
+    
+    // Fetch featured products for "You may also like these" section
+    this.suggestedProducts$ = this.apiService.getFeaturedProducts();
   }
   trackByProductId(index: number, item: CartItem): string {
     return item.product.id;
@@ -127,11 +93,11 @@ export class CartPageComponent implements OnInit {
     return items.reduce((sum, item) => sum + this.calculateItemSubtotal(item), 0);
   }
 
-  // Method to calculate total including gift wrap
+  // Method to calculate total
   calculateTotal(items: CartItem[]): number {
     const subtotal = this.calculateCartSubtotal(items);
     const discount = this.appliedPromoCodeDetails?.discountAmount || 0;
-    return subtotal + (this.giftWrap ? this.giftWrapCost : 0) - discount;
+    return subtotal - discount;
   }
 
   // Method to handle quantity updates from the input
@@ -181,11 +147,6 @@ export class CartPageComponent implements OnInit {
     } else {
       console.error('Cannot remove item, product ID missing from item:', item);
     }
-  }
-
-  // Toggle gift wrapping
-  toggleGiftWrap(): void {
-    this.giftWrap = !this.giftWrap;
   }
 
   // Apply promo code
@@ -258,21 +219,8 @@ export class CartPageComponent implements OnInit {
   }
 
   // Add suggested product to cart
-  onAddSuggestedProductToCart(product: SuggestedProduct): void {
-    // Convert SuggestedProduct to Product interface
-    const productToAdd: Product = {
-      id: product.id,
-      sku: product.id,
-      name: product.name,
-      description: '',
-      price: product.price,
-      imageUrls: [product.image],
-      categories: [],
-      stockLevel: 10, // Default stock for suggested products
-      isActive: true,
-    };
-
-    this.cartService.addItem(productToAdd).subscribe({
+  onAddSuggestedProductToCart(product: Product): void {
+    this.cartService.addItem(product).subscribe({
       next: () => {
         this.notificationService.showSuccess(
           this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, 1, product.name)

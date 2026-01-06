@@ -69,49 +69,17 @@
               <span class="item-total-price">{{ calculateItemSubtotal(item) | currency:'NIS' }}</span>
             </div>
           </div>
-
-          <!-- Gift Wrapping Row -->
-          <div class="cart-item gift-wrap-row" *ngIf="giftWrap">
-            <div class="item-product">
-              <div class="item-image gift-wrap-image"></div>
-              <div class="item-details">
-                <span class="item-price">{{ giftWrapCost | currency:'NIS' }}</span>
-                <span class="item-name">Gift Wrapping</span>
-              </div>
-            </div>
-            <div class="item-quantity">
-              <span class="quantity-value">1</span>
-            </div>
-            <div class="item-total">
-              <span class="item-total-price">{{ giftWrapCost | currency:'NIS' }}</span>
-            </div>
-          </div>
         </div>
-
-        <!-- Gift Wrap Checkbox -->
-        <label class="gift-wrap-checkbox">
-          <input type="checkbox" [checked]="giftWrap" (change)="toggleGiftWrap()" class="checkbox-input">
-          <span class="checkbox-label">For {{ giftWrapCost | currency:'NIS' }}, please wrap the products in this order.</span>
-        </label>
       </div>
 
       <!-- Sidebar -->
       <aside class="cart-sidebar">
-        <!-- Free Shipping Banner -->
-        <div class="sidebar-card free-shipping-banner">
-          <div class="banner-content">
-            <div class="banner-accent"></div>
-            <p class="banner-text">You are eligible for free shipping!</p>
-          </div>
-          <div class="banner-divider"></div>
-        </div>
-
         <!-- New Product Suggestion -->
         <div class="sidebar-card new-product-card">
           <h3 class="sidebar-card-title">New Product</h3>
           <div class="new-product-content">
             <div class="new-product-image">
-              <img [src]="newProductSuggestion.image" [alt]="newProductSuggestion.name">
+              <img [src]="newProductSuggestion.imageUrls[0] || '/assets/images/placeholder.png'" [alt]="newProductSuggestion.name">
             </div>
             <div class="new-product-details">
               <span class="new-product-price">{{ newProductSuggestion.price | currency:'NIS' }}</span>
@@ -155,32 +123,31 @@
     <section class="suggested-products-section">
       <h2 class="section-title">You may also like these</h2>
       <p class="section-subtitle">Don't check out before looking at these great offers!</p>
-      <div class="suggested-products-grid">
-        <a *ngFor="let product of suggestedProducts"
+      <div class="suggested-products-scroll-container">
+        <div class="suggested-products-grid">
+        <a *ngFor="let product of suggestedProducts$ | async"
           [routerLink]="['/', currentStoreSlug$ | async, 'product', product.id]"
           class="suggested-product-link">
           <div class="suggested-product-card">
             <!-- Badges -->
             <div class="product-badges">
-              <span *ngIf="product.discount" class="product-badge discount-badge">-{{ product.discount }}%</span>
-              <span *ngIf="product.isNew" class="product-badge new-badge">NEW</span>
+              <span *ngIf="product.tags?.includes('Sale')" class="product-badge discount-badge">SALE</span>
+              <span *ngIf="product.tags?.includes('New')" class="product-badge new-badge">NEW</span>
             </div>
             <!-- Product Image -->
             <div class="suggested-product-image">
-              <img [src]="product.image" [alt]="product.name">
+              <img [src]="product.imageUrls[0] || '/assets/images/placeholder.png'" [alt]="product.name">
             </div>
             <!-- Product Info -->
             <div class="suggested-product-info">
               <div class="suggested-product-price-row">
                 <span class="suggested-product-price">{{ product.price | currency:'NIS' }}</span>
-                <span *ngIf="product.originalPrice" class="suggested-product-original-price">
-                  {{ product.originalPrice | currency:'NIS' }}
-                </span>
               </div>
               <h3 class="suggested-product-name">{{ product.name }}</h3>
             </div>
           </div>
         </a>
+        </div>
       </div>
     </section>
   </ng-container>

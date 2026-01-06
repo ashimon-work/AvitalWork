@@ -29,11 +29,11 @@
       </a>
     </mat-nav-list>
 
-    <div class="mobile-drawer-search">
-      <app-search-bar></app-search-bar>
-    </div>
-
     <div class="mobile-drawer-actions">
+      <button mat-stroked-button class="full-width-button" (click)="openSearchPanel()">
+        <mat-icon>search</mat-icon> Search
+      </button>
+
       <button mat-stroked-button class="full-width-button" (click)="onAccountClick()">
         <mat-icon>person_outline</mat-icon> Account
       </button>
@@ -93,9 +93,9 @@
         <!-- Right: Search + Icons (desktop) -->
         <div class="desktop-actions hidden md:flex">
           <!-- Search -->
-          <div class="desktop-search-area">
-            <app-search-bar></app-search-bar>
-          </div>
+          <button mat-icon-button aria-label="Search" (click)="openSearchPanel()" class="action-icon-button">
+            <mat-icon>search</mat-icon>
+          </button>
 
           <!-- Account -->
           <button mat-icon-button aria-label="Account" (click)="onAccountClick()" class="action-icon-button">
@@ -116,3 +116,6 @@
 
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<!-- Search Panel (outside sidenav container for proper z-index) -->
+<app-search-panel></app-search-panel>

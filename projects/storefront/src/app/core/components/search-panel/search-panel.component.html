@@ -1,0 +1,92 @@
+@if (isOpen) {
+  <!-- Overlay -->
+  <div
+    class="search-panel-overlay"
+    (click)="onClose()">
+  </div>
+
+  <!-- Panel -->
+  <div class="search-panel">
+    <div class="search-panel-content">
+      <!-- Header -->
+      <div class="search-panel-header">
+        <h2 class="search-panel-title">{{ 'Search' }}</h2>
+        <button
+          class="search-panel-close-button"
+          (click)="onClose()"
+          aria-label="Close search">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="search-panel-input-wrapper">
+        <input
+          #searchInput
+          type="text"
+          class="search-panel-input"
+          [placeholder]="'Type a keyword...'"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchQueryChanged($event)"
+          (keydown)="handleKeyDown($event)"
+          autofocus />
+      </div>
+
+      <!-- Results -->
+      @if (searchQuery.length > 0) {
+        <div class="search-panel-results">
+          <!-- Categories -->
+          @if (filteredCategories.length > 0) {
+            <div class="search-panel-section">
+              @for (category of filteredCategories; track category.id) {
+                <a
+                  class="search-panel-category-link"
+                  (click)="navigateToCategory(category)">
+                  {{ category.name }}
+                </a>
+              }
+            </div>
+          }
+
+          <!-- Products -->
+          @if (filteredProducts.length > 0) {
+            <div class="search-panel-section">
+              <h3 class="search-panel-section-title">Products</h3>
+              <div class="search-panel-products">
+                @for (product of filteredProducts; track product.id) {
+                  <a
+                    class="search-panel-product-link"
+                    (click)="navigateToProduct(product)">
+                    <div class="search-panel-product-image">
+                      @if (product.imageUrls && product.imageUrls.length > 0) {
+                        <img
+                          [src]="product.imageUrls[0]"
+                          [alt]="product.name"
+                          class="product-image" />
+                      } @else {
+                        <div class="product-image-placeholder">
+                          <span>{{ product.name.charAt(0) || 'P' }}</span>
+                        </div>
+                      }
+                    </div>
+                    <div class="search-panel-product-details">
+                      <p class="search-panel-product-price">{{ product.price | currency }}</p>
+                      <p class="search-panel-product-name">{{ product.name }}</p>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- No results -->
+          @if (filteredCategories.length === 0 && filteredProducts.length === 0) {
+            <p class="search-panel-no-results">
+              No results found for "{{ searchQuery }}"
+            </p>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

@@ -8,11 +8,12 @@ import { AuthService } from './core/services/auth.service';
 import { CartService } from './core/services/cart.service'; // Added CartService
 import { CommonModule } from '@angular/common';
 import { NotificationToastComponent } from './shared/components/notification-toast/notification-toast.component';
+import { CartDrawerComponent } from './cart/components/cart-drawer/cart-drawer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, CommonModule, NotificationToastComponent, TranslatePipe],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, CommonModule, NotificationToastComponent, TranslatePipe, CartDrawerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

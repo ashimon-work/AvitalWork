@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core'; // Removed inject, ElementRef, HostListener
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-// FormsModule, ReactiveFormsModule removed as search is delegated
-import { Observable, Subscription, of, firstValueFrom } from 'rxjs'; // Removed Subject, fromEvent, operators not needed by header
-import { map } from 'rxjs/operators'; // Keep map if used by other parts
+import { Observable, Subscription, firstValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,8 +14,10 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { CartService } from '../../services/cart.service';
 import { StoreContextService } from '../../services/store-context.service';
 import { AuthService } from '../../services/auth.service';
-// ApiService removed, SearchBarComponent will use it
-import { SearchBarComponent } from '../search-bar/search-bar.component'; // Import SearchBarComponent
+import { CartDrawerService } from '../../services/cart-drawer.service';
+import { SearchPanelService } from '../../services/search-panel.service';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { SearchPanelComponent } from '../search-panel/search-panel.component';
 
 interface NavLink {
   label: string;
@@ -39,8 +40,8 @@ interface NavLink {
     MatSidenavModule,
     MatListModule,
     MatBadgeModule,
-    SearchBarComponent // Add SearchBarComponent here
-    // FormsModule, ReactiveFormsModule removed
+    SearchBarComponent,
+    SearchPanelComponent
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -73,8 +74,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
     private cartService: CartService,
     private storeContext: StoreContextService,
-    private authService: AuthService
-    // ElementRef and ApiService removed
+    private authService: AuthService,
+    private cartDrawerService: CartDrawerService,
+    private searchPanelService: SearchPanelService
   ) {
     this.storeSlug$ = this.storeContext.currentStoreSlug$;
     this.isAuthenticated$ = this.authService.isAuthenticated$;
@@ -129,8 +131,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   async onCartClick(): Promise<void> {
-    const slug = await firstValueFrom(this.storeSlug$);
-    this.router.navigate(slug ? ['/', slug, 'cart'] : ['/cart']);
+    this.cartDrawerService.open();
     if (this.mobileDrawer?.opened) {
       this.mobileDrawer.close();
     }
@@ -148,6 +149,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.mobileDrawer?.opened) {
       this.mobileDrawer.close();
     }
+  }
+
+  openSearchPanel(): void {
+    console.log('[HeaderComponent] openSearchPanel called');
+    this.searchPanelService.open();
   }
 
   logout(): void {

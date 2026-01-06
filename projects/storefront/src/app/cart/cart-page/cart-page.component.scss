@@ -1,10 +1,12 @@
-@use "sass:color";
+@use 'sass:color';
 @use '../../../styles/variables' as variables;
 
 // Local variables based on React design
 $border-radius-xl: 0.75rem;
 $border-radius-full: 9999px;
-$shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(variables.$black, 0.05);
+$shadow-lg:
+  0 10px 15px -3px rgba(variables.$black, 0.1),
+  0 4px 6px -2px rgba(variables.$black, 0.05);
 
 :host {
   display: block;
@@ -127,10 +129,6 @@ $shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(va
     &:last-child {
       border-bottom: none;
     }
-
-    &.gift-wrap-row {
-      border-top: 1px solid variables.$border-color;
-    }
   }
 
   // Product Info
@@ -155,10 +153,6 @@ $shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(va
         width: 100%;
         height: 100%;
         object-fit: cover;
-      }
-
-      &.gift-wrap-image {
-        background-color: variables.$neutral-light;
       }
     }
 
@@ -222,6 +216,7 @@ $shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(va
       border: none;
       cursor: pointer;
       transition: background-color 0.2s ease;
+      color: #000;
 
       &:hover:not(:disabled) {
         background-color: variables.$neutral-light;
@@ -235,6 +230,7 @@ $shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(va
       svg {
         width: 1rem;
         height: 1rem;
+        color: #000;
       }
     }
 
@@ -275,28 +271,6 @@ $shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(va
       font-size: variables.$font-size-sm;
     }
   }
-
-  // Gift Wrap Checkbox
-  .gift-wrap-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-    cursor: pointer;
-
-    .checkbox-input {
-      width: 1.25rem;
-      height: 1.25rem;
-      border-radius: variables.$border-radius-md;
-      border: 1px solid variables.$border-color;
-      cursor: pointer;
-    }
-
-    .checkbox-label {
-      font-size: variables.$font-size-sm;
-      color: variables.$text-color;
-    }
-  }
 }
 
 // Sidebar
@@ -316,35 +290,6 @@ $shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(va
     font-weight: 500;
     margin: 0 0 1rem 0;
     color: variables.$text-color;
-  }
-}
-
-// Free Shipping Banner
-.free-shipping-banner {
-  .banner-content {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .banner-accent {
-    width: 0.25rem;
-    height: 1.25rem;
-    background-color: variables.$text-color;
-    flex-shrink: 0;
-  }
-
-  .banner-text {
-    font-size: variables.$font-size-sm;
-    color: variables.$text-color;
-    margin: 0;
-  }
-
-  .banner-divider {
-    width: 100%;
-    height: 1px;
-    background-color: variables.$text-color;
-    margin-top: 0.75rem;
   }
 }
 
@@ -550,13 +495,39 @@ $shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(va
     margin: 0 0 2.5rem 0;
   }
 
+  .suggested-products-scroll-container {
+    overflow-x: auto;
+    padding-bottom: var(--spacing-md);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--neutral-dark);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--neutral-light);
+    }
+  }
+
   .suggested-products-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
     gap: 1.5rem;
+    padding-bottom: var(--spacing-sm);
+    min-width: min-content;
 
     @media (min-width: 768px) {
-      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+
+    .suggested-product-link {
+      flex: 0 0 250px;
+      width: 250px;
     }
   }
 
@@ -570,7 +541,9 @@ $shadow-lg: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(va
     background-color: variables.$white;
     border-radius: variables.$border-radius-md;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
 
     &:hover {
       transform: translateY(-2px);
