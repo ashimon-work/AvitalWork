@@ -67,7 +67,7 @@
   .arrow-icon {
     transition: all 0.3s ease;
     opacity: 0; 
-    width: 0;   
+    width: 16px;
     transform: scaleX(-1) translateX(8px); 
     stroke: #ffffff;
   }
@@ -75,7 +75,6 @@
   &:hover {
     .arrow-icon {
       opacity: 1;
-      width: 16px;
       transform: scaleX(-1) translateX(0);
     }
   }
@@ -104,9 +103,10 @@
   color: #4b5563; 
   padding: 0;
   list-style: none;
-
-  a {
-    cursor: pointer;
+  position: relative; 
+  z-index: 50; 
+  pointer-events: auto; 
+   a {
     color: inherit;
     text-decoration: none;
     transition: color 0.2s;
