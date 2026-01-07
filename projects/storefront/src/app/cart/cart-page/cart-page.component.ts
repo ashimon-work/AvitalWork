@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Observable, firstValueFrom, take, of, switchMap } from 'rxjs';
+import { Observable, firstValueFrom, take, of, switchMap, map, catchError } from 'rxjs';
 import { CartService, CartState, CartItem } from '../../core/services/cart.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { ApiService } from '../../core/services/api.service';
@@ -48,36 +48,33 @@ export class CartPageComponent implements OnInit {
   currentStoreSlug$: Observable<string | null> = this.storeContextService.currentStoreSlug$;
   recentlyViewedProducts$: Observable<Product[]> = of([]);
   suggestedProducts$: Observable<Product[]> = of([]);
-
-  // New product suggestion (mock data)
-  newProductSuggestion: Product = {
-    id: '7',
-    sku: '7',
-    name: 'W&S Little Lion Sculpture',
-    description: '',
-    price: 49.00,
-    imageUrls: ['/assets/images/placeholder.png'],
-    categories: [],
-    stockLevel: 10,
-    isActive: true,
-  };
+  newestProduct$: Observable<Product | null> = of(null);
 
   ngOnInit(): void {
-    const productIds = this.recentlyViewedService.getRecentlyViewedProductIds();
-    if (productIds.length > 0) {
-      this.recentlyViewedProducts$ = this.currentStoreSlug$.pipe(
-        take(1),
-        switchMap(storeSlug => {
-          if (storeSlug) {
-            return this.apiService.getProductsByIds(productIds);
-          }
-          return of([]);
-        })
-      );
-    }
+    // const productIds = this.recentlyViewedService.getRecentlyViewedProductIds();
+    // if (productIds.length > 0) {
+    //   this.recentlyViewedProducts$ = this.currentStoreSlug$.pipe(
+    //     take(1),
+    //     switchMap(storeSlug => {
+    //       if (storeSlug) {
+    //         return this.apiService.getProductsByIds(productIds);
+    //       }
+    //       return of([]);
+    //     })
+    //   );
+    // }
     
     // Fetch featured products for "You may also like these" section
     this.suggestedProducts$ = this.apiService.getFeaturedProducts();
+
+    // Fetch the newest product for the "New Product" section
+    this.newestProduct$ = this.apiService.getProducts({ sort: 'newest', limit: 1 }).pipe(
+      map(response => response.products && response.products.length > 0 ? response.products[0] : null),
+      catchError(error => {
+        console.error('[CartPage] Error fetching newest product:', error);
+        return of(null);
+      })
+    );
   }
   trackByProductId(index: number, item: CartItem): string {
     return item.product.id;

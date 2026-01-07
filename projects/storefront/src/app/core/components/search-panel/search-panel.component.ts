@@ -1,18 +1,39 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ElementRef,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { CurrencyPipe } from '@angular/common';
 import { Subject, of, Subscription, fromEvent, firstValueFrom } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, filter, takeUntil, map } from 'rxjs/operators';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  catchError,
+  filter,
+  takeUntil,
+  map,
+  withLatestFrom,
+} from 'rxjs/operators';
 
 import { ApiService } from '../../services/api.service';
 import { StoreContextService } from '../../services/store-context.service';
 import { SearchPanelService } from '../../services/search-panel.service';
-import { Product, Category } from '@shared-types';
+import { Product, Category, Store } from '@shared-types';
 import { T } from '@shared/i18n';
 import { TranslatePipe } from '@shared/i18n';
+
+// Define a type for combined search results
+export type SearchResultItem =
+  | (Product & { resultType: 'product' })
+  | (Store & { resultType: 'store' });
 
 @Component({
   selector: 'app-search-panel',
@@ -22,16 +43,15 @@ import { TranslatePipe } from '@shared/i18n';
     FormsModule,
     MatIconModule,
     CurrencyPipe,
-    TranslatePipe
+    TranslatePipe,
   ],
   templateUrl: './search-panel.component.html',
-  styleUrl: './search-panel.component.scss'
+  styleUrl: './search-panel.component.scss',
 })
 export class SearchPanelComponent implements OnInit, OnDestroy {
   public tKeys = T;
   searchQuery: string = '';
-  filteredCategories: Category[] = [];
-  filteredProducts: Product[] = [];
+  searchResults: SearchResultItem[] = [];
   isOpen: boolean = false;
 
   private searchTerms = new Subject<string>();
@@ -53,31 +73,51 @@ export class SearchPanelComponent implements OnInit, OnDestroy {
     const searchResults$ = this.searchTerms.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((term) => {
+      withLatestFrom(this.storeContext.currentStoreSlug$),
+      switchMap(([term, storeSlug]) => {
         if (!term || term.length < 2) {
-          return of({ categories: [], products: [] });
+          return of([]);
         }
-        return this.apiService.getSearchSuggestions(term).pipe(
-          map((products) => {
-            // Filter products based on search query
-            const filteredProducts = products.filter(p =>
-              p.name.toLowerCase().includes(term.toLowerCase())
-            );
-            return { categories: [], products: filteredProducts };
-          }),
-          catchError((error) => {
-            console.error('[SearchPanel] Error fetching search results:', error);
-            return of({ categories: [], products: [] });
-          })
-        );
+        if (storeSlug) {
+          // Search for products when in a store context
+          return this.apiService.getSearchSuggestions(term).pipe(
+            map((products) =>
+              products.map(
+                (p) => ({ ...p, resultType: 'product' }) as SearchResultItem
+              )
+            ),
+            catchError((error) => {
+              console.error(
+                '[SearchPanel] Error fetching product suggestions:',
+                error
+              );
+              return of([]);
+            })
+          );
+        } else {
+          // Search for stores when not in a store context
+          return this.apiService.searchStores(term).pipe(
+            map((stores) =>
+              stores.map(
+                (s) => ({ ...s, resultType: 'store' }) as SearchResultItem
+              )
+            ),
+            catchError((error) => {
+              console.error(
+                '[SearchPanel] Error fetching store suggestions:',
+                error
+              );
+              return of([]);
+            })
+          );
+        }
       }),
       takeUntil(this.destroy$)
     );
 
     this.subscriptions.add(
       searchResults$.subscribe((results) => {
-        this.filteredCategories = results.categories;
-        this.filteredProducts = results.products;
+        this.searchResults = results;
       })
     );
 
@@ -93,10 +133,7 @@ export class SearchPanelComponent implements OnInit, OnDestroy {
             this.searchInput?.nativeElement.focus();
           }, 100);
         } else {
-          document.body.style.overflow = 'unset';
-          this.searchQuery = '';
-          this.filteredCategories = [];
-          this.filteredProducts = [];
+          this.resetSearchPanel();
         }
       })
     );
@@ -106,7 +143,13 @@ export class SearchPanelComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
+    this.resetSearchPanel();
+  }
+
+  private resetSearchPanel(): void {
     document.body.style.overflow = 'unset';
+    this.searchQuery = '';
+    this.searchResults = [];
   }
 
   onClose(): void {
@@ -119,35 +162,31 @@ export class SearchPanelComponent implements OnInit, OnDestroy {
     this.searchTerms.next(trimmedQuery);
 
     if (trimmedQuery.length < 2) {
-      this.filteredCategories = [];
-      this.filteredProducts = [];
+      this.searchResults = [];
     }
   }
 
   clearSearch(): void {
-    this.searchQuery = '';
+    this.resetSearchPanel();
     this.searchTerms.next('');
-    this.filteredCategories = [];
-    this.filteredProducts = [];
     this.searchInput?.nativeElement.focus();
   }
 
-  async navigateToCategory(category: Category): Promise<void> {
+  async navigateToResult(result: SearchResultItem): Promise<void> {
     const storeSlug = await firstValueFrom(this.storeContext.currentStoreSlug$);
-    if (storeSlug) {
-      this.router.navigate(['/', storeSlug, 'category', category.id]);
-    } else {
-      this.router.navigate(['/category', category.id]);
-    }
-    this.onClose();
-  }
 
-  async navigateToProduct(product: Product): Promise<void> {
-    const storeSlug = await firstValueFrom(this.storeContext.currentStoreSlug$);
-    if (storeSlug) {
-      this.router.navigate(['/', storeSlug, 'product', product.id]);
+    if (result.resultType === 'product') {
+      if (storeSlug && result.id) {
+        this.router.navigate(['/', storeSlug, 'product', result.id]);
+      } else {
+        console.error(
+          'Cannot navigate to product result, missing store slug or product ID.'
+        );
+      }
+    } else if (result.resultType === 'store' && result.slug) {
+      this.router.navigate(['/', result.slug]);
     } else {
-      this.router.navigate(['/product', product.id]);
+      console.error('Unknown or incomplete result type selected:', result);
     }
     this.onClose();
   }
@@ -159,9 +198,13 @@ export class SearchPanelComponent implements OnInit, OnDestroy {
     const storeSlug = await firstValueFrom(this.storeContext.currentStoreSlug$);
 
     if (storeSlug) {
-      this.router.navigate(['/', storeSlug, 'search'], { queryParams: { q: term } });
+      this.router.navigate(['/', storeSlug, 'search'], {
+        queryParams: { q: term },
+      });
     } else {
-      this.router.navigate(['/search'], { queryParams: { q: term, global: 'true' } });
+      this.router.navigate(['/search'], {
+        queryParams: { q: term, global: 'true' },
+      });
     }
     this.onClose();
   }

@@ -30,7 +30,7 @@
             <div class="item-product">
               <a [routerLink]="['/', currentStoreSlug$ | async, 'product', item.product.id]" class="item-image-link">
                 <div class="item-image">
-                  <img [src]="item.product.imageUrls[0] || '/assets/images/placeholder.png'" [alt]="item.product.name">
+                  <img [src]="item.product.imageUrls?.[0] || '/assets/images/placeholder.png'" [alt]="item.product.name">
                 </div>
               </a>
               <div class="item-details">
@@ -75,16 +75,16 @@
       <!-- Sidebar -->
       <aside class="cart-sidebar">
         <!-- New Product Suggestion -->
-        <div class="sidebar-card new-product-card">
+        <div class="sidebar-card new-product-card" *ngIf="newestProduct$ | async as newestProduct">
           <h3 class="sidebar-card-title">New Product</h3>
           <div class="new-product-content">
             <div class="new-product-image">
-              <img [src]="newProductSuggestion.imageUrls[0] || '/assets/images/placeholder.png'" [alt]="newProductSuggestion.name">
+              <img [src]="newestProduct?.imageUrls?.[0] || '/assets/images/placeholder.png'" [alt]="newestProduct?.name">
             </div>
             <div class="new-product-details">
-              <span class="new-product-price">{{ newProductSuggestion.price | currency:'NIS' }}</span>
-              <h4 class="new-product-name">{{ newProductSuggestion.name }}</h4>
-              <button (click)="onAddSuggestedProductToCart(newProductSuggestion)" class="add-to-cart-btn">
+              <span class="new-product-price">{{ newestProduct?.price | currency:'NIS' }}</span>
+              <h4 class="new-product-name">{{ newestProduct?.name }}</h4>
+              <button (click)="onAddSuggestedProductToCart(newestProduct)" class="add-to-cart-btn" [disabled]="!newestProduct">
                 Add to cart
               </button>
             </div>
@@ -136,7 +136,7 @@
             </div>
             <!-- Product Image -->
             <div class="suggested-product-image">
-              <img [src]="product.imageUrls[0] || '/assets/images/placeholder.png'" [alt]="product.name">
+              <img [src]="product.imageUrls?.[0] || '/assets/images/placeholder.png'" [alt]="product.name">
             </div>
             <!-- Product Info -->
             <div class="suggested-product-info">
