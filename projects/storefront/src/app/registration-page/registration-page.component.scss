@@ -13,7 +13,7 @@
   margin: 0 auto;
   padding-top: 3rem;
   padding-left: 1.5rem;
-  padding-right: 6.5rem;
+  padding-right: 12rem;
 }
 
 .max-w-2xl { max-width: 42rem; }
@@ -29,9 +29,9 @@
 .separator {
   width: 60%;
   border: 0;
-  border-bottom: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;  
   margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .breadcrumb {
@@ -55,25 +55,12 @@
   }
 }
 
-.row-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* יוצר שני טורים שווים */
-  gap: 1rem;                      /* רווח קטן בין שני האינפוטים */
-  width: 65%;                     /* חשוב: שיהיה באותו רוחב של שאר האינפוטים בטופס */
-  
-  .form-group {
-    margin-bottom: 1;             /* מבטל את הרווח התחתון בתוך הגריד כדי שלא יהיה "חור" */
-  }
-
-  .custom-input {
-    width: 100%;                  /* בתוך הגריד, האינפוט ממלא את כל הטור שלו */
-  }
-}.form-group {
+.form-group {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
 }
 
 .input-label {
@@ -84,19 +71,23 @@
 
 .custom-input {
   width: 65%;
-  padding: 1rem;
-  border: 1px solid #d1d5db;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e5e5e5; 
+  background-color: #ffffff;
+  color: #262626;
   border-radius: 1.5rem;
   font-size: 1rem;
   transition: all 0.2s ease;
+  text-align: right;
+
   &::placeholder { 
-    color: #6b7280; 
+    color: #737373; 
     text-align: right; 
   }
 
   &.focus {
     outline: none;
-    border-color: #111827;
+    border-color:#262626;
     box-shadow: 0 0 0 1px #111827;
   }
 

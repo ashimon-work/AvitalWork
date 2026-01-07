@@ -1,79 +1,3 @@
-<!-- <div class="login-container">
-  <div class="min-h-screen bg-background">
-  <div class="container-inner py-12">
-    <div class="page-header mb-8">
-      <nav class="breadcrumb mb-4">
-        <a routerLink="/">Home</a>
-        <span>/</span>
-        <span class="current">Login</span>
-      </nav>
-      <h1 class="text-display">{{ tKeys.SF_LOGIN_PAGE_TITLE | translate }}</h1>
-      <p class="subtitle text-muted">{{ tKeys.SF_LOGIN_PAGE_SUBTITLE | translate }}</p>
-    </div>
-
-    <div class="max-w-2xl">
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
-        
-        <div class="form-group">
-          <input
-            type="email"
-            formControlName="email"
-            class="custom-input"
-            [placeholder]="tKeys.SF_LOGIN_PAGE_EMAIL_PLACEHOLDER | translate"
-            [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }"
-          />
-          <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="invalid-feedback">
-            <small *ngIf="email?.errors?.['required']">{{ tKeys.SF_LOGIN_PAGE_EMAIL_REQUIRED_ERROR | translate }}</small>
-            <small *ngIf="email?.errors?.['email']">{{ tKeys.SF_LOGIN_PAGE_EMAIL_INVALID_ERROR | translate }}</small>
-          </div>
-        </div>
-
-    <div class="form-group">
-      <input
-        [type]="passwordFieldType"
-        formControlName="password"
-        class="custom-input"
-        [placeholder]="tKeys.SF_LOGIN_PAGE_PASSWORD_PLACEHOLDER | translate"
-        [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }"
-      />
-        <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="invalid-feedback">
-            <small *ngIf="password?.errors?.['required']">
-              {{ tKeys.SF_LOGIN_PAGE_PASSWORD_REQUIRED_ERROR | translate }}
-            </small>
-            <small *ngIf="password?.errors?.['minlength']">
-              {{ tKeys.SF_LOGIN_PAGE_PASSWORD_MINLENGTH_ERROR | translate }}
-            </small>
-          </div>
-      </div>
-
-        <div class="form-actions mt-8">
-          <button
-            type="submit"
-            class="submit-button"
-            [disabled]="loginForm.invalid || isSubmitting"
-            (mouseenter)="isSubmitHovered = true"
-            (mouseleave)="isSubmitHovered = false"
-          >
-            <span>{{ (isSubmitting ? tKeys.SF_LOGIN_PAGE_LOGGING_IN_BUTTON : tKeys.SF_LOGIN_PAGE_LOGIN_BUTTON) | translate }}</span>
-            <svg 
-              [ngClass]="{'visible': isSubmitHovered, 'hidden': !isSubmitHovered}"
-              class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </button>
-
-          <div class="action-links">
-            <a routerLink="/forgot-password" class="link-muted">
-              {{ tKeys.SF_LOGIN_PAGE_FORGOT_PASSWORD_LINK | translate }}
-            </a>
-            <a routerLink="/register" class="link-bold">
-              {{ tKeys.SF_LOGIN_PAGE_SIGN_UP_LINK | translate }}
-            </a>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-</div> -->
 <div class="min-h-screen bg-background">
   <div class="container-inner py-12">
     <div class="page-header mb-8">
@@ -89,7 +13,7 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
         
         <div class="form-group">
-          <label for="email" class="input-label">{{ tKeys.SF_REGISTRATION_EMAIL_LABEL | translate }}</label>
+          <label for="email" class="input-label">אימייל</label>
           <input id="email" type="email" formControlName="email" class="custom-input"
             placeholder="אימייל"
             [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }" />
@@ -125,9 +49,7 @@
             (mouseleave)="isSubmitHovered = false"
           >
             <span>{{ (isSubmitting ? tKeys.SF_LOGIN_PAGE_LOGGING_IN_BUTTON : tKeys.SF_LOGIN_PAGE_LOGIN_BUTTON) | translate }}</span>
-            <svg 
-              [ngClass]="{'visible': isSubmitHovered, 'hidden': !isSubmitHovered}"
-              class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+
           </button>
 
           <div class="action-links">
