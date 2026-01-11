@@ -17,7 +17,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of cartState.items" class="cart-item">
+            <tr *ngFor="let item of cartState.items; trackBy: trackByProductId" class="cart-item">
               <td class="item-image">
                 <a [routerLink]="['/', currentStoreSlug$ | async, 'product', item.product.id]">
                   <img [src]="item.product.imageUrls[0] || '/assets/images/placeholder.png'" [alt]="item.product.name">

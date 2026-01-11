@@ -8,6 +8,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { StoreContextService } from './core/services/store-context.service';
 import { StoreCoordinatorService } from './core/services/store-coordinator.service';
+import { ApiService } from './core/services/api.service';
 import { SharedI18nModule } from '@shared/i18n';
 
 // This is the function that will be executed by APP_INITIALIZER.
@@ -17,7 +18,7 @@ export function initializeStoreContext() {
     const storeContextService = inject(StoreContextService);
     const storeCoordinatorService = inject(StoreCoordinatorService);
     const document = inject(DOCUMENT);
-    
+
     // Get the initial path from window.location
     const initialPath = document.location.pathname;
     console.log('[APP_INITIALIZER] Initial Path:', initialPath);

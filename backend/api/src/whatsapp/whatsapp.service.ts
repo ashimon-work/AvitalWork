@@ -9,7 +9,7 @@ import { StoreEntity } from 'src/stores/entities/store.entity';
 import { UserRole } from 'src/users/entities/user-role.enum';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
-import { handleState } from './state-machine';
+import { MessageDispatcher } from './message-dispatcher.service';
 import { OrderEntity } from 'src/orders/entities/order.entity';
 import { getLang, getMessage, invalidThenPrompt } from './helpers';
 
@@ -32,6 +32,7 @@ export class WhatsappService {
     @InjectRepository(OrderEntity)
     readonly orderRepository: Repository<OrderEntity>,
     readonly configService: ConfigService,
+    private readonly messageDispatcher: MessageDispatcher,
   ) {
     this.verifyToken = this.configService.get<string>(
       'WHATSAPP_VERIFY_TOKEN',
@@ -103,7 +104,7 @@ export class WhatsappService {
                 };
               }
 
-              const newState = await handleState(
+              const newState = await this.messageDispatcher.dispatch(
                 this,
                 conversationState,
                 messageText,

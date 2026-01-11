@@ -196,7 +196,7 @@
         <ng-template #displayRelatedProducts>
           <div class="related-products-list">
             <app-featured-product-card *ngFor="let relatedProduct of relatedProducts" [product]="relatedProduct"
-              (addToCart)="onAddToCart($event)"></app-featured-product-card>
+              [storeSlug]="currentStoreSlug" (addToCart)="onAddToCart($event)"></app-featured-product-card>
           </div>
         </ng-template>
       </div>

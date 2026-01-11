@@ -349,8 +349,12 @@ export class ApiService {
         }
         const url = `${this.apiUrl}/stores/${storeSlug}/cart/add`;
         let headers = new HttpHeaders();
-        if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+        const token = this.authService.getToken();
+
+        if (token) {
+          headers = headers.set('Authorization', `Bearer ${token}`);
+        } else if (guestCartId) {
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
         return this.http.post<Cart>(url, payload, { headers });
       }),
@@ -378,7 +382,7 @@ export class ApiService {
         const url = `${this.apiUrl}/stores/${storeSlug}/cart`;
         let headers = new HttpHeaders();
         if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
         // storeSlug is now part of the URL, not a query param for this endpoint
         return this.http.get<Cart | any>(url, { headers });
@@ -390,29 +394,36 @@ export class ApiService {
     );
   }
 
-  updateCartItemQuantity(productId: string, quantity: number, guestCartId?: string | null): Observable<Cart> {
+  updateCartItemQuantity(cartItemId: string, quantity: number, guestCartId?: string | null): Observable<Cart> {
     return this.storeContext.currentStoreSlug$.pipe(
       take(1),
       switchMap(storeSlug => {
-        if (!storeSlug) {
-          console.error('[ApiService] Store slug is missing when updating cart item quantity.');
-          return throwError(() => new Error('Store context is required to update cart item quantity.'));
-        }
-        const url = `${this.apiUrl}/stores/${storeSlug}/cart/${productId}`;
+        const url = `${this.apiUrl}/stores/${storeSlug}/cart/${cartItemId}`;
+
+        // ודאי שה-Body נשלח בדיוק כך
+        const body = { quantity: Number(quantity) };
+
         let headers = new HttpHeaders();
-        if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+        const token = this.authService.getToken();
+
+        if (token) {
+          headers = headers.set('Authorization', `Bearer ${token}`);
+        } else if (guestCartId) {
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
-        return this.http.patch<Cart>(url, { quantity }, { headers });
-      }),
-      catchError(error => {
-        console.error('[ApiService] Error updating cart item quantity:', error);
-        return throwError(() => error);
+
+        return this.http.patch<Cart>(url, body, { headers });
       })
     );
   }
 
-  removeCartItem(productId: string, guestCartId?: string | null): Observable<Cart> {
+  // Helper method to check if a string is a UUID
+  private isUUID(str: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  }
+
+  removeCartItem(cartItemId: string, guestCartId?: string | null): Observable<Cart> {
     return this.storeContext.currentStoreSlug$.pipe(
       take(1),
       switchMap(storeSlug => {
@@ -420,10 +431,14 @@ export class ApiService {
           console.error('[ApiService] Store slug is missing when removing cart item.');
           return throwError(() => new Error('Store context is required to remove cart item.'));
         }
-        const url = `${this.apiUrl}/stores/${storeSlug}/cart/${productId}`;
+        const url = `${this.apiUrl}/stores/${storeSlug}/cart/${cartItemId}`;
         let headers = new HttpHeaders();
-        if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+        const token = this.authService.getToken();
+
+        if (token) {
+          headers = headers.set('Authorization', `Bearer ${token}`);
+        } else if (guestCartId) {
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
         return this.http.delete<Cart>(url, { headers });
       }),
@@ -453,7 +468,7 @@ export class ApiService {
         const url = `${this.apiUrl}/stores/${storeSlug}/cart/merge`;
         // The backend controller for merge needs to be created or confirmed.
         // For now, this will likely fail if the backend endpoint isn't /stores/:storeSlug/cart/merge
-        return this.http.post<Cart>(url, { guestCartId });
+        return this.http.post<Cart>(url, { guestSessionId: guestCartId });
       }),
       catchError(error => {
         console.error('[ApiService] Error merging cart:', error);
@@ -604,13 +619,13 @@ export class ApiService {
     // Remove storeSlug from payload since it should be passed as query parameter for StoreContextGuard
     const payload = { ...formData };
     const url = `${this.apiUrl}/contact`;
-    
+
     // Add storeSlug as query parameter if available
     let params = new HttpParams();
     if (storeSlug) {
       params = params.set('storeSlug', storeSlug);
     }
-    
+
     console.log(`[ApiService] Submitting contact form to: ${url} with payload:`, payload, 'and params:', params.toString());
     return this.http.post<any>(url, payload, { params }).pipe(
       catchError(error => {
@@ -982,7 +997,7 @@ export class ApiService {
 
         let headers = new HttpHeaders();
         if (guestCartId && !this.authService.getToken()) {
-          headers = headers.set('X-Guest-Cart-ID', guestCartId);
+          headers = headers.set('x-guest-session-id', guestCartId);
         }
 
         return this.http.post(url, payload, { headers });
@@ -1028,12 +1043,25 @@ export class ApiService {
     );
   }
 
-  placeOrder(orderData: any): Observable<any> { // TODO: Define proper types for orderData and response
-    const url = `${this.apiUrl}/orders`;
-    return this.http.post<any>(url, orderData).pipe(
-      catchError(error => {
-        console.error('[ApiService] Error placing order:', error);
-        return throwError(() => error); // Re-throw for component handling
+  placeOrder(orderData: any): Observable<any> {
+    return this.storeContext.currentStoreSlug$.pipe(
+      take(1),
+      switchMap(storeSlug => {
+        if (!storeSlug) {
+          console.error('[ApiService] Store slug is missing when placing order.');
+          return throwError(() => new Error('Store context is required to place order.'));
+        }
+
+        const url = `${this.apiUrl}/checkout/orders`;
+        let params = new HttpParams();
+        params = params.set('storeSlug', storeSlug);
+
+        return this.http.post<any>(url, orderData, { params }).pipe(
+          catchError(error => {
+            console.error('[ApiService] Error placing order:', error);
+            return throwError(() => error);
+          })
+        );
       })
     );
   }

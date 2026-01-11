@@ -48,6 +48,7 @@ export const routes: Routes = [
       // Existing routes moved under the :storeSlug parameter
       {
         path: '', // Default path for a store (e.g., /awesome-gadgets)
+        pathMatch: 'full', // Important: Only match when path is exactly the store root
         loadComponent: () =>
           import('./home/homepage/homepage.component').then((m) => m.HomepageComponent),
       },

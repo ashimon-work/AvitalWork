@@ -3,15 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConversationStateEntity } from '../whatsapp/entities/conversation-state.entity';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
-import { handleState } from '../whatsapp/state-machine';
+import { MessageDispatcher } from '../whatsapp/message-dispatcher.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { StoreEntity } from '../stores/entities/store.entity';
 import { OrderEntity } from '../orders/entities/order.entity';
+import { WebChatMessageEntity } from './entities/web-chat-message.entity';
+import { WebChatGateway } from './web-chat.gateway';
 
 @Injectable()
 export class WebChatService {
   constructor(
     private readonly whatsappService: WhatsappService,
+    private readonly messageDispatcher: MessageDispatcher,
     @InjectRepository(ConversationStateEntity)
     private readonly conversationStateRepository: Repository<ConversationStateEntity>,
     @InjectRepository(UserEntity)
@@ -20,6 +23,9 @@ export class WebChatService {
     private readonly storeRepository: Repository<StoreEntity>,
     @InjectRepository(OrderEntity)
     private readonly orderRepository: Repository<OrderEntity>,
+    @InjectRepository(WebChatMessageEntity)
+    private readonly webChatMessageRepository: Repository<WebChatMessageEntity>,
+    private readonly webChatGateway: WebChatGateway,
   ) {}
 
   async handleDeveloperMessage(developerId: string, messageText: string) {
@@ -86,10 +92,44 @@ export class WebChatService {
       ...this.whatsappService,
       sendWhatsAppMessage: async (to, text, buttons) => {
         // Instead of calling the Meta API, capture the message and buttons.
-        capturedResponses.push({ text, buttons: buttons || [] });
+        const response = { text, buttons: buttons || [] };
+        capturedResponses.push(response);
+        
+        // Save bot response to DB
+        await this.webChatMessageRepository.save({
+          userId: developerId,
+          sender: 'bot',
+          content: text,
+          buttons: buttons || [],
+        });
+
+        // Emit real-time event
+        this.webChatGateway.emitMessage(developerId, {
+          sender: 'bot',
+          content: text,
+          buttons: buttons || [],
+          createdAt: new Date(),
+        });
+
         return Promise.resolve();
       },
     } as WhatsappService; 
+
+    // Save user message to DB
+    await this.webChatMessageRepository.save({
+      userId: developerId,
+      sender: 'user',
+      content: messageText,
+      buttons: [],
+    });
+
+    // Emit real-time event for user message (confirmation/echo)
+    this.webChatGateway.emitMessage(developerId, {
+      sender: 'user',
+      content: messageText,
+      buttons: [],
+      createdAt: new Date(),
+    });
 
     // 5. Simulate the message object that the state machine expects.
     const simulatedMessage = {
@@ -98,8 +138,8 @@ export class WebChatService {
       type: 'text',
     };
 
-    // 6. Process the message using the existing, unmodified state machine.
-    const newState = await handleState(
+    // 6. Process the message using the message dispatcher.
+    const newState = await this.messageDispatcher.dispatch(
       proxiedWhatsappService,
       conversationState,
       messageText.toLowerCase(),
@@ -111,6 +151,14 @@ export class WebChatService {
 
     // 8. Return the captured bot responses to the controller.
     return { responses: capturedResponses };
+  }
+
+  async getHistory(developerId: string) {
+    const messages = await this.webChatMessageRepository.find({
+      where: { userId: developerId },
+      order: { createdAt: 'ASC' },
+    });
+    return messages;
   }
 }
 

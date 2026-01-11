@@ -1,518 +1,589 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>WhatsApp Web UI Clone</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      rel="stylesheet"
-    />
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              primary: '#00A884',
-              'background-light': '#E5DDD5',
-              'background-dark': '#0b141a',
-            },
-            fontFamily: {
-              display: [
-                'Plus Jakarta Sans',
-                'Segoe UI',
-                'Helvetica Neue',
-                'sans-serif',
-              ],
-            },
-            borderRadius: {
-              DEFAULT: '0.5rem',
-              lg: '0.75rem',
-              xl: '1rem',
-              full: '9999px',
-            },
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>WhatsApp Web UI Clone</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#00A884',
+            'background-light': '#E5DDD5',
+            'background-dark': '#0b141a',
+          },
+          fontFamily: {
+            display: [
+              'Plus Jakarta Sans',
+              'Segoe UI',
+              'Helvetica Neue',
+              'sans-serif',
+            ],
+          },
+          borderRadius: {
+            DEFAULT: '0.5rem',
+            lg: '0.75rem',
+            xl: '1rem',
+            full: '9999px',
           },
         },
-      };
-    </script>
-    <style>
-      :root {
-        color-scheme: light;
-      }
-      html.dark {
-        color-scheme: dark;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: 'Plus Jakarta Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
-      }
-      .chat-background {
-        background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-        background-color: #e5ddd5;
-        background-size: cover;
-        background-position: center;
-      }
-      .dark .chat-background {
-        background-image: url('https://i.redd.it/qwd83nc4xxf41.png');
-        background-color: #0b141a;
-      }
-      #chat-log {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        width: 100%;
-      }
-      .message {
-        display: flex;
-        width: 100%;
-        padding: 0.25rem;
-      }
-      .message.user-message {
-        justify-content: flex-end;
-      }
-      .message.bot-message {
-        justify-content: flex-start;
-      }
-      .message-content {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-        width: fit-content;
-        max-width: min(75%, 520px);
-      }
-      .user-message .message-content {
-        align-items: flex-end;
-      }
-      .bot-message .message-content {
-        align-items: flex-start;
-      }
-      .message-bubble {
-        display: inline-flex;
-        flex-direction: column;
-        gap: 0.4rem;
-        padding: 0.75rem 1rem;
-        border-radius: 0.85rem;
-        width: 100%;
-        box-shadow: 0 8px 20px rgba(17, 27, 33, 0.08);
-        background-color: #ffffff;
-        color: #111b21;
-        font-size: 0.95rem;
-        line-height: 1.5;
-      }
-      .message.user-message .message-bubble {
-        background-color: #dcf8c6;
-        border-top-right-radius: 0.3rem;
-      }
-      .message.bot-message .message-bubble {
-        border-top-left-radius: 0.3rem;
-      }
-      .dark .message.user-message .message-bubble {
-        background-color: #005c4b;
-        color: #e9edef;
-      }
-      .dark .message.bot-message .message-bubble {
-        background-color: #202c33;
-        color: #e9edef;
-      }
-      .message-bubble p {
-        margin: 0;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      .message-meta {
-        font-size: 0.7rem;
-        color: #667781;
-        align-self: flex-end;
-      }
-      .dark .message-meta {
-        color: #8696a0;
-      }
-      .buttons-container {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        width: 100%;
-        max-width: 280px;
-        padding-top: 0.25rem;
-      }
-      .bot-message .buttons-container {
-        margin-left: 2.5rem;
-      }
-      .user-message .buttons-container {
-        margin-right: 2.5rem;
-      }
-      .buttons-container button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        min-height: 2.5rem;
-        padding: 0 1rem;
-        border: 1px solid #d1d7db;
-        border-radius: 0.75rem;
-        font-size: 0.9rem;
-        font-weight: 500;
-        background-color: #ffffff;
-        color: #00a884;
-        cursor: pointer;
-        box-shadow: 0 2px 6px rgba(17, 27, 33, 0.08);
-        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      }
-      .buttons-container button:hover {
-        background-color: #f5f6f6;
-        border-color: rgba(0, 168, 132, 0.4);
-      }
-      .dark .buttons-container button {
-        background-color: #202c33;
-        border-color: #2a3942;
-        color: #53bdeb;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-      }
-      .dark .buttons-container button:hover {
-        background-color: #2a3942;
-        border-color: #3b4a54;
-      }
-      #message-input {
-        border: none;
-        background: transparent;
-        color: #111b21;
-        width: 100%;
-      }
-      #message-input:focus {
-        outline: none;
-      }
-      #message-input::placeholder {
-        color: #8696a0;
-      }
-      .dark #message-input {
-        color: #e9edef;
-      }
-      footer button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-    </style>
-  </head>
-  <body class="font-display bg-background-light dark:bg-background-dark">
-    <div class="relative flex h-screen w-full flex-col bg-white dark:bg-[#111b21] group/design-root overflow-hidden">
-      <div class="flex h-full w-full">
-        <!-- Left Panel -->
-        <aside class="hidden lg:flex w-[32%] min-w-[320px] max-w-[460px] border-r border-slate-200/50 dark:border-white/10 bg-[#f0f2f5] dark:bg-[#111b21]">
-          <div class="flex flex-1 flex-col">
-            <header class="flex h-[60px] items-center justify-between gap-3 px-4 bg-[#f0f2f5] dark:bg-[#202c33] border-b border-black/5 dark:border-white/10">
-              <div
-                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                role="img"
-                aria-label="User profile"
-                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDDVk3bW3GgL3e1yes8J3-11easjnWpLmd4XShN8d53HvBjF5bD0YBkrJ396FRGRqsynXI6pEaS2glCwiEMlDI6CugMfTN0NWXJ0K7fed8ipbysd7ybCZYD017Og81DOCW-75xsBp9Q1-GF4MZssL47xEUzQk3fNQLx-ocOIZd4sFQVBJbe6MZAVQzTZpWWcQVwFctYf8x2EDMPvwpf2bwRPCctZQvZMfWsjSO9mQX1pxV9qHLxYYNg4DjGou_xa62T3kS53jhaYkqB');"
-              ></div>
-              <div class="flex items-center gap-2 text-[#54656f] dark:text-[#aebac1]">
-                <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" type="button">
-                  <span class="material-symbols-outlined">circle</span>
-                </button>
-                <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" type="button">
-                  <span class="material-symbols-outlined">chat</span>
-                </button>
-                <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" type="button">
-                  <span class="material-symbols-outlined">more_vert</span>
-                </button>
-              </div>
-            </header>
-            <div class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#111b21] border-b border-black/5 dark:border-white/10">
-              <label class="flex flex-1">
-                <div class="flex w-full items-center rounded-lg bg-[#f0f2f5] dark:bg-[#202c33] text-[#54656f] dark:text-[#8696a0]">
-                  <span class="material-symbols-outlined px-3">search</span>
-                  <input
-                    class="w-full bg-transparent py-2 pr-3 text-sm focus:outline-none placeholder:text-[#54656f] dark:placeholder:text-[#8696a0]"
-                    placeholder="Search or start new chat"
-                    type="text"
-                  />
-                </div>
-              </label>
-              <button class="p-2 text-[#54656f] dark:text-[#aebac1]" type="button">
-                <span class="material-symbols-outlined">filter_list</span>
+      },
+    };
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    html.dark {
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    }
+
+    .chat-background {
+      background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+      background-color: #e5ddd5;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .dark .chat-background {
+      background-image: url('https://i.redd.it/qwd83nc4xxf41.png');
+      background-color: #0b141a;
+    }
+
+    #chat-log {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      width: 100%;
+    }
+
+    .message {
+      display: flex;
+      width: 100%;
+      padding: 0.25rem;
+    }
+
+    .message.user-message {
+      justify-content: flex-end;
+    }
+
+    .message.bot-message {
+      justify-content: flex-start;
+    }
+
+    .message-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      width: fit-content;
+      max-width: min(75%, 520px);
+    }
+
+    .user-message .message-content {
+      align-items: flex-end;
+    }
+
+    .bot-message .message-content {
+      align-items: flex-start;
+    }
+
+    .message-bubble {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.85rem;
+      width: 100%;
+      box-shadow: 0 8px 20px rgba(17, 27, 33, 0.08);
+      background-color: #ffffff;
+      color: #111b21;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .message.user-message .message-bubble {
+      background-color: #dcf8c6;
+      border-top-right-radius: 0.3rem;
+    }
+
+    .message.bot-message .message-bubble {
+      border-top-left-radius: 0.3rem;
+    }
+
+    .dark .message.user-message .message-bubble {
+      background-color: #005c4b;
+      color: #e9edef;
+    }
+
+    .dark .message.bot-message .message-bubble {
+      background-color: #202c33;
+      color: #e9edef;
+    }
+
+    .message-bubble p {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message-meta {
+      font-size: 0.7rem;
+      color: #667781;
+      align-self: flex-end;
+    }
+
+    .dark .message-meta {
+      color: #8696a0;
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 280px;
+      padding-top: 0.25rem;
+    }
+
+    .bot-message .buttons-container {
+      margin-left: 2.5rem;
+    }
+
+    .user-message .buttons-container {
+      margin-right: 2.5rem;
+    }
+
+    .buttons-container button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 2.5rem;
+      padding: 0 1rem;
+      border: 1px solid #d1d7db;
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background-color: #ffffff;
+      color: #00a884;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(17, 27, 33, 0.08);
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .buttons-container button:hover {
+      background-color: #f5f6f6;
+      border-color: rgba(0, 168, 132, 0.4);
+    }
+
+    .dark .buttons-container button {
+      background-color: #202c33;
+      border-color: #2a3942;
+      color: #53bdeb;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .dark .buttons-container button:hover {
+      background-color: #2a3942;
+      border-color: #3b4a54;
+    }
+
+    #message-input {
+      border: none;
+      background: transparent;
+      color: #111b21;
+      width: 100%;
+    }
+
+    #message-input:focus {
+      outline: none;
+    }
+
+    #message-input::placeholder {
+      color: #8696a0;
+    }
+
+    .dark #message-input {
+      color: #e9edef;
+    }
+
+    footer button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark">
+  <div class="relative flex h-screen w-full flex-col bg-white dark:bg-[#111b21] group/design-root overflow-hidden">
+    <div class="flex h-full w-full">
+      <!-- Left Panel -->
+      <aside
+        class="hidden lg:flex w-[32%] min-w-[320px] max-w-[460px] border-r border-slate-200/50 dark:border-white/10 bg-[#f0f2f5] dark:bg-[#111b21]">
+        <div class="flex flex-1 flex-col">
+          <header
+            class="flex h-[60px] items-center justify-between gap-3 px-4 bg-[#f0f2f5] dark:bg-[#202c33] border-b border-black/5 dark:border-white/10">
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" role="img"
+              aria-label="User profile"
+              style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDDVk3bW3GgL3e1yes8J3-11easjnWpLmd4XShN8d53HvBjF5bD0YBkrJ396FRGRqsynXI6pEaS2glCwiEMlDI6CugMfTN0NWXJ0K7fed8ipbysd7ybCZYD017Og81DOCW-75xsBp9Q1-GF4MZssL47xEUzQk3fNQLx-ocOIZd4sFQVBJbe6MZAVQzTZpWWcQVwFctYf8x2EDMPvwpf2bwRPCctZQvZMfWsjSO9mQX1pxV9qHLxYYNg4DjGou_xa62T3kS53jhaYkqB');">
+            </div>
+            <div class="flex items-center gap-2 text-[#54656f] dark:text-[#aebac1]">
+              <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" type="button">
+                <span class="material-symbols-outlined">circle</span>
+              </button>
+              <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" type="button">
+                <span class="material-symbols-outlined">chat</span>
+              </button>
+              <button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10" type="button">
+                <span class="material-symbols-outlined">more_vert</span>
               </button>
             </div>
-            <div class="flex-1 overflow-y-auto bg-white dark:bg-[#111b21]">
-              <div class="flex flex-col">
-                <div class="flex items-center gap-3 px-4 py-3 bg-[#e7fde9] dark:bg-[#2a3942] border-b border-black/5 dark:border-transparent">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZIe_1XkQEO4XvQ4-Ns9c0Wr-6Kq_w7qUcILtykqjyIXD0EXWXbPn2Eq3MrnowepcW7OY2bjGnRMyUGyG9wE3dE6GabxZQTs7_Cuo-zstIgpFiCpgrC2cNAJK4XEzHY7b_HI0CyyQ7RvriWhfo5GNRs-OGaQPtl0nxGY57ZVSazzc0x9zksI_H2CFyJzgcDQMNrMkiRk5LhI7DsMuNECcKtkw9EKu4JDs397fc-kjRHV8PC5Gs-0E6LAsxQeVOgkXAmgrk3tWLV6Em');"
-                  ></div>
-                  <div class="flex flex-col flex-1 min-w-0">
-                    <p class="text-[#111b21] dark:text-white text-base font-medium truncate">Design Team</p>
-                    <p class="text-[#54656f] dark:text-[#aebac1] text-sm truncate">Alex: Sounds good, let's sync up.</p>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-[#00a884] text-xs font-medium">10:49 AM</p>
-                    <div class="mt-1 flex items-center justify-center rounded-full bg-[#25d366] size-6">
-                      <span class="text-white text-xs font-semibold">2</span>
-                    </div>
+          </header>
+          <div
+            class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#111b21] border-b border-black/5 dark:border-white/10">
+            <label class="flex flex-1">
+              <div
+                class="flex w-full items-center rounded-lg bg-[#f0f2f5] dark:bg-[#202c33] text-[#54656f] dark:text-[#8696a0]">
+                <span class="material-symbols-outlined px-3">search</span>
+                <input
+                  class="w-full bg-transparent py-2 pr-3 text-sm focus:outline-none placeholder:text-[#54656f] dark:placeholder:text-[#8696a0]"
+                  placeholder="Search or start new chat" type="text" />
+              </div>
+            </label>
+            <button class="p-2 text-[#54656f] dark:text-[#aebac1]" type="button">
+              <span class="material-symbols-outlined">filter_list</span>
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto bg-white dark:bg-[#111b21]">
+            <div class="flex flex-col">
+              <div
+                class="flex items-center gap-3 px-4 py-3 bg-[#e7fde9] dark:bg-[#2a3942] border-b border-black/5 dark:border-transparent">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                  style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZIe_1XkQEO4XvQ4-Ns9c0Wr-6Kq_w7qUcILtykqjyIXD0EXWXbPn2Eq3MrnowepcW7OY2bjGnRMyUGyG9wE3dE6GabxZQTs7_Cuo-zstIgpFiCpgrC2cNAJK4XEzHY7b_HI0CyyQ7RvriWhfo5GNRs-OGaQPtl0nxGY57ZVSazzc0x9zksI_H2CFyJzgcDQMNrMkiRk5LhI7DsMuNECcKtkw9EKu4JDs397fc-kjRHV8PC5Gs-0E6LAsxQeVOgkXAmgrk3tWLV6Em');">
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <p class="text-[#111b21] dark:text-white text-base font-medium truncate">Design Team</p>
+                  <p class="text-[#54656f] dark:text-[#aebac1] text-sm truncate">Alex: Sounds good, let's sync up.</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[#00a884] text-xs font-medium">10:49 AM</p>
+                  <div class="mt-1 flex items-center justify-center rounded-full bg-[#25d366] size-6">
+                    <span class="text-white text-xs font-semibold">2</span>
                   </div>
                 </div>
-                <div class="flex items-center gap-3 px-4 py-3 hover:bg-[#f5f6f6] dark:hover:bg-[#202c33] border-b border-[#e9edef] dark:border-[#1f2a30]">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwQXtCaCtjrMbdOYTr3RGpCR_l4Dt_n9Rp3EWOoslmYNrnf1w2ejYQuQGCh2GJf-vQqVZ8Etk3vIcXD6-Xmi7Nr8DUQ-OSKPuabB_HTdpR8zZAM4gR7qKcRbvUkiYvv4aZ4IJI2nCeGojMz9KIkwajZuUSc0rCZaCGMNiMnCbpQEvyxOPN4JmF_fY5o4PGIMAbKMnGOcd6V_wKofNfwDwqneJAmWGKg364qhhmSHTxSdBKKr_7ZQB147VmdZXE8yXx1lbeyMweZyoJ');"
-                  ></div>
-                  <div class="flex flex-col flex-1 min-w-0">
-                    <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">Jane Doe</p>
-                    <p class="text-[#54656f] dark:text-[#aebac1] text-sm truncate">See you tomorrow!</p>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-[#00a884] text-xs font-medium">10:30 AM</p>
-                    <div class="mt-1 flex items-center justify-center rounded-full bg-[#25d366] size-6">
-                      <span class="text-white text-xs font-semibold">1</span>
-                    </div>
+              </div>
+              <div
+                class="flex items-center gap-3 px-4 py-3 hover:bg-[#f5f6f6] dark:hover:bg-[#202c33] border-b border-[#e9edef] dark:border-[#1f2a30]">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                  style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwQXtCaCtjrMbdOYTr3RGpCR_l4Dt_n9Rp3EWOoslmYNrnf1w2ejYQuQGCh2GJf-vQqVZ8Etk3vIcXD6-Xmi7Nr8DUQ-OSKPuabB_HTdpR8zZAM4gR7qKcRbvUkiYvv4aZ4IJI2nCeGojMz9KIkwajZuUSc0rCZaCGMNiMnCbpQEvyxOPN4JmF_fY5o4PGIMAbKMnGOcd6V_wKofNfwDwqneJAmWGKg364qhhmSHTxSdBKKr_7ZQB147VmdZXE8yXx1lbeyMweZyoJ');">
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">Jane Doe</p>
+                  <p class="text-[#54656f] dark:text-[#aebac1] text-sm truncate">See you tomorrow!</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[#00a884] text-xs font-medium">10:30 AM</p>
+                  <div class="mt-1 flex items-center justify-center rounded-full bg-[#25d366] size-6">
+                    <span class="text-white text-xs font-semibold">1</span>
                   </div>
                 </div>
-                <div class="flex items-center gap-3 px-4 py-3 hover:bg-[#f5f6f6] dark:hover:bg-[#202c33] border-b border-[#e9edef] dark:border-[#1f2a30]">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDh0y47BEe8OcWEq7fSlXaNdDlv_bCki6vggVKjHthtTaoGfG3_zoJbNJn33bnbIqT-kP20aUtRqHeHA8jiKMuF1_Un3GCDkWspyZ6gp0B5jvLU5qJ8Bl80OUI6n5l7g7tnt7H97LBVFEIVYNf-xNebOHf6s081ByFsgfc3qlFTgZGLB_1u-o8X1hADDkNjUCoSYpYZ5sOVrsmo4oFjvqcbly72O3DzecqKGcOCPixLmSC1be3k6h_N89OKIgoPBG2FZqt4fFkNeUgA');"
-                  ></div>
-                  <div class="flex flex-col flex-1 min-w-0">
-                    <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">John Smith</p>
-                    <p class="text-[#667781] dark:text-[#8696a0] text-sm truncate">Perfect, thanks!</p>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-[#667781] text-xs">Yesterday</p>
-                  </div>
+              </div>
+              <div
+                class="flex items-center gap-3 px-4 py-3 hover:bg-[#f5f6f6] dark:hover:bg-[#202c33] border-b border-[#e9edef] dark:border-[#1f2a30]">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                  style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDh0y47BEe8OcWEq7fSlXaNdDlv_bCki6vggVKjHthtTaoGfG3_zoJbNJn33bnbIqT-kP20aUtRqHeHA8jiKMuF1_Un3GCDkWspyZ6gp0B5jvLU5qJ8Bl80OUI6n5l7g7tnt7H97LBVFEIVYNf-xNebOHf6s081ByFsgfc3qlFTgZGLB_1u-o8X1hADDkNjUCoSYpYZ5sOVrsmo4oFjvqcbly72O3DzecqKGcOCPixLmSC1be3k6h_N89OKIgoPBG2FZqt4fFkNeUgA');">
                 </div>
-                <div class="flex items-center gap-3 px-4 py-3 hover:bg-[#f5f6f6] dark:hover:bg-[#202c33] border-b border-[#e9edef] dark:border-[#1f2a30]">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCay1lt3RcMUn7hnyyzNmakdiihGw4e1aTfyB-Ep5BOpnTD_D_1BntumdCrRhYY2pgduAEV94n3bXkfgWpL5n8qM0kIVru3gxKdXaGZExjBI6Qk71oKDmyBul-N38PGx4Rn30Sj_JhGtRAemUbTdJNJsoITdLq-hsN7Gv4zByTvN_wngfiRm7l3hyQtWkmGE4bn4QcWOtvBn0tqr6Q1rZYJZVMch1A-MC5rpDm9Dp5RzwW-wDb13Qs-SJKVl--eZl07s13_wUo_9t5R');"
-                  ></div>
-                  <div class="flex flex-col flex-1 min-w-0">
-                    <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">Marketing Group</p>
-                    <p class="text-[#667781] dark:text-[#8696a0] text-sm truncate">Sarah: Just sent the new campaign assets.</p>
-                  </div>
-                  <div class="text-right flex flex-col items-end gap-1">
-                    <p class="text-[#667781] text-xs">Tuesday</p>
-                    <span class="material-symbols-outlined text-[#667781] dark:text-[#8696a0] text-base">volume_off</span>
-                  </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">John Smith</p>
+                  <p class="text-[#667781] dark:text-[#8696a0] text-sm truncate">Perfect, thanks!</p>
                 </div>
-                <div class="flex items-center gap-3 px-4 py-3 hover:bg-[#f5f6f6] dark:hover:bg-[#202c33] border-b border-[#e9edef] dark:border-[#1f2a30]">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBux_U426Dt0BjjI728UEh1dR2CHiTUOdsVd-r2hgp7NPscW4tNG3A4IE5KcPRNlu_nn-xpWqXTiuYsF5H7-13vXO5rjbzw54eaYln2fARq1qpnTLnAvguACt0Uey_xGO13Wd92ovY6SiiyEHIGWHNwP4bDQeeUE5FxUCNKFze8s7KrpFubF1f1qgny-v_7gpcvXgyKL-3Zz8DXQJbDfPIn8zGwaIuv9xGRi4ACTQRime4dfBl3aFPMjFCQjKfC2XAqwC4ffBxDLNUr');"
-                  ></div>
-                  <div class="flex flex-col flex-1 min-w-0">
-                    <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">Emily Carter</p>
-                    <p class="text-[#00a884] dark:text-[#00a884] text-sm font-medium truncate">typing...</p>
-                  </div>
+                <div class="text-right">
+                  <p class="text-[#667781] text-xs">Yesterday</p>
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-3 px-4 py-3 hover:bg-[#f5f6f6] dark:hover:bg-[#202c33] border-b border-[#e9edef] dark:border-[#1f2a30]">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                  style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCay1lt3RcMUn7hnyyzNmakdiihGw4e1aTfyB-Ep5BOpnTD_D_1BntumdCrRhYY2pgduAEV94n3bXkfgWpL5n8qM0kIVru3gxKdXaGZExjBI6Qk71oKDmyBul-N38PGx4Rn30Sj_JhGtRAemUbTdJNJsoITdLq-hsN7Gv4zByTvN_wngfiRm7l3hyQtWkmGE4bn4QcWOtvBn0tqr6Q1rZYJZVMch1A-MC5rpDm9Dp5RzwW-wDb13Qs-SJKVl--eZl07s13_wUo_9t5R');">
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">Marketing Group</p>
+                  <p class="text-[#667781] dark:text-[#8696a0] text-sm truncate">Sarah: Just sent the new campaign
+                    assets.</p>
+                </div>
+                <div class="text-right flex flex-col items-end gap-1">
+                  <p class="text-[#667781] text-xs">Tuesday</p>
+                  <span class="material-symbols-outlined text-[#667781] dark:text-[#8696a0] text-base">volume_off</span>
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-3 px-4 py-3 hover:bg-[#f5f6f6] dark:hover:bg-[#202c33] border-b border-[#e9edef] dark:border-[#1f2a30]">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                  style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBux_U426Dt0BjjI728UEh1dR2CHiTUOdsVd-r2hgp7NPscW4tNG3A4IE5KcPRNlu_nn-xpWqXTiuYsF5H7-13vXO5rjbzw54eaYln2fARq1qpnTLnAvguACt0Uey_xGO13Wd92ovY6SiiyEHIGWHNwP4bDQeeUE5FxUCNKFze8s7KrpFubF1f1qgny-v_7gpcvXgyKL-3Zz8DXQJbDfPIn8zGwaIuv9xGRi4ACTQRime4dfBl3aFPMjFCQjKfC2XAqwC4ffBxDLNUr');">
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">Emily Carter</p>
+                  <p class="text-[#00a884] dark:text-[#00a884] text-sm font-medium truncate">typing...</p>
                 </div>
               </div>
             </div>
           </div>
-        </aside>
-        <!-- Right Panel -->
-        <div class="flex flex-1 flex-col">
-          <header class="flex h-[59px] items-center justify-between gap-4 bg-[#f0f2f5] dark:bg-[#202c33] px-4 border-b border-slate-200/40 dark:border-white/10">
-            <div class="flex items-center gap-4 min-w-0">
-              <div
-                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 shrink-0"
-                aria-label="Chat avatar"
-                role="img"
-                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzP6Zl1Qwj1wexxT3WTmIvTbAfFgKMKygPo-CTyKUDjTR497NZ3bPdFAyco5AL1wHlw0ZokYS5yztv_sAzzxT5E6xi5ks_Kz8EoPdCsdEvBd5s3jk_xtSQSaSdnrzsodDZF7dfAq9Q6clPakdm6gVpxKPBuwSz8o87xpsVnciC2ZDOx2akEUNHJTtzH_2LIVELuqC5JexaG8hNzmWdzMgeDoClh-wpTKbbM3widgj6ZVOazqmnvkoQJJ0_xlxkV9GFgcfmwU_6Us0x');"
-              ></div>
-              <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">Jane Doe</p>
-            </div>
-            <div class="flex items-center gap-2 text-[#54656f] dark:text-[#aebac1]">
-              <button class="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10" type="button">
-                <span class="material-symbols-outlined text-2xl">search</span>
-              </button>
-              <button class="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10" type="button">
-                <span class="material-symbols-outlined text-2xl">more_vert</span>
-              </button>
-            </div>
-          </header>
-          <main class="flex-1 overflow-y-auto chat-background">
-            <div id="chat-log" class="flex flex-col gap-1 p-4 md:p-8"></div>
-          </main>
-          <footer class="bg-[#f0f2f5] dark:bg-[#202c33] px-4 py-2.5 border-t border-slate-200/40 dark:border-white/10">
-            <form id="chat-form" class="flex items-center gap-2">
-              <button
-                class="text-[#54656f] dark:text-[#aebac1] flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
-                type="button"
-                aria-label="Insert emoji"
-              >
-                <span class="material-symbols-outlined text-2xl">mood</span>
-              </button>
-              <button
-                class="text-[#54656f] dark:text-[#aebac1] flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
-                type="button"
-                aria-label="Attach file"
-              >
-                <span class="material-symbols-outlined text-2xl">attach_file</span>
-              </button>
-              <div class="flex-1">
-                <input
-                  class="w-full h-11 rounded-lg bg-white dark:bg-[#2a3942] px-4 text-[#111b21] dark:text-[#e9edef] placeholder:text-[#8696a0] dark:placeholder:text-[#8696a0] focus:ring-2 focus:ring-primary"
-                  id="message-input"
-                  placeholder="Type a message"
-                  required
-                  type="text"
-                  autocomplete="off"
-                />
-              </div>
-              <button
-                id="send-button"
-                class="bg-primary flex size-11 items-center justify-center rounded-full text-white shadow-sm transition hover:bg-[#029873]"
-                type="submit"
-                aria-label="Send message"
-              >
-                <span class="material-symbols-outlined text-2xl">send</span>
-              </button>
-            </form>
-          </footer>
         </div>
+      </aside>
+      <!-- Right Panel -->
+      <div class="flex flex-1 flex-col">
+        <header
+          class="flex h-[59px] items-center justify-between gap-4 bg-[#f0f2f5] dark:bg-[#202c33] px-4 border-b border-slate-200/40 dark:border-white/10">
+          <div class="flex items-center gap-4 min-w-0">
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 shrink-0"
+              aria-label="Chat avatar" role="img"
+              style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzP6Zl1Qwj1wexxT3WTmIvTbAfFgKMKygPo-CTyKUDjTR497NZ3bPdFAyco5AL1wHlw0ZokYS5yztv_sAzzxT5E6xi5ks_Kz8EoPdCsdEvBd5s3jk_xtSQSaSdnrzsodDZF7dfAq9Q6clPakdm6gVpxKPBuwSz8o87xpsVnciC2ZDOx2akEUNHJTtzH_2LIVELuqC5JexaG8hNzmWdzMgeDoClh-wpTKbbM3widgj6ZVOazqmnvkoQJJ0_xlxkV9GFgcfmwU_6Us0x');">
+            </div>
+            <p class="text-[#111b21] dark:text-[#e9edef] text-base font-medium truncate">Jane Doe</p>
+          </div>
+          <div class="flex items-center gap-2 text-[#54656f] dark:text-[#aebac1]">
+            <button
+              class="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
+              type="button">
+              <span class="material-symbols-outlined text-2xl">search</span>
+            </button>
+            <button
+              class="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
+              type="button">
+              <span class="material-symbols-outlined text-2xl">more_vert</span>
+            </button>
+          </div>
+        </header>
+        <main class="flex-1 overflow-y-auto chat-background">
+          <div id="chat-log" class="flex flex-col gap-1 p-4 md:p-8"></div>
+        </main>
+        <footer class="bg-[#f0f2f5] dark:bg-[#202c33] px-4 py-2.5 border-t border-slate-200/40 dark:border-white/10">
+          <form id="chat-form" class="flex items-center gap-2">
+            <button
+              class="text-[#54656f] dark:text-[#aebac1] flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
+              type="button" aria-label="Insert emoji">
+              <span class="material-symbols-outlined text-2xl">mood</span>
+            </button>
+            <button
+              class="text-[#54656f] dark:text-[#aebac1] flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
+              type="button" aria-label="Attach file">
+              <span class="material-symbols-outlined text-2xl">attach_file</span>
+            </button>
+            <div class="flex-1">
+              <input
+                class="w-full h-11 rounded-lg bg-white dark:bg-[#2a3942] px-4 text-[#111b21] dark:text-[#e9edef] placeholder:text-[#8696a0] dark:placeholder:text-[#8696a0] focus:ring-2 focus:ring-primary"
+                id="message-input" placeholder="Type a message" required type="text" autocomplete="off" />
+            </div>
+            <button id="send-button"
+              class="bg-primary flex size-11 items-center justify-center rounded-full text-white shadow-sm transition hover:bg-[#029873]"
+              type="submit" aria-label="Send message">
+              <span class="material-symbols-outlined text-2xl">send</span>
+            </button>
+          </form>
+        </footer>
       </div>
     </div>
+  </div>
 
-    <script>
-      const form = document.getElementById('chat-form');
-      const input = document.getElementById('message-input');
-      const chatLog = document.getElementById('chat-log');
-      const sendButton = document.getElementById('send-button');
-      const chatScrollContainer = chatLog?.parentElement;
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <script>
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('message-input');
+    const chatLog = document.getElementById('chat-log');
+    const sendButton = document.getElementById('send-button');
+    const chatScrollContainer = chatLog?.parentElement;
 
-      // IMPORTANT: Replace this with the actual, valid JWT for the logged-in developer.
-      // This token is required by the JwtAuthGuard on the backend.
-      const JWT_TOKEN = prompt('Please enter your developer JWT token:');
+    // IMPORTANT: Replace this with the actual, valid JWT for the logged-in developer.
+    // This token is required by the JwtAuthGuard on the backend.
+    const JWT_TOKEN = prompt('Please enter your developer JWT token:');
 
-      function formatTime(date = new Date()) {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      }
-
-      function scrollChatToBottom(behavior = 'smooth') {
-        if (chatScrollContainer) {
-          chatScrollContainer.scrollTo({
-            top: chatScrollContainer.scrollHeight,
-            behavior,
-          });
-        } else {
-          chatLog.scrollTop = chatLog.scrollHeight;
-        }
-      }
-
-      function addMessage(text, sender, buttons = []) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${sender}-message`;
-
-        const contentWrap = document.createElement('div');
-        contentWrap.className = 'message-content';
-        messageDiv.appendChild(contentWrap);
-
-        const bubble = document.createElement('div');
-        bubble.className = 'message-bubble';
-
-        const textParagraph = document.createElement('p');
-        textParagraph.innerText = text; // Safely render text and preserve newlines
-        bubble.appendChild(textParagraph);
-
-        const meta = document.createElement('span');
-        meta.className = 'message-meta';
-        meta.innerText = formatTime();
-        bubble.appendChild(meta);
-
-        contentWrap.appendChild(bubble);
-
-        if (buttons.length > 0) {
-          const buttonsDiv = document.createElement('div');
-          buttonsDiv.className = 'buttons-container';
-          buttons.forEach((btn) => {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.innerText = btn.title;
-            button.onclick = () => {
-              addMessage(btn.title, 'user');
-              sendMessage(btn.id); // Send the button's ID as the next message
-            };
-            buttonsDiv.appendChild(button);
-          });
-          contentWrap.appendChild(buttonsDiv);
-        }
-
-        chatLog.appendChild(messageDiv);
-        requestAnimationFrame(() => scrollChatToBottom());
-      }
-
-      async function sendMessage(text) {
-        if (!JWT_TOKEN) {
-          addMessage(
-            'Authentication token is missing. Please refresh and enter your token.',
-            'bot',
-          );
-          return;
-        }
-        input.disabled = true;
-        sendButton.disabled = true;
-
-        try {
-          const apiBase = window.location.origin + '/api';
-          const response = await fetch(`${apiBase}/web-chat/message`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${JWT_TOKEN}`,
-            },
-            body: JSON.stringify({ message: text }),
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            let errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
-            if (response.status === 401 || response.status === 403) {
-              errorMessage = 'Authentication Failed. Check your JWT token.';
-            }
-            throw new Error(errorMessage);
-          }
-
-          const data = await response.json();
-          data.responses.forEach((res) => {
-            addMessage(res.text, 'bot', res.buttons || []);
-          });
-        } catch (error) {
-          console.error('Error sending message:', error);
-          addMessage(`Error: ${error.message}`, 'bot');
-        } finally {
-          input.disabled = false;
-          sendButton.disabled = false;
-          input.focus();
-        }
-      }
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const messageText = input.value.trim();
-        if (messageText) {
-          addMessage(messageText, 'user');
-          sendMessage(messageText);
-          input.value = '';
+    // Initialize Socket.io
+    let socket;
+    if (JWT_TOKEN) {
+      socket = io('/web-chat', {
+        path: '/api/socket.io',
+        auth: {
+          token: JWT_TOKEN
         }
       });
 
-      // Trigger the initial welcome message on page load by sending a generic greeting.
-      window.onload = () => {
-        if (JWT_TOKEN) {
-          sendMessage('hello');
-        }
-        requestAnimationFrame(() => scrollChatToBottom('instant'));
-      };
-    </script>
-  </body>
-</html>
+      socket.on('connect', () => {
+        console.log('Connected to WebSocket');
+      });
 
+      socket.on('connect_error', (err) => {
+        console.error('WebSocket connection error:', err);
+      });
+
+      socket.on('message', (msg) => {
+        addMessage(msg.content, msg.sender, msg.buttons);
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from WebSocket');
+      });
+
+      // Fetch history on load
+      fetchHistory();
+    }
+
+    async function fetchHistory() {
+      try {
+        const response = await fetch('/api/web-chat/history', {
+          headers: {
+            'Authorization': `Bearer ${JWT_TOKEN}`
+          }
+        });
+        if (response.ok) {
+          const messages = await response.json();
+          messages.forEach(msg => {
+            addMessage(msg.content, msg.sender, msg.buttons);
+          });
+          // Scroll to bottom after loading history
+          requestAnimationFrame(() => scrollChatToBottom('instant'));
+        }
+      } catch (error) {
+        console.error('Error fetching history:', error);
+      }
+    }
+
+    function formatTime(date = new Date()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function scrollChatToBottom(behavior = 'smooth') {
+      if (chatScrollContainer) {
+        chatScrollContainer.scrollTo({
+          top: chatScrollContainer.scrollHeight,
+          behavior,
+        });
+      } else {
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+    }
+
+    function addMessage(text, sender, buttons = []) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}-message`;
+
+      const contentWrap = document.createElement('div');
+      contentWrap.className = 'message-content';
+      messageDiv.appendChild(contentWrap);
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+
+      const textParagraph = document.createElement('p');
+      textParagraph.innerText = text; // Safely render text and preserve newlines
+      bubble.appendChild(textParagraph);
+
+      const meta = document.createElement('span');
+      meta.className = 'message-meta';
+      meta.innerText = formatTime();
+      bubble.appendChild(meta);
+
+      contentWrap.appendChild(bubble);
+
+      if (buttons && buttons.length > 0) {
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'buttons-container';
+        buttons.forEach((btn) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.innerText = btn.title;
+          button.onclick = () => {
+            // addMessage(btn.title, 'user'); // Don't manually add, let socket handle it
+            sendMessage(btn.id); // Send the button's ID as the next message
+          };
+          buttonsDiv.appendChild(button);
+        });
+        contentWrap.appendChild(buttonsDiv);
+      }
+
+      chatLog.appendChild(messageDiv);
+      requestAnimationFrame(() => scrollChatToBottom());
+    }
+
+    async function sendMessage(text) {
+      if (!JWT_TOKEN) {
+        addMessage(
+          'Authentication token is missing. Please refresh and enter your token.',
+          'bot',
+        );
+        return;
+      }
+      input.disabled = true;
+      sendButton.disabled = true;
+
+      try {
+        const apiBase = window.location.origin + '/api';
+        const response = await fetch(`${apiBase}/web-chat/message`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${JWT_TOKEN}`,
+          },
+          body: JSON.stringify({ message: text }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          let errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
+          if (response.status === 401 || response.status === 403) {
+            errorMessage = 'Authentication Failed. Check your JWT token.';
+          }
+          throw new Error(errorMessage);
+        }
+
+        // We don't need to handle the response here anymore because the socket will receive the bot's response
+        // and the user's message is also echoed back via socket (or we could optimistically add it, but let's rely on socket for consistency)
+
+      } catch (error) {
+        console.error('Error sending message:', error);
+        addMessage(`Error: ${error.message}`, 'bot');
+      } finally {
+        input.disabled = false;
+        sendButton.disabled = false;
+        input.focus();
+      }
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const messageText = input.value.trim();
+      if (messageText) {
+        // addMessage(messageText, 'user'); // Removed manual add
+        sendMessage(messageText);
+        input.value = '';
+      }
+    });
+
+    // Trigger the initial welcome message on page load by sending a generic greeting.
+    // window.onload = () => {
+    //   if (JWT_TOKEN) {
+    //     sendMessage('hello');
+    //   }
+    //   requestAnimationFrame(() => scrollChatToBottom('instant'));
+    // };
+  </script>
+</body>
+
+</html>
