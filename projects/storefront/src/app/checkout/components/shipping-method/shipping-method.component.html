@@ -1,15 +1,26 @@
-<section class="shipping-method">
-  <h2 class="shipping-method__title">Shipping Method</h2>
+<section class="shipping-method" dir="rtl">
+  <h2 class="shipping-method__title">שיטת משלוח</h2>
+  
   <div class="shipping-method__options">
     <div *ngFor="let method of shippingMethods"
          class="shipping-method__option"
          [class.selected]="method.id === selectedMethod?.id"
          (click)="selectMethod(method)">
-      <div class="shipping-method__option-details">
-        <span class="shipping-method__option-name">{{ method.name }}</span>
-        <span class="shipping-method__option-description">{{ method.description }}</span>
+      
+      <div class="shipping-method__option-main">
+        <div class="custom-radio">
+          <div class="custom-radio__inner" *ngIf="method.id === selectedMethod?.id"></div>
+        </div>
+
+        <div class="shipping-method__option-details">
+          <span class="shipping-method__option-name">{{ method.name }}</span>
+          <p class="shipping-method__option-description">{{ method.description }}</p>
+        </div>
       </div>
-      <span class="shipping-method__option-cost">{{ method.cost | currency }}</span>
+
+      <span class="shipping-method__option-cost">
+        {{ method.cost === 0 ? 'חינם' : (method.cost | currency:'ILS':'symbol':'1.2-2') }}
+      </span>
     </div>
   </div>
 </section>

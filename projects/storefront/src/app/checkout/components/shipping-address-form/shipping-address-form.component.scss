@@ -1,119 +1,59 @@
-@use '../../styles/variables' as *;
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .shipping-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2.5rem;
+  direction: rtl; 
+  text-align: right; 
+  margin-right: 1rem;
 
-  &__fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  &__legend {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+  &__title {
+  font-family: 'Heebo', sans-serif;
+  margin-top:-1rem;
+  color:#000000;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
   }
 
   &__grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-
-    @media (min-width: 768px) {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  &__grid-item--full {
-    @media (min-width: 768px) {
-      grid-column: span 2;
-    }
-  }
-
-  &__label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-
-  &__input-container {
-    position: relative;
-  }
-
-  &__icon {
-    position: absolute;
-    left: 0.875rem; // 14px
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
-    color: $text-color-muted;
-  }
-
-  &__input, &__select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    padding-left: 3rem;
-    border: 1px solid $border-color;
-    border-radius: $border-radius-md;
-    background-color: $background-color;
-    transition: border-color 0.2s, box-shadow 0.2s;
-
-    &:focus {
-      outline: none;
-      border-color: $primary-color;
-      box-shadow: 0 0 0 2px $primary-color;
-    }
-  }
-  
-  &__select {
-    // This class is not used, so it is being removed.
-  }
-
-  &__error {
-    font-size: 0.875rem;
-    color: $error-color;
-    margin-top: 0.5rem;
-    animation: fadeInDown 0.3s ease-out;
-  }
-
-  &__options {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  &__option {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  &__checkbox {
-    margin-top: 0.2rem;
-  }
-
-  &__link {
-    color: $primary-color;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
+    width: 100%;
+    &-item {
+      &--full {
+        grid-column: span 2;
+      }
     }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+      &-item, &-item--full { grid-column: span 1; }
+    }
+  }
+}
+
+.custom-input {
+  width: 100%;
+  padding: 1.3rem 1.3rem;
+  font-family: 'Heebo', sans-serif;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #111827;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  text-align: right; 
+  transition: all 0.2s ease;
+  margin-bottom:0.7rem ;
+  &::placeholder {
+    color: #6b7280;
+    text-align: right;
+    font-family: 'Heebo', sans-serif;
+    font-size: 1.25rem;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 1px #111827;
   }
 }

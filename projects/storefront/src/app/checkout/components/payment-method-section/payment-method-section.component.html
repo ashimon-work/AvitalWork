@@ -1,59 +1,97 @@
-<section class="payment-method">
-  <h2 class="payment-method__title">Payment Method</h2>
-  <div class="payment-method__card">
-    <div *ngIf="storedCard; else noCard" class="payment-method__card-details">
-      <div class="payment-method__card-info">
-        <!-- Icon: CreditCard -->
-        <svg class="payment-method__card-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-        <div>
-          <p class="payment-method__card-brand">{{ storedCard.brand }} ending in {{ storedCard.last4 }}</p>
-          <p class="payment-method__card-text">Your card is securely stored.</p>
-        </div>
-      </div>
-      <button (click)="isModalOpen = true" class="btn btn--outline">Update Card</button>
-    </div>
-    <ng-template #noCard>
-      <button (click)="isModalOpen = true" class="btn btn--default btn--full-width">
-        <!-- Icon: PlusCircle -->
-        <svg class="payment-method__add-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
-        Add Payment Method
-      </button>
-    </ng-template>
-  </div>
-
-  <h2 class="payment-method__title">Billing Address</h2>
-  <div class="payment-method__billing-address">
-    <div class="payment-method__billing-address-option">
-      <input type="checkbox" id="sameAsShipping" [checked]="!showBillingForm" (change)="showBillingForm = !showBillingForm" />
-      <label for="sameAsShipping">Billing address is the same as shipping</label>
-    </div>
-    <div *ngIf="showBillingForm" class="payment-method__billing-address-form" [class.visible]="showBillingForm">
-        <app-shipping-address-form (formUpdate)="handleBillingSubmit($event)"></app-shipping-address-form>
-    </div>
-  </div>
-</section>
-
-<div *ngIf="isModalOpen" class="modal-overlay" (click)="isModalOpen = false">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3 class="modal-title">{{ storedCard ? 'Update' : 'Add' }} Payment Method</h3>
-      <button (click)="isModalOpen = false" class="modal-close">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="tranzila-form">
-        <p class="tranzila-form__text">Tranzila Secure PCI-Compliant Form</p>
-        <div class="tranzila-form__inputs">
-          <input class="tranzila-form__input" placeholder="Card Number" />
-          <div class="tranzila-form__input-group">
-            <input class="tranzila-form__input" placeholder="MM/YY" />
-            <input class="tranzila-form__input" placeholder="CVC" />
+<div class="payment-wrapper" dir="rtl">
+  <h2 class="section-title">תשלום</h2>
+  <span class="section-subtitle">כרטיסים שמורים</span>
+  <div class="payment-options-list">
+    
+    <div *ngFor="let card of $any(storedCard); let i = index" 
+            class="pill-container pill-container--header" 
+            [class.active]="!isModalOpen && i === 0"
+            (click)="isModalOpen = false">
+          
+          <div class="radio-circle">
+            <div class="radio-dot" *ngIf="!isModalOpen && i === 0"></div>
           </div>
-        </div>
-      </div>
+          
+          <div class="pill-content">
+            <span class="pill-label">{{ card?.brand }} •••• {{ card?.last4 }}</span>
+          </div>
     </div>
-    <div class="modal-footer">
-      <button (click)="isModalOpen = false" class="btn btn--secondary">Cancel</button>
-      <button (click)="handleCardSave()" class="btn btn--primary">Save Card</button>
+    <div class="pill-container pill-container--header" 
+         [class.active]="isModalOpen"
+         (click)="isModalOpen = true">
+      <div class="radio-circle">
+        <div class="radio-dot" *ngIf="isModalOpen"></div>
+      </div>
+      <span class="pill-label">השתמש בכרטיס חדש</span>
+    </div>
+
+  </div>
+
+  <div class="fields-expansion" *ngIf="isModalOpen">
+    
+<div class="pill-container pill-container--input">
+      <input type="text" 
+             class="clean-input" 
+             placeholder="מספר כרטיס "
+             maxlength="16"
+             inputmode="numeric"
+             oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    </div>
+
+    <div class="inputs-grid">
+      <div class="pill-container pill-container--input">
+        <input type="text" 
+               class="clean-input" 
+               placeholder="חודש"
+               maxlength="2"
+               inputmode="numeric"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+      </div>
+
+      <div class="pill-container pill-container--input">
+        <input type="text" 
+               class="clean-input" 
+               placeholder="שנה"
+               maxlength="2"
+               inputmode="numeric"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+      </div>
+
+      <div class="pill-container pill-container--input">
+        <input type="text" 
+               class="clean-input" 
+               placeholder="CVC"
+               maxlength="4"
+               inputmode="numeric"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+      </div>
+    
+    </div>
+  </div>
+  <div class="fields-expansion" *ngIf="isModalOpen">
+<div class="checkbox-line" (click)="saveCardRef.checked = !saveCardRef.checked">
+  
+  <input type="checkbox" #saveCardRef hidden> 
+  
+  <div class="custom-v-check" [class.active]="saveCardRef.checked">
+    <svg *ngIf="saveCardRef.checked" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  </div>
+  
+  <span class="checkbox-label">שמור כרטיס זה לרכישות עתידיות</span>
+</div>
+</div>
+  <div class="billing-section">
+    <h2 class="section-title">כתובת חיוב</h2>
+    
+    <div class="checkbox-line" (click)="showBillingForm = !showBillingForm">
+      <div class="custom-v-check" [class.active]="!showBillingForm">
+        <svg *ngIf="!showBillingForm" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <label class="checkbox-label">כתובת חיוב זהה לכתובת משלוח</label>
+    </div>
+
+    <div *ngIf="showBillingForm" class="billing-form-container">
+       <app-shipping-address-form (formUpdate)="handleBillingSubmit($event)"></app-shipping-address-form>
     </div>
   </div>
 </div>

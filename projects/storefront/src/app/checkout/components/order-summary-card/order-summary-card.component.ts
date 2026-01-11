@@ -38,10 +38,9 @@ export class OrderSummaryCardComponent implements OnChanges {
     this.total = this.subtotal + this.shipping + this.taxes - (this.discount?.amount || 0);
   }
 
-  formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  }
-}
+formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('he-IL', {
+    style: 'currency',
+    currency: 'ILS',
+  }).format(amount);
+}}

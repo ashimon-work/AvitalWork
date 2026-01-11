@@ -1,23 +1,29 @@
 @use '../styles/variables' as *;
 
+.page-header{
+  margin-right:1rem;
+  margin-bottom: 5rem;
+}
+
 .checkout-page {
   background-color: $background-color;
   color: $text-color;
   min-height: 100vh;
-
+  align-items: start;
+  padding-bottom: 4rem;
   &__header {
     padding: 2rem 0;
     border-bottom: 1px solid $border-color;
   }
 
   &__container {
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 0rem ;
   }
 
   &__main {
-    padding: 2rem 1rem;
+    padding: 2rem 0rem;
 
     @media (min-width: 1024px) {
       padding: 3rem 1rem;
@@ -27,28 +33,113 @@
   &__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
-
+    width: 100%;
+    align-items: start;
     @media (min-width: 1024px) {
       grid-template-columns: repeat(12, 1fr);
       gap: 3rem;
+      align-items: start;
     }
   }
 
-  &__grid-left {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    @media (min-width: 1024px) {
-      grid-column: span 7;
-    }
-  }
+&__grid-left {
+display: block; 
+  margin-left: 1rem;
+  
+  // הגדרות הסטיקי
+  position: sticky;
+  top: 2rem; 
+  
+  // מוודא שהגובה הוא רק לפי התוכן (הכרטיס והכפתור) ולא יותר
+  height: max-content; 
 
+  @media (min-width: 1024px) {
+    grid-column: span 4;
+    align-self: start; // חשוב מאוד כדי שלא יימתח לגובה של צד ימין
+  }
+}  
   &__grid-right {
-    grid-row: 1; // On mobile, ensure it comes first
+    grid-row: 1; 
     @media (min-width: 1024px) {
-      grid-column: span 5;
+      grid-column: span 8;
       grid-row: auto;
     }
+  }
+
+  
+}
+.text-display{
+  color:#000000;
+}
+
+.breadcrumb {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #737373; 
+  padding: 0;
+  list-style: none;
+  margin-bottom: 2rem;
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+    &:hover { color: #111827;cursor: pointer; }
+  }
+
+  .current {
+    color: #111827;
+    font-weight: 500;
+  }
+}
+
+.complete-order-btn {
+  margin-top: 2rem;
+  height: 3.5rem;
+  margin-right: 1rem;
+  /* רוחב מלא כדי להתאים לעמודה */
+  width: 13rem; 
+  
+  /* עיצוב גלולה אחיד */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+  background-color: #111827;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px; /* גלולה בדיוק כמו ה-pill-container */
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+    
+    .arrow-icon {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+  }
+
+  &:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  .arrow-icon {
+    display: inline-block;
+    font-size: 1.2rem;
+    line-height: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* מצב מוסתר */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(10px);
   }
 }

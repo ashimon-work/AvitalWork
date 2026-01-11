@@ -1,102 +1,37 @@
-<form class="shipping-form" [formGroup]="form">
-  <fieldset class="shipping-form__fieldset">
-    <legend class="shipping-form__legend">Shipping Address</legend>
+<form class="shipping-form" [formGroup]="form" dir="rtl">
+  <div class="shipping-form__section">
+    <h2 class="shipping-form__title">פרטים</h2>
     <div class="shipping-form__grid">
       <div class="shipping-form__grid-item--full">
-        <label class="shipping-form__label" for="fullName">Full Name</label>
-        <div class="shipping-form__input-container">
-          <svg class="shipping-form__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          <input class="shipping-form__input" id="fullName" formControlName="fullName" placeholder="John Doe" />
-        </div>
-        <div class="shipping-form__error" *ngIf="form.get('fullName')?.invalid && form.get('fullName')?.touched">
-          Full name is required.
-        </div>
-      </div>
-      <div class="shipping-form__grid-item">
-        <label class="shipping-form__label" for="email">Email Address</label>
-        <div class="shipping-form__input-container">
-          <svg class="shipping-form__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-          <input class="shipping-form__input" id="email" type="email" formControlName="email" placeholder="you@example.com" />
-        </div>
-        <div class="shipping-form__error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-          <span *ngIf="form.get('email')?.errors?.['required']">Email is required.</span>
-          <span *ngIf="form.get('email')?.errors?.['email']">Email is invalid.</span>
-        </div>
-      </div>
-      <div class="shipping-form__grid-item">
-        <label class="shipping-form__label" for="phone">Phone Number</label>
-        <div class="shipping-form__input-container">
-          <svg class="shipping-form__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-          <input class="shipping-form__input" id="phone" type="tel" formControlName="phone" placeholder="(123) 456-7890" />
-        </div>
-        <div class="shipping-form__error" *ngIf="form.get('phone')?.invalid && form.get('phone')?.touched">
-          Phone number is required.
-        </div>
+        <input class="custom-input" formControlName="fullName" placeholder="שם מלא" />
       </div>
       <div class="shipping-form__grid-item--full">
-        <label class="shipping-form__label" for="address1">Address Line 1</label>
-        <div class="shipping-form__input-container">
-          <svg class="shipping-form__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <input class="shipping-form__input" id="address1" formControlName="address1" placeholder="123 Main St" />
-        </div>
-        <div class="shipping-form__error" *ngIf="form.get('address1')?.invalid && form.get('address1')?.touched">
-          Address is required.
-        </div>
+        <input class="custom-input" type="email" formControlName="email" placeholder="אימייל" />
       </div>
       <div class="shipping-form__grid-item--full">
-        <label class="shipping-form__label" for="address2">Address Line 2 (Optional)</label>
-        <div class="shipping-form__input-container">
-          <svg class="shipping-form__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>
-          <input class="shipping-form__input" id="address2" formControlName="address2" placeholder="Apt, suite, etc." />
-        </div>
-      </div>
-      <div class="shipping-form__grid-item">
-        <label class="shipping-form__label" for="city">City</label>
-        <input class="shipping-form__input" id="city" formControlName="city" placeholder="Anytown" />
-        <div class="shipping-form__error" *ngIf="form.get('city')?.invalid && form.get('city')?.touched">
-          City is required.
-        </div>
-      </div>
-      <div class="shipping-form__grid-item">
-        <label class="shipping-form__label" for="state">State / Province</label>
-        <input class="shipping-form__input" id="state" formControlName="state" placeholder="CA" />
-        <div class="shipping-form__error" *ngIf="form.get('state')?.invalid && form.get('state')?.touched">
-          State/Province is required.
-        </div>
-      </div>
-      <div class="shipping-form__grid-item">
-        <label class="shipping-form__label" for="zip">ZIP / Postal Code</label>
-        <input class="shipping-form__input" id="zip" formControlName="zip" placeholder="12345" />
-        <div class="shipping-form__error" *ngIf="form.get('zip')?.invalid && form.get('zip')?.touched">
-          ZIP/Postal code is required.
-        </div>
-      </div>
-      <div class="shipping-form__grid-item">
-        <label class="shipping-form__label" for="country">Country</label>
-        <select class="shipping-form__input" id="country" formControlName="country">
-          <option value="USA">United States</option>
-          <option value="CAN">Canada</option>
-          <option value="MEX">Mexico</option>
-          <option value="GBR">United Kingdom</option>
-        </select>
-      </div>
-    </div>
-  </fieldset>
-  <div class="shipping-form__options">
-    <div class="shipping-form__option">
-      <input class="shipping-form__checkbox" type="checkbox" id="newsletter" formControlName="newsletter" />
-      <label class="shipping-form__label" for="newsletter">
-        Sign up for our newsletter for exclusive offers.
-      </label>
-    </div>
-    <div class="shipping-form__option">
-      <input class="shipping-form__checkbox" type="checkbox" id="terms" formControlName="terms" />
-      <label class="shipping-form__label" for="terms">
-        I agree to the <a class="shipping-form__link" href="#">Terms and Conditions</a>.
-      </label>
-      <div class="shipping-form__error" *ngIf="form.get('terms')?.invalid && form.get('terms')?.touched">
-        You must agree to the terms.
+        <input class="custom-input" type="tel" formControlName="phone" placeholder="טלפון" />
       </div>
     </div>
   </div>
+
+<div class="shipping-form__section">
+  <h2 class="shipping-form__title">כתובת</h2>
+  <div class="shipping-form__grid">
+    
+    <div class="shipping-form__grid-item">
+      <input class="custom-input" formControlName="address1" placeholder="כתובת (רחוב ומספר בית)" />
+    </div>
+    <div class="shipping-form__grid-item">
+      <input class="custom-input" formControlName="address2" placeholder="דירה, כניסה, קומה (אופציונלי)" />
+    </div>
+    
+    <div class="shipping-form__grid-item">
+      <input class="custom-input" formControlName="city" placeholder="עיר" />
+    </div>
+    <div class="shipping-form__grid-item">
+      <input class="custom-input" formControlName="zip" placeholder="מיקוד" />
+    </div>
+
+  </div>
+</div>
 </form>

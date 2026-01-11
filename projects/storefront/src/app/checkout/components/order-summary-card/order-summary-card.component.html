@@ -1,71 +1,34 @@
 <div class="order-summary-card">
-  <div class="order-summary-card__header">
-    <h3 class="order-summary-card__title">
-      <span>Order Summary</span>
-      <!-- Icon: ShoppingBag -->
-      <svg class="order-summary-card__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    </h3>
-  </div>
-  <div class="order-summary-card__content">
-    <details class="order-summary-card__accordion" open>
-      <summary class="order-summary-card__accordion-trigger">
-        <span>{{ items.length }} items in cart</span>
-        <!-- Icon: ChevronDown -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="accordion-arrow"><path d="m6 9 6 6 6-6"/></svg>
-      </summary>
-      <div class="order-summary-card__accordion-content">
-        <ul class="order-summary-card__item-list">
-          <li *ngFor="let item of items" class="order-summary-card__item">
-            <img [src]="item.image" [alt]="item.name" class="order-summary-card__item-image" />
-            <div class="order-summary-card__item-details">
-              <p class="order-summary-card__item-name">{{ item.name }}</p>
-              <p class="order-summary-card__item-options">{{ item.options }}</p>
-              <p class="order-summary-card__item-quantity">Qty: {{ item.quantity }}</p>
-            </div>
-            <p class="order-summary-card__item-price">{{ formatCurrency(item.price * item.quantity) }}</p>
-          </li>
-        </ul>
+  <h2 class="order-summary-card__title">סיכום הזמנה</h2>
+
+  <ul class="order-summary-card__item-list">
+    <li *ngFor="let item of items" class="order-summary-card__item">
+      <img [src]="item.image" class="order-summary-card__item-image" />
+      <div class="order-summary-card__item-details">
+        <span class="order-summary-card__item-name">{{ item.name }}</span>
+        <span class="order-summary-card__item-quantity">כמות: {{ item.quantity }}</span>
+        <span class="order-summary-card__item-price">{{ formatCurrency(item.price) }}</span>
       </div>
-    </details>
-    <hr class="order-summary-card__separator" />
-    <div class="order-summary-card__totals">
-      <div class="order-summary-card__total-row">
-        <p class="order-summary-card__total-label">Subtotal</p>
-        <p>{{ formatCurrency(subtotal) }}</p>
-      </div>
-      <div class="order-summary-card__total-row">
-        <p class="order-summary-card__total-label">Shipping</p>
-        <p>{{ formatCurrency(shipping) }}</p>
-      </div>
-      <div class="order-summary-card__total-row">
-        <p class="order-summary-card__total-label">Taxes</p>
-        <p>{{ formatCurrency(taxes) }}</p>
-      </div>
-      <div *ngIf="discount" class="order-summary-card__total-row order-summary-card__total-row--discount">
-        <p>Discount ({{ discount.code }})</p>
-        <p>-{{ formatCurrency(discount.amount) }}</p>
-      </div>
+    </li>
+  </ul>
+
+  <hr class="order-summary-card__separator" />
+
+  <div class="order-summary-card__totals">
+    <div class="order-summary-card__total-row">
+      <span>סיכום ביניים</span>
+      <span>{{ formatCurrency(subtotal) }}</span>
     </div>
-    <hr class="order-summary-card__separator" />
+    <div class="order-summary-card__total-row">
+      <span>משלוח</span>
+      <span>{{ shipping === 0 ? 'חינם' : formatCurrency(shipping) }}</span>
+    </div>
+    
+    <hr class="order-summary-card__separator" style="margin-top: 0.5rem;" />
+    
     <div class="order-summary-card__grand-total">
-      <p class="order-summary-card__grand-total-label">Total</p>
-      <p class="order-summary-card__grand-total-amount">{{ formatCurrency(total) }}</p>
-    </div>
-  </div>
-  <div class="order-summary-card__footer">
-    <button (click)="placeOrder.emit()" [disabled]="!canPlaceOrder || isPlacingOrder" class="btn btn--success btn--large btn--full-width">
-      <ng-container *ngIf="!isPlacingOrder; else placingOrder">
-        Place Order
-      </ng-container>
-      <ng-template #placingOrder>
-        <!-- Icon: Loader2 -->
-        <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-      </ng-template>
-    </button>
-    <div class="order-summary-card__secure-checkout">
-      <!-- Icon: Lock -->
-      <svg class="order-summary-card__secure-checkout-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      <span>Secure Checkout</span>
+      <span>סה"כ</span>
+      <span>{{ formatCurrency((+subtotal || 0) + (+shipping || 0)) }}</span>
     </div>
   </div>
 </div>
