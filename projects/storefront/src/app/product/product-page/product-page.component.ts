@@ -48,6 +48,7 @@ export class ProductPageComponent implements OnInit {
   product$: Observable<Product | null> | undefined;
   category$: Observable<Category | null>;
   quantity: number = 1;
+  currentStoreSlug: string | null = null;
 
   // New properties for variant selection and display
   availableOptions: { name: string, values: { value: string, disabled: boolean }[] }[] = [];
@@ -101,6 +102,11 @@ export class ProductPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Subscribe to current store slug
+    this.currentStoreSlug$.subscribe(slug => {
+      this.currentStoreSlug = slug;
+    });
+    
     // Fetch Product Details
     this.product$ = this.route.paramMap.pipe(
       map(params => params.get('id')),

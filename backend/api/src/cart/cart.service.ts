@@ -210,13 +210,13 @@ export class CartService {
 
   async updateItemQuantity(
     storeSlug: string,
-    productId: string,
+    cartItemId: string,
     quantity: number,
     userId?: string,
     guestSessionId?: string,
   ): Promise<CartEntity | null> {
     this.logger.log(
-      `Attempting to update quantity for ${productId} to ${quantity} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`,
+      `Attempting to update quantity for ${cartItemId} to ${quantity} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`,
     );
 
     if (!userId && !guestSessionId) {
@@ -252,18 +252,18 @@ export class CartService {
     }
 
     const existingItem = cart.items.find(
-      (item) => item.product.id === productId,
+      (item) => item.id === cartItemId,
     );
 
     if (!existingItem) {
       throw new NotFoundException(
-        `Item with product ID ${productId} not found in cart.`,
+        `Item with cart item ID ${cartItemId} not found in cart.`
       );
     }
 
     if (quantity < 1) {
       this.logger.log(
-        `Removing item ${productId} from cart ${cart.id} due to quantity zero.`,
+        `Removing item ${cartItemId} from cart ${cart.id} due to quantity zero.`,
       );
       await this.cartItemRepository.remove(existingItem);
       // Remove the item from the cart's items array in memory
@@ -272,7 +272,7 @@ export class CartService {
       existingItem.quantity = quantity;
       await this.cartItemRepository.save(existingItem);
       this.logger.log(
-        `Quantity updated for item ${productId} in cart ${cart.id}. New quantity: ${existingItem.quantity}`,
+        `Quantity updated for item ${cartItemId} in cart ${cart.id}. New quantity: ${existingItem.quantity}`,
       );
     }
 
@@ -287,12 +287,12 @@ export class CartService {
 
   async removeItem(
     storeSlug: string,
-    productId: string,
+    cartItemId: string,
     userId?: string,
     guestSessionId?: string,
   ): Promise<CartEntity | null> {
     this.logger.log(
-      `Attempting to remove item ${productId} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`,
+      `Attempting to remove item ${cartItemId} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`,
     );
 
     if (!userId && !guestSessionId) {
@@ -328,17 +328,17 @@ export class CartService {
     }
 
     const existingItem = cart.items.find(
-      (item) => item.product.id === productId,
+      (item) => item.id === cartItemId,
     );
 
     if (!existingItem) {
       throw new NotFoundException(
-        `Item with product ID ${productId} not found in cart.`,
+        `Item with cart item ID ${cartItemId} not found in cart.`,
       );
     }
 
     await this.cartItemRepository.remove(existingItem);
-    this.logger.log(`Item ${productId} removed from cart ${cart.id}.`);
+    this.logger.log(`Item ${cartItemId} removed from cart ${cart.id}.`);
 
     // Remove the item from the cart's items array in memory
     cart.items = cart.items.filter((item) => item.id !== existingItem.id);
@@ -547,6 +547,7 @@ export class CartService {
   async mergeCarts(
     userId: string,
     storeId: string,
+    storeSlug: string,
     guestCartId: string,
   ): Promise<CartEntity | null> {
     this.logger.log(
@@ -565,8 +566,8 @@ export class CartService {
       throw new NotFoundException('Store not found.');
     }
 
-    const guestCart = await this.cartRepository.findOne({
-      where: { guestCartId, store: { id: storeId } },
+    let guestCart = await this.cartRepository.findOne({
+      where: { guest_session_id: guestCartId, store: { slug: storeSlug } },
       relations: ['items', 'items.product', 'store'], // Load guest cart items and their products
     });
 
