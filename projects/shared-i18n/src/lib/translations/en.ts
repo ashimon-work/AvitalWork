@@ -31,6 +31,7 @@ export const enMessages: TranslationSchema = {
   SF_FOOTER_TWITTER_TEXT: "Twitter",
   SF_FOOTER_COPYRIGHT: (params: { year: number, storeName: string }) => `&copy; ${params.year} ${params.storeName}. All Rights Reserved.`,
   SF_NAV_HOME: "Home",
+  SF_NAV_COLLECTIONS: "Collections",
   SF_NAV_SHOP: "Shop",
   SF_NAV_ABOUT: "About",
   SF_NAV_CONTACT: "Contact",
@@ -264,12 +265,12 @@ export const enMessages: TranslationSchema = {
   SF_CATEGORY_BUTTON_APPLY_FILTERS: "Apply Filters",
   SF_CATEGORY_NO_PRODUCTS_FOUND: "No products found matching your criteria.",
   SF_CATEGORY_LOADING_PRODUCTS: "Loading products...",
-  SF_CATEGORY_SHOWING_X_OF_Y_PRODUCTS: (params: { count: number, total: number }) => `Showing ${params.count} of ${params.total} products`,
   SF_CATEGORY_PAGINATION_PREVIOUS: "Previous",
   SF_CATEGORY_PAGINATION_PAGE_X_OF_Y: (params: { currentPage: number, totalPages: number }) => `Page ${params.currentPage} of ${params.totalPages}`,
   SF_CATEGORY_PAGINATION_NEXT: "Next",
   SF_CATEGORY_PAGINATION_TOTAL_PRODUCTS: (total: number) => `Total Products: ${total}`,
   SF_CATEGORY_LOADING_DETAILS: "Loading category details...",
+  SF_ALL_PRODUCTS_TITLE: "All Products",
 
   // Colors
   SF_COLOR_RED: "Red",

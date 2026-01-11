@@ -29,6 +29,7 @@ export const heMessages = {
   SF_FOOTER_TWITTER_TEXT: "טוויטר",
   SF_FOOTER_COPYRIGHT: (params: { year: number, storeName: string }) => `&copy; ${params.year} ${params.storeName}. כל הזכויות שמורות.`,
   SF_NAV_HOME: "בית",
+  SF_NAV_COLLECTIONS: "אוספים",
   SF_NAV_SHOP: "חנות",
   SF_NAV_ABOUT: "אודות",
   SF_NAV_CONTACT: "צור קשר",
@@ -257,7 +258,6 @@ export const heMessages = {
   SF_CATEGORY_BUTTON_APPLY_FILTERS: "החל מסננים",
   SF_CATEGORY_NO_PRODUCTS_FOUND: "לא נמצאו מוצרים התואמים את הקריטריונים שלך.",
   SF_CATEGORY_LOADING_PRODUCTS: "טוען מוצרים...",
-  SF_CATEGORY_SHOWING_X_OF_Y_PRODUCTS: (params: { count: number, total: number }) => `מציג ${params.count} מתוך ${params.total} מוצרים`,
   SF_CATEGORY_PAGINATION_PREVIOUS: "הקודם",
   SF_CATEGORY_PAGINATION_PAGE_X_OF_Y: (params: { currentPage: number, totalPages: number }) => `עמוד ${params.currentPage} מתוך ${params.totalPages}`,
   SF_CATEGORY_PAGINATION_NEXT: "הבא",
@@ -469,6 +469,7 @@ SF_CHECKOUT_TITLE: "קופה",
   SF_HOMEPAGE_FEATURED_CATEGORIES_TITLE: "קטגוריות נבחרות",
   SF_HOMEPAGE_FEATURED_PRODUCTS_TITLE: "מוצרים נבחרים",
   SF_HOMEPAGE_ALL_PRODUCTS: "כל המוצרים",
+  SF_ALL_PRODUCTS_TITLE: "כל המוצרים",
 
   // Login Page
   SF_LOGIN_PAGE_TITLE: "התחברות",

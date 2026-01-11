@@ -151,6 +151,23 @@ $header-height-mobile: 56px;
   }
 }
 
+.shop-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+}
+
+.shop-dropdown-wrapper {
+  position: relative;
+}
+
+// Keep old styles for backward compatibility if needed
 .categories-button {
   display: flex;
   align-items: center;
@@ -179,7 +196,7 @@ $header-height-mobile: 56px;
 .category-menu-item {
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   padding: 12px 16px;
   min-height: 60px;
   cursor: pointer;
@@ -191,7 +208,7 @@ $header-height-mobile: 56px;
   .category-name {
     flex-grow: 1;
     text-align: right;
-    margin-left: 12px; 
+    margin-left: 12px;
     margin-right: 0;
   }
 
@@ -416,4 +433,28 @@ button[mat-icon-button] {
 ::ng-deep mat-list-item.category-menu-item .category-name {
   text-align: right !important;
   margin-right: 0 !important;
+}
+
+// Add CSS variables for the shop dropdown if not already defined globally
+:root {
+  --background: 0 0% 100%; /* hsl(0 0% 100%) - white */
+  --foreground: 222.2 84% 4.9%; /* hsl(222.2 84% 4.9%) - dark text */
+  --border: 214.3 31.8% 91.4%; /* hsl(214.3 31.8% 91.4%) - light border */
+}
+
+// Shop button styling
+.shop-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+}
+
+.shop-dropdown-wrapper {
+  position: relative;
 }

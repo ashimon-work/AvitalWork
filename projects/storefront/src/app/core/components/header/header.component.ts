@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core'; // Removed inject, ElementRef, HostListener
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-// FormsModule, ReactiveFormsModule removed as search is delegated
-import { Observable, Subscription, of, firstValueFrom } from 'rxjs'; // Removed Subject, fromEvent, operators not needed by header
-import { map, switchMap } from 'rxjs/operators'; // Keep map if used by other parts, add switchMap
+import { Observable, Subscription, of, firstValueFrom } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,9 +16,9 @@ import { CartService } from '../../services/cart.service';
 import { StoreContextService } from '../../services/store-context.service';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
-// SearchBarComponent will use it
-import { SearchBarComponent } from '../search-bar/search-bar.component'; // Import SearchBarComponent
+import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { Category } from '@shared-types';
+import { CategoryDropdownService } from '../../services/category-dropdown.service';
 
 interface NavLink {
   label: string;
@@ -43,8 +42,7 @@ interface NavLink {
     MatListModule,
     MatBadgeModule,
     MatMenuModule,
-    SearchBarComponent, // Add SearchBarComponent here
-    // FormsModule, ReactiveFormsModule removed
+    SearchBarComponent,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
@@ -61,13 +59,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     'https://lh3.googleusercontent.com/aida-public/AB6AXuC44Hzw2Taav4khTujCr44832VCInQKGrmMHAEErJ1sru0o-XS9uVoReQQEzDLpC9OoAoZUKM69RkahY-FFPaPF5jpGlzqrIfUatLHXrzt8tg9WGwbuTklTGc4v8cH-uILUQ3CW-L_92nIWVbmWVtfUdrxMaGKeJziBnC_x0B2Ikvk9IsqHRlLid8b7Oibg6-bZ_mGSDB1H7YvWp8vqb00wPXIuMQtuX3mOJOK_ovrNvtQu6a3sYG14bPfBYF20swftpnpdKlQ9dA';
 
   cartItemCount$: Observable<number>;
-  categories$: Observable<Category[]>;
   private subscriptions = new Subscription();
-
-  // All search-related properties removed:
-  // searchQuery, searchSuggestions$, currentSearchSuggestions, searchQueryChanged,
-  // showSuggestions, activeSuggestionIndex, destroy$, searchInputFocused,
-  // desktopSearchInput, mobileSearchInput
 
   public NAV_LINKS: NavLink[] = [
     {
@@ -96,8 +88,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private storeContext: StoreContextService,
     private authService: AuthService,
-    private apiService: ApiService
-    // ElementRef removed
+    private apiService: ApiService,
+    private categoryDropdownService: CategoryDropdownService
   ) {
     this.storeSlug$ = this.storeContext.currentStoreSlug$;
     this.isAuthenticated$ = this.authService.isAuthenticated$;
@@ -112,24 +104,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       map((store) => store?.logoUrl)
     );
     this.cartItemCount$ = this.cartService.getItemCount();
-    this.categories$ = this.storeSlug$.pipe(
-      switchMap((storeSlug) => {
-        if (storeSlug) {
-          return this.apiService.getStoreCategories(storeSlug);
-        } else {
-          return of([]);
-        }
-      })
-    );
   }
 
-  ngOnInit() {
-    // Search-related subscriptions removed
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-    // destroy$ for search removed
   }
 
   generateRouterLink(link: NavLink, slug: string | null | undefined): string[] {
@@ -149,13 +129,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }
     }
     return ['/', ...link.pathSegments].filter(
-      (segment) => segment !== undefined && segment !== null && segment !== ''
+      (segment) =>
+        segment !== undefined && segment !== null && segment !== ''
     );
   }
-
-  // All search-related methods removed:
-  // onSearchQueryChanged, fetchSearchSuggestions, clearSearch, onSearchFocus,
-  // handleKeyDown, selectSuggestion, slugify, performSearch
 
   async onAccountClick(): Promise<void> {
     const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
@@ -193,12 +170,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onCategoryClick(category: Category): Promise<void> {
-    const slug = await firstValueFrom(this.storeSlug$);
-    this.router.navigate([`/${slug}/category`, category.id]);
-    if (this.mobileDrawer?.opened) {
-      this.mobileDrawer.close();
-    }
+  toggleShopDropdown(): void {
+    this.categoryDropdownService.toggle();
   }
 
   logout(): void {

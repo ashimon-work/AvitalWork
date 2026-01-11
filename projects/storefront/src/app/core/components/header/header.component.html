@@ -177,43 +177,16 @@
                 {{ link.label }}
               </a>
             </li>
-            <li>
+            <li class="shop-dropdown-wrapper">
               <button
                 mat-button
-                [matMenuTriggerFor]="categoriesMenu"
-                class="nav-link categories-button"
+                class="nav-link shop-button"
+                (mouseenter)="toggleShopDropdown()"
+                (click)="toggleShopDropdown()"
               >
-                Categories
+                Shop
                 <mat-icon>arrow_drop_down</mat-icon>
               </button>
-              <mat-menu
-                #categoriesMenu="matMenu"
-                xPosition="before"
-                class="categories-menu"
-              >
-                <div class="categories-menu-content">
-                  <mat-list-item
-                    *ngFor="let category of categories$ | async"
-                    (click)="onCategoryClick(category)"
-                    class="category-menu-item"
-                  >
-                    <img
-                      [src]="
-                        category.imageUrl || 'assets/icons/default-category.svg'
-                      "
-                      [alt]="category.name"
-                      class="category-image"
-                      *ngIf="category.imageUrl; else noImage"
-                    />
-                    <ng-template #noImage>
-                      <div class="category-no-image">
-                        <mat-icon>category</mat-icon>
-                      </div>
-                    </ng-template>
-                    <span class="category-name">{{ category.name }}</span>
-                  </mat-list-item>
-                </div>
-              </mat-menu>
             </li>
           </ul>
         </nav>

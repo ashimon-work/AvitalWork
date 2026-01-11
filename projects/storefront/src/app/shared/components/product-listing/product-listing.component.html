@@ -1,0 +1,194 @@
+<!-- Main page container -->
+<div class="page-wrapper">
+  <!-- Spacer for fixed header -->
+  <div class="header-spacer"></div>
+
+  <!-- Inner container -->
+  <div class="content-container">
+    <!-- Page Title Section -->
+    <header class="page-title-section animate-category-header" *ngIf="pageTitle">
+      <h1 class="page-title">{{ pageTitle }}</h1>
+    </header>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar-section">
+      <div class="filter-bar-container">
+        <div class="filter-controls">
+          <button #filterButton class="filter-button" (click)="toggleMobileFilters()" [class.is-active]="isMobileFiltersVisible">
+            <img src="assets/icons/filter.svg" alt="filter" class="icon icon-filter">
+            <span>{{ tKeys.SF_CATEGORY_FILTERS_TITLE | translate }}</span>
+          </button>
+          <div class="sort-dropdown-wrapper">
+            <span class="sort-label">{{ tKeys.SF_CATEGORY_SORT_BY_LABEL | translate }}</span>
+            <div class="sort-dropdown" #sortDropdown>
+              <button class="sort-dropdown-button" (click)="toggleSortDropdown()">
+                <span class="sort-dropdown-text">{{ sortLabel() }}</span>
+                <img src="assets/icons/chevron-down.svg" alt="dropdown arrow" class="sort-dropdown-icon" [class.is-open]="isSortDropdownOpen">
+              </button>
+              <div class="sort-dropdown-menu" *ngIf="isSortDropdownOpen">
+                <div class="sort-dropdown-item"
+                     *ngFor="let option of sortOptions"
+                     [class.is-selected]="sortSubject.value === option.value"
+                     (click)="selectSortOption(option.value)">
+                  {{ option.label | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Panel (Collapsible) - Side Drawer -->
+    <div #mobileFilterOverlay class="filter-drawer-overlay" *ngIf="isMobileFiltersVisible" (click)="toggleMobileFilters()">
+      <aside class="filter-drawer-panel" (click)="$event.stopPropagation()">
+        <div class="filter-panel-header">
+          <h2 class="filters-title">{{ tKeys.SF_CATEGORY_FILTERS_TITLE | translate }}</h2>
+          <button class="button-close-filters" (click)="toggleMobileFilters()">
+            <img src="assets/icons/x.svg" alt="close" class="icon icon-close">
+          </button>
+        </div>
+
+        <!-- Price Filter -->
+        <div class="filter-group">
+          <button class="filter-group-toggle" (click)="toggleFilterSection('price')">
+            <h3 class="filter-group-title">{{ tKeys.SF_CATEGORY_FILTER_PRICE_RANGE | translate }}</h3>
+            <img src="assets/icons/chevron-right.svg" alt="toggle price filter" class="icon icon-chevron" [class.is-open]="isFilterSectionOpen('price')">
+          </button>
+          <div class="filter-group-content" *ngIf="isFilterSectionOpen('price')">
+            <div *ngFor="let priceRange of availablePriceRanges" class="filter-checkbox-item">
+              <label class="custom-checkbox-label">
+                <input type="checkbox" class="native-checkbox-hidden" [(ngModel)]="selectedPriceRanges[priceRange.id]" (ngModelChange)="applyFilters()">
+                <span class="custom-checkbox-display">
+                  <img src="assets/icons/check.svg" class="custom-checkbox-checkmark" *ngIf="selectedPriceRanges[priceRange.id]">
+                </span>
+                <span class="custom-checkbox-text">{{ (priceRange.labelTranslationKey | translate) || priceRange.id }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags Filter -->
+        <div class="filter-group">
+          <button class="filter-group-toggle" (click)="toggleFilterSection('tags')">
+            <h3 class="filter-group-title">{{ tKeys.SF_CATEGORY_FILTER_TAGS | translate }}</h3>
+            <img src="assets/icons/chevron-right.svg" alt="toggle tags filter" class="icon icon-chevron" [class.is-open]="isFilterSectionOpen('tags')">
+          </button>
+          <div class="filter-group-content" *ngIf="isFilterSectionOpen('tags')">
+            <div *ngFor="let tag of availableTags" class="filter-checkbox-item">
+              <label class="custom-checkbox-label">
+                <input type="checkbox" class="native-checkbox-hidden" [(ngModel)]="selectedTags[tag.value]" (ngModelChange)="applyFilters()">
+                <span class="custom-checkbox-display">
+                  <img src="assets/icons/check.svg" class="custom-checkbox-checkmark" *ngIf="selectedTags[tag.value]">
+                </span>
+                <span class="custom-checkbox-text">{{ tag.translationKey | translate }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colors Filter -->
+        <div class="filter-group">
+          <button class="filter-group-toggle" (click)="toggleFilterSection('colors')">
+            <h3 class="filter-group-title">{{ tKeys.SF_CATEGORY_FILTER_COLORS | translate }}</h3>
+            <img src="assets/icons/chevron-right.svg" alt="toggle colors filter" class="icon icon-chevron" [class.is-open]="isFilterSectionOpen('colors')">
+          </button>
+          <div class="filter-group-content" *ngIf="isFilterSectionOpen('colors')">
+            <div *ngFor="let color of availableColors" class="filter-checkbox-item">
+              <label class="custom-checkbox-label">
+                <input type="checkbox" class="native-checkbox-hidden" [(ngModel)]="selectedColors[color.value]" (ngModelChange)="applyFilters()">
+                <span class="custom-checkbox-display color-swatch-checkbox" [style.backgroundColor]="color.colorHex" [class.is-white]="color.value === 'White'">
+                  <img src="assets/icons/check.svg" class="custom-checkbox-checkmark" *ngIf="selectedColors[color.value]" [class.checkmark-dark]="color.value !== 'Black'">
+                </span>
+                <span class="custom-checkbox-text">{{ color.translationKey | translate }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sizes Filter -->
+        <div class="filter-group">
+          <button class="filter-group-toggle" (click)="toggleFilterSection('sizes')">
+            <h3 class="filter-group-title">{{ tKeys.SF_CATEGORY_FILTER_SIZES | translate }}</h3>
+            <img src="assets/icons/chevron-right.svg" alt="toggle sizes filter" class="icon icon-chevron" [class.is-open]="isFilterSectionOpen('sizes')">
+          </button>
+          <div class="filter-group-content" *ngIf="isFilterSectionOpen('sizes')">
+            <div *ngFor="let size of availableSizes" class="filter-checkbox-item">
+              <label class="custom-checkbox-label">
+                <input type="checkbox" class="native-checkbox-hidden" [(ngModel)]="selectedSizes[size.value]" (ngModelChange)="applyFilters()">
+                <span class="custom-checkbox-display">
+                  <img src="assets/icons/check.svg" class="custom-checkbox-checkmark" *ngIf="selectedSizes[size.value]">
+                </span>
+                <span class="custom-checkbox-text">{{ size.translationKey | translate }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button class="button button-clear-filters" (click)="clearFilters()">{{ tKeys.SF_CATEGORY_BUTTON_CLEAR_ALL_FILTERS | translate }}</button>
+      </aside>
+    </div>
+
+    <!-- Main Product Listing Area -->
+    <main class="product-listing-area animate-main-content">
+      <!-- Product Grid -->
+      <div class="product-grid-container animate-product-grid">
+        <ng-container *ngIf="products$ | async as products; else loadingProducts">
+          <div class="product-grid" *ngIf="products.length > 0; else noProducts">
+            <app-featured-product-card
+              *ngFor="let product of products"
+              [product]="product"
+              (addToCart)="onAddToCart($event)"
+            ></app-featured-product-card>
+          </div>
+          <ng-template #noProducts>
+            <p class="no-products-message">{{ tKeys.SF_CATEGORY_NO_PRODUCTS_FOUND | translate }}</p>
+          </ng-template>
+        </ng-container>
+        <ng-template #loadingProducts>
+          <p class="loading-message">{{ tKeys.SF_CATEGORY_LOADING_PRODUCTS | translate }}</p>
+        </ng-template>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container animate-pagination" *ngIf="{ total: totalProducts$ | async, page: page$ | async, products: products$ | async } as paginationData">
+        <ng-container *ngIf="paginationData.products && paginationData.products.length > 0 && paginationData.page !== null">
+          <div class="pagination">
+            <!-- Previous Arrow -->
+            <button
+              class="pagination-arrow pagination-arrow-prev"
+              [disabled]="paginationData.page === 1"
+              (click)="onPageChange((paginationData.page || 1) - 1)"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 8L5 8M5 8L8 5M5 8L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+
+            <!-- Page Numbers -->
+            <ng-container *ngFor="let pageNum of pageNumbers()">
+              <button
+                class="pagination-page"
+                [class.is-active]="pageNum === paginationData.page"
+                (click)="onPageChange(pageNum)"
+              >
+                {{ pageNum }}
+              </button>
+            </ng-container>
+
+            <!-- Next Arrow -->
+            <button
+              class="pagination-arrow pagination-arrow-next"
+              [disabled]="paginationData.page >= totalPages()"
+              (click)="onPageChange((paginationData.page || 1) + 1)"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 8H11M11 8L8 5M11 8L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </main>
+  </div> <!-- End .content-container -->
+</div> <!-- End .page-wrapper -->

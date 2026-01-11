@@ -1,23 +1,19 @@
 import {
   Component,
-  OnInit,
-  AfterViewInit,
-  OnDestroy,
-  OnChanges,
-  SimpleChanges,
-  ViewChild,
-  ElementRef,
-  Input,
   inject,
+  OnInit,
+  OnDestroy,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { Observable, Subject, fromEvent, of } from 'rxjs';
-import { debounceTime, switchMap, take, takeUntil } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
 
 import { Category } from '@shared-types';
 import { ApiService } from '../../../core/services/api.service';
 import { StoreContextService } from '../../../core/services/store-context.service';
+import { CategoryDropdownService } from '../../../core/services/category-dropdown.service';
 
 @Component({
   selector: 'app-category-navigation',
@@ -26,186 +22,91 @@ import { StoreContextService } from '../../../core/services/store-context.servic
   templateUrl: './category-navigation.component.html',
   styleUrls: ['./category-navigation.component.scss'],
 })
-export class CategoryNavigationComponent
-  implements OnInit, AfterViewInit, OnDestroy, OnChanges
-{
-  @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLElement>;
-  @ViewChild('navList') navList!: ElementRef<HTMLElement>;
-  @Input() currentCategoryId?: string;
+export class CategoryNavigationComponent implements OnInit, OnDestroy {
+  isOpen = false;
+  currentCategoryId?: string;
 
   categories$!: Observable<Category[]>;
   categories: Category[] = [];
-
-  hasOverflow = false;
-  canScrollLeft = false;
-  canScrollRight = false;
-  scrollProgress = 0;
+  storeSlug: string | null = null;
 
   private destroy$ = new Subject<void>();
-  private listenersInitialized = false;
-
   private apiService = inject(ApiService);
   private storeContext = inject(StoreContextService);
   private router = inject(Router);
-
-  /* ----------------------------------
-   * Lifecycle
-   * ---------------------------------- */
+  private categoryDropdownService = inject(CategoryDropdownService);
 
   ngOnInit(): void {
     this.categories$ = this.storeContext.currentStoreSlug$.pipe(
-      switchMap((slug) =>
-        slug ? this.apiService.getStoreCategories(slug) : of([])
-      )
+      switchMap((slug) => {
+        this.storeSlug = slug;
+        return slug ? this.apiService.getStoreCategories(slug) : of([]);
+      }),
+      takeUntil(this.destroy$)
     );
 
-    this.categories$.pipe(takeUntil(this.destroy$)).subscribe((categories) => {
+    this.categories$.subscribe((categories) => {
       this.categories = categories;
-      this.resetScroll();
-      this.updateAfterRender();
     });
-  }
 
-  ngAfterViewInit(): void {
-    this.initScrollListeners();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['currentCategoryId']?.currentValue) {
-      this.scrollToActiveCategory();
-    }
+    // Subscribe to dropdown state from service
+    this.categoryDropdownService.dropdownState.pipe(takeUntil(this.destroy$)).subscribe((isOpen) => {
+      this.isOpen = isOpen;
+      if (isOpen) {
+        this.disableBodyScroll();
+      } else {
+        this.enableBodyScroll();
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    // Ensure body scroll is enabled when component is destroyed
+    this.enableBodyScroll();
   }
 
-  /* ----------------------------------
-   * Navigation
-   * ---------------------------------- */
-
-  onCategoryClick(category: Category): void {
-    this.storeContext.currentStoreSlug$.pipe(take(1)).subscribe((slug) => {
-      if (slug) {
-        this.router.navigate([`/${slug}/category`, category.id]);
-      }
-    });
-  }
-
-  trackByCategoryId(_: number, category: Category): string {
-    return category.id;
-  }
-
-  /* ----------------------------------
-   * Scroll handling
-   * ---------------------------------- */
-
-  scroll(direction: 'left' | 'right'): void {
-    if (!this.scrollContainer || !this.hasOverflow) return;
-
-    const offset = direction === 'left' ? -200 : 200;
-    this.scrollContainer.nativeElement.scrollBy({
-      left: offset,
-      behavior: 'smooth',
-    });
-
-    this.defer(() => this.updateScrollMetrics());
-  }
-
-  private initScrollListeners(): void {
-    if (this.listenersInitialized || !this.scrollContainer) return;
-
-    const container = this.scrollContainer.nativeElement;
-
-    fromEvent(container, 'scroll')
-      .pipe(debounceTime(100), takeUntil(this.destroy$))
-      .subscribe(() => this.updateScrollMetrics());
-
-    fromEvent(window, 'resize')
-      .pipe(debounceTime(200), takeUntil(this.destroy$))
-      .subscribe(() => this.updateAfterRender());
-
-    this.listenersInitialized = true;
-  }
-
-  private updateAfterRender(): void {
-    this.defer(() => {
-      this.updateOverflowState();
-      this.updateScrollMetrics();
-    });
-  }
-
-  private updateOverflowState(): void {
-    if (!this.scrollContainer) return;
-
-    const { scrollWidth, clientWidth } = this.scrollContainer.nativeElement;
-
-    this.hasOverflow = scrollWidth > clientWidth + 1;
-
-    if (this.hasOverflow) {
-      this.applyScrollPadding();
+  // Handle Esc key to close dropdown
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.isOpen) {
+      this.onClose();
     }
   }
 
-  private updateScrollMetrics(): void {
-    if (!this.scrollContainer || !this.hasOverflow) return;
-
-    const el = this.scrollContainer.nativeElement;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-
-    this.canScrollLeft = el.scrollLeft > 1;
-    this.canScrollRight = el.scrollLeft < maxScroll - 1;
-    this.scrollProgress =
-      maxScroll > 0 ? Math.min((el.scrollLeft / maxScroll) * 100, 100) : 0;
+  // Handle click outside to close dropdown
+  @HostListener('document:click', ['$event'])
+  onClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const dropdownElement = document.querySelector('.category-navigation');
+    
+    if (this.isOpen && dropdownElement && !dropdownElement.contains(target)) {
+      this.onClose();
+    }
   }
 
-  private resetScroll(): void {
-    if (!this.scrollContainer) return;
-    this.scrollContainer.nativeElement.scrollLeft = 0;
+  // Featured categories for the images (first 2 categories with images)
+  get featuredCategories(): Category[] {
+    return this.categories.filter((cat) => cat.imageUrl).slice(0, 2);
   }
 
-  private scrollToActiveCategory(): void {
-    this.defer(() => {
-      if (!this.navList || !this.scrollContainer) return;
-
-      const links =
-        this.navList.nativeElement.querySelectorAll<HTMLElement>('.nav-link');
-
-      const activeIndex = Array.from(links).findIndex((el) =>
-        el.classList.contains('active')
-      );
-
-      if (activeIndex === -1) return;
-
-      if (activeIndex === links.length - 1) {
-        const container = this.scrollContainer.nativeElement;
-        container.scrollTo({
-          left: container.scrollWidth - container.clientWidth,
-          behavior: 'smooth',
-        });
-      } else {
-        links[activeIndex].scrollIntoView({
-          behavior: 'smooth',
-          inline: 'center',
-          block: 'nearest',
-        });
-      }
-
-      this.defer(() => this.updateScrollMetrics(), 600);
-    }, 500);
+  generateCategoryLink(categoryId: string): string[] {
+    if (this.storeSlug) {
+      return ['/', this.storeSlug, 'category', categoryId];
+    }
+    return ['/category', categoryId];
   }
 
-  /* ----------------------------------
-   * Utils
-   * ---------------------------------- */
-
-  private applyScrollPadding(): void {
-    this.scrollContainer.nativeElement.style.scrollPaddingInline = '3.5rem';
+  generateAllProductsLink(): string[] {
+    if (this.storeSlug) {
+      return ['/', this.storeSlug, 'products'];
+    }
+    return ['/products'];
   }
 
-  private defer(fn: () => void, delay = 300): void {
-    setTimeout(fn, delay);
+  onClose(): void {
+    this.categoryDropdownService.close();
   }
 
   onImageError(event: Event): void {
@@ -213,5 +114,17 @@ export class CategoryNavigationComponent
     img.src =
       'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5OTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
     img.onerror = null;
+  }
+
+  private disableBodyScroll(): void {
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+  }
+
+  private enableBodyScroll(): void {
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
   }
 }

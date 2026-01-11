@@ -1,5 +1,8 @@
 <app-header></app-header>
 
+<!-- Category Navigation Dropdown - outside header to avoid stacking context issues -->
+<app-category-navigation (close)="closeCategoryDropdown()"></app-category-navigation>
+
 <main style="overflow-x: hidden;">
   <router-outlet></router-outlet>
   <app-notification-toast></app-notification-toast>
