@@ -2,8 +2,20 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Observable, firstValueFrom, take, of, switchMap, map, catchError } from 'rxjs';
-import { CartService, CartState, CartItem } from '../../core/services/cart.service';
+import {
+  Observable,
+  firstValueFrom,
+  take,
+  of,
+  switchMap,
+  map,
+  catchError,
+} from 'rxjs';
+import {
+  CartService,
+  CartState,
+  CartItem,
+} from '../../core/services/cart.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { ApiService } from '../../core/services/api.service';
 import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
@@ -11,9 +23,6 @@ import { Product } from '@shared-types';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { T } from '@shared/i18n';
 import { TranslatePipe } from '@shared/i18n';
-import { NotificationService } from '../../core/services/notification.service';
-import { I18nService } from '@shared/i18n';
-
 
 @Component({
   selector: 'app-cart-page',
@@ -23,10 +32,10 @@ import { I18nService } from '@shared/i18n';
     RouterModule,
     FormsModule,
     ProductCardComponent,
-    TranslatePipe
+    TranslatePipe,
   ],
   templateUrl: './cart-page.component.html',
-  styleUrl: './cart-page.component.scss'
+  styleUrl: './cart-page.component.scss',
 })
 export class CartPageComponent implements OnInit {
   private cartService = inject(CartService);
@@ -35,17 +44,20 @@ export class CartPageComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private recentlyViewedService = inject(RecentlyViewedService);
-  private notificationService = inject(NotificationService);
-  private i18nService = inject(I18nService);
 
   public tKeys = T;
   promoCode: string = '';
-  appliedPromoCodeDetails: { code: string, discountAmount: number, message?: string } | null = null;
+  appliedPromoCodeDetails: {
+    code: string;
+    discountAmount: number;
+    message?: string;
+  } | null = null;
 
   // Expose the cart state observable directly to the template
   cartState$: Observable<CartState | null> = this.cartService.cartState$;
   // Expose the store slug observable
-  currentStoreSlug$: Observable<string | null> = this.storeContextService.currentStoreSlug$;
+  currentStoreSlug$: Observable<string | null> =
+    this.storeContextService.currentStoreSlug$;
   recentlyViewedProducts$: Observable<Product[]> = of([]);
   suggestedProducts$: Observable<Product[]> = of([]);
   newestProduct$: Observable<Product | null> = of(null);
@@ -63,18 +75,24 @@ export class CartPageComponent implements OnInit {
     //     })
     //   );
     // }
-    
+
     // Fetch featured products for "You may also like these" section
     this.suggestedProducts$ = this.apiService.getFeaturedProducts();
 
     // Fetch the newest product for the "New Product" section
-    this.newestProduct$ = this.apiService.getProducts({ sort: 'newest', limit: 1 }).pipe(
-      map(response => response.products && response.products.length > 0 ? response.products[0] : null),
-      catchError(error => {
-        console.error('[CartPage] Error fetching newest product:', error);
-        return of(null);
-      })
-    );
+    this.newestProduct$ = this.apiService
+      .getProducts({ sort: 'newest', limit: 1 })
+      .pipe(
+        map((response) =>
+          response.products && response.products.length > 0
+            ? response.products[0]
+            : null
+        ),
+        catchError((error) => {
+          console.error('[CartPage] Error fetching newest product:', error);
+          return of(null);
+        })
+      );
   }
   trackByProductId(index: number, item: CartItem): string {
     return item.product.id;
@@ -87,7 +105,10 @@ export class CartPageComponent implements OnInit {
 
   // Method to calculate cart subtotal
   calculateCartSubtotal(items: CartItem[]): number {
-    return items.reduce((sum, item) => sum + this.calculateItemSubtotal(item), 0);
+    return items.reduce(
+      (sum, item) => sum + this.calculateItemSubtotal(item),
+      0
+    );
   }
 
   // Method to calculate total
@@ -107,17 +128,21 @@ export class CartPageComponent implements OnInit {
 
     if (newQuantity === 0) {
       this.removeItem(item);
-    } else if (item.id) { // Ensure item ID exists
+    } else if (item.id) {
+      // Ensure item ID exists
       console.log('CartPage: Updating quantity for item:', item);
       console.log('CartPage: Item ID:', item.id);
       console.log('CartPage: Full item object:', JSON.stringify(item));
       this.cartService.updateItemQuantity(item.id, newQuantity).subscribe({
-        next: () => console.log('Quantity update request sent.'),
-        error: (err: any) => console.error('Error updating quantity:', err)
-        // State update is handled within the service
+        error: (error: any) => {
+          console.error('Error updating item quantity:', error);
+        },
       });
     } else {
-      console.error('Cannot update quantity, product ID missing from item:', item);
+      console.error(
+        'Cannot update quantity, product ID missing from item:',
+        item
+      );
     }
   }
 
@@ -135,11 +160,12 @@ export class CartPageComponent implements OnInit {
 
   // Method to handle removing an item
   removeItem(item: CartItem): void {
-    if (item?.id) { // Ensure product ID exists
+    if (item?.id) {
+      // Ensure product ID exists
       this.cartService.removeItem(item.id).subscribe({
-        next: () => console.log('Remove item request sent.'),
-        error: (err: any) => console.error('Error removing item:', err)
-        // State update is handled within the service
+        error: (error: any) => {
+          console.error('Error removing item from cart:', error);
+        },
       });
     } else {
       console.error('Cannot remove item, product ID missing from item:', item);
@@ -152,60 +178,72 @@ export class CartPageComponent implements OnInit {
       this.appliedPromoCodeDetails = {
         code: '',
         discountAmount: 0,
-        message: 'Please enter a promo code.'
+        message: 'Please enter a promo code.',
       };
       return;
     }
 
-    this.storeContextService.currentStoreSlug$.pipe(take(1)).subscribe(storeSlug => {
-      if (!storeSlug) {
-        console.error('Store slug is not available. Cannot apply promo code.');
-        this.appliedPromoCodeDetails = {
-          code: this.promoCode,
-          discountAmount: 0,
-          message: 'Error: Store context not found.'
-        };
-        return;
-      }
-
-      this.apiService.applyPromoCodeToCart(storeSlug, this.promoCode).subscribe({
-        next: (response: any) => {
-          // Assuming API response: { success: boolean, code: string, discountAmount: number, message?: string, newTotal?: number }
-          if (response && response.success) {
-            this.appliedPromoCodeDetails = {
-              code: response.code,
-              discountAmount: response.discountAmount,
-              message: response.message || `Promo code "${response.code}" applied successfully! You saved ${response.discountAmount}.`
-            };
-            this.promoCode = '';
-          } else {
-            this.appliedPromoCodeDetails = {
-              code: this.promoCode,
-              discountAmount: 0,
-              message: response.message || 'Invalid or expired promo code.'
-            };
-          }
-        },
-        error: (err: any) => {
-          console.error('Error applying promo code:', err);
+    this.storeContextService.currentStoreSlug$
+      .pipe(take(1))
+      .subscribe((storeSlug) => {
+        if (!storeSlug) {
+          console.error(
+            'Store slug is not available. Cannot apply promo code.'
+          );
           this.appliedPromoCodeDetails = {
             code: this.promoCode,
             discountAmount: 0,
-            message: 'Invalid or expired promo code. Please try again.'
+            message: 'Error: Store context not found.',
           };
+          return;
         }
+
+        this.apiService
+          .applyPromoCodeToCart(storeSlug, this.promoCode)
+          .subscribe({
+            next: (response: any) => {
+              // Assuming API response: { success: boolean, code: string, discountAmount: number, message?: string, newTotal?: number }
+              if (response && response.success) {
+                this.appliedPromoCodeDetails = {
+                  code: response.code,
+                  discountAmount: response.discountAmount,
+                  message:
+                    response.message ||
+                    `Promo code "${response.code}" applied successfully! You saved ${response.discountAmount}.`,
+                };
+                this.promoCode = '';
+              } else {
+                this.appliedPromoCodeDetails = {
+                  code: this.promoCode,
+                  discountAmount: 0,
+                  message: response.message || 'Invalid or expired promo code.',
+                };
+              }
+            },
+            error: (err: any) => {
+              console.error('Error applying promo code:', err);
+              this.appliedPromoCodeDetails = {
+                code: this.promoCode,
+                discountAmount: 0,
+                message: 'Invalid or expired promo code. Please try again.',
+              };
+            },
+          });
       });
-    });
   }
 
   // Proceed to checkout
   async proceedToCheckout(): Promise<void> {
     console.log('Proceeding to checkout...');
-    const storeSlug = await firstValueFrom(this.storeContextService.currentStoreSlug$);
+    const storeSlug = await firstValueFrom(
+      this.storeContextService.currentStoreSlug$
+    );
     if (storeSlug) {
       this.router.navigate(['/', storeSlug, 'checkout']);
     } else {
-      console.error('Store slug is not available. Cannot navigate to checkout.');
+      console.error(
+        'Store slug is not available. Cannot navigate to checkout.'
+      );
       this.router.navigate(['/']);
     }
   }
@@ -218,15 +256,9 @@ export class CartPageComponent implements OnInit {
   // Add suggested product to cart
   onAddSuggestedProductToCart(product: Product): void {
     this.cartService.addItem(product).subscribe({
-      next: () => {
-        this.notificationService.showSuccess(
-          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, 1, product.name)
-        );
-      },
       error: (error: any) => {
         console.error('Error adding suggested product to cart:', error);
-        this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
-      }
+      },
     });
   }
 }

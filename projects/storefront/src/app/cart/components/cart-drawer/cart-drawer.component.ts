@@ -5,16 +5,28 @@ import {
   OnInit,
   HostListener,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { Observable, Subscription, map } from 'rxjs';
-import { CurrencyPipe } from '@angular/common';
+import { Observable, map, Subject, takeUntil } from 'rxjs';
 
 import { CartService } from '../../../core/services/cart.service';
 import { CartDrawerService } from '../../../core/services/cart-drawer.service';
 import { StoreContextService } from '../../../core/services/store-context.service';
 import { Cart, CartItem } from '@shared-types';
 import { T, TranslatePipe } from '@shared/i18n';
+
+interface CartItemWithComputed extends CartItem {
+  computedImage: string;
+  computedPrice: number;
+  computedOriginalPrice?: number;
+}
+
+interface CartWithComputed extends Omit<Cart, 'items'> {
+  items: CartItemWithComputed[];
+  computedSubtotal: number;
+  computedDiscountAmount: number;
+  computedTotal: number;
+}
 
 @Component({
   selector: 'app-cart-drawer',
@@ -30,28 +42,52 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
   private cartDrawerService = inject(CartDrawerService);
   private storeContextService = inject(StoreContextService);
   private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
 
-  cart$: Observable<Cart | null> = this.cartService.cartState$;
+  cart$: Observable<CartWithComputed | null> = this.cartService.cartState$.pipe(
+    map((cart) => {
+      if (!cart || !cart.items) {
+        return null;
+      }
+      const itemsWithComputed = cart.items.map((item) => ({
+        ...item,
+        computedImage: item.product.imageUrls?.[0] ?? '',
+        computedPrice: item.price || item.product.price,
+        computedOriginalPrice:
+          item.price && item.price !== item.product.price
+            ? item.product.price
+            : undefined,
+      }));
+      const computedSubtotal = itemsWithComputed.reduce(
+        (sum, item) => sum + item.computedPrice * item.quantity,
+        0
+      );
+      const computedDiscountAmount = cart.discountAmount || 0;
+      const computedTotal = cart.grandTotal || computedSubtotal;
+      return {
+        ...cart,
+        items: itemsWithComputed,
+        computedSubtotal,
+        computedDiscountAmount,
+        computedTotal,
+      };
+    })
+  );
   itemCount$: Observable<number> = this.cartService.getItemCount();
   isOpen$: Observable<boolean> = this.cartDrawerService.isOpen$;
 
-  private subscriptions: Subscription[] = [];
+  private destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.subscriptions.push(
-      this.isOpen$.subscribe((isOpen) => {
-        if (isOpen) {
-          document.body.style.overflow = 'hidden';
-        } else {
-          document.body.style.overflow = 'unset';
-        }
-      })
-    );
+    this.isOpen$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isOpen) => {
+        document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+      });
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.destroy$.next();
+    this.destroy$.complete();
     document.body.style.overflow = 'unset';
   }
 
@@ -66,42 +102,50 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
     this.cartDrawerService.close();
   }
 
+  trackByItemId(index: number, item: CartItem): string {
+    return item.id;
+  }
+
   incrementQuantity(item: CartItem): void {
-    this.cartService
-      .updateItemQuantity(item.product.id, item.quantity + 1)
-      .subscribe();
+    this.cartService.updateItemQuantity(item.id, item.quantity + 1).subscribe({
+      error: (error: any) => {
+        console.error('Error updating item quantity:', error);
+      },
+    });
   }
 
   decrementQuantity(item: CartItem): void {
     if (item.quantity > 1) {
       this.cartService
-        .updateItemQuantity(item.product.id, item.quantity - 1)
-        .subscribe();
+        .updateItemQuantity(item.id, item.quantity - 1)
+        .subscribe({
+          error: (error: any) => {
+            console.error('Error updating item quantity:', error);
+          },
+        });
     }
   }
 
   removeItem(productId: string): void {
-    this.cartService.removeItem(productId).subscribe();
+    this.cartService.removeItem(productId).subscribe({
+      error: (error: any) => {
+        console.error('Error removing item from cart:', error);
+      },
+    });
   }
 
   navigateToCart(): void {
     this.closeDrawer();
     const storeSlug = this.storeContextService.getCurrentStoreSlug();
-    if (storeSlug) {
-      this.router.navigate(['/', storeSlug, 'cart']);
-    } else {
-      this.router.navigate(['/cart']);
-    }
+    this.router.navigate(storeSlug ? ['/', storeSlug, 'cart'] : ['/cart']);
   }
 
   navigateToCheckout(): void {
     this.closeDrawer();
     const storeSlug = this.storeContextService.getCurrentStoreSlug();
-    if (storeSlug) {
-      this.router.navigate(['/', storeSlug, 'checkout']);
-    } else {
-      this.router.navigate(['/checkout']);
-    }
+    this.router.navigate(
+      storeSlug ? ['/', storeSlug, 'checkout'] : ['/checkout']
+    );
   }
 
   navigateToProducts(): void {
@@ -109,40 +153,4 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  getSubtotal(cart: Cart | null): number {
-    if (!cart || !cart.items) return 0;
-    return cart.items.reduce(
-      (sum, item) => sum + (item.price || item.product.price) * item.quantity,
-      0
-    );
-  }
-
-  getDiscountAmount(cart: Cart | null): number {
-    if (!cart) return 0;
-    return cart.discountAmount || 0;
-  }
-
-  getTotal(cart: Cart | null): number {
-    if (!cart) return 0;
-    return cart.grandTotal || this.getSubtotal(cart);
-  }
-
-  getProductImage(item: CartItem): string {
-    if (item.product.imageUrls && item.product.imageUrls.length > 0) {
-      return item.product.imageUrls[0];
-    }
-    return '';
-  }
-
-  getProductPrice(item: CartItem): number {
-    return item.price || item.product.price;
-  }
-
-  getOriginalPrice(item: CartItem): number | undefined {
-    // If the item has a different price than the product price, treat it as a discount
-    if (item.price && item.price !== item.product.price) {
-      return item.product.price;
-    }
-    return undefined;
-  }
 }

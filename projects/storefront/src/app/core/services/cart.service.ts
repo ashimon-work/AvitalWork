@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, tap, catchError, throwError, map, first, S
 import { Product, Cart, CartItem } from '@shared-types';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service'; // For login/logout events
+import { CartDrawerService } from './cart-drawer.service';
 // Removed incorrect NestJS Logger import
 
 export { type CartItem, type Cart as CartState } from '@shared-types';
@@ -36,7 +37,8 @@ export class CartService {
 
   constructor(
     private apiService: ApiService,
-    private authService: AuthService // Inject AuthService
+    private authService: AuthService, // Inject AuthService
+    private cartDrawerService: CartDrawerService // Inject CartDrawerService
   ) {
     this.guestCartId = localStorage.getItem(this.GUEST_CART_ID_KEY);
     this.loadInitialCart(this.guestCartId);
@@ -134,6 +136,7 @@ export class CartService {
         this._updateStateFromBackendCart(response);
         console.log(`Item added successfully. New state updated.`);
         this.itemAddedSource.next();
+        this.cartDrawerService.open(); // Open cart drawer when item is added
       }),
       catchError(error => {
         console.error('Error adding item to cart:', error);
