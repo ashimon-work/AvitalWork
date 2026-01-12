@@ -30,12 +30,10 @@
           </button>
         </div>
         <div class="checkout-page__grid-left">
-          <div class="sticky-container">
           <app-order-summary-card 
             [items]="orderItems" 
             [shipping]="selectedShippingMethod?.cost || 0">
            </app-order-summary-card>  
-          </div>
         </div>
       </div>
     </div>

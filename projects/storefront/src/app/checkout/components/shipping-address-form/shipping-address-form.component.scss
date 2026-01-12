@@ -7,7 +7,6 @@
   margin-right: 1rem;
 
   &__title {
-  font-family: 'Heebo', sans-serif;
   margin-top:-1rem;
   color:#000000;
   font-size: 1.25rem;
@@ -35,9 +34,10 @@
 .custom-input {
   width: 100%;
   padding: 1.3rem 1.3rem;
-  font-family: 'Heebo', sans-serif;
   border: 1px solid #e5e7eb;
   background-color: #ffffff;
+          font-family: inherit;
+
   color: #111827;
   border-radius: 0.75rem;
   font-size: 1rem;
@@ -47,8 +47,9 @@
   &::placeholder {
     color: #6b7280;
     text-align: right;
-    font-family: 'Heebo', sans-serif;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    font-family: inherit;
+
   }
 
   &:focus {
