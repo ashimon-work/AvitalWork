@@ -7,9 +7,7 @@
   <router-outlet></router-outlet>
   <app-notification-toast></app-notification-toast>
 </main>
-<!-- Cart Notification -->
-<div *ngIf="showCartNotification" class="cart-notification">
-  {{ tKeys.SF_CART_NOTIFICATION_ITEM_ADDED | translate }}
-</div>
+
+<app-cart-drawer></app-cart-drawer>
 
 <app-footer></app-footer>
