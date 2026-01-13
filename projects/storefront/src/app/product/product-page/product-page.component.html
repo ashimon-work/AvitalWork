@@ -24,7 +24,7 @@
       <h1 class="product-name">{{ product.name }}</h1>
 
       <!-- Price - Use currentPrice which updates with variant selection -->
-      <p class="product-price">{{ currentPrice | currency }}</p>
+      <p class="product-price">{{ currentPrice | formatCurrency() }}</p>
 
       <!-- Average Rating Display -->
       <div class="product-rating">

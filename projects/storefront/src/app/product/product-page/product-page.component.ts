@@ -503,4 +503,10 @@ export class ProductPageComponent implements OnInit {
       }
     });
   }
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('he-IL', {
+      style: 'currency',
+      currency: 'ILS',
+    }).format(amount);
+  }
 }

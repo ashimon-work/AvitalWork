@@ -28,7 +28,7 @@
                   item.product.name }}</a>
                 <!-- Display selected variants later if applicable -->
               </td>
-              <td class="item-price">{{ item.product.price | currency }}</td>
+              <td class="item-price">{{ item.product.price | formatCurrency() }}</td>
               <td class="item-quantity">
                 <div class="quantity-control">
                   <button (click)="decrementQuantity(item)" [disabled]="item.quantity <= 1"
@@ -47,7 +47,7 @@
                   </button>
                 </div>
               </td>
-              <td class="item-subtotal">{{ calculateItemSubtotal(item) | currency }}</td>
+              <td class="item-subtotal">{{ calculateItemSubtotal(item) | formatCurrency() }}</td>
               <td class="item-remove">
                 <button (click)="removeItem(item)" class="remove-item-btn"
                   [title]="tKeys.SF_CART_REMOVE_ITEM_TITLE | translate"
@@ -76,7 +76,7 @@
         <div class="summary-content">
           <div class="summary-row">
             <span>{{ tKeys.SF_CART_SUBTOTAL_HEADER | translate }}:</span>
-            <span>{{ calculateCartSubtotal(cartState.items) | currency }}</span>
+            <span>{{ calculateCartSubtotal(cartState.items) | formatCurrency() }}</span>
           </div>
           <div class="summary-row">
             <span>{{ tKeys.SF_CART_SHIPPING_LABEL | translate }}</span>
@@ -104,14 +104,14 @@
 
           <div class="summary-row" *ngIf="appliedPromoCodeDetails && appliedPromoCodeDetails.discountAmount > 0">
             <span>{{ tKeys.SF_CART_DISCOUNT_LABEL | translate:appliedPromoCodeDetails.code }}</span>
-            <span>- {{ appliedPromoCodeDetails.discountAmount | currency }}</span>
+            <span>- {{ appliedPromoCodeDetails.discountAmount | formatCurrency() }}</span>
           </div>
           <hr class="summary-separator" *ngIf="appliedPromoCodeDetails && appliedPromoCodeDetails.discountAmount > 0">
 
           <div class="summary-row total">
             <span>{{ tKeys.SF_CART_TOTAL_LABEL | translate }}</span>
             <span>{{ (calculateCartSubtotal(cartState.items) - (appliedPromoCodeDetails?.discountAmount || 0)) |
-              currency }}</span>
+                formatCurrency() }}</span>
           </div>
         </div>
         <div class="summary-footer">

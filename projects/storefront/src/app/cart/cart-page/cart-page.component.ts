@@ -95,10 +95,10 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
       this.removeItem(item);
     } else if (item.product?.id) { // Ensure product ID exists
       this.cartService.updateItemQuantity(item.product.id, newQuantity).subscribe({
-         next: () => console.log('Quantity update request sent.'),
-         error: (err) => console.error('Error updating quantity:', err)
-         // State update is handled within the service
-       });
+        next: () => console.log('Quantity update request sent.'),
+        error: (err) => console.error('Error updating quantity:', err)
+        // State update is handled within the service
+      });
     } else {
       console.error('Cannot update quantity, product ID missing from item:', item);
     }
@@ -127,12 +127,12 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
   removeItem(item: CartItem): void {
     if (item.product?.id) { // Ensure product ID exists
       this.cartService.removeItem(item.product.id).subscribe({
-         next: () => console.log('Remove item request sent.'),
-         error: (err) => console.error('Error removing item:', err)
-         // State update is handled within the service
-       });
+        next: () => console.log('Remove item request sent.'),
+        error: (err) => console.error('Error removing item:', err)
+        // State update is handled within the service
+      });
     } else {
-       console.error('Cannot remove item, product ID missing from item:', item);
+      console.error('Cannot remove item, product ID missing from item:', item);
     }
   }
 
@@ -236,5 +236,11 @@ export class CartPageComponent implements OnInit { // Implemented OnInit
     console.log('Navigate to all recently viewed products page - TBD');
     // Example: this.router.navigate(['/', storeSlug, 'products', 'recently-viewed']);
     // This would require a new route and component.
+  }
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('he-IL', {
+      style: 'currency',
+      currency: 'ILS',
+    }).format(amount);
   }
 }
