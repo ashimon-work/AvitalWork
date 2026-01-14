@@ -15,21 +15,21 @@
   </div>
 
 <div class="shipping-form__section">
-  <h2 class="shipping-form__title">כתובת</h2>
+  <h2 class="shipping-form__title">{{ tKeys.SF_CHECKOUT_SHIPPING_ADDRESS_TITLE | translate }}</h2>
   <div class="shipping-form__grid">
     
     <div class="shipping-form__grid-item">
-      <input class="custom-input" formControlName="address1" placeholder="כתובת (רחוב ומספר בית)" />
+      <input class="custom-input" formControlName="address1" placeholder="{{ tKeys.SF_CHECKOUT_ADDRESS_LABEL | translate }}" />
     </div>
     <div class="shipping-form__grid-item">
-      <input class="custom-input" formControlName="address2" placeholder="דירה, כניסה, קומה (אופציונלי)" />
+      <input class="custom-input" formControlName="address2" placeholder="{{ tKeys.SF_CHECKOUT_ADDRESS_LINE2_LABEL | translate }}" />
     </div>
     
     <div class="shipping-form__grid-item">
-      <input class="custom-input" formControlName="city" placeholder="עיר" />
+      <input class="custom-input" formControlName="city" placeholder="{{ tKeys.SF_CHECKOUT_CITY_LABEL | translate }}" />
     </div>
     <div class="shipping-form__grid-item">
-      <input class="custom-input" formControlName="zip" placeholder="מיקוד" />
+      <input class="custom-input" formControlName="zip" placeholder="{{ tKeys.SF_CHECKOUT_ZIP_CODE_LABEL | translate }}" />
     </div>
 
   </div>

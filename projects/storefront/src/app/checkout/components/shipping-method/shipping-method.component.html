@@ -1,5 +1,5 @@
 <section class="shipping-method" dir="rtl">
-  <h2 class="shipping-method__title">שיטת משלוח</h2>
+  <h2 class="shipping-method__title">{{ tKeys.SF_CHECKOUT_SHIPPING_METHOD_TITLE | translate }}</h2>
   
   <div class="shipping-method__options">
     <div *ngFor="let method of shippingMethods"
@@ -19,7 +19,7 @@
       </div>
 
       <span class="shipping-method__option-cost">
-        {{ method.cost === 0 ? 'חינם' : (method.cost | currency:'ILS':'symbol':'1.2-2') }}
+        {{ method.cost === 0 ? (tKeys.SF_ACCOUNT_ORDER_DETAIL_SHIPPING_FREE_TEXT | translate) : (method.cost | currency:'ILS':'symbol':'1.2-2') }}
       </span>
     </div>
   </div>

@@ -1,6 +1,6 @@
 <div class="payment-wrapper" dir="rtl">
-  <h2 class="section-title">תשלום</h2>
-  <span class="section-subtitle">כרטיסים שמורים</span>
+  <h2 class="section-title">{{ tKeys.SF_CHECKOUT_PAYMENT_TITLE | translate }}</h2>
+  <span class="section-subtitle">{{ tKeys.SF_CHECKOUT_SAVED_CARDS_TITLE | translate }}</span>
   <div class="payment-options-list">
     
     <div *ngFor="let card of $any(storedCard); let i = index" 
@@ -22,7 +22,7 @@
       <div class="radio-circle">
         <div class="radio-dot" *ngIf="isModalOpen"></div>
       </div>
-      <span class="pill-label">השתמש בכרטיס חדש</span>
+      <span class="pill-label">{{ tKeys.SF_CHECKOUT_ADD_NEW_CARD_TITLE | translate }}</span>
     </div>
 
   </div>
@@ -32,7 +32,7 @@
 <div class="pill-container pill-container--input">
       <input type="text" 
              class="clean-input" 
-             placeholder="מספר כרטיס "
+             [placeholder]=" tKeys.SF_CHECKOUT_CARD_NUMBER_PLACEHOLDER | translate"
              maxlength="16"
              inputmode="numeric"
              oninput="this.value = this.value.replace(/[^0-9]/g, '')">
@@ -42,7 +42,7 @@
       <div class="pill-container pill-container--input">
         <input type="text" 
                class="clean-input" 
-               placeholder="חודש"
+               [placeholder]=" tKeys.SF_CHECKOUT_EXPIRY_MONTH_PLACEHOLDER | translate"
                maxlength="2"
                inputmode="numeric"
                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
@@ -51,7 +51,7 @@
       <div class="pill-container pill-container--input">
         <input type="text" 
                class="clean-input" 
-               placeholder="שנה"
+               [placeholder]=" tKeys.SF_CHECKOUT_EXPIRY_YEAR_PLACEHOLDER | translate"
                maxlength="2"
                inputmode="numeric"
                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
@@ -60,7 +60,7 @@
       <div class="pill-container pill-container--input">
         <input type="text" 
                class="clean-input" 
-               placeholder="CVC"
+               [placeholder]=" tKeys.SF_CHECKOUT_CVV_PLACEHOLDER | translate"
                maxlength="4"
                inputmode="numeric"
                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
@@ -77,17 +77,17 @@
     <svg *ngIf="saveCardRef.checked" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
   </div>
   
-  <span class="checkbox-label">שמור כרטיס זה לרכישות עתידיות</span>
+  <span class="checkbox-label">{{ tKeys.SF_CHECKOUT_SAVE_CARD_LABEL | translate }}</span>
 </div>
 </div>
   <div class="billing-section">
-    <h2 class="section-title">כתובת חיוב</h2>
+    <h2 class="section-title">{{ tKeys.SF_CHECKOUT_BILLING_ADDRESS_TITLE | translate }}</h2>
     
     <div class="checkbox-line" (click)="showBillingForm = !showBillingForm">
       <div class="custom-v-check" [class.active]="!showBillingForm">
         <svg *ngIf="!showBillingForm" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
-      <label class="checkbox-label">כתובת חיוב זהה לכתובת משלוח</label>
+      <label class="checkbox-label">{{ tKeys.SF_CHECKOUT_BILLING_SAME_AS_SHIPPING_LABEL | translate }}</label>
     </div>
 
     <div *ngIf="showBillingForm" class="billing-form-container">
