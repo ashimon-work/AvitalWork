@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core'; // Added OnDestroy, inject
+import { Component, OnInit, OnDestroy, inject ,Input} from '@angular/core'; // Added OnDestroy, inject
 import { Observable, Subscription } from 'rxjs'; // Added Subscription
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router } from '@angular/router';
 import { T, TranslatePipe } from '@shared/i18n';
 import { HeaderComponent } from './core/components/header/header.component';
 import { FooterComponent } from './core/components/footer/footer.component';
@@ -16,7 +16,8 @@ import { NotificationToastComponent } from './shared/components/notification-toa
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit, OnDestroy { // Implemented OnDestroy
+export class AppComponent implements OnInit, OnDestroy {
+  constructor(private router: Router) { } // Implemented OnDestroy
   public tKeys = T;
   isAuthenticated$!: Observable<boolean>;
   showCartNotification = false;
@@ -27,8 +28,10 @@ export class AppComponent implements OnInit, OnDestroy { // Implemented OnDestro
   private cartService = inject(CartService); // Using inject
 
   // Removed constructor injection, using inject() instead
-
+  @Input() variant: 'transparent' | 'light' | 'dark' = 'transparent';
   ngOnInit(): void {
+    
+  
     this.isAuthenticated$ = this.authService.isAuthenticated$;
 
     // Subscribe to item added events
@@ -45,7 +48,19 @@ export class AppComponent implements OnInit, OnDestroy { // Implemented OnDestro
       }, 2000);
     });
   }
+  getHeaderVariant(): 'transparent' | 'light' | 'dark' {
+    const currentUrl = this.router.url;
 
+    // Handle store slugs in URL
+    const urlParts = currentUrl.split('/');
+    const pathWithoutStore = urlParts.length > 2 ? '/' + urlParts.slice(2).join('/') : currentUrl;
+
+    if (pathWithoutStore === '/' || pathWithoutStore === '/about') {
+      return 'transparent';
+    } else {
+      return 'light';
+    }
+  }
   ngOnDestroy(): void {
     // Unsubscribe to prevent memory leaks
     if (this.itemAddedSubscription) {

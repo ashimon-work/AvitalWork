@@ -48,7 +48,12 @@ export class CarouselComponent implements OnInit, OnDestroy {
   private readonly transitionDurationMs = 500; // Match CSS transition duration
 
   // Remove ngOnChanges as slides are no longer an Input
-
+  scrollToFeaturedProducts(): void {
+    const element = document.querySelector('.featured-products');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
   ngOnInit(): void {
     console.log('ngOnInit called');
     this.fetchSlides();
@@ -141,7 +146,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
 
       }, this.transitionDurationMs); // Wait for CSS transition
     } else {
-       console.log('Moved to index:', this.currentSlideIndex);
+      console.log('Moved to index:', this.currentSlideIndex);
     }
     // Don't restart autoplay here, let the interval handle it or manual interaction
   }
@@ -176,9 +181,9 @@ export class CarouselComponent implements OnInit, OnDestroy {
 
       }, this.transitionDurationMs); // Wait for CSS transition to complete
     } else {
-       console.log('Moved to index:', this.currentSlideIndex);
+      console.log('Moved to index:', this.currentSlideIndex);
     }
-     // Don't restart autoplay here, let the interval handle it or manual interaction
+    // Don't restart autoplay here, let the interval handle it or manual interaction
   }
 
   // Calculate the transform style for the slides wrapper

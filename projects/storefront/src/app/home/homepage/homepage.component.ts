@@ -47,7 +47,11 @@ export class HomepageComponent {
   showErrorMessage = false;
   successMessage = '';
   errorMessage = '';
+  showAll = false; // משתנה ששולט בתצוגה
 
+  toggleShowAll() {
+    this.showAll = !this.showAll;
+  }
   constructor() {
     console.log('<<<<< HomepageComponent Constructor Start >>>>>'); // Add this very first line
     console.log('[HomepageComponent] Fetching featured categories...');
@@ -58,7 +62,7 @@ export class HomepageComponent {
         return of([]);
       })
     );
-
+   
     this.featuredProducts$ = this.apiService.getFeaturedProducts();
     this.carouselSlides$ = this.apiService.getCarouselImages().pipe(startWith([]));
     

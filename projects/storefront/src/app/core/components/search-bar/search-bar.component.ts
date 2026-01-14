@@ -48,7 +48,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     private storeContext: StoreContextService,
     private elementRef: ElementRef // Injected ElementRef
   ) {}
-
+ 
   ngOnInit(): void {
     const searchResults$: Observable<SearchResultItem[]> = this.searchTerms.pipe(
       debounceTime(300),
@@ -105,7 +105,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       this.activeSuggestionIndex = -1;
     });
   }
-
+  
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
     this.destroy$.next();

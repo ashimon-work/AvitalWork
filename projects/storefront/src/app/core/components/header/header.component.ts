@@ -1,23 +1,21 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core'; // Removed inject, ElementRef, HostListener
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core'; // Removed inject, ElementRef, HostListener
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 // FormsModule, ReactiveFormsModule removed as search is delegated
 import { Observable, Subscription, of, firstValueFrom } from 'rxjs'; // Removed Subject, fromEvent, operators not needed by header
 import { map } from 'rxjs/operators'; // Keep map if used by other parts
-
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
-
+import { HostListener } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { StoreContextService } from '../../services/store-context.service';
 import { AuthService } from '../../services/auth.service';
 // ApiService removed, SearchBarComponent will use it
 import { SearchBarComponent } from '../search-bar/search-bar.component'; // Import SearchBarComponent
-
 interface NavLink {
   label: string;
   pathSegments: string[];
@@ -39,13 +37,18 @@ interface NavLink {
     MatSidenavModule,
     MatListModule,
     MatBadgeModule,
-    SearchBarComponent // Add SearchBarComponent here
+    SearchBarComponent,
     // FormsModule, ReactiveFormsModule removed
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  @Input() variant: 'transparent' | 'light' | 'dark' = 'transparent'; // <--- הוסף כאן
+  isScrolled = false;
+  shopOpen = false;
+  
+
   @ViewChild('mobileDrawer') mobileDrawer!: MatSidenav;
 
   public storeSlug$: Observable<string | null>;
@@ -65,9 +68,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public NAV_LINKS: NavLink[] = [
     { label: 'Home', pathSegments: [], isStoreSpecific: true, key: 'home', exact: true },
-    { label: 'About Us', pathSegments: ['about'], isStoreSpecific: true, key: 'about' },
     { label: 'Contact', pathSegments: ['contact'], isStoreSpecific: true, key: 'contact' },
+    { label: 'About', pathSegments: ['about'], isStoreSpecific: true, key: 'about' },
   ];
+  isSearchOpen = false;
 
   constructor(
     private router: Router,
@@ -76,6 +80,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService
     // ElementRef and ApiService removed
   ) {
+
     this.storeSlug$ = this.storeContext.currentStoreSlug$;
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     this.userProfileImageUrl$ = this.authService.currentUser$.pipe(map(user => user?.profilePictureUrl || null));
@@ -92,12 +97,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Search-related subscriptions removed
   }
-
+  @HostListener('window:scroll')
+  onScroll() {
+    this.isScrolled = window.scrollY > 20;
+  }
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
     // destroy$ for search removed
   }
-
+  toggleCard() {
+    this.isSearchOpen = !this.isSearchOpen;
+  }
   generateRouterLink(link: NavLink, slug: string | null | undefined): string[] {
     if (link.isStoreSpecific) {
       if (slug) {
@@ -139,7 +149,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   async onLogoClick(): Promise<void> {
     const slug = await firstValueFrom(this.storeSlug$);
     this.router.navigate(slug ? ['/', slug] : ['/']);
-     if (this.mobileDrawer?.opened) {
+    if (this.mobileDrawer?.opened) {
       this.mobileDrawer.close();
     }
   }

@@ -1,59 +1,65 @@
-<div class="carousel-container"
-     (mouseenter)="stopAutoPlay()"
-     (mouseleave)="startAutoPlay()">
+<div class="carousel-container" (mouseenter)="stopAutoPlay()" (mouseleave)="startAutoPlay()">
 
   <!-- Slides -->
-  <div class="slides-wrapper"
-       [style.transform]="slidesTransform"
-       [class.no-transition]="transitioning"> <!-- Add class to disable transition -->
-
-    <!-- Cloned Last Slide (for infinite loop backward) -->
+  <div class="slides-wrapper" [style.transform]="slidesTransform" [class.no-transition]="transitioning">
     <div class="slide" *ngIf="slides.length > 1">
-       <a *ngIf="slides[slides.length - 1].linkUrl && (currentStoreSlug | async); else noLinkCloneLast"
-         [routerLink]="['/', (currentStoreSlug | async), 'product', slides[slides.length - 1].linkUrl]">
-        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText + (tKeys.SF_CAROUSEL_ALT_SUFFIX_CLONE_LAST | translate)">
+      <a *ngIf="slides[slides.length - 1].linkUrl && (currentStoreSlug | async); else noLinkCloneLast"
+        [routerLink]="['/', (currentStoreSlug | async), 'product', slides[slides.length - 1].linkUrl]">
+        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText" class="slide-image">
       </a>
       <ng-template #noLinkCloneLast>
-        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText + (tKeys.SF_CAROUSEL_ALT_SUFFIX_CLONE_LAST | translate)">
+        <img [src]="slides[slides.length - 1].imageUrl" [alt]="slides[slides.length - 1].altText" class="slide-image">
       </ng-template>
     </div>
 
     <!-- Original Slides -->
-    <div class="slide"
-         *ngFor="let slide of slides; let i = index; trackBy: trackByFn">
+    <div class="slide" *ngFor="let slide of slides; let i = index; trackBy: trackByFn">
       <a *ngIf="slide.linkUrl && (currentStoreSlug | async); else noLink"
-         [routerLink]="['/', (currentStoreSlug | async), 'product', slide.linkUrl]">
-        <img [src]="slide.imageUrl" [alt]="slide.altText">
+        [routerLink]="['/', (currentStoreSlug | async), 'product', slide.linkUrl]">
+        <img [src]="slide.imageUrl" [alt]="slide.altText" class="slide-image">
       </a>
       <ng-template #noLink>
-        <img [src]="slide.imageUrl" [alt]="slide.altText">
+        <img [src]="slide.imageUrl" [alt]="slide.altText" class="slide-image">
       </ng-template>
+
+      <!-- Overlay content -->
+      <div class="slide-content">
+
+        <button class="cta-button" (click)="scrollToFeaturedProducts()">קנה עכשיו</button>
+      </div>
     </div>
 
-    <!-- Cloned First Slide (for infinite loop illusion) -->
     <div class="slide" *ngIf="slides.length > 1">
-       <a *ngIf="slides[0].linkUrl && (currentStoreSlug | async); else noLinkClone"
-         [routerLink]="['/', (currentStoreSlug | async), 'product', slides[0].linkUrl]">
-        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText + (tKeys.SF_CAROUSEL_ALT_SUFFIX_CLONE | translate)">
+      <a *ngIf="slides[0].linkUrl && (currentStoreSlug | async); else noLinkClone"
+        [routerLink]="['/', (currentStoreSlug | async), 'product', slides[0].linkUrl]">
+        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText" class="slide-image">
       </a>
       <ng-template #noLinkClone>
-        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText + (tKeys.SF_CAROUSEL_ALT_SUFFIX_CLONE | translate)">
+        <img [src]="slides[0].imageUrl" [alt]="slides[0].altText" class="slide-image">
       </ng-template>
     </div>
-
   </div>
 
-  <!-- Navigation Arrows -->
-  <button class="carousel-control prev" (click)="prevSlide()" [attr.aria-label]="tKeys.SF_CAROUSEL_PREV_BUTTON | translate">&#10094;</button>
-  <button class="carousel-control next" (click)="nextSlide()" [attr.aria-label]="tKeys.SF_CAROUSEL_NEXT_BUTTON | translate">&#10095;</button>
+  <!-- Navigation Arrows (Now bottom) -->
+  <div class="carousel-controls-bottom">
+    <button class="carousel-control prev" (click)="prevSlide()"
+      [attr.aria-label]="tKeys.SF_CAROUSEL_PREV_BUTTON | translate">&#10094;</button>
+    <button class="carousel-control next" (click)="nextSlide()"
+      [attr.aria-label]="tKeys.SF_CAROUSEL_NEXT_BUTTON | translate">&#10095;</button>
+  </div>
 
   <!-- Indicators (Dots) -->
-  <div class="carousel-indicators">
+  <!-- <div class="carousel-indicators">
     <span *ngFor="let slide of slides; let i = index"
           class="indicator-dot"
           [ngClass]="{'active': (i === currentSlideIndex - 1) || (currentSlideIndex === 0 && i === slides.length - 1) || (currentSlideIndex === slides.length + 1 && i === 0)}"
           (click)="selectSlide(i)">
     </span>
+  </div> -->
+  <div class="carousel-indicators">
+    <span *ngFor="let slide of slides; let i = index" class="indicator-pill"
+      [ngClass]="{'active': (i === currentSlideIndex - 1) || (currentSlideIndex === 0 && i === slides.length - 1) || (currentSlideIndex === slides.length + 1 && i === 0)}"
+      (click)="selectSlide(i)">
+    </span>
   </div>
-
 </div>
