@@ -3,33 +3,33 @@
 
     <div class="page-header">
       <nav class="breadcrumb">
-        <a href="/">דף הבית</a>
+        <a href="/">{{tKeys.SF_MINI_NAVIGATE_HOME | translate}}</a>
         <span>/</span>
-        <span class="current">צור קשר</span>
+        <span class="current">{{tKeys.SF_MINI_NAVIGATE_CONTACT_US | translate}}</span>
       </nav>
-      <h1 class="text-display">צור קשר</h1>
+      <h1 class="text-display">{{tKeys.SF_CONTACT_PAGE_TITLE | translate}}</h1>
     </div>
 
     <div class="max-w-3xl">
       <form [formGroup]="contactForm" (ngSubmit)="onContactSubmit()" class="contact-form" novalidate>
 
         <div class="form-group">
-          <input type="text" formControlName="name" class="custom-input" placeholder="שם"
+          <input type="text" formControlName="name" class="custom-input" placeholder="{{ tKeys.SF_CONTACT_FORM_FULL_NAME_PLACEHOLDER | translate }}"
             [ngClass]="{'is-invalid': contactForm.get('name')?.invalid && contactForm.get('name')?.touched}">
         </div>
 
         <div class="form-group">
-          <input type="email" formControlName="email" class="custom-input" placeholder=" אימייל"
+          <input type="email" formControlName="email" class="custom-input" placeholder="{{ tKeys.SF_CONTACT_FORM_EMAIL_PLACEHOLDER | translate }}"
             [ngClass]="{'is-invalid': contactForm.get('email')?.invalid && contactForm.get('email')?.touched}">
         </div>
 
         <div class="form-group">
-          <input type="text" formControlName="subject" class="custom-input" placeholder="נושא"
+          <input type="text" formControlName="subject" class="custom-input" placeholder="{{ tKeys.SF_CONTACT_FORM_SUBJECT_LABEL | translate }}"
             [ngClass]="{'is-invalid': contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched}">
         </div>
 
         <div class="form-group">
-          <textarea formControlName="message" class="custom-textarea" rows="6" placeholder="הודעה"
+          <textarea formControlName="message" class="custom-textarea" rows="6" placeholder="{{ tKeys.SF_CONTACT_FORM_MESSAGE_PLACEHOLDER | translate }}"
             [ngClass]="{'is-invalid': contactForm.get('message')?.invalid && contactForm.get('message')?.touched}"></textarea>
         </div>
 
