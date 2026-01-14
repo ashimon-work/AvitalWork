@@ -1,15 +1,23 @@
 <!-- Main page container -->
-<div class="page-wrapper" *ngIf="category$ | async as category; else loadingCategory">
+<div
+  class="page-wrapper"
+  *ngIf="category$ | async as category; else loadingCategory"
+>
   <!-- Spacer for fixed header -->
   <div class="header-spacer"></div>
 
   <!-- Inner container -->
   <div class="content-container">
     <!-- Breadcrumb Navigation -->
-    <nav class="breadcrumb-nav animate-breadcrumb" aria-label="Breadcrumb navigation">
+    <nav
+      class="breadcrumb-nav animate-breadcrumb"
+      aria-label="Breadcrumb navigation"
+    >
       <ol class="breadcrumb-list">
         <li class="breadcrumb-item">
-          <a [routerLink]="['/', (currentStoreSlug$ | async)]" class="breadcrumb-link">{{ tKeys.SF_NAV_HOME | translate }}</a>
+          <a [routerLink]="['/', currentStoreSlug()]" class="breadcrumb-link">{{
+            tKeys.SF_NAV_HOME | translate
+          }}</a>
         </li>
         <li class="breadcrumb-separator">
           <span>/</span>
@@ -21,24 +29,32 @@
     </nav>
 
     <!-- Category Navigation -->
-    <app-category-navigation *ngIf="currentCategoryId$ | async"></app-category-navigation>
+    <app-category-navigation
+      *ngIf="currentCategoryId$ | async"
+    ></app-category-navigation>
 
     <!-- Product Listing Component -->
     <app-product-listing
       [categoryId]="(currentCategoryId$ | async)!"
       [pageTitle]="category.name"
       [showCategoryNavigation]="false"
-      [queryParams]="(queryParams$ | async) ?? {}">
+      [storeSlug]="currentStoreSlug()"
+      [queryParams]="queryParams()"
+    >
     </app-product-listing>
-  </div> <!-- End .content-container -->
-</div> <!-- End .page-wrapper -->
+  </div>
+  <!-- End .content-container -->
+</div>
+<!-- End .page-wrapper -->
 
 <!-- Loading template for category -->
 <ng-template #loadingCategory>
   <div class="page-wrapper">
     <div class="header-spacer"></div>
     <div class="content-container">
-      <p class="loading-message">{{ tKeys.SF_CATEGORY_LOADING_DETAILS | translate }}</p>
+      <p class="loading-message">
+        {{ tKeys.SF_CATEGORY_LOADING_DETAILS | translate }}
+      </p>
     </div>
   </div>
 </ng-template>

@@ -1,46 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Product } from '@shared-types';
 import { ProductListingComponent } from '../../shared/components/product-listing/product-listing.component';
 import { RouterLink } from '@angular/router';
 import { T, TranslatePipe } from '@shared/i18n';
 import { StoreContextService } from '../../core/services/store-context.service';
-import { Observable, map } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'app-all-products-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    ProductListingComponent,
-    TranslatePipe
-  ],
+  imports: [CommonModule, RouterLink, ProductListingComponent, TranslatePipe],
   templateUrl: './all-products-page.component.html',
-  styleUrl: './all-products-page.component.scss'
+  styleUrl: './all-products-page.component.scss',
 })
-export class AllProductsPageComponent implements OnInit {
+export class AllProductsPageComponent {
   public tKeys = T;
-  currentStoreSlug$: Observable<string | null>;
-  queryParams$: Observable<Params>;
 
-  constructor(
-    private route: ActivatedRoute,
-    private storeContext: StoreContextService
-  ) {
-    this.currentStoreSlug$ = this.storeContext.currentStoreSlug$;
-    this.queryParams$ = this.route.queryParams.pipe(
-      map(params => ({ ...params }))
-    );
-  }
+  // Inject dependencies
+  private route = inject(ActivatedRoute);
+  private storeContext = inject(StoreContextService);
 
-  ngOnInit(): void {
-    // Component initialization
-  }
-
-  onAddToCart(product: Product): void {
-    // This is handled by the ProductListingComponent
-    // This method is kept for potential future use
-  }
+  // Convert Observables to signals for efficient template binding
+  // Signals only trigger updates when actual values change, not just references
+  readonly currentStoreSlug = toSignal(this.storeContext.currentStoreSlug$, {
+    initialValue: null,
+  });
+  readonly queryParams = toSignal(
+    this.route.queryParams.pipe(map((params) => ({ ...params }))),
+    { initialValue: {} as Params }
+  );
 }

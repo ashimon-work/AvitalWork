@@ -6,16 +6,23 @@
   <!-- Inner container -->
   <div class="content-container">
     <!-- Breadcrumb Navigation -->
-    <nav class="breadcrumb-nav animate-breadcrumb" aria-label="Breadcrumb navigation">
+    <nav
+      class="breadcrumb-nav animate-breadcrumb"
+      aria-label="Breadcrumb navigation"
+    >
       <ol class="breadcrumb-list">
         <li class="breadcrumb-item">
-          <a [routerLink]="['/', (currentStoreSlug$ | async)]" class="breadcrumb-link">{{ tKeys.SF_NAV_HOME | translate }}</a>
+          <a [routerLink]="['/', currentStoreSlug()]" class="breadcrumb-link">{{
+            tKeys.SF_NAV_HOME | translate
+          }}</a>
         </li>
         <li class="breadcrumb-separator">
           <span>/</span>
         </li>
         <li class="breadcrumb-item">
-          <span class="breadcrumb-page">{{ tKeys.SF_ALL_PRODUCTS_TITLE | translate }}</span>
+          <span class="breadcrumb-page">{{
+            tKeys.SF_ALL_PRODUCTS_TITLE | translate
+          }}</span>
         </li>
       </ol>
     </nav>
@@ -23,7 +30,11 @@
     <!-- Product Listing Component -->
     <app-product-listing
       [pageTitle]="tKeys.SF_ALL_PRODUCTS_TITLE | translate"
-      [queryParams]="(queryParams$ | async) ?? {}">
+      [storeSlug]="currentStoreSlug()"
+      [queryParams]="queryParams()"
+    >
     </app-product-listing>
-  </div> <!-- End .content-container -->
-</div> <!-- End .page-wrapper -->
+  </div>
+  <!-- End .content-container -->
+</div>
+<!-- End .page-wrapper -->

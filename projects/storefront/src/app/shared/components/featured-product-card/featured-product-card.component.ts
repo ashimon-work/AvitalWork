@@ -1,19 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, OnInit, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Product } from '@shared-types';
 import { RouterModule } from '@angular/router';
 import { WishlistService } from '../../../core/services/wishlist.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import {T, I18nService } from '@shared/i18n';
-
+import { T, I18nService } from '@shared/i18n';
 
 @Component({
   selector: 'app-featured-product-card',
   standalone: true,
   imports: [CommonModule, MatIconModule, RouterModule],
   templateUrl: './featured-product-card.component.html',
-  styleUrl: './featured-product-card.component.scss'
+  styleUrl: './featured-product-card.component.scss',
 })
 export class FeaturedProductCardComponent implements OnInit {
   @Input() product!: Product;
@@ -36,20 +42,22 @@ export class FeaturedProductCardComponent implements OnInit {
         },
         error: (err: any) => {
           console.error('Failed to check if item is in wishlist:', err);
-        }
+        },
       });
     }
   }
-  get href(): string {
+  get productLink(): any[] | null {
     if (this.storeSlug && this.product) {
-      return `/${this.storeSlug}/product/${this.product.id}`;
+      return ['/', this.storeSlug, 'product', this.product.id];
     }
     // Fallback or default link
-    return '/products';
+    return null;
   }
 
   get imageUrl(): string {
-    return (this.product && this.product.imageUrls && this.product.imageUrls.length > 0)
+    return this.product &&
+      this.product.imageUrls &&
+      this.product.imageUrls.length > 0
       ? this.product.imageUrls[0]
       : 'assets/images/placeholder-image.webp';
   }
@@ -80,15 +88,21 @@ export class FeaturedProductCardComponent implements OnInit {
           console.log(`Product ${product.id} removed from wishlist`);
           this.isInWishlist = false;
           this.notificationService.showInfo(
-            this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REMOVE_FROM_WISHLIST_SUCCESS_NOTIFICATION, product.name)
+            this.i18nService.translate(
+              this.tKeys
+                .SF_PRODUCT_PAGE_REMOVE_FROM_WISHLIST_SUCCESS_NOTIFICATION,
+              product.name
+            )
           );
         },
         error: (err: any) => {
           console.error('Failed to remove item from wishlist:', err);
           this.notificationService.showError(
-            this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REMOVE_FROM_WISHLIST_ERROR_NOTIFICATION)
+            this.i18nService.translate(
+              this.tKeys.SF_PRODUCT_PAGE_REMOVE_FROM_WISHLIST_ERROR_NOTIFICATION
+            )
           );
-        }
+        },
       });
     } else {
       // Add to wishlist
@@ -97,17 +111,21 @@ export class FeaturedProductCardComponent implements OnInit {
           console.log(`Product ${product.id} added to wishlist`);
           this.isInWishlist = true;
           this.notificationService.showSuccess(
-            this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_WISHLIST_SUCCESS_NOTIFICATION, product.name)
+            this.i18nService.translate(
+              this.tKeys.SF_PRODUCT_PAGE_ADD_TO_WISHLIST_SUCCESS_NOTIFICATION,
+              product.name
+            )
           );
         },
         error: (err: any) => {
           console.error('Failed to add item to wishlist:', err);
           this.notificationService.showError(
-            this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_WISHLIST_ERROR_NOTIFICATION)
+            this.i18nService.translate(
+              this.tKeys.SF_PRODUCT_PAGE_ADD_TO_WISHLIST_ERROR_NOTIFICATION
+            )
           );
-        }
+        },
       });
     }
   }
-
 }
