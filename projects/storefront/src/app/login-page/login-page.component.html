@@ -26,7 +26,7 @@
           <label for="password" class="input-label">{{ tKeys.SF_REGISTRATION_PASSWORD_LABEL | translate }}</label>
           <input id="password" [type]="passwordFieldType" formControlName="password"
             class="custom-input"
-            [placeholder]=" tKeys.SF_REGISTRATION_PASSWORD_PLACEHOLDER | translate "
+            [placeholder]="tKeys.SF_REGISTRATION_PASSWORD_PLACEHOLDER | translate "
             [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }"
           />
 

@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
-
+import { T, TranslatePipe } from '@shared/i18n';
 import { CartService } from '../../services/cart.service';
 import { StoreContextService } from '../../services/store-context.service';
 import { AuthService } from '../../services/auth.service';
@@ -39,6 +39,7 @@ interface NavLink {
     MatSidenavModule,
     MatListModule,
     MatBadgeModule,
+    TranslatePipe,
     SearchBarComponent // Add SearchBarComponent here
     // FormsModule, ReactiveFormsModule removed
   ],
@@ -47,7 +48,7 @@ interface NavLink {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('mobileDrawer') mobileDrawer!: MatSidenav;
-
+  public tKeys = T;
   public storeSlug$: Observable<string | null>;
   storeName$: Observable<string | undefined>;
   storeLogoUrl$: Observable<string | undefined | null>;
@@ -139,7 +140,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   async onLogoClick(): Promise<void> {
     const slug = await firstValueFrom(this.storeSlug$);
     this.router.navigate(slug ? ['/', slug] : ['/']);
-     if (this.mobileDrawer?.opened) {
+    if (this.mobileDrawer?.opened) {
       this.mobileDrawer.close();
     }
   }

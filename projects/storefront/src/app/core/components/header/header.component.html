@@ -3,13 +3,19 @@
     <div class="mobile-drawer-header">
       <a (click)="onLogoClick()" class="logo-brand-link" [title]="(storeName$ | async) || 'Home'">
         <div class="logo-container">
-          <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'" class="logo-image small-logo">
-          <svg *ngIf="!(storeLogoUrl$ | async)" class="logo-svg-fallback small-logo" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'"
+            class="logo-image small-logo">
+          <svg *ngIf="!(storeLogoUrl$ | async)" class="logo-svg-fallback small-logo" fill="none" viewBox="0 0 48 48"
+            xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_6_319_header_logo_fallback_mobile)">
-              <path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+              <path
+                d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                fill="currentColor"></path>
             </g>
             <defs>
-              <clipPath id="clip0_6_319_header_logo_fallback_mobile"><rect fill="white" height="48" width="48"></rect></clipPath>
+              <clipPath id="clip0_6_319_header_logo_fallback_mobile">
+                <rect fill="white" height="48" width="48"></rect>
+              </clipPath>
             </defs>
           </svg>
         </div>
@@ -21,10 +27,10 @@
     </div>
 
     <mat-nav-list class="mobile-nav-list">
-      <a mat-list-item *ngFor="let link of NAV_LINKS"
-         [routerLink]="generateRouterLink(link, storeSlug$ | async)"
-         routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: link.exact !== undefined ? link.exact : false}"
-         (click)="handleNavLinkClick()">
+      <a mat-list-item *ngFor="let link of NAV_LINKS" [routerLink]="generateRouterLink(link, storeSlug$ | async)"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{exact: link.exact !== undefined ? link.exact : false}"
+        (click)="handleNavLinkClick()">
         {{ link.label }}
       </a>
     </mat-nav-list>
@@ -35,14 +41,14 @@
 
     <div class="mobile-drawer-actions">
       <button mat-stroked-button class="full-width-button" (click)="onAccountClick()">
-        <mat-icon>person_outline</mat-icon> Account
+        <mat-icon>person_outline</mat-icon> {{tKey.SF_HEADER_MY_ACCOUNT_TITLE | translate}}
       </button>
-      <button mat-stroked-button class="full-width-button" (click)="onCartClick()"
-        [matBadge]="cartItemCount$ | async" matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="(cartItemCount$ | async) === 0">
-        <mat-icon>shopping_cart</mat-icon> Cart
+      <button mat-stroked-button class="full-width-button" (click)="onCartClick()" [matBadge]="cartItemCount$ | async"
+        matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="(cartItemCount$ | async) === 0">
+        <mat-icon>shopping_cart</mat-icon> {{tKey.SF_HEADER_SHOPPING_CART_TITLE | translate}}
       </button>
       <button mat-stroked-button class="full-width-button" *ngIf="isAuthenticated$ | async" (click)="logout()">
-        <mat-icon>logout</mat-icon> Logout
+        <mat-icon>logout</mat-icon> {{tKey.SF_HEADER_LOGOUT_TITLE | translate}}
       </button>
     </div>
   </mat-sidenav>
@@ -51,20 +57,27 @@
     <mat-toolbar color="background" class="modern-header">
       <div class="header-content-wrapper">
         <!-- Mobile Hamburger -->
-        <button mat-icon-button (click)="mobileDrawer.toggle()" aria-label="Open navigation menu" class="mobile-menu-button md:hidden">
+        <button mat-icon-button (click)="mobileDrawer.toggle()" aria-label="Open navigation menu"
+          class="mobile-menu-button md:hidden">
           <mat-icon>menu</mat-icon>
         </button>
 
         <!-- Left: Logo -->
         <a (click)="onLogoClick()" class="logo-brand-link" [title]="(storeName$ | async) || 'Home'">
           <div class="logo-container">
-            <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'" class="logo-image">
-            <svg *ngIf="!(storeLogoUrl$ | async)" class="logo-svg-fallback" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'"
+              class="logo-image">
+            <svg *ngIf="!(storeLogoUrl$ | async)" class="logo-svg-fallback" fill="none" viewBox="0 0 48 48"
+              xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_6_319_header_logo_fallback_desktop)">
-                <path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+                <path
+                  d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                  fill="currentColor"></path>
               </g>
               <defs>
-                <clipPath id="clip0_6_319_header_logo_fallback_desktop"><rect fill="white" height="48" width="48"></rect></clipPath>
+                <clipPath id="clip0_6_319_header_logo_fallback_desktop">
+                  <rect fill="white" height="48" width="48"></rect>
+                </clipPath>
               </defs>
             </svg>
           </div>
@@ -78,9 +91,9 @@
         <nav class="desktop-navigation hidden md:flex" aria-label="Main navigation">
           <ul class="nav-links-list">
             <li *ngFor="let link of NAV_LINKS">
-              <a [routerLink]="generateRouterLink(link, storeSlug$ | async)"
-                 routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: link.exact !== undefined ? link.exact : false}"
-                 class="nav-link" (click)="handleNavLinkClick()">
+              <a [routerLink]="generateRouterLink(link, storeSlug$ | async)" routerLinkActive="active-link"
+                [routerLinkActiveOptions]="{exact: link.exact !== undefined ? link.exact : false}" class="nav-link"
+                (click)="handleNavLinkClick()">
                 {{ link.label }}
               </a>
             </li>
@@ -104,7 +117,8 @@
 
           <!-- Cart -->
           <button mat-icon-button aria-label="Cart" (click)="onCartClick()" class="action-icon-button"
-            [matBadge]="cartItemCount$ | async" matBadgePosition="above after" matBadgeColor="warn" [matBadgeHidden]="(cartItemCount$ | async) === 0">
+            [matBadge]="cartItemCount$ | async" matBadgePosition="above after" matBadgeColor="warn"
+            [matBadgeHidden]="(cartItemCount$ | async) === 0">
             <mat-icon>shopping_cart</mat-icon>
           </button>
         </div>

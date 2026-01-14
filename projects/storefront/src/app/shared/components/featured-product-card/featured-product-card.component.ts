@@ -3,11 +3,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Product } from '@shared-types';
 import { RouterModule } from '@angular/router';
-
+import { T, TranslatePipe } from '@shared/i18n';
 @Component({
   selector: 'app-featured-product-card',
   standalone: true,
-  imports: [CommonModule, MatIconModule, RouterModule],
+  imports: [CommonModule, MatIconModule, RouterModule, TranslatePipe],
   templateUrl: './featured-product-card.component.html',
   styleUrl: './featured-product-card.component.scss'
 })
@@ -18,7 +18,7 @@ export class FeaturedProductCardComponent {
   @Output() addToCart = new EventEmitter<Product>(); // Emit Product
 
   public favorite: boolean = false;
-
+  public tKeys = T; // Translation keys
   get href(): string {
     if (this.storeSlug && this.product) {
       return `/${this.storeSlug}/product/${this.product.id}`;
