@@ -159,6 +159,7 @@ export const heMessages = {
   SF_ACCOUNT_ORDER_DETAIL_TABLE_TOTAL_HEADER: "סה\"כ",
   SF_ACCOUNT_ORDER_DETAIL_SUBTOTAL_LABEL: "סכום ביניים:",
   SF_ACCOUNT_ORDER_DETAIL_SHIPPING_LABEL: "משלוח:",
+  SF_ACCOUNT_ORDER_DETAIL_SHIPPING_FREE_TEXT: "חינם",
   SF_ACCOUNT_ORDER_DETAIL_TAX_LABEL: "מס:",
   SF_ACCOUNT_ORDER_DETAIL_GRAND_TOTAL_LABEL: "סה\"כ:",
   SF_ACCOUNT_ORDER_DETAIL_ERROR_MESSAGE: "לא ניתן היה לטעון את פרטי ההזמנה. ייתכן שההזמנה אינה קיימת או שאירעה שגיאה.",
@@ -1262,6 +1263,13 @@ SM_MGMT_NOT_FOUND_TITLE: "404 - עמוד לא נמצא",
   SF_HOMEPAGE_NEWSLETTER_EMAIL_ERROR: "אנא הכנס כתובת אימייל חוקית",
   SF_HOMEPAGE_NEWSLETTER_SUBSCRIBE_BUTTON: "הירשם",
 
+    //Mini Navigate
+  SF_MINI_NAVIGATE_HOME: "דף הבית",
+  SF_MINI_NAVIGATE_REGISTER: "הרשמה",
+  SF_MINI_NAVIGATE_LOGIN: "התחברות",
+  SF_MINI_NAVIGATE_CONTACT_US: "צור קשר",
+  SF_MINI_NAVIGATE_CART:"עגלה",
+  SF_MINI_NAVIGATE_CHECKOUT: "תשלום",
   // Footer component - Newsletter form
   SF_FORM_FIELD_EMAIL_LABEL: "כתובת אימייל",
   SF_FORM_FIELD_EMAIL_ERROR_REQUIRED: "שדה האימייל הוא חובה.",

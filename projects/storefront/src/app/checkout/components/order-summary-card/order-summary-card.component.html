@@ -1,12 +1,13 @@
 <div class="order-summary-card">
-  <h2 class="order-summary-card__title">סיכום הזמנה</h2>
+  <h2 class="order-summary-card__title">{{ tKeys.SF_CHECKOUT_ORDER_SUMMARY_TITLE | translate }}</h2>
 
   <ul class="order-summary-card__item-list">
     <li *ngFor="let item of items" class="order-summary-card__item">
       <img [src]="item.image" class="order-summary-card__item-image" />
       <div class="order-summary-card__item-details">
         <span class="order-summary-card__item-name">{{ item.name }}</span>
-        <span class="order-summary-card__item-quantity">כמות: {{ item.quantity }}</span>
+        <span class="order-summary-card__item-quantity">{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_TABLE_QUANTITY_HEADER |
+          translate }}: {{ item.quantity }}</span>
         <span class="order-summary-card__item-price">{{ formatCurrency(item.price) }}</span>
       </div>
     </li>
@@ -16,18 +17,20 @@
 
   <div class="order-summary-card__totals">
     <div class="order-summary-card__total-row">
-      <span>סיכום ביניים</span>
+      <span>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_SUBTOTAL_LABEL | translate }}</span>
       <span>{{ formatCurrency(subtotal) }}</span>
     </div>
     <div class="order-summary-card__total-row">
-      <span>משלוח</span>
-      <span>{{ shipping === 0 ? 'חינם' : formatCurrency(shipping) }}</span>
+      <span>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_SHIPPING_LABEL | translate }}</span>
+      <span>
+        {{ shipping === 0 ? (tKeys.SF_ACCOUNT_ORDER_DETAIL_SHIPPING_FREE_TEXT | translate) : formatCurrency(shipping) }}
+      </span>
     </div>
-    
+
     <hr class="order-summary-card__separator" style="margin-top: 0.5rem;" />
-    
+
     <div class="order-summary-card__grand-total">
-      <span>סה"כ</span>
+      <span>{{ tKeys.SF_ACCOUNT_ORDER_DETAIL_GRAND_TOTAL_LABEL | translate }}</span>
       <span>{{ formatCurrency((+subtotal || 0) + (+shipping || 0)) }}</span>
     </div>
   </div>

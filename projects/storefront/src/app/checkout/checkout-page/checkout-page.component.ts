@@ -25,7 +25,8 @@ import { ShippingMethodComponent } from '../components/shipping-method/shipping-
     ShippingAddressFormComponent,
     PaymentMethodSectionComponent,
     OrderSummaryCardComponent,
-    ShippingMethodComponent
+    ShippingMethodComponent,
+    TranslatePipe
   ],
   templateUrl: './checkout-page.component.html',
   styleUrls: ['./checkout-page.component.scss'],

@@ -166,6 +166,7 @@ export const enMessages: TranslationSchema = {
   SF_ACCOUNT_ORDER_DETAIL_TABLE_TOTAL_HEADER: "Total",
   SF_ACCOUNT_ORDER_DETAIL_SUBTOTAL_LABEL: "Subtotal:",
   SF_ACCOUNT_ORDER_DETAIL_SHIPPING_LABEL: "Shipping:",
+  SF_ACCOUNT_ORDER_DETAIL_SHIPPING_FREE_TEXT: "Free",
   SF_ACCOUNT_ORDER_DETAIL_TAX_LABEL: "Tax:",
   SF_ACCOUNT_ORDER_DETAIL_GRAND_TOTAL_LABEL: "Total:",
   SF_ACCOUNT_ORDER_DETAIL_ERROR_MESSAGE: "Order details could not be loaded. The order may not exist or an error occurred.",
@@ -1264,6 +1265,13 @@ SM_MGMT_NOT_FOUND_TITLE: "404 - Page Not Found",
   SM_SETTINGS_PAGE_NOTIF_PARSE_BACKUP_FILE_FAILED: "Failed to parse backup file. Please ensure it is a valid JSON file.",
   SM_SETTINGS_PAGE_NOTIF_READ_BACKUP_FILE_FAILED: "Failed to read backup file.",
   SM_SETTINGS_PAGE_NOTIF_RELOAD_SETTINGS_AFTER_RESTORE_FAILED: "Failed to reload settings after restore.",
+  //Mini Navigate
+  SF_MINI_NAVIGATE_HOME: "Home",
+  SF_MINI_NAVIGATE_REGISTER: "Register",
+  SF_MINI_NAVIGATE_LOGIN: "Login",
+  SF_MINI_NAVIGATE_CONTACT_US: "Contact Us",
+  SF_MINI_NAVIGATE_CART: "Cart",
+  SF_MINI_NAVIGATE_CHECKOUT:"Checkout",
 
   // Footer component - Newsletter form
   SF_FORM_FIELD_EMAIL_LABEL: "Email Address",
