@@ -19,17 +19,17 @@
   <div class="shipping-form__grid">
     
     <div class="shipping-form__grid-item">
-      <input class="custom-input" formControlName="address1" placeholder="{{ tKeys.SF_CHECKOUT_ADDRESS_LABEL | translate }}" />
+      <input class="custom-input" formControlName="address1" [placeholder]=" tKeys.SF_CHECKOUT_ADDRESS_LABEL | translate " />
     </div>
     <div class="shipping-form__grid-item">
-      <input class="custom-input" formControlName="address2" placeholder="{{ tKeys.SF_CHECKOUT_ADDRESS_LINE2_LABEL | translate }}" />
+      <input class="custom-input" formControlName="address2" [placeholder]=" tKeys.SF_CHECKOUT_ADDRESS_LINE2_LABEL | translate " />
     </div>
     
     <div class="shipping-form__grid-item">
-      <input class="custom-input" formControlName="city" placeholder="{{ tKeys.SF_CHECKOUT_CITY_LABEL | translate }}" />
+      <input class="custom-input" formControlName="city" [placeholder]=" tKeys.SF_CHECKOUT_CITY_LABEL | translate " />
     </div>
     <div class="shipping-form__grid-item">
-      <input class="custom-input" formControlName="zip" placeholder="{{ tKeys.SF_CHECKOUT_ZIP_CODE_LABEL | translate }}" />
+      <input class="custom-input" formControlName="zip" [placeholder]=" tKeys.SF_CHECKOUT_ZIP_CODE_LABEL | translate " />
     </div>
 
   </div>
