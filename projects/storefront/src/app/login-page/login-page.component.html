@@ -9,9 +9,9 @@
       <h1 class="text-display">{{ tKeys.SF_LOGIN_PAGE_TITLE | translate }}</h1>
       <hr class="separator" />
     </div>
+    
     <div class="max-w-2xl">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
-        
         <div class="form-group">
           <label for="email" class="input-label">{{ tKeys.SF_LOGIN_PAGE_EMAIL_LABEL | translate }}</label>
           <input id="email" type="email" formControlName="email" class="custom-input"
@@ -26,7 +26,7 @@
           <label for="password" class="input-label">{{ tKeys.SF_REGISTRATION_PASSWORD_LABEL | translate }}</label>
           <input id="password" [type]="passwordFieldType" formControlName="password"
             class="custom-input"
-            [placeholder]=" tKeys.SF_REGISTRATION_PASSWORD_PLACEHOLDER | translate "
+            [placeholder]="tKeys.SF_REGISTRATION_PASSWORD_PLACEHOLDER | translate "
             [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }"
           />
 
@@ -44,12 +44,17 @@
           <button
             type="submit"
             class="submit-button"
-            [disabled]="loginForm.invalid || isSubmitting"
             (mouseenter)="isSubmitHovered = true"
             (mouseleave)="isSubmitHovered = false"
           >
-            <span>{{ (isSubmitting ? tKeys.SF_LOGIN_PAGE_LOGGING_IN_BUTTON : tKeys.SF_LOGIN_PAGE_LOGIN_BUTTON) | translate }}</span>
-
+          <span>
+            <ng-container *ngIf="isSubmitting">
+              {{ tKeys.SF_LOGIN_PAGE_LOGGING_IN_BUTTON | translate }}
+            </ng-container>
+            <ng-container *ngIf="!isSubmitting">
+              {{ tKeys.SF_LOGIN_PAGE_LOGIN_BUTTON | translate }}
+            </ng-container>
+          </span>
           </button>
 
           <div class="action-links">
