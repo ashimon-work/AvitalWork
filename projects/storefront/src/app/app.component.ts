@@ -1,18 +1,29 @@
+
 import { Component, OnInit, OnDestroy, inject ,Input} from '@angular/core'; // Added OnDestroy, inject
 import { Observable, Subscription } from 'rxjs'; // Added Subscription
 import { RouterOutlet, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { RouterOutlet } from '@angular/router';
 import { T, TranslatePipe } from '@shared/i18n';
 import { HeaderComponent } from './core/components/header/header.component';
 import { FooterComponent } from './core/components/footer/footer.component';
 import { AuthService } from './core/services/auth.service';
-import { CartService } from './core/services/cart.service'; // Added CartService
 import { CommonModule } from '@angular/common';
 import { NotificationToastComponent } from './shared/components/notification-toast/notification-toast.component';
+import { CartDrawerComponent } from './cart/components/cart-drawer/cart-drawer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, CommonModule, NotificationToastComponent, TranslatePipe],
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    CommonModule,
+    NotificationToastComponent,
+    TranslatePipe,
+    CartDrawerComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -20,9 +31,6 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private router: Router) { } // Implemented OnDestroy
   public tKeys = T;
   isAuthenticated$!: Observable<boolean>;
-  showCartNotification = false;
-  private notificationTimeout: any = null; // Using 'any' for Node.js/Browser compatibility
-  private itemAddedSubscription: Subscription | null = null;
 
   private authService = inject(AuthService); // Using inject
   private cartService = inject(CartService); // Using inject

@@ -1,7 +1,17 @@
 <mat-sidenav-container class="app-sidenav-container">
-  <mat-sidenav #mobileDrawer mode="over" position="start" class="mobile-sidenav" [autoFocus]="false">
+  <mat-sidenav
+    #mobileDrawer
+    mode="over"
+    position="start"
+    class="mobile-sidenav"
+    [autoFocus]="false"
+  >
     <div class="mobile-drawer-header">
-      <a (click)="onLogoClick()" class="logo-brand-link" [title]="(storeName$ | async) || 'Home'">
+      <a
+        (click)="onLogoClick()"
+        class="logo-brand-link"
+        [title]="(storeName$ | async) || 'Home'"
+      >
         <div class="logo-container">
           <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'"
             class="logo-image small-logo">
@@ -19,9 +29,15 @@
             </defs>
           </svg>
         </div>
-        <span *ngIf="storeName$ | async as name" class="brand-name-mobile">{{ name }}</span>
+        <span *ngIf="storeName$ | async as name" class="brand-name-mobile">{{
+          name
+        }}</span>
       </a>
-      <button mat-icon-button (click)="mobileDrawer.close()" aria-label="Close navigation menu">
+      <button
+        mat-icon-button
+        (click)="mobileDrawer.close()"
+        aria-label="Close navigation menu"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -41,14 +57,31 @@
     </div>
 
     <div class="mobile-drawer-actions">
-      <button mat-stroked-button class="full-width-button" (click)="onAccountClick()">
+      <button
+        mat-stroked-button
+        class="full-width-button"
+        (click)="openSearchPanel()"
+      >
+        <mat-icon>search</mat-icon> Search
+      </button>
+
+      <button
+        mat-stroked-button
+        class="full-width-button"
+        (click)="onAccountClick()"
+      >
         <mat-icon>person_outline</mat-icon> Account
       </button>
       <button mat-stroked-button class="full-width-button" (click)="onCartClick()" [matBadge]="cartItemCount$ | async"
         matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="(cartItemCount$ | async) === 0">
         <mat-icon>shopping_cart</mat-icon> Cart
       </button>
-      <button mat-stroked-button class="full-width-button" *ngIf="isAuthenticated$ | async" (click)="logout()">
+      <button
+        mat-stroked-button
+        class="full-width-button"
+        *ngIf="isAuthenticated$ | async"
+        (click)="logout()"
+      >
         <mat-icon>logout</mat-icon> Logout
       </button>
     </div>
@@ -153,6 +186,5 @@
 
     <!-- This is where your <router-outlet> or main page content would go -->
     <!-- For the purpose of this component, it's outside -->
-
   </mat-sidenav-content>
 </mat-sidenav-container>

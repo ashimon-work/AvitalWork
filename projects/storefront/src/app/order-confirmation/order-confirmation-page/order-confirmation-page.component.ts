@@ -112,9 +112,7 @@ export class OrderConfirmationPageComponent implements OnInit {
 
     this.cartService.addItem(product).subscribe({
       next: () => {
-        this.notificationService.showSuccess(
-          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, 1, product.name) // Assuming quantity 1
-        );
+        // Success notification removed - cart drawer opens automatically
       },
       error: (error: any) => {
         console.error('Error adding product to cart from order confirmation page:', error);

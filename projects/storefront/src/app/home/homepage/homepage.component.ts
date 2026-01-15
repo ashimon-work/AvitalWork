@@ -78,31 +78,12 @@ export class HomepageComponent {
     
     if (!product || !product.id) {
       console.error('Invalid product data received:', event);
-      this.showErrorMessage = true;
-      this.errorMessage = 'Invalid product data';
-      setTimeout(() => {
-        this.showErrorMessage = false;
-      }, 3000);
       return;
     }
 
     this.cartService.addItem(product).subscribe({
-      next: () => {
-        // Show success message
-        this.showSuccessMessage = true;
-        this.successMessage = 'Product added to cart';
-        setTimeout(() => {
-          this.showSuccessMessage = false;
-        }, 3000);
-      },
       error: (error: any) => {
         console.error('Error adding product to cart:', error);
-        // Show error message
-        this.showErrorMessage = true;
-        this.errorMessage = 'Error adding product to cart';
-        setTimeout(() => {
-          this.showErrorMessage = false;
-        }, 3000);
       }
     });
   }

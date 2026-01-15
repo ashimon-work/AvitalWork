@@ -1,20 +1,45 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core'; // Added OnDestroy, ViewChild, ElementRef
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  inject,
+} from '@angular/core'; // Added OnDestroy, ViewChild, ElementRef
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { StoreContextService } from '../../services/store-context.service';
 import { Product, Store } from '@shared-types'; // Added Store type
-import { Subject, Observable, of, Subscription, fromEvent, firstValueFrom } from 'rxjs'; // Added Subscription, fromEvent, firstValueFrom
 import {
-  debounceTime, distinctUntilChanged, switchMap, catchError, tap, filter, map, takeUntil, withLatestFrom
+  Subject,
+  Observable,
+  of,
+  Subscription,
+  fromEvent,
+  firstValueFrom,
+} from 'rxjs'; // Added Subscription, fromEvent, firstValueFrom
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  catchError,
+  tap,
+  filter,
+  map,
+  takeUntil,
+  withLatestFrom,
 } from 'rxjs/operators'; // Added takeUntil and withLatestFrom
 import { MatIconModule } from '@angular/material/icon'; // Import MatIconModule
 import { T } from '@shared/i18n';
 import { TranslatePipe } from '@shared/i18n';
 
 // Define a type for combined search results
-export type SearchResultItem = (Product & { resultType: 'product' }) | (Store & { resultType: 'store' });
+export type SearchResultItem =
+  | (Product & { resultType: 'product' })
+  | (Store & { resultType: 'store' });
 
 @Component({
   selector: 'app-search-bar',
@@ -23,10 +48,11 @@ export type SearchResultItem = (Product & { resultType: 'product' }) | (Store & 
     CommonModule,
     FormsModule,
     TranslatePipe,
-    MatIconModule // Add MatIconModule here
+    MatIconModule, // Add MatIconModule here
+    CurrencyPipe,
   ],
   templateUrl: './search-bar.component.html',
-  styleUrl: './search-bar.component.scss'
+  styleUrl: './search-bar.component.scss',
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
   public tKeys = T;
@@ -34,6 +60,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   showSuggestions = false;
   activeSuggestionIndex = -1;
   currentSearchSuggestions: SearchResultItem[] = []; // Use the new combined type
+  isOpen = false; // Track if the panel is open (triggered by header button)
 
   private searchTerms = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -50,60 +77,80 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   ) {}
  
   ngOnInit(): void {
-    const searchResults$: Observable<SearchResultItem[]> = this.searchTerms.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      withLatestFrom(this.storeContext.currentStoreSlug$),
-      switchMap(([term, storeSlug]) => {
-        if (!term || term.length < 3) {
-          return of([]);
-        }
-        if (storeSlug) {
-          return this.apiService.getSearchSuggestions(term).pipe(
-            map(products => products.map(p => ({ ...p, resultType: 'product' } as SearchResultItem))),
-            catchError(error => {
-              console.error('[SearchBar] Error fetching product suggestions:', error);
-              return of([]);
-            })
-          );
-        } else {
-          // If no store slug, perhaps we search globally for stores or offer a different experience.
-          // For now, let's assume product search is primary if store context exists.
-          // Or, call apiService.searchStores(term) if that's the desired fallback.
-          // This part matches the original SearchBarComponent's logic for store search.
-           return this.apiService.searchStores(term).pipe(
-             map(stores => stores.map(s => ({ ...s, resultType: 'store' } as SearchResultItem))),
-             catchError(error => {
-               console.error('[SearchBar] Error fetching store suggestions:', error);
-               return of([]);
-             })
-           );
-        }
-      }),
-      takeUntil(this.destroy$)
-    );
+    const searchResults$: Observable<SearchResultItem[]> =
+      this.searchTerms.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        withLatestFrom(this.storeContext.currentStoreSlug$),
+        switchMap(([term, storeSlug]) => {
+          if (!term || term.length < 3) {
+            return of([]);
+          }
+          if (storeSlug) {
+            return this.apiService.getSearchSuggestions(term).pipe(
+              map((products) =>
+                products.map(
+                  (p) => ({ ...p, resultType: 'product' }) as SearchResultItem
+                )
+              ),
+              catchError((error) => {
+                console.error(
+                  '[SearchBar] Error fetching product suggestions:',
+                  error
+                );
+                return of([]);
+              })
+            );
+          } else {
+            // If no store slug, perhaps we search globally for stores or offer a different experience.
+            // For now, let's assume product search is primary if store context exists.
+            // Or, call apiService.searchStores(term) if that's the desired fallback.
+            // This part matches the original SearchBarComponent's logic for store search.
+            return this.apiService.searchStores(term).pipe(
+              map((stores) =>
+                stores.map(
+                  (s) => ({ ...s, resultType: 'store' }) as SearchResultItem
+                )
+              ),
+              catchError((error) => {
+                console.error(
+                  '[SearchBar] Error fetching store suggestions:',
+                  error
+                );
+                return of([]);
+              })
+            );
+          }
+        }),
+        takeUntil(this.destroy$)
+      );
 
     this.subscriptions.add(
-      searchResults$.subscribe(suggestions => {
+      searchResults$.subscribe((suggestions) => {
         this.currentSearchSuggestions = suggestions;
-        this.showSuggestions = this.searchInputFocused && suggestions.length > 0 && this.searchQuery.length >=3;
+        this.showSuggestions =
+          this.searchInputFocused &&
+          suggestions.length > 0 &&
+          this.searchQuery.length >= 3;
         this.activeSuggestionIndex = -1;
       })
     );
 
     // Click outside logic
-    fromEvent(document, 'click').pipe(
-      filter(event => {
-        if (!this.showSuggestions) return false;
-        const clickedElement = event.target as HTMLElement;
-        // Check if the click is outside the search-bar component itself
-        return !this.elementRef.nativeElement.contains(clickedElement);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.showSuggestions = false;
-      this.activeSuggestionIndex = -1;
-    });
+    fromEvent(document, 'click')
+      .pipe(
+        filter((event) => {
+          if (!this.showSuggestions) return false;
+          const clickedElement = event.target as HTMLElement;
+          // Check if the click is outside the search-bar component itself
+          return !this.elementRef.nativeElement.contains(clickedElement);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.showSuggestions = false;
+        this.activeSuggestionIndex = -1;
+      });
   }
   
   ngOnDestroy(): void {
@@ -121,16 +168,19 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       this.showSuggestions = false;
       this.currentSearchSuggestions = []; // Clear suggestions immediately
     } else if (this.searchInputFocused) {
-        // If query is long enough and input is focused, intent is to show.
-        // Actual display depends on currentSearchSuggestions having items.
-        this.showSuggestions = true;
+      // If query is long enough and input is focused, intent is to show.
+      // Actual display depends on currentSearchSuggestions having items.
+      this.showSuggestions = true;
     }
-     this.activeSuggestionIndex = -1;
+    this.activeSuggestionIndex = -1;
   }
-  
+
   onSearchFocus(): void {
     this.searchInputFocused = true;
-    if (this.searchQuery.trim().length >= 3 && this.currentSearchSuggestions.length > 0) {
+    if (
+      this.searchQuery.trim().length >= 3 &&
+      this.currentSearchSuggestions.length > 0
+    ) {
       this.showSuggestions = true;
     }
   }
@@ -149,10 +199,21 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     this.searchQuery = '';
     this.searchTerms.next(''); // Clear the stream
     this.showSuggestions = false;
+    this.isOpen = false;
     this.activeSuggestionIndex = -1;
     this.currentSearchSuggestions = [];
+    document.body.style.overflow = 'unset'; // Unlock body scroll
     // Optionally re-focus input:
     this.searchInput?.nativeElement.focus(); // Use ViewChild reference
+  }
+
+  open(): void {
+    this.isOpen = true;
+    this.showSuggestions = true;
+    document.body.style.overflow = 'hidden'; // Lock body scroll
+    setTimeout(() => {
+      this.searchInput?.nativeElement.focus();
+    }, 100);
   }
 
   handleKeyDown(event: KeyboardEvent): void {
@@ -168,14 +229,21 @@ export class SearchBarComponent implements OnInit, OnDestroy {
 
     if (event.key === 'ArrowDown') {
       event.preventDefault();
-      this.activeSuggestionIndex = (this.activeSuggestionIndex + 1) % suggestionsCount;
+      this.activeSuggestionIndex =
+        (this.activeSuggestionIndex + 1) % suggestionsCount;
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
-      this.activeSuggestionIndex = (this.activeSuggestionIndex - 1 + suggestionsCount) % suggestionsCount;
+      this.activeSuggestionIndex =
+        (this.activeSuggestionIndex - 1 + suggestionsCount) % suggestionsCount;
     } else if (event.key === 'Enter') {
       event.preventDefault();
-      if (this.activeSuggestionIndex > -1 && this.activeSuggestionIndex < suggestionsCount) {
-        this.selectSuggestion(this.currentSearchSuggestions[this.activeSuggestionIndex]);
+      if (
+        this.activeSuggestionIndex > -1 &&
+        this.activeSuggestionIndex < suggestionsCount
+      ) {
+        this.selectSuggestion(
+          this.currentSearchSuggestions[this.activeSuggestionIndex]
+        );
       } else {
         this.submitSearch();
       }
@@ -190,31 +258,29 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   async selectSuggestion(suggestion: SearchResultItem): Promise<void> {
     this.searchQuery = suggestion.name; // Assuming 'name' is common or handle specific properties
     this.showSuggestions = false;
+    this.isOpen = false;
     this.activeSuggestionIndex = -1;
-    
+    document.body.style.overflow = 'unset'; // Unlock body scroll
+
     const storeSlug = await firstValueFrom(this.storeContext.currentStoreSlug$);
 
     if (suggestion.resultType === 'product') {
-      if (storeSlug && suggestion.name) { // Check for name to slugify
-         // Products are identified by ID (UUID) in the backend, but routes use slugs.
-         // We will generate a slug from the product name for navigation.
-        const productSlug = this.slugify(suggestion.name);
-        this.router.navigate(['/', storeSlug, 'product', productSlug]);
+      if (storeSlug && suggestion.id) {
+        // Products are identified by ID (UUID) in the backend
+        this.router.navigate(['/', storeSlug, 'product', suggestion.id]);
       } else {
-        console.error('Cannot navigate to product suggestion, missing store slug or product name for slug generation.');
+        console.error(
+          'Cannot navigate to product suggestion, missing store slug or product ID.'
+        );
       }
     } else if (suggestion.resultType === 'store' && suggestion.slug) {
       this.router.navigate(['/', suggestion.slug]);
     } else {
-      console.error('Unknown or incomplete suggestion type selected:', suggestion);
+      console.error(
+        'Unknown or incomplete suggestion type selected:',
+        suggestion
+      );
     }
-  }
-  
-  private slugify(text: string): string {
-    return text.toString().toLowerCase().trim()
-      .replace(/\s+/g, '-') // Replace spaces with -
-      .replace(/[^\w-]+/g, '') // Remove all non-word chars
-      .replace(/--+/g, '-'); // Replace multiple - with single -
   }
 
   async submitSearch(): Promise<void> {
@@ -222,14 +288,23 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     if (!term) return;
 
     this.showSuggestions = false;
+    this.isOpen = false;
+    document.body.style.overflow = 'unset'; // Unlock body scroll
     const storeSlug = await firstValueFrom(this.storeContext.currentStoreSlug$);
 
     if (storeSlug) {
-      this.router.navigate(['/', storeSlug, 'search'], { queryParams: { q: term } });
+      this.router.navigate(['/', storeSlug, 'search'], {
+        queryParams: { q: term },
+      });
     } else {
       // For global search, redirect to a generic search page or handle as needed
-      this.router.navigate(['/search'], { queryParams: { q: term, global: 'true' } });
-      console.log('Performing global search for (stores or all products):', term);
+      this.router.navigate(['/search'], {
+        queryParams: { q: term, global: 'true' },
+      });
+      console.log(
+        'Performing global search for (stores or all products):',
+        term
+      );
     }
   }
 }

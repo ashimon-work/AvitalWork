@@ -1021,19 +1021,77 @@ const wishlistItemData: any[] = []; // Will populate after fetching products
 
 // --- About Content Data ---
 const aboutContentData = [
+  // Awesome Gadgets & Goods
   {
     storeId: storeData[0].id,
-    title: 'About Awesome Gadgets & Goods',
+    title: 'About Us',
     content:
-      'We are passionate about bringing you the latest and greatest gadgets and unique home goods.',
+      'Awesome Gadgets & Goods is an online store specializing in smart gadgets and selected products for a more convenient and enjoyable life. The store offers a wide range of advanced technology products, audio accessories, smart home devices, quality kitchen and lifestyle products. All products are carefully selected to combine innovation, design and functionality – for a smart and updated shopping experience.',
     imageUrl: 'https://picsum.photos/seed/about-awesome/800/400',
   },
   {
-    storeId: storeData[1].id,
-    title: 'About Fashion & Fun Zone',
+    storeId: storeData[0].id,
+    title: 'Shipping Policy',
     content:
-      'Discover the latest fashion trends and fun items for the whole family.',
+      'We offer fast and reliable shipping on all orders. Standard shipping typically takes 3-5 business days within the country. Express options are available for urgent deliveries. International shipping is provided to select countries with delivery times ranging from 7-14 business days. All shipments are tracked and insured. Free shipping is available on orders over $50.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[0].id,
+    title: 'Return Policy',
+    content:
+      'We want you to be completely satisfied with your purchase. If you are not happy with your item, you can return it within 30 days of delivery for a full refund or exchange. Items must be in their original condition and packaging. Return shipping costs are covered by us for defective items. For all other returns, customers are responsible for return shipping costs.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[0].id,
+    title: 'Privacy Policy',
+    content:
+      'We are committed to protecting your privacy. We collect personal information only for order processing and customer service. Your data is securely stored and never shared with third parties without your consent. We use industry-standard encryption and follow all relevant data protection regulations. You can request to view, update, or delete your personal information at any time.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[0].id,
+    title: 'Terms of Service',
+    content:
+      'By using our website and services, you agree to our terms. All products are sold as-is with warranty coverage as specified by manufacturers. We reserve the right to modify prices and availability without notice. Intellectual property on our site belongs to Awesome Gadgets & Goods. Any misuse of our services may result in account suspension.',
+    imageUrl: undefined,
+  },
+  // Fashion & Fun Zone
+  {
+    storeId: storeData[1].id,
+    title: 'About Us',
+    content:
+      'Fashion & Fun Zone is your ultimate destination for stylish apparel and entertaining products. We curate the latest trends in clothing, accessories, and fun items for all ages. From trendy fashion pieces to toys and sporting goods, our collection combines quality, style, and enjoyment to make every day more fun and fashionable.',
     imageUrl: 'https://picsum.photos/seed/about-fashion/800/400',
+  },
+  {
+    storeId: storeData[1].id,
+    title: 'Shipping Policy',
+    content:
+      'Fashion & Fun Zone provides reliable shipping services to ensure your orders arrive quickly and safely. Domestic shipping typically takes 2-4 business days, with express options available. We ship internationally to over 50 countries, with delivery times of 5-10 business days. All packages are carefully packaged and tracked. Free shipping applies to orders over $75.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[1].id,
+    title: 'Return Policy',
+    content:
+      'Customer satisfaction is our priority at Fashion & Fun Zone. We offer a hassle-free 30-day return policy on all items. Returns must be in original condition with tags attached. We provide prepaid return labels for easy returns. Exchanges are processed within 5-7 business days. Refunds are issued to the original payment method within 3-5 business days after receipt.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[1].id,
+    title: 'Privacy Policy',
+    content:
+      'Your privacy matters to us. We collect information only necessary for processing orders and improving our services. Personal data is encrypted and stored securely. We comply with all privacy laws and never sell your information. You have the right to access, correct, or delete your data. Contact us for any privacy-related concerns.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[1].id,
+    title: 'Terms of Service',
+    content:
+      'Welcome to Fashion & Fun Zone. By shopping with us, you agree to these terms. Products are sold with manufacturer warranties. Prices and availability are subject to change. Our intellectual property is protected. Accounts may be terminated for violations of our policies. Disputes are resolved through our customer service team.',
+    imageUrl: undefined,
   },
   gjAboutContentData,
 ];
