@@ -5,20 +5,28 @@ import { T, TranslatePipe } from '@shared/i18n';
 import { HeaderComponent } from './core/components/header/header.component';
 import { FooterComponent } from './core/components/footer/footer.component';
 import { AuthService } from './core/services/auth.service';
-import { CartService } from './core/services/cart.service'; // Added CartService
 import { CommonModule } from '@angular/common';
 import { NotificationToastComponent } from './shared/components/notification-toast/notification-toast.component';
-
+import { CartDrawerComponent } from './cart/components/cart-drawer/cart-drawer.component';
+import { CartService } from './core/services/cart.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, CommonModule, NotificationToastComponent, TranslatePipe],
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    CommonModule,
+    NotificationToastComponent,
+    TranslatePipe,
+    CartDrawerComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit, OnDestroy {
   constructor(private router: Router) { } // Implemented OnDestroy
-  public tKeys = T;
+   public tKeys = T;
   isAuthenticated$!: Observable<boolean>;
   showCartNotification = false;
   private notificationTimeout: any = null; // Using 'any' for Node.js/Browser compatibility
