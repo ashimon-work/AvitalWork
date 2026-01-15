@@ -41,41 +41,36 @@
     }
   }
 
-  &__grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  align-items: stretch; 
-    height: auto;
-  max-height: none;
+&__grid {
+    display: grid;
+    grid-template-columns: 1fr; 
 
     @media (min-width: 1024px) {
       grid-template-columns: repeat(12, 1fr);
       gap: 3rem;
-      align-items: stretch;
     }
   }
 
   &__grid-left {
-    grid-column: span 4;
-    margin-left: 1rem;
-    height: 100%;
-    align-self: stretch;    
-    overflow: visible !important;
-      @media (min-width: 1024px) {
-      grid-column: span 4 ;
-      align-self: stretch;
-    }
-  }  
-
-  &__grid-right {
     grid-row: 1; 
+    grid-column: 1 / -1;
+
     @media (min-width: 1024px) {
-      grid-column: span 8;
+      grid-column: span 4;
       grid-row: auto;
+      margin-left: 1rem;
     }
   }
 
-  
+  &__grid-right {
+    grid-row: 2; 
+    grid-column: 1 / -1;
+
+    @media (min-width: 1024px) {
+      grid-column: span 8;
+      grid-row: auto; 
+    }
+  }
 }
 .text-display{
   color:#000000;
@@ -115,7 +110,7 @@
   background-color: #111827;
   color: #ffffff;
   border: none;
-  border-radius: 999px; /* גלולה בדיוק כמו ה-pill-container */
+  border-radius: 999px; 
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
@@ -142,7 +137,6 @@
     line-height: 1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
-    /* מצב מוסתר */
     opacity: 0;
     visibility: hidden;
     transform: translateX(10px);
