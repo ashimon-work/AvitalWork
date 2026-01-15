@@ -136,8 +136,8 @@ const productData: any[] = [
   // Electronics (Store 1)
   {
     sku: 'FP1v2',
-    name: 'Wireless Noise-Cancelling Headphones',
-    description: 'Experience immersive sound with these premium headphones.',
+    name: 'אוזניות ללא חוטים מבטלות רעש',
+    description: 'חווה צליל עמוק עם אוזניות פרימיום אלה.',
     price: 199.99,
     imageUrls: [
       'https://images.unsplash.com/photo-1496957961599-e35b69ef5d7c?w=500&h=500&fit=crop',
@@ -153,8 +153,8 @@ const productData: any[] = [
   },
   {
     sku: 'FP2v2',
-    name: 'Smartwatch Series 8',
-    description: 'Stay connected and track your fitness goals effortlessly.',
+    name: 'שעון חכם סדרה 8',
+    description: 'הישאר מחובר ועקוב אחר מטרות הכושר שלך בקלות.',
     price: 349.0,
     imageUrls: [
       'https://media.istockphoto.com/id/539215939/photo/smart-watch-displaying-apps-icons.webp?a=1&b=1&s=612x612&w=0&k=20&c=-xaY3cEkxpHYv7kbomdaX_MXrTVReTnqCfCQ_iKEgiw=',
@@ -169,9 +169,9 @@ const productData: any[] = [
   },
   {
     sku: 'FP3',
-    name: 'Portable Bluetooth Speaker',
+    name: 'רמקול בלוטות\' נייד',
     description:
-      'Compact speaker with powerful sound quality for music on the go.',
+      'רמקול קומפקטי עם איכות צליל חזקה למוזיקה בדרכים.',
     price: 49.99,
     imageUrls: ['https://plus.unsplash.com/premium_photo-1677159499898-b061fb5bd2d7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8UG9ydGFibGUlMjBCbHVldG9vdGglMjBTcGVha2VyfGVufDB8fDB8fHww'],
     tags: ['Sale', 'Featured', 'Audio'],
@@ -183,8 +183,8 @@ const productData: any[] = [
   },
   {
     sku: 'FP4',
-    name: '4K Ultra HD Smart TV',
-    description: 'Stunning picture quality with smart features.',
+    name: 'טלוויזיה חכמה 4K אולטרה HD',
+    description: 'איכות תמונה מדהימה עם תכונות חכמות.',
     price: 799.99,
     imageUrls: [
       'https://plus.unsplash.com/premium_photo-1683121217848-44dde7d393e6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8NEslMjBVbHRyYSUyMEhEJTIwU21hcnQlMjBUVnxlbnwwfHwwfHx8MA%3D%3D',
@@ -200,8 +200,8 @@ const productData: any[] = [
   },
   {
     sku: 'FP5',
-    name: 'Gaming Laptop',
-    description: 'High-performance laptop for gaming enthusiasts.',
+    name: 'מחשב נייד לגיימינג',
+    description: 'מחשב נייד בעל ביצועים גבוהים לחובבי גיימינג.',
     price: 1299.0,
     imageUrls: ['https://images.unsplash.com/photo-1611078489935-0cb964de46d6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8R2FtaW5nJTIwTGFwdG9wfGVufDB8fDB8fHww'],
     tags: ['New', 'Gaming'],
@@ -214,9 +214,9 @@ const productData: any[] = [
   // Apparel (Store 2)
   {
     sku: 'APPA-001',
-    name: 'Classic Cotton T-Shirt',
+    name: 'חולצת טי קלאסית מכותנה',
     description:
-      'A comfortable and stylish everyday essential, available in multiple colors.',
+      'פריט חובה יומי נוח ואופנתי, זמין במגוון צבעים.',
     price: 24.99,
     imageUrls: [
       'https://images.unsplash.com/photo-1713881587420-113c1c43e28a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Q2xhc3NpYyUyMENvdHRvbiUyMFQtU2hpcnR8ZW58MHx8MHx8fDA%3D',
@@ -346,8 +346,8 @@ const productData: any[] = [
   },
   {
     sku: 'APPA-002',
-    name: 'Slim Fit Denim Jeans',
-    description: 'Classic slim fit denim jeans for a modern look.',
+    name: 'ג\'ינס דנימ סקיני פיט',
+    description: 'ג\'ינס דנימ קלאסי סקיני פיט למראה מודרני.',
     price: 59.99,
     imageUrls: [
       'https://picsum.photos/seed/newAPPA-002a/500/500',
@@ -437,8 +437,8 @@ const productData: any[] = [
   },
   {
     sku: 'APPA-003',
-    name: 'Lightweight Hoodie',
-    description: 'Perfect for layering or cool evenings.',
+    name: 'הודי קל משקל',
+    description: 'מושלם לשכבות או ערבים קרירים.',
     price: 45.0,
     imageUrls: ['https://picsum.photos/seed/newAPPA-003a/500/500'],
     tags: ['New', 'Casual'],
@@ -506,8 +506,8 @@ const productData: any[] = [
   },
   {
     sku: 'APPA-004',
-    name: 'Summer Dress',
-    description: 'Flowy and comfortable dress for warm weather.',
+    name: 'שמלת קיץ',
+    description: 'שמלה זורמת ונוחה למזג אוויר חם.',
     price: 65.0,
     imageUrls: [
       'https://picsum.photos/seed/newAPPA-004a/500/500',
@@ -587,8 +587,8 @@ const productData: any[] = [
   },
   {
     sku: 'APPA-005',
-    name: 'Running Sneakers',
-    description: 'Lightweight and supportive sneakers for your runs.',
+    name: 'נעלי ריצה',
+    description: 'נעלי ספורט קלות ותומכות לריצות שלך.',
     price: 89.99,
     imageUrls: [
       'https://picsum.photos/seed/APPA-005a/500/500',
@@ -680,8 +680,8 @@ const productData: any[] = [
   // Home Goods (Store 1)
   {
     sku: 'HOME-001',
-    name: 'Ceramic Coffee Mug Set (4)',
-    description: 'Start your day right with this durable set of mugs.',
+    name: 'סט ספלי קפה קרמיקה (4)',
+    description: 'התחל את היום שלך נכון עם סט עמיד של ספלים.',
     price: 39.99,
     imageUrls: ['https://images.unsplash.com/photo-1651936020103-1156d5390b25?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fENlcmFtaWMlMjBDb2ZmZWUlMjBNdWclMjBTZXR8ZW58MHx8MHx8fDA%3D'],
     tags: ['Kitchen', 'Gift Idea'],
@@ -693,8 +693,8 @@ const productData: any[] = [
   },
   {
     sku: 'HOME-002',
-    name: 'Luxury Scented Candle',
-    description: 'Relaxing lavender and vanilla scented candle in a glass jar.',
+    name: 'נר ריחני יוקרתי',
+    description: 'נר ריחני מרגיע של לבנדר ווניל בקנקן זכוכית.',
     price: 22.5,
     imageUrls: [
       'https://images.unsplash.com/photo-1707839568938-f9b50bb88454?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8THV4dXJ5JTIwU2NlbnRlZCUyMENhbmRsZXxlbnwwfHwwfHx8MA%3D%3D',
@@ -708,8 +708,8 @@ const productData: any[] = [
   },
   {
     sku: 'HOME-003',
-    name: 'Plush Throw Blanket',
-    description: 'Soft and cozy blanket for your sofa or bed.',
+    name: 'שמיכת זריקה רכה',
+    description: 'שמיכה רכה ונוחה לספה או למיטה.',
     price: 49.99,
     imageUrls: ['https://images.unsplash.com/photo-1640794334953-47993ef59351?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8UGx1c2glMjBUaHJvdyUyMEJsYW5rZXR8ZW58MHx8MHx8fDA%3D'],
     tags: ['Comfort', 'Home Decor'],
@@ -720,8 +720,8 @@ const productData: any[] = [
   },
   {
     sku: 'HOME-004',
-    name: 'Stainless Steel Cookware Set',
-    description: 'Durable 10-piece cookware set for your kitchen.',
+    name: 'סט כלי בישול פלדת אל-חלד',
+    description: 'סט כלי בישול עמיד בן 10 חלקים למטבח שלך.',
     price: 149.99,
     imageUrls: [
       'https://plus.unsplash.com/premium_photo-1664391825760-17aacf4cb3b4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8U3RhaW5sZXNzJTIwU3RlZWwlMjBDb29rd2FyZSUyMFNldHxlbnwwfHwwfHx8MA%3D%3D',
@@ -736,8 +736,8 @@ const productData: any[] = [
   },
   {
     sku: 'HOME-005',
-    name: 'Wall Art Print',
-    description: 'Abstract art print to enhance your living space.',
+    name: 'הדפס אומנות קיר',
+    description: 'הדפס אומנות אבסטרקטית לשיפור המרחב המחיה שלך.',
     price: 75.0,
     imageUrls: ['https://plus.unsplash.com/premium_photo-1723759219493-6287376860f0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8V2FsbCUyMEFydCUyMFByaW50fGVufDB8fDB8fHww'],
     tags: ['Home Decor'],
@@ -750,8 +750,8 @@ const productData: any[] = [
   // Books (Store 1)
   {
     sku: 'BOOK-001',
-    name: 'The Midnight Library',
-    description: 'A captivating novel about choices and regrets.',
+    name: 'ספריית חצות',
+    description: 'רומן מרתק על בחירות וחרטות.',
     price: 15.99,
     imageUrls: ['https://images.unsplash.com/photo-1563135629-4850a3517799?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fFRoZSUyME1pZG5pZ2h0JTIwTGlicmFyeXxlbnwwfHwwfHx8MA%3D%3D'],
     tags: ['Featured', 'Fiction', 'Best Seller'],
@@ -763,8 +763,8 @@ const productData: any[] = [
   },
   {
     sku: 'BOOK-002',
-    name: 'Babies book',
-    description: 'A concise and accessible guide to the cosmos.',
+    name: 'ספר תינוקות',
+    description: 'מדריך תמציתי ונגיש לקוסמוס.',
     price: 12.99,
     imageUrls: ['https://images.unsplash.com/photo-1589123066574-165d71809555?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8QmFiaWVzJTIwYm9va3xlbnwwfHwwfHx8MA%3D%3D'],
     tags: ['Non-Fiction', 'Science'],
@@ -775,8 +775,8 @@ const productData: any[] = [
   },
   {
     sku: 'BOOK-003',
-    name: 'Cookbook: Simple Recipes',
-    description: 'Easy and delicious recipes for everyday cooking.',
+    name: 'ספר בישול: מתכונים פשוטים',
+    description: 'מתכונים קלים וטעימים לבישול יומיומי.',
     price: 25.0,
     imageUrls: ['https://images.unsplash.com/photo-1542010589005-d1eacc3918f2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q29va2Jvb2slM0ElMjBTaW1wbGUlMjBSZWNpcGVzfGVufDB8fDB8fHww'],
     tags: ['Cooking', 'Gift Idea'],
@@ -787,8 +787,8 @@ const productData: any[] = [
   },
   {
     sku: 'BOOK-004',
-    name: "Children's Picture Book",
-    description: 'A beautifully illustrated story for young readers.',
+    name: "ספר תמונות לילדים",
+    description: 'סיפור מאויר יפה לקוראים צעירים.',
     price: 9.99,
     imageUrls: ['hhttps://images.unsplash.com/photo-1616802099190-5a4485319df6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q2hpbGRyZW4ncyUyMFBpY3R1cmUlMjBCb29rfGVufDB8fDB8fHww'],
     tags: ['Children', 'Illustrated'],
@@ -801,8 +801,8 @@ const productData: any[] = [
   // Sports & Outdoors (Store 2)
   {
     sku: 'SPRT-001',
-    name: 'Premium Yoga Mat',
-    description: 'Extra thick, comfortable, and non-slip yoga mat.',
+    name: 'מחצלת יוגה פרימיום',
+    description: 'מחצלת יוגה עבה במיוחד, נוחה ולא מחליקה.',
     price: 34.99,
     imageUrls: [
       'https://picsum.photos/seed/SPRT-001a/500/500',
@@ -817,8 +817,8 @@ const productData: any[] = [
   },
   {
     sku: 'SPRT-002',
-    name: 'Hiking Backpack (40L)',
-    description: 'Durable and spacious backpack for day hikes or travel.',
+    name: 'תיק גב טיולים (40 ליטר)',
+    description: 'תיק גב עמיד ומרווח לטיולים יומיים או נסיעות.',
     price: 79.99,
     imageUrls: [
       'https://picsum.photos/seed/SPRT-002a/500/500',
@@ -833,8 +833,8 @@ const productData: any[] = [
   },
   {
     sku: 'SPRT-003',
-    name: 'Resistance Band Set',
-    description: 'Versatile resistance bands for home workouts.',
+    name: 'סט רצועות התנגדות',
+    description: 'רצועות התנגדות מגוונות לאימונים ביתיים.',
     price: 19.99,
     imageUrls: ['https://picsum.photos/seed/SPRT-003a/500/500'],
     tags: ['Fitness', 'Workout'],
@@ -845,8 +845,8 @@ const productData: any[] = [
   },
   {
     sku: 'SPRT-004',
-    name: 'Insulated Water Bottle',
-    description: 'Keeps drinks cold for 24 hours or hot for 12.',
+    name: 'בקבוק מים מבודד',
+    description: 'שומר על משקאות קרים למשך 24 שעות או חמים למשך 12.',
     price: 24.99,
     imageUrls: [
       'https://picsum.photos/seed/SPRT-004a/500/500',
@@ -862,9 +862,9 @@ const productData: any[] = [
   // Toys & Games (Store 2)
   {
     sku: 'TOY-001',
-    name: 'Wooden Building Blocks Set (100pcs)',
+    name: 'סט קוביות בנייה עץ (100 חלקים)',
     description:
-      'Classic wooden building blocks for creative and educational play.',
+      'קוביות בנייה עץ קלאסיות למשחק יצירתי וחינוכי.',
     price: 45.99,
     imageUrls: ['https://picsum.photos/seed/TOY-001a/500/500'],
     tags: ['Educational', 'Kids'],
@@ -875,8 +875,8 @@ const productData: any[] = [
   },
   {
     sku: 'TOY-002',
-    name: 'Strategy Board Game',
-    description: 'Engaging board game for family game night.',
+    name: 'משחק לוח אסטרטגיה',
+    description: 'משחק לוח מרתק לערב משפחתי.',
     price: 39.99,
     imageUrls: [
       'https://picsum.photos/seed/TOY-002a/500/500',
@@ -890,8 +890,8 @@ const productData: any[] = [
   },
   {
     sku: 'TOY-003',
-    name: 'Plush Teddy Bear',
-    description: 'Soft and cuddly teddy bear companion.',
+    name: 'דובי פלוש',
+    description: 'בן לוויה דובי רך ומחבק.',
     price: 19.99,
     imageUrls: ['https://picsum.photos/seed/TOY-003a/500/500'],
     tags: ['Gift Idea', 'Kids'],
@@ -902,8 +902,8 @@ const productData: any[] = [
   },
   {
     sku: 'TOY-004',
-    name: 'Remote Control Car',
-    description: 'Fast and fun remote control car for indoor/outdoor play.',
+    name: 'מכונית שלט רחוק',
+    description: 'מכונית שלט רחוק מהירה וכיפית למשחק בפנים/חוץ.',
     price: 29.99,
     imageUrls: [
       'https://picsum.photos/seed/TOY-004a/500/500',
