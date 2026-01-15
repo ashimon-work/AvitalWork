@@ -19,6 +19,8 @@ export class FeaturedProductCardComponent {
 
   public favorite: boolean = false;
 
+  private cacheBuster = '&t=' + Date.now();
+
   get href(): string {
     if (this.storeSlug && this.product) {
       return `/${this.storeSlug}/product/${this.product.id}`;
@@ -28,9 +30,12 @@ export class FeaturedProductCardComponent {
   }
 
   get imageUrl(): string {
-    return (this.product && this.product.imageUrls && this.product.imageUrls.length > 0)
+    const url = (this.product && this.product.imageUrls && this.product.imageUrls.length > 0)
       ? this.product.imageUrls[0]
       : 'assets/images/placeholder-image.webp';
+    console.log('Featured product image URL:', url, 'for product:', this.product?.name);
+    const separator = url.includes('?') ? '&' : '?';
+    return url + separator + 'v=1';
   }
 
   get altText(): string {
@@ -44,5 +49,9 @@ export class FeaturedProductCardComponent {
 
   onAddToCartClick(): void {
     this.addToCart.emit(this.product);
+  }
+
+  onImageError(event: Event): void {
+    console.error('Image failed to load:', (event.target as HTMLImageElement).src);
   }
 }

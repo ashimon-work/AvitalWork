@@ -1,211 +1,127 @@
-<!-- Wait for product data -->
 <div class="product-page-container" *ngIf="product$ | async as product; else loadingProduct">
+  <main class="py-12">
+    <div class="container mx-auto px-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+        
+        <div class="space-y-4">
+          <div class="aspect-square bg-muted overflow-hidden relative group rounded-xl" style="background-color: #f3f4f6; border-radius: 0.75rem;">
+            <img
+              [src]="getImageUrl(selectedImageIndex)"
+              [alt]="product.name"
+              class="w-full h-full object-cover"
+              (error)="onImageError($event)"
+            />
 
-  <!-- Breadcrumbs (Example - Needs category data if available) -->
-  <div class="breadcrumbs">
-    <a [routerLink]="['/']">{{ tKeys.SF_NAV_HOME | translate }}</a>
-    <!-- Add category link if product data includes it -->
-    <ng-container *ngIf="productCategory">
-      <img src="assets/icons/chevron-right.svg" alt="" class="breadcrumb-separator-icon" /> <a
-        [routerLink]="['/category', productCategory.id]">{{ productCategory.name }}</a>
-    </ng-container>
-    <img src="assets/icons/chevron-right.svg" alt="" class="breadcrumb-separator-icon" /> <span>{{ product.name
-      }}</span>
-  </div>
-
-  <div class="product-details-flex-container">
-    <!-- Left Section: Images (using Image Carousel Component) -->
-    <div class="product-image-section">
-      <app-image-carousel [images]="product.imageUrls"></app-image-carousel>
-    </div>
-
-    <!-- Right Section: Info & Actions -->
-    <div class="product-info-section">
-      <h1 class="product-name">{{ product.name }}</h1>
-
-      <!-- Price - Use currentPrice which updates with variant selection -->
-      <p class="product-price">{{ currentPrice | currency }}</p>
-
-      <!-- Average Rating Display -->
-      <div class="product-rating">
-        <span *ngFor="let star of getStarArray(averageRating); let i = index" class="star">
-          <img [src]="star ? 'assets/icons/star-filled.svg' : 'assets/icons/star-outline.svg'"
-            alt="{{ star ? 'Filled Star' : 'Empty Star' }}" class="rating-star-icon" />
-        </span>
-        <span>{{ tKeys.SF_PRODUCT_PAGE_RATING_SUMMARY | translate:averageRating:reviews.length }}</span>
-      </div>
-
-      <!-- Description -->
-      <div class="product-description">
-        <p>{{ product.description || (tKeys.SF_PRODUCT_PAGE_NO_DESCRIPTION | translate) }}</p>
-        <!-- Add formatted text/bullets later -->
-      </div>
-
-      <!-- Variant Selection -->
-      <div class="product-variants" *ngIf="availableOptions.length > 0">
-        <div *ngFor="let option of availableOptions" class="variant-option">
-          <label>{{ option.name }}:</label> <!-- Assuming option.name is not for translation or comes translated -->
-          <select [(ngModel)]="selectedOptions[option.name]" (change)="onOptionChange(option.name, $event)">
-            <option *ngFor="let optValue of option.values" [value]="optValue.value" [disabled]="optValue.disabled">
-              {{ optValue.value }} <!-- Assuming optValue.value is not for translation or comes translated -->
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Stock Level -->
-      <div class="product-stock">
-        <span *ngIf="currentStock !== undefined">
-          {{ tKeys.SF_PRODUCT_PAGE_STOCK_LEVEL | translate:(currentStock > 0 ? currentStock :
-          (tKeys.SF_PRODUCT_PAGE_OUT_OF_STOCK | translate)) }}
-        </span>
-      </div>
-
-      <!-- Quantity & Add to Cart -->
-      <div class="product-actions">
-        <div class="quantity-selector">
-          <label for="quantity">{{ tKeys.SF_PRODUCT_PAGE_QUANTITY_LABEL | translate }}</label>
-          <button (click)="decrementQuantity()" [disabled]="quantity <= 1">-</button>
-          <input type="number" id="quantity" [(ngModel)]="quantity" min="1" [max]="currentStock || 0"
-            (change)="onQuantityChange($event)" class="quantity-input">
-          <button (click)="incrementQuantity()" [disabled]="quantity >= (currentStock || 0)">+</button>
-        </div>
-        <button class="add-to-cart-btn" (click)="onAddToCart(product)"
-          [disabled]="(currentStock || 0) <= 0 || quantity <= 0">{{ tKeys.SF_PRODUCT_CARD_ADD_TO_CART_BUTTON | translate
-          }}</button>
-        <!-- Add Wishlist button -->
-        <button *ngIf="isLoggedIn$ | async" class="add-to-wishlist-btn" [class.in-wishlist]="isInWishlist"
-          (click)="toggleWishlist(product)">
-          <img src="assets/icons/heart.svg" alt="" class="wishlist-icon" [class.filled]="isInWishlist" />
-          <span>{{ isInWishlist ? (tKeys.SF_PRODUCT_PAGE_REMOVE_FROM_WISHLIST | translate) :
-            (tKeys.SF_PRODUCT_PAGE_ADD_TO_WISHLIST | translate) }}</span>
-        </button>
-      </div>
-
-      <!-- Shipping/Return Info -->
-      <div class="product-meta-info">
-        <h4>{{ tKeys.SF_PRODUCT_PAGE_SHIPPING_INFO_TITLE | translate }}</h4>
-        <p>{{ tKeys.SF_PRODUCT_PAGE_ESTIMATED_DELIVERY | translate }}</p>
-        <p>{{ tKeys.SF_PRODUCT_PAGE_SHIPPING_COST_NOTE | translate }}</p>
-        <h4>{{ tKeys.SF_PRODUCT_PAGE_RETURN_POLICY_TITLE | translate }}</h4>
-        <p [innerHTML]="tKeys.SF_PRODUCT_PAGE_RETURN_POLICY_DETAILS_HTML | translate:'/return-policy'"></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Lower Sections: Tabs for Specs/Reviews, and Related Products -->
-  <div class="product-lower-sections">
-    <div class="product-tabs">
-      <div class="tab-headers">
-        <button class="tab-button" [class.active]="selectedTab === 'specs'" (click)="selectTab('specs')">{{
-          tKeys.SF_PRODUCT_PAGE_SPECS_TAB_TITLE | translate }}</button>
-        <button class="tab-button" [class.active]="selectedTab === 'reviews'" (click)="selectTab('reviews')">{{
-          tKeys.SF_PRODUCT_PAGE_REVIEWS_TAB_TITLE | translate:reviews.length }}</button>
-      </div>
-      <div class="tab-content">
-        <!-- Product Specifications Tab -->
-        <div *ngIf="selectedTab === 'specs'" class="product-specs">
-          <h3>{{ tKeys.SF_PRODUCT_PAGE_SPECS_SECTION_TITLE | translate }}</h3>
-          <!-- Add dynamic spec display later -->
-          <dl class="product-specs-list">
-            <div class="spec-item">
-              <dt>{{ tKeys.SF_PRODUCT_PAGE_SPEC_MATERIAL_LABEL | translate }}</dt>
-              <dd>{{ tKeys.SF_PRODUCT_PAGE_SPEC_MATERIAL_VALUE_FABRIC | translate }}</dd>
-            </div>
-            <div class="spec-item">
-              <dt>{{ tKeys.SF_PRODUCT_PAGE_SPEC_WEIGHT_LABEL | translate }}</dt>
-              <dd>{{ tKeys.SF_PRODUCT_PAGE_SPEC_WEIGHT_VALUE_HALF_KG | translate }}</dd>
-            </div>
-            <div class="spec-item">
-              <dt>{{ tKeys.SF_PRODUCT_PAGE_SPEC_DIMENSIONS_LABEL | translate }}</dt>
-              <dd>{{ tKeys.SF_PRODUCT_PAGE_SPEC_DIMENSIONS_VALUE_20_15_5_CM | translate }}</dd>
-            </div>
-            <div class="spec-item">
-              <dt>{{ tKeys.SF_PRODUCT_PAGE_SPEC_MANUFACTURER_LABEL | translate }}</dt>
-              <dd>{{ tKeys.SF_PRODUCT_PAGE_SPEC_MANUFACTURER_VALUE_ACME | translate }}</dd>
-            </div>
-            <!-- Example for dynamic specs if product.specifications is an array of {label: string, value: string}
-            <ng-container *ngFor="let spec of product.specifications">
-              <div class="spec-item">
-                <dt>{{ spec.label }}</dt>
-                <dd>{{ spec.value }}</dd>
-              </div>
-            </ng-container>
-            -->
-          </dl>
-        </div>
-
-        <!-- Customer Reviews Tab -->
-        <div *ngIf="selectedTab === 'reviews'" class="product-reviews">
-          <h3>{{ tKeys.SF_PRODUCT_PAGE_REVIEWS_SECTION_TITLE | translate:reviews.length }}</h3>
-
-          <div *ngIf="reviews.length === 0; else displayReviews">
-            <p>{{ tKeys.SF_PRODUCT_PAGE_NO_REVIEWS_PROMPT | translate }}</p>
+            <button
+              *ngIf="product.imageUrls.length > 1"
+              (click)="handlePrevImage()"
+              class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center transition-all shadow-sm"
+              style="border-radius: 9999px; position: absolute; top: 50%; transform: translateY(-50%); left: 1rem;"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <button
+              *ngIf="product.imageUrls.length > 1"
+              (click)="handleNextImage()"
+              class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center transition-all shadow-sm"
+              style="border-radius: 9999px; position: absolute; top: 50%; transform: translateY(-50%); right: 1rem;"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
           </div>
 
-          <ng-template #displayReviews>
-            <div *ngFor="let review of reviews" class="review-item">
-              <div class="review-header">
-                <strong>{{ review.user?.name || (tKeys.SF_PRODUCT_PAGE_REVIEW_ANONYMOUS_USER | translate) }}</strong>
-                <span class="review-date">{{ review.createdAt | date }}</span>
-              </div>
-              <div class="review-rating">
-                <!-- Display star rating based on review.rating -->
-                <ng-container *ngIf="review.rating !== undefined">
-                  <span *ngFor="let star of getStarArray(review.rating); let i = index" class="star">
-                    <img [src]="star ? 'assets/icons/star-filled.svg' : 'assets/icons/star-outline.svg'"
-                      alt="{{ star ? 'Filled Star' : 'Empty Star' }}" class="rating-star-icon" />
-                  </span>
-                  <span>{{ tKeys.SF_PRODUCT_PAGE_REVIEW_RATING_VALUE | translate:review.rating }}</span>
-                </ng-container>
-              </div>
-              <div class="review-comment">
-                <p>{{ review.comment }}</p>
-              </div>
-              <hr> <!-- Separator between reviews -->
-            </div>
-          </ng-template>
-
-          <!-- Write a Review Form (Visible if logged in) -->
-          <div *ngIf="isLoggedIn$ | async" class="write-review-form">
-            <h4>{{ tKeys.SF_PRODUCT_PAGE_WRITE_REVIEW_TITLE | translate }}</h4>
-            <div class="form-group">
-              <label for="reviewRating">{{ tKeys.SF_PRODUCT_PAGE_REVIEW_FORM_RATING_LABEL | translate }}</label>
-              <input type="number" id="reviewRating" [(ngModel)]="newReviewRating" min="1" max="5" required>
-            </div>
-            <div class="form-group">
-              <label for="reviewComment">{{ tKeys.SF_PRODUCT_PAGE_REVIEW_FORM_COMMENT_LABEL | translate }}</label>
-              <textarea id="reviewComment" [(ngModel)]="newReviewComment" rows="4" required></textarea>
-            </div>
-            <button class="submit-review-btn" (click)="submitReview(product?.id)">{{
-              tKeys.SF_PRODUCT_PAGE_REVIEW_FORM_SUBMIT_BUTTON | translate }}</button>
-            <p *ngIf="reviewSubmissionError" class="error-message">{{ reviewSubmissionError }}</p>
-            <!-- reviewSubmissionError is already translated in TS -->
+          <div *ngIf="product.imageUrls.length > 1" class="flex gap-3">
+            <button
+              *ngFor="let image of product.imageUrls; let index = index"
+              (click)="setSelectedImageIndex(index)"
+              class="w-20 h-20 overflow-hidden border-2 transition-colors rounded-md"
+              [style.border-color]="selectedImageIndex === index ? '#000' : 'transparent'"
+              style="width: 5rem; height: 5rem; border-width: 2px;"
+            >
+              <img [src]="getImageUrl(index)" [alt]="'View ' + (index + 1)" class="w-full h-full object-cover" (error)="onImageError($event)" />
+            </button>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Related Products Section (outside of tabs) -->
-    <div class="related-products-section">
-      <h3>{{ tKeys.SF_PRODUCT_PAGE_RELATED_PRODUCTS_TITLE | translate }}</h3>
-      <div class="related-products-scroll-container">
-        <div *ngIf="relatedProducts.length === 0; else displayRelatedProducts">
-          <p>{{ tKeys.SF_PRODUCT_PAGE_NO_RELATED_PRODUCTS | translate }}</p>
-        </div>
-        <ng-template #displayRelatedProducts>
-          <div class="related-products-list">
-            <app-featured-product-card *ngFor="let relatedProduct of relatedProducts" [product]="relatedProduct"
-              (addToCart)="onAddToCart($event)"></app-featured-product-card>
+        <div class="space-y-6">
+          <nav class="flex items-center gap-3 text-sm" style="color: #9ca3af; display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem;">
+            <a [routerLink]="['../../']" class="hover:text-black transition-colors">Home</a>
+            <span>/</span>
+            <a [routerLink]="['../../products']" class="hover:text-black transition-colors">Collections</a>
+            <span>/</span>
+            <span style="color: #000;">{{ product.name }}</span>
+          </nav>
+
+          <h1 style="font-family: 'Playfair Display', serif; font-size: 2.25rem; font-weight: 300; line-height: 1.2; color: #111827;">
+            {{ product.name }}
+          </h1>
+
+          <div class="flex items-baseline gap-3">
+            <span style="font-size: 1.5rem; font-weight: 600;">
+              {{ currentPrice | currency }}
+            </span>
           </div>
-        </ng-template>
-      </div>
-    </div>
-  </div>
 
+          <p style="font-size: 0.875rem; color: #6b7280; font-style: italic;">
+            You can return it within 5 business days. For more details, refer to the
+            <a [routerLink]="['../../returns']" style="font-weight: 600; text-decoration: underline; color: #000;">
+              return policy page
+            </a>.
+          </p>
+
+          <div style="color: #4b5563; line-height: 1.6;">
+            <p class="whitespace-pre-line">{{ displayedDescription }}</p>
+            <button
+              *ngIf="isLongDescription"
+              (click)="toggleDescription()"
+              style="color: #000; text-decoration: underline; margin-top: 0.5rem; background: none; border: none; cursor: pointer; font-weight: 500;"
+            >
+              {{ showFullDescription ? "Show less" : "Show more" }}
+            </button>
+          </div>
+
+          <div style="border: 1px solid #e5e7eb; padding: 1.5rem; margin-top: 1.5rem;">
+            <p style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem;">Price</p>
+            <p style="font-size: 1.875rem; font-weight: 600; color: #000;">
+              {{ currentPrice | currency }}
+            </p>
+          </div>
+
+          <button 
+            style="width: 100%; background-color: #000; color: #fff; padding: 1.25rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; border-radius: 9999px; border: none; cursor: pointer; margin-top: 1.5rem;"
+            (click)="onAddToCart(product)"
+            [disabled]="(currentStock || 0) <= 0 || quantity <= 0">
+            {{ tKeys.SF_PRODUCT_CARD_ADD_TO_CART_BUTTON | translate }}
+          </button>
+        </div>
+      </div>
+
+      <section style="margin-top: 6rem;">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 400; margin-bottom: 2.5rem; color: #1a1a1a;">
+          You may also like
+        </h2>
+        
+        <div *ngIf="relatedProducts.length > 0">
+          <div #relatedContainer class="flex gap-6 overflow-x-auto scrollbar-hide" style="scroll-behavior: smooth;">
+            <app-featured-product-card
+              *ngFor="let relatedProduct of relatedProducts"
+              [product]="relatedProduct"
+              [storeSlug]="currentStoreSlug$ | async"
+              (addToCart)="onAddToCart($event)"
+              class="flex-shrink-0 w-56"
+            ></app-featured-product-card>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
 </div>
 
-<!-- Loading Template -->
 <ng-template #loadingProduct>
-  <p>{{ tKeys.SF_PRODUCT_PAGE_LOADING_DETAILS | translate }}</p>
+  <p style="text-align: center; padding: 3rem; color: #9ca3af;">{{ tKeys.SF_PRODUCT_PAGE_LOADING_DETAILS | translate }}</p>
 </ng-template>

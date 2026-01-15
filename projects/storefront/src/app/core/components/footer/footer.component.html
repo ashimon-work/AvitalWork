@@ -6,7 +6,7 @@
       <p class="text-muted-foreground mb-4 text-sm">{{ tKeys.SF_FOOTER_NEWSLETTER_SUBTEXT | translate }}</p>
       <form [formGroup]="newsletterForm" (ngSubmit)="handleSubmit()" class="newsletter-form-flex" aria-label="Newsletter signup">
         <div class="newsletter-input-group">
-          <input type="email" formControlName="email" placeholder="{{ tKeys.SF_FORM_FIELD_EMAIL_LABEL | translate }}" required [disabled]="newsletterLoading" class="newsletter-email-input">
+          <input type="email" formControlName="email" placeholder="{{ tKeys.SF_FORM_FIELD_EMAIL_LABEL | translate }}" required class="newsletter-email-input">
           <button type="submit" class="newsletter-submit-button" [disabled]="newsletterLoading || newsletterForm.invalid">
             <span *ngIf="!newsletterLoading">{{ 'SF_BUTTON_SUBSCRIBE' | translate }}</span>
             <span *ngIf="newsletterLoading">{{ 'SF_BUTTON_SUBSCRIBING' | translate }}</span>

@@ -1,34 +1,22 @@
-<article
-  class="relative flex flex-col w-full max-w-[320px] h-[410px] rounded-3xl overflow-hidden bg-white/90 dark:bg-black/80 shadow-xl border border-white/30 dark:border-black/30 focus-within:ring-2 focus-within:ring-primary/60 transition-all group"
-  tabindex="-1">
-  <!-- Favorite button -->
+<article class="relative flex flex-col w-full bg-white transition-all" style="border-radius: 0;" tabindex="-1">
+  
   <button type="button"
     [attr.aria-label]="favorite ? 'Remove ' + product.name + ' from favorites' : 'Add ' + product.name + ' to favorites'"
-    class="absolute top-4 right-4 z-20 rounded-full p-2 bg-white/80 dark:bg-black/60 shadow-md border border-white/40 dark:border-black/40 transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-primary/60"
+    class="favorite-btn-always"
     (click)="toggleFavorite()" tabindex="0">
-    <mat-icon [class.is-favorite]="favorite">{{ favorite ? 'favorite' : 'favorite_border' }}</mat-icon>
-    <span class="sr-only">{{ favorite ? "Favorited" : "Not favorited" }}</span>
+    <mat-icon [class.is-favorite]="favorite">
+      {{ favorite ? 'favorite' : 'favorite_border' }}
+    </mat-icon>
   </button>
 
-  <!-- Product image in inset container -->
-  <a [routerLink]="href" [attr.aria-label]="altText" tabindex="0" class="block focus:outline-none">
-    <div
-      class="relative w-full h-[200px] flex items-center justify-center bg-gradient-to-br from-white/60 to-muted/40 dark:from-black/40 dark:to-muted/20 rounded-t-3xl border-b border-white/30 dark:border-black/30 shadow-inner overflow-hidden">
-      <img [src]="imageUrl" [alt]="altText"
-        class="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105 group-focus:scale-105"
-        width="320" height="200" draggable="false" aria-hidden="false" />
-    </div>
-    <div class="px-6 pt-5 pb-2">
-      <h3 class="text-lg font-bold text-foreground mb-1 line-clamp-2 min-h-[2.5em]">{{ product.name }}</h3>
-      <p class="text-2xl font-extrabold text-primary mb-2">{{ product.price | currency }}</p>
+  <a [routerLink]="href" class="block focus:outline-none" style="text-decoration: none;">
+    <div class="image-container-fixed">
+      <img [src]="imageUrl" [alt]="altText" class="product-img" (error)="onImageError($event)" />
+      <div class="image-overlay"></div>
+      <div class="product-info-overlay">
+        <h3 class="product-title">{{ product.name }}</h3>
+        <p class="product-price">{{ product.price | currency }}</p>
+      </div>
     </div>
   </a>
-
-  <div class="px-6 pb-6 mt-auto">
-    <button type="button"
-      class="w-full rounded-full py-2 px-6 text-base font-semibold bg-primary text-primary-foreground shadow-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/60 hover:bg-primary/90"
-      (click)="onAddToCartClick()" [attr.aria-label]="'Add ' + product.name + ' to cart'" tabindex="0">
-      Add to Cart
-    </button>
-  </div>
 </article>

@@ -1,0 +1,29 @@
+:host {
+    // הגדרת פונט אלגנטי לכותרות (דומה למה שיש ב-Combine)
+    h1, h2, h3 {
+      font-family: 'Playfair Display', serif; /* ודאי שהפונט הזה מוטען ב-index.html */
+      font-weight: 400;
+    }
+  
+    p, a, span {
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.02em;
+    }
+  }
+  
+  // עיצוב מיוחד לסרגל הגלילה במוצרים אם החלטת להשאיר גלילה אופקית
+  .overflow-x-auto {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  
+  // אפקט ריחוף עדין לכרטיסיות
+  app-featured-product-card {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    display: block;
+    &:hover {
+      transform: translateY(-8px);
+    }
+  }

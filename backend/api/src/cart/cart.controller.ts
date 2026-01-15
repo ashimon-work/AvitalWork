@@ -25,6 +25,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { IsNotEmpty, IsUUID } from 'class-validator';
 import { CartDto } from './dto/cart.dto';
 import { plainToInstance } from 'class-transformer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { StoreEntity } from '../stores/entities/store.entity';
 
 // DTO for the merge cart request
 export class MergeCartDto {
@@ -36,7 +39,11 @@ export class MergeCartDto {
 @Controller('stores/:storeSlug/cart')
 export class CartController {
   private readonly logger = new Logger(CartController.name);
-  constructor(private readonly cartService: CartService) {}
+  constructor(
+    private readonly cartService: CartService,
+    @InjectRepository(StoreEntity)
+    private readonly storeRepository: Repository<StoreEntity>,
+  ) {}
 
   // Note: The StoreContextGuard will use req.params.storeSlug to validate the store
   // and attach req.storeId. The controller methods will use req.params.storeSlug
@@ -87,12 +94,19 @@ export class CartController {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
     const guestSessionId = guestSessionIdHeader;
+    const storeId = req.storeId; // From StoreContextGuard
 
     // storeSlug presence is validated by the guard.
 
     this.logger.log(
       `CartController: getCart called. UserID: ${userId}, GuestSessionID Header: ${guestSessionIdHeader}, StoreSlug from params: ${storeSlug}`,
     );
+
+    const store = await this.storeRepository.findOneBy({ id: storeId });
+    if (!store) {
+      this.logger.error(`Store not found with id: ${storeId} for slug: ${storeSlug}`);
+      throw new NotFoundException('Store not found.');
+    }
 
     const cart = await this.cartService.getCart(
       storeSlug,
@@ -117,7 +131,7 @@ export class CartController {
             grandTotal: 0,
             discountAmount: 0,
             appliedPromoCode: null,
-            store: { slug: storeSlug }, // Include store slug for context
+            store: store,
             user: null, // No user for guest cart
             // Ensure all fields expected by Cart interface are present
             createdAt: new Date().toISOString(),

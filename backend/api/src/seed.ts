@@ -51,7 +51,7 @@ const storeData = [
     id: '11111111-1111-1111-1111-111111111111',
     name: 'Awesome Gadgets & Goods',
     slug: 'awesome-gadgets',
-    logoUrl: 'https://picsum.photos/seed/logo-awesome-gadgets/150/50',
+    logoUrl: 'https://plus.unsplash.com/premium_photo-1750895096919-1a7f59cbdda4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QXdlc29tZSUyMEdhZGdldHMlMjAlMjYlMjBHb29kc3xlbnwwfHwwfHx8MA%3D%3D',
     isFeaturedInMarketplace: true,
     authorizedPhoneNumbers: ['+972583215251', '+972534758922', '+972506105590'],
   },
@@ -59,7 +59,7 @@ const storeData = [
     id: '22222222-2222-2222-2222-222222222222',
     name: 'Fashion & Fun Zone',
     slug: 'fashion-fun',
-    logoUrl: 'https://picsum.photos/seed/logo-fashion-fun/150/50',
+    logoUrl: 'https://images.unsplash.com/photo-1617348493867-55244641c60f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RmFzaGlvbiUyMCUyNiUyMEZ1biUyMFpvbmV8ZW58MHx8MHx8fDA%3D',
     isFeaturedInMarketplace: true,
     authorizedPhoneNumbers: ['+972583215251', '+972534758922', '+972506105590'],
   },
@@ -76,7 +76,7 @@ const categoryData = [
     id: 'aaa00001-c246-4913-9166-f75a99ee0c21',
     name: 'Electronics',
     description: 'Gadgets and devices',
-    imageUrl: 'https://picsum.photos/seed/aaa00001/300/200',
+    imageUrl: 'https://plus.unsplash.com/premium_photo-1679079456083-9f288e224e96?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RWxlY3Ryb25pY3N8ZW58MHx8MHx8fDA%3D',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
@@ -84,7 +84,7 @@ const categoryData = [
     id: 'aaa00003-c246-4913-9166-f75a99ee0c21',
     name: 'Home Goods',
     description: 'Items for your home',
-    imageUrl: 'https://picsum.photos/seed/aaa00003/300/200',
+    imageUrl: 'https://plus.unsplash.com/premium_photo-1715071976149-6f26134fc7f0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SG9tZSUyMEdvb2RzfGVufDB8fDB8fHww',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
@@ -92,15 +92,15 @@ const categoryData = [
     id: 'aaa00004-c246-4913-9166-f75a99ee0c21',
     name: 'Books',
     description: 'Literature and reading materials',
-    imageUrl: 'https://picsum.photos/seed/aaa00004/300/200',
+    imageUrl: 'https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Qm9va3N8ZW58MHx8MHx8fDA%3D',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
   {
     id: 'aaa00007-c246-4913-9166-f75a99ee0c21',
-    name: 'Category_4',
+    name: 'Kitchen products',
     description: 'A new category',
-    imageUrl: 'https://picsum.photos/seed/aaa00007/300/200',
+    imageUrl: 'https://plus.unsplash.com/premium_photo-1714702844124-be1377d19666?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8S2l0Y2hlbiUyMHByb2R1Y3RzfGVufDB8fDB8fHww',
     storeId: storeData[0].id,
   },
   // Store 2: Fashion & Fun Zone
@@ -108,7 +108,7 @@ const categoryData = [
     id: 'aaa00002-c246-4913-9166-f75a99ee0c21',
     name: 'Apparel',
     description: 'Clothing and fashion',
-    imageUrl: 'https://picsum.photos/seed/aaa00002/300/200',
+    imageUrl: 'https://images.unsplash.com/photo-1732257119998-b66cda63dcfc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Q2xvdGhpbmclMjBhbmQlMjBmYXNoaW9ufGVufDB8fDB8fHww',
     storeId: storeData[1].id,
     isFeaturedInMarketplace: true,
   },
@@ -116,7 +116,7 @@ const categoryData = [
     id: 'aaa00005-c246-4913-9166-f75a99ee0c21',
     name: 'Sports & Outdoors',
     description: 'Equipment for sports and outdoor activities.',
-    imageUrl: 'https://picsum.photos/seed/aaa00005/300/200',
+    imageUrl: 'https://images.unsplash.com/photo-1598046655252-f0f143557dcb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fFNwb3J0cyUyMCUyNiUyME91dGRvb3JzfGVufDB8fDB8fHww',
     storeId: storeData[1].id,
     isFeaturedInMarketplace: true,
   },
@@ -124,7 +124,7 @@ const categoryData = [
     id: 'aaa00006-c246-4913-9166-f75a99ee0c21',
     name: 'Toys & Games',
     description: 'Fun for all ages.',
-    imageUrl: 'https://picsum.photos/seed/aaa00006/300/200',
+    imageUrl: 'https://images.unsplash.com/photo-1708032563896-06d7a8aef4e5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     storeId: storeData[1].id,
   },
   ...gjCategoryData,
@@ -135,14 +135,14 @@ const productData: any[] = [
   // Added 'any[]' for type compatibility with gjProductData
   // Electronics (Store 1)
   {
-    sku: 'ELEC-001',
+    sku: 'FP1v2',
     name: 'Wireless Noise-Cancelling Headphones',
     description: 'Experience immersive sound with these premium headphones.',
     price: 199.99,
     imageUrls: [
-      'https://picsum.photos/seed/ELEC-001a/500/500',
-      'https://picsum.photos/seed/ELEC-001b/500/500',
-      'https://picsum.photos/seed/ELEC-001c/500/500',
+      'https://images.unsplash.com/photo-1496957961599-e35b69ef5d7c?w=500&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1524678714210-9917a6c619c2?w=500&h=500&fit=crop',
     ],
     tags: ['New', 'Featured', 'Audio'],
     stockLevel: 50,
@@ -152,13 +152,13 @@ const productData: any[] = [
     isFeaturedInMarketplace: true,
   },
   {
-    sku: 'ELEC-002',
+    sku: 'FP2v2',
     name: 'Smartwatch Series 8',
     description: 'Stay connected and track your fitness goals effortlessly.',
     price: 349.0,
     imageUrls: [
-      'https://picsum.photos/seed/ELEC-002a/500/500',
-      'https://picsum.photos/seed/ELEC-002b/500/500',
+      'https://media.istockphoto.com/id/539215939/photo/smart-watch-displaying-apps-icons.webp?a=1&b=1&s=612x612&w=0&k=20&c=-xaY3cEkxpHYv7kbomdaX_MXrTVReTnqCfCQ_iKEgiw=',
+      'https://images.unsplash.com/photo-1660844817855-3ecc7ef21f12?w=300&h=200&fit=crop',
     ],
     tags: ['New', 'Featured', 'Wearable'],
     stockLevel: 25,
@@ -168,12 +168,12 @@ const productData: any[] = [
     isFeaturedInMarketplace: true,
   },
   {
-    sku: 'ELEC-003',
+    sku: 'FP3',
     name: 'Portable Bluetooth Speaker',
     description:
       'Compact speaker with powerful sound quality for music on the go.',
     price: 49.99,
-    imageUrls: ['https://picsum.photos/seed/ELEC-003a/500/500'],
+    imageUrls: ['https://plus.unsplash.com/premium_photo-1677159499898-b061fb5bd2d7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8UG9ydGFibGUlMjBCbHVldG9vdGglMjBTcGVha2VyfGVufDB8fDB8fHww'],
     tags: ['Sale', 'Featured', 'Audio'],
     stockLevel: 40,
     isActive: true,
@@ -182,15 +182,15 @@ const productData: any[] = [
     isFeaturedInMarketplace: true,
   },
   {
-    sku: 'ELEC-004',
+    sku: 'FP4',
     name: '4K Ultra HD Smart TV',
     description: 'Stunning picture quality with smart features.',
     price: 799.99,
     imageUrls: [
-      'https://picsum.photos/seed/ELEC-004a/500/500',
-      'https://picsum.photos/seed/ELEC-004b/500/500',
-      'https://picsum.photos/seed/ELEC-004c/500/500',
-      'https://picsum.photos/seed/ELEC-004d/500/500',
+      'https://plus.unsplash.com/premium_photo-1683121217848-44dde7d393e6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8NEslMjBVbHRyYSUyMEhEJTIwU21hcnQlMjBUVnxlbnwwfHwwfHx8MA%3D%3D',
+      'https://media.istockphoto.com/id/611294444/photo/uhd-4k-smart-tv-on-black-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=RQQnVLoUV9_tjUWEAe2h0BZTgJJxq-aqJTv9kICrvhY=',
+      'https://images.unsplash.com/photo-1698047484467-9680294b55fd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzR8fDRLJTIwVWx0cmElMjBIRCUyMFNtYXJ0JTIwVFZ8ZW58MHx8MHx8fDA%3D',
+      'https://plus.unsplash.com/premium_photo-1682274001252-cd39d7158ae3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8NEslMjBVbHRyYSUyMEhEJTIwU21hcnQlMjBUVnxlbnwwfHwwfHx8MA%3D%3D',
     ],
     tags: ['Featured', 'Home Entertainment'],
     stockLevel: 15,
@@ -199,11 +199,11 @@ const productData: any[] = [
     categoryIds: [categoryData[0].id],
   },
   {
-    sku: 'ELEC-005',
+    sku: 'FP5',
     name: 'Gaming Laptop',
     description: 'High-performance laptop for gaming enthusiasts.',
     price: 1299.0,
-    imageUrls: ['https://picsum.photos/seed/ELEC-005a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1611078489935-0cb964de46d6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8R2FtaW5nJTIwTGFwdG9wfGVufDB8fDB8fHww'],
     tags: ['New', 'Gaming'],
     stockLevel: 10,
     isActive: true,
@@ -219,9 +219,9 @@ const productData: any[] = [
       'A comfortable and stylish everyday essential, available in multiple colors.',
     price: 24.99,
     imageUrls: [
-      'https://picsum.photos/seed/APPA-001a/500/500',
-      'https://picsum.photos/seed/APPA-001b/500/500',
-      'https://picsum.photos/seed/APPA-001c/500/500',
+      'https://images.unsplash.com/photo-1713881587420-113c1c43e28a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Q2xhc3NpYyUyMENvdHRvbiUyMFQtU2hpcnR8ZW58MHx8MHx8fDA%3D',
+      'https://images.unsplash.com/photo-1623658580851-3b25bf83b4ea?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fENsYXNzaWMlMjBDb3R0b24lMjBULVNoaXJ0fGVufDB8fDB8fHww',
+      'https://images.unsplash.com/photo-1633966887768-64f9a867bdba?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODh8fENsYXNzaWMlMjBDb3R0b24lMjBULVNoaXJ0fGVufDB8fDB8fHww',
     ],
     tags: ['Best Seller', 'Featured', 'Basics'],
     stockLevel: 0,
@@ -350,8 +350,8 @@ const productData: any[] = [
     description: 'Classic slim fit denim jeans for a modern look.',
     price: 59.99,
     imageUrls: [
-      'https://picsum.photos/seed/APPA-002a/500/500',
-      'https://picsum.photos/seed/APPA-002b/500/500',
+      'https://picsum.photos/seed/newAPPA-002a/500/500',
+      'https://picsum.photos/seed/newAPPA-002b/500/500',
     ],
     tags: ['Menswear'],
     stockLevel: 0,
@@ -440,7 +440,7 @@ const productData: any[] = [
     name: 'Lightweight Hoodie',
     description: 'Perfect for layering or cool evenings.',
     price: 45.0,
-    imageUrls: ['https://picsum.photos/seed/APPA-003a/500/500'],
+    imageUrls: ['https://picsum.photos/seed/newAPPA-003a/500/500'],
     tags: ['New', 'Casual'],
     stockLevel: 0,
     isActive: true,
@@ -510,8 +510,8 @@ const productData: any[] = [
     description: 'Flowy and comfortable dress for warm weather.',
     price: 65.0,
     imageUrls: [
-      'https://picsum.photos/seed/APPA-004a/500/500',
-      'https://picsum.photos/seed/APPA-004b/500/500',
+      'https://picsum.photos/seed/newAPPA-004a/500/500',
+      'https://picsum.photos/seed/newAPPA-004b/500/500',
     ],
     tags: ['Womenswear', 'Sale'],
     stockLevel: 0,
@@ -683,7 +683,7 @@ const productData: any[] = [
     name: 'Ceramic Coffee Mug Set (4)',
     description: 'Start your day right with this durable set of mugs.',
     price: 39.99,
-    imageUrls: ['https://picsum.photos/seed/HOME-001a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1651936020103-1156d5390b25?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fENlcmFtaWMlMjBDb2ZmZWUlMjBNdWclMjBTZXR8ZW58MHx8MHx8fDA%3D'],
     tags: ['Kitchen', 'Gift Idea'],
     stockLevel: 80,
     isActive: true,
@@ -697,8 +697,8 @@ const productData: any[] = [
     description: 'Relaxing lavender and vanilla scented candle in a glass jar.',
     price: 22.5,
     imageUrls: [
-      'https://picsum.photos/seed/HOME-002a/500/500',
-      'https://picsum.photos/seed/HOME-002b/500/500',
+      'https://images.unsplash.com/photo-1707839568938-f9b50bb88454?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8THV4dXJ5JTIwU2NlbnRlZCUyMENhbmRsZXxlbnwwfHwwfHx8MA%3D%3D',
+      'https://images.unsplash.com/photo-1707839568443-912e7206c726?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8THV4dXJ5JTIwU2NlbnRlZCUyMENhbmRsZXxlbnwwfHwwfHx8MA%3D%3D',
     ],
     tags: ['New', 'Home Decor'],
     stockLevel: 70,
@@ -711,7 +711,7 @@ const productData: any[] = [
     name: 'Plush Throw Blanket',
     description: 'Soft and cozy blanket for your sofa or bed.',
     price: 49.99,
-    imageUrls: ['https://picsum.photos/seed/HOME-003a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1640794334953-47993ef59351?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8UGx1c2glMjBUaHJvdyUyMEJsYW5rZXR8ZW58MHx8MHx8fDA%3D'],
     tags: ['Comfort', 'Home Decor'],
     stockLevel: 60,
     isActive: true,
@@ -724,9 +724,9 @@ const productData: any[] = [
     description: 'Durable 10-piece cookware set for your kitchen.',
     price: 149.99,
     imageUrls: [
-      'https://picsum.photos/seed/HOME-004a/500/500',
-      'https://picsum.photos/seed/HOME-004b/500/500',
-      'https://picsum.photos/seed/HOME-004c/500/500',
+      'https://plus.unsplash.com/premium_photo-1664391825760-17aacf4cb3b4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8U3RhaW5sZXNzJTIwU3RlZWwlMjBDb29rd2FyZSUyMFNldHxlbnwwfHwwfHx8MA%3D%3D',
+      'https://images.unsplash.com/photo-1760537440650-37ccbfe91d2c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fFN0YWlubGVzcyUyMFN0ZWVsJTIwQ29va3dhcmUlMjBTZXR8ZW58MHx8MHx8fDA%3D',
+      'https://images.unsplash.com/photo-1596411912876-0714b94a68bd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fFN0YWlubGVzcyUyMFN0ZWVsJTIwQ29va3dhcmUlMjBTZXR8ZW58MHx8MHx8fDA%3D',
     ],
     tags: ['Kitchen', 'Featured'],
     stockLevel: 20,
@@ -739,7 +739,7 @@ const productData: any[] = [
     name: 'Wall Art Print',
     description: 'Abstract art print to enhance your living space.',
     price: 75.0,
-    imageUrls: ['https://picsum.photos/seed/HOME-005a/500/500'],
+    imageUrls: ['https://plus.unsplash.com/premium_photo-1723759219493-6287376860f0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8V2FsbCUyMEFydCUyMFByaW50fGVufDB8fDB8fHww'],
     tags: ['Home Decor'],
     stockLevel: 35,
     isActive: true,
@@ -753,7 +753,7 @@ const productData: any[] = [
     name: 'The Midnight Library',
     description: 'A captivating novel about choices and regrets.',
     price: 15.99,
-    imageUrls: ['https://picsum.photos/seed/BOOK-001a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1563135629-4850a3517799?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fFRoZSUyME1pZG5pZ2h0JTIwTGlicmFyeXxlbnwwfHwwfHx8MA%3D%3D'],
     tags: ['Featured', 'Fiction', 'Best Seller'],
     stockLevel: 30,
     isActive: true,
@@ -763,10 +763,10 @@ const productData: any[] = [
   },
   {
     sku: 'BOOK-002',
-    name: 'Astrophysics for People in a Hurry',
+    name: 'Babies book',
     description: 'A concise and accessible guide to the cosmos.',
     price: 12.99,
-    imageUrls: ['https://picsum.photos/seed/BOOK-002a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1589123066574-165d71809555?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8QmFiaWVzJTIwYm9va3xlbnwwfHwwfHx8MA%3D%3D'],
     tags: ['Non-Fiction', 'Science'],
     stockLevel: 45,
     isActive: true,
@@ -778,7 +778,7 @@ const productData: any[] = [
     name: 'Cookbook: Simple Recipes',
     description: 'Easy and delicious recipes for everyday cooking.',
     price: 25.0,
-    imageUrls: ['https://picsum.photos/seed/BOOK-003a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1542010589005-d1eacc3918f2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q29va2Jvb2slM0ElMjBTaW1wbGUlMjBSZWNpcGVzfGVufDB8fDB8fHww'],
     tags: ['Cooking', 'Gift Idea'],
     stockLevel: 50,
     isActive: true,
@@ -790,7 +790,7 @@ const productData: any[] = [
     name: "Children's Picture Book",
     description: 'A beautifully illustrated story for young readers.',
     price: 9.99,
-    imageUrls: ['https://picsum.photos/seed/BOOK-004a/500/500'],
+    imageUrls: ['hhttps://images.unsplash.com/photo-1616802099190-5a4485319df6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q2hpbGRyZW4ncyUyMFBpY3R1cmUlMjBCb29rfGVufDB8fDB8fHww'],
     tags: ['Children', 'Illustrated'],
     stockLevel: 100,
     isActive: true,
@@ -920,11 +920,11 @@ const productData: any[] = [
 
 // Define which product SKUs are used in the carousel for easier lookup
 const carouselProductSkus = [
-  'ELEC-001',
+  'FP1v2',
   'HOME-001',
   'BOOK-001',
   'APPA-001',
-  'SPRT-001',
+  'BOOK-004',
   ...gjCarouselItemData
     .map((item) =>
       item.linkUrl?.startsWith('product_sku:')
@@ -1027,7 +1027,7 @@ const aboutContentData = [
     title: 'About Us',
     content:
       'Awesome Gadgets & Goods is an online store specializing in smart gadgets and selected products for a more convenient and enjoyable life. The store offers a wide range of advanced technology products, audio accessories, smart home devices, quality kitchen and lifestyle products. All products are carefully selected to combine innovation, design and functionality – for a smart and updated shopping experience.',
-    imageUrl: 'https://picsum.photos/seed/about-awesome/800/400',
+    imageUrl: 'https://images.unsplash.com/photo-1597664607810-e59e0318e775?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXdlc29tZSUyMGdhZGdldHN8ZW58MHx8MHx8fDA%3D',
   },
   {
     storeId: storeData[0].id,
@@ -1246,11 +1246,9 @@ async function bootstrap() {
 
     // --- Seed Categories ---
     logger.log('Seeding categories...');
-    const categoryUpsertResult = await categoryRepository.upsert(categoryData, [
-      'id',
-    ]);
+    const categorySaveResult = await categoryRepository.save(categoryData);
     logger.log(
-      `Categories seeded/updated: ${categoryUpsertResult.raw?.length || categoryUpsertResult.generatedMaps?.length || 'N/A (check upsert result)'}`,
+      `Categories seeded: ${categorySaveResult.length}`,
     );
     const categoryCount = await categoryRepository.count();
     logger.log(`Total categories in DB after seeding: ${categoryCount}`);
@@ -1322,32 +1320,32 @@ async function bootstrap() {
     const genericCarouselData = [
       // Store 1: Awesome Gadgets & Goods
       {
-        imageUrl: 'https://picsum.photos/seed/carousel1-store1/1920/400',
+        imageUrl: 'https://plus.unsplash.com/premium_photo-1679513691474-73102089c117?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8V2lyZWxlc3MlMjBIZWFkcGhvbmVzfGVufDB8fDB8fHww',
         altText: 'Promotion: Wireless Headphones',
-        linkUrl: skuToIdMap.get('ELEC-001'),
+        linkUrl: skuToIdMap.get('FP1v2'),
         storeId: storeData[0].id,
       },
       {
-        imageUrl: 'https://picsum.photos/seed/carousel2-store1/1920/400',
+        imageUrl: 'https://plus.unsplash.com/premium_photo-1726848084754-8045e048c62b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjV8fENvZmZlZSUyME11ZyUyMFNldHxlbnwwfHwwfHx8MA%3D%3D',
         altText: 'Promotion: Coffee Mug Set',
         linkUrl: skuToIdMap.get('HOME-001'),
         storeId: storeData[0].id,
       },
       {
-        imageUrl: 'https://picsum.photos/seed/carousel3-store1/1920/400',
+        imageUrl: 'https://images.unsplash.com/photo-1678138458795-793494b64ea7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fEZlYXR1cmVkJTIwQm9vayUzQSUyMFRoZSUyME1pZG5pZ2h0JTIwTGlicmFyeXxlbnwwfHwwfHx8MA%3D%3D',
         altText: 'Featured Book: The Midnight Library',
         linkUrl: skuToIdMap.get('BOOK-001'),
         storeId: storeData[0].id,
       },
       // Store 2: Fashion & Fun Zone
       {
-        imageUrl: 'https://picsum.photos/seed/carousel1-store2/1920/400',
+        imageUrl: 'https://picsum.photos/seed/newcarousel1-store2/1920/400',
         altText: 'Featured: Classic Cotton T-Shirt',
         linkUrl: skuToIdMap.get('APPA-001'),
         storeId: storeData[1].id,
       },
       {
-        imageUrl: 'https://picsum.photos/seed/carousel2-store2/1920/400',
+        imageUrl: 'https://picsum.photos/seed/newcarousel2-store2/1920/400',
         altText: 'Featured: Premium Yoga Mat',
         linkUrl: skuToIdMap.get('SPRT-001'),
         storeId: storeData[1].id,
