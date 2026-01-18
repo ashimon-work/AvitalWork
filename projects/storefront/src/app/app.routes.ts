@@ -31,7 +31,7 @@ export const routes: Routes = [
 
   // Redirect /default specifically to /awesome-gadgets
   { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
-  { path: '', redirectTo: '/default-store', pathMatch: 'full' }, // Redirect root to a default store slug
+  { path: '', redirectTo: '/awesome-gadgets', pathMatch: 'full' }, // Redirect root to a default store slug
 
   // Explicit route for the generic 404 page
   { path: '404', component: NotFoundPageComponent },
@@ -56,6 +56,11 @@ export const routes: Routes = [
         path: 'category/:id', // e.g., /awesome-gadgets/category/electronics
         loadComponent: () =>
           import('./category/category-page/category-page.component').then((m) => m.CategoryPageComponent),
+      },
+      {
+        path: 'products', // e.g., /awesome-gadgets/products
+        loadComponent: () =>
+          import('./products/all-products-page/all-products-page.component').then((m) => m.AllProductsPageComponent),
       },
       {
         path: 'product/:id', // e.g., /awesome-gadgets/product/123

@@ -3,11 +3,11 @@
     
     <div class="page-header">
       <nav class="breadcrumb">
-        <a routerLink="/">דף הבית</a>
+        <a routerLink="/">{{ tKeys.SF_MINI_NAVIGATE_HOME | translate }}</a>
         <span>/</span>
-        <span class="current">הרשמה</span>
+        <span class="current">{{ tKeys.SF_MINI_NAVIGATE_REGISTER | translate }}</span>
       </nav>
-      <h1 class="text-display">הרשמה</h1>
+      <h1 class="text-display">{{ tKeys.SF_REGISTRATION_PAGE_TITLE | translate }}</h1>
       <hr class="separator" />
     </div>
 
@@ -67,7 +67,7 @@
         <div class="form-group">
           <label for="phone" class="input-label">{{ tKeys.SF_REGISTRATION_PHONE_LABEL | translate }}</label>
           <input id="phone" type="tel" formControlName="phone" class="custom-input" 
-                 placeholder="טלפון נייד"
+                 [placeholder]="tKeys.SF_REGISTRATION_PHONE_LABEL | translate"
                  [ngClass]="{ 'is-invalid': phone?.invalid && (phone?.dirty || phone?.touched) }">
           <div *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="invalid-feedback">
              <small>{{ tKeys.SF_REGISTRATION_PHONE_INVALID_ERROR | translate }}</small>
