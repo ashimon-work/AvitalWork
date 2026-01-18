@@ -1,5 +1,8 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+
+import { Component, OnInit, OnDestroy, inject ,Input} from '@angular/core'; // Added OnDestroy, inject
+import { Observable, Subscription } from 'rxjs'; // Added Subscription
+import { RouterOutlet, Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { RouterOutlet } from '@angular/router';
 import { T, TranslatePipe } from '@shared/i18n';
 import { HeaderComponent } from './core/components/header/header.component';
@@ -29,19 +32,62 @@ import { CategoryDropdownService } from './core/services/category-dropdown.servi
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit, OnDestroy {
+  constructor(private router: Router) { } // Implemented OnDestroy
   public tKeys = T;
   isAuthenticated$!: Observable<boolean>;
   showCartNotification = false;
   private notificationTimeout: any = null;
   private itemAddedSubscription: Subscription | null = null;
 
+
   private authService = inject(AuthService);
   private cartService = inject(CartService);
   private categoryDropdownService = inject(CategoryDropdownService); // ← הוספה כאן
 
+
+  // Removed constructor injection, using inject() instead
+  @Input() variant: 'transparent' | 'light' | 'dark' = 'transparent';
   ngOnInit(): void {
+    
+  
     this.isAuthenticated$ = this.authService.isAuthenticated$;
 
+    // Subscribe to item added events
+    this.itemAddedSubscription = this.cartService.itemAdded$.subscribe(() => {
+      this.showCartNotification = true;
+      // Clear previous timeout if one exists
+      if (this.notificationTimeout) {
+        clearTimeout(this.notificationTimeout);
+      }
+      // Set new timeout to hide after 2 seconds
+      this.notificationTimeout = setTimeout(() => {
+        this.showCartNotification = false;
+        this.notificationTimeout = null; // Clear the timeout reference
+      }, 2000);
+    });
+  }
+  getHeaderVariant(): 'transparent' | 'light' | 'dark' {
+    const currentUrl = this.router.url;
+
+    // Handle store slugs in URL
+    const urlParts = currentUrl.split('/');
+    const pathWithoutStore = urlParts.length > 2 ? '/' + urlParts.slice(2).join('/') : currentUrl;
+
+    if (pathWithoutStore === '/' || pathWithoutStore === '/about') {
+      return 'transparent';
+    } else {
+      return 'light';
+    }
+  }
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    if (this.itemAddedSubscription) {
+      this.itemAddedSubscription.unsubscribe();
+    }
+    // Clear timeout if component is destroyed before it fires
+    if (this.notificationTimeout) {
+      clearTimeout(this.notificationTimeout);
+    }
     this.itemAddedSubscription = this.cartService.itemAdded$.subscribe(() => {
       this.showCartNotification = true;
       if (this.notificationTimeout) {

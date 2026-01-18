@@ -1,232 +1,430 @@
-// Using global variables defined in src/styles.scss
-
 :host {
   display: block;
-  margin-top: var(--spacing-xxl); // Add space above the footer
 }
 
+/* ROOT */
 .store-footer {
-  background-color: var(--card-background, #ffffff); // Light card background
-  color: var(--card-foreground, var(--text-color));
-  padding-top: var(--spacing-xl);
-  border-top: 1px solid var(--border-color, #e0e0e0); // Subtle border top
-  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)); // Soft shadow
+  background: #2b2b2b;
+  color: #f5f5f5;
   width: 100%;
+  direction: rtl;
+  text-align: right;
 }
 
+/* MAIN GRID */
+/* MAIN GRID */
 .footer-content-wrapper {
-  display: flex;
-  flex-wrap: wrap; // Allow items to wrap on smaller screens
-  gap: var(--spacing-lg);
-  justify-content: space-between; // Distribute space
-
-  // Apply container constraints
+  /* שינוי מ-1300px ל-100% כדי שיתפרס על כל המסך */
   width: 100%;
-  max-width: var(--container-max-width);
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: var(--container-padding-x);
-  padding-left: var(--container-padding-x);
-  padding-bottom: var(--spacing-xl);
+  max-width: 100%; 
+  
+  /* מרווח קבוע מהצדדים כדי שלא יידבק ממש לקצה המסך */
+  padding: 60px 62px 51px; 
+  margin: 0;
+  
+  display: flex;
+  flex-direction: row;
+  
+  /* שינוי ל-space-between כדי שהעמודה הראשונה תהיה בימין הקיצוני והאחרונה בשמאל הקיצוני */
+  justify-content: space-between; 
+  
+  box-sizing: border-box;
+  direction: rtl;
 }
 
-.footer-section {
-  flex: 1 1 280px; // Flex properties for responsiveness
-  min-width: 250px; // Minimum width before wrapping
-
-  h3, h4 { // Target both h3 for newsletter and h4 for others
-    font-size: 1.1rem;
-    font-weight: var(--font-weight-semibold, 600); // Use semibold or fallback
-    color: var(--text-color);
-    margin-bottom: var(--spacing-md);
-  }
-}
-
-.newsletter-section {
-  max-width: 450px; // Limit width of newsletter section
-
-  .text-muted-foreground {
-    color: var(--muted-foreground, var(--text-color-light)); // Use specific muted color or fallback
-    font-size: 0.9rem; // Slightly smaller text
-    margin-bottom: var(--spacing-md);
-  }
-
-  .newsletter-form-flex {
-    display: flex;
-    gap: var(--spacing-sm);
-    align-items: flex-start; // Align items to the start for multi-line errors
-  }
-
-  .newsletter-input-group {
-    display: flex;
-    flex-grow: 1;
-    border: 1px solid var(--border-color-subtle, #ced4da); // Subtle border for the group
-    border-radius: var(--border-radius-lg, 20px); // Rounded corners for the group
-    overflow: hidden; // To ensure child borders don't poke out
-
-    .newsletter-email-input {
-      flex-grow: 1;
-      padding: var(--spacing-sm) var(--spacing-md);
-      border: none; // Remove individual border
-      outline: none;
-      font-size: 1rem;
-      background-color: transparent; // Match footer background
-      color: var(--text-color);
-      min-width: 0; // Allow input to shrink
-
-      &::placeholder {
-        color: var(--muted-foreground, var(--text-color-light));
-      }
-    }
-
-    .newsletter-submit-button {
-      padding: var(--spacing-sm) var(--spacing-lg);
-      border: none; // Remove individual border
-      border-left: 1px solid var(--border-color-subtle, #ced4da); // Subtle separator
-      background-color: var(--primary-color, #007bff);
-      color: var(--primary-contrast-color, #ffffff);
-      cursor: pointer;
-      font-weight: var(--font-weight-medium);
-      transition: background-color var(--transition-speed-fast) ease-in-out;
-
-      &:hover:not(:disabled) {
-        background-color: var(--primary-color-dark, #0056b3);
-      }
-
-      &:disabled {
-        background-color: var(--disabled-background-color, #e9ecef);
-        color: var(--disabled-foreground-color, #6c757d);
-        cursor: not-allowed;
-      }
-    }
-  }
-   .newsletter-errors {
-    margin-top: var(--spacing-xs);
-    .error-message {
-      color: var(--destructive-color, #dc3545);
-      font-size: 0.875rem;
-      margin-bottom: var(--spacing-xxs);
-    }
+@media (min-width: 768px) {
+  .footer-content-wrapper {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-
-.links-section {
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-    li {
-      margin-bottom: var(--spacing-sm);
-
-      a {
-        color: var(--text-color-light);
-        text-decoration: none;
-        transition: color var(--transition-speed-fast) ease-in-out;
-
-        &:hover,
-        &:focus {
-          color: var(--primary-color);
-          text-decoration: underline;
-        }
-      }
-    }
+@media (min-width: 1024px) {
+  .footer-content-wrapper {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-.social-media-nav { // Applied to the nav element which is also a .footer-section
-  .social-links-container {
-    display: flex;
-    gap: var(--spacing-md); // Gap between icons
-    align-items: center;
-    flex-wrap: wrap; // Allow icons to wrap
-  }
+/* BRAND */
+.newsletter-section h3 {
+  font-size: 1.8rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
 
-  .social-icon-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px; // Circular background size
-    height: 40px;
-    border-radius: 50%; // Circular shape
-    background-color: var(--muted-background-color, var(--neutral-lighter, #f0f0f0)); // Muted background
-    color: var(--muted-foreground-color, var(--text-color)); // Icon color
-    transition: background-color var(--transition-speed-fast) ease-in-out, color var(--transition-speed-fast) ease-in-out;
-    // box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0,0,0,0.05)); // Optional: subtle shadow on icons
+  /* הגדרות גודל ומשקל */
+  font-size: 24px;
+  /* ניתן לשינוי לפי הצורך */
+  font-weight: 700;
+  /* עובי מודגש כמו בתמונה */
+  text-transform: uppercase;
+  /* הופך את כל האותיות לגדולות (Caps) */
 
-    &:hover,
-    &:focus-visible {
-      background-color: var(--primary-color);
-      color: var(--primary-contrast-color, #fff); // Text color on primary background
-      outline: none;
-    }
+  /* צבע וריווח */
+  color: #ffffff;
+  /* לבן נקי */
+  letter-spacing: 1.5px;
+  /* הריווח בין האותיות שרואים בתמונה */
 
-    &:focus-visible {
-       box-shadow: 0 0 0 2px var(--primary-color-focus, rgba(var(--primary-color-rgb, 0, 123, 255), 0.4));
-    }
+  /* אופציונלי: צל קטן מאוד שנותן את ה"עומק" שיש בתמונה */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 
-    .social-svg-icon {
-      width: 20px; // Icon size
-      height: 20px;
-      // currentColor will not work directly on <img> src.
-      // For color changes on hover, you'd typically use CSS filters
-      // or embed SVGs directly to manipulate 'fill' or 'stroke'.
-      // Given we are using <img>, hover color change is limited.
-      // The background of the <a> tag will change as per existing :hover rules.
-    }
-  }
+  display: inline-block;
+  margin-bottom: 15px;
 }
 
+.text-muted-foreground {
+  color: #cfcfcf;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
 
+/* TITLES */
+.footer-section h4 {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-family: 'Playfair Display', serif;
+
+  /* הגדרות גודל ומשקל */
+  font-size: 24px;
+  /* ניתן לשינוי לפי הצורך */
+  font-weight: 700;
+  /* עובי מודגש כמו בתמונה */
+  text-transform: uppercase;
+  /* הופך את כל האותיות לגדולות (Caps) */
+
+  /* צבע וריווח */
+  color: #ffffff;
+  /* לבן נקי */
+  letter-spacing: 1.5px;
+  /* הריווח בין האותיות שרואים בתמונה */
+
+  /* אופציונלי: צל קטן מאוד שנותן את ה"עומק" שיש בתמונה */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+/* LINKS */
+.links-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #b0b0b0;
+  /* אפור בהיר כמו בתמונה */
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.links-section li {
+  margin-bottom: 0.9rem;
+}
+
+.links-section a {
+  font-size: 0.95rem;
+  color: #cfcfcf;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.links-section a:hover {
+  color: #ffffff;
+}
+
+/* CONTACT */
+.footer-section p,
+.footer-section a {
+  font-size: 0.95rem;
+  color: #cfcfcf;
+}
+
+.footer-section a:hover {
+  color: #ffffff;
+}
+
+/* SOCIAL */
+.social-links-container {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+}
+
+.social-icon-link {
+  background: none !important;
+  padding: 0;
+}
+
+.social-icon-link img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.social-icon-link:hover img {
+  opacity: 0.55;
+}
+
+/* NEWSLETTER */
+.newsletter-form-flex {
+  width: 100%;
+}
+
+.contact-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #b0b0b0;
+  /* אפור בהיר כמו בתמונה */
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.newsletter-input-group {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0 !important;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #b0b0b0;
+  /* אפור בהיר כמו בתמונה */
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.newsletter-email-input {
+  background: transparent !important;
+  border: none !important;
+  padding: 0.75rem 2.5rem 0.75rem 0 !important;
+  color: white !important;
+  font-size: 0.95rem;
+}
+
+.newsletter-email-input::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.newsletter-submit-button {
+  background: transparent !important;
+  padding: 0 !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.newsletter-submit-button:hover {
+  color: white !important;
+}
+
+/* BOTTOM BAR */
 .footer-bottom {
-  background-color: var(--neutral-light, #f8f9fa); // Slightly different shade for separation if desired
-  padding: var(--spacing-md) var(--container-padding-x);
-  text-align: center;
-  margin-top: var(--spacing-lg);
-  border-top: 1px solid var(--border-color, #e0e0e0); // Subtle border top
-
-  p {
-    margin-bottom: 0;
-    font-size: 0.85rem; // Slightly smaller copyright text
-    color: var(--text-color-light);
-  }
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1.4rem 2rem;
 }
 
-// Responsive adjustments
+.footer-bottom p {
+  max-width: 1300px;
+  margin: 0 auto;
+  font-size: 0.9rem;
+  color: #cfcfcf;
+}
+/* BOTTOM BAR */
+.footer-bottom {
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1.4rem 40px; /* תואם לפאדינג של תוכן הפוטר */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.footer-bottom p {
+  /* ביטול ה-max-width וה-margin: 0 auto שמרכזים את הטקסט */
+  max-width: 100%; 
+  margin: 0; 
+  font-size: 0.9rem;
+  color: #cfcfcf;
+  text-align: right; /* מוודא יישור לימין בגלל ה-RTL */
+}
+
+/* MOBILE */
 @media (max-width: 768px) {
   .footer-content-wrapper {
-    flex-direction: column; // Stack sections vertically
-    align-items: center; // Center items when stacked
-    text-align: center; // Center text within sections
+    text-align: center;
   }
 
-  .newsletter-section {
-    width: 100%; // Allow newsletter to take full width
-    max-width: 100%;
-
-    .newsletter-form-flex {
-      flex-direction: column; // Stack form elements
-      align-items: stretch; // Stretch form elements to full width
-
-      .newsletter-input-group {
-        width: 100%;
-      }
-      .newsletter-submit-button { // Ensure button also takes full width if needed or adjust
-         margin-top: var(--spacing-sm); // Add space when stacked
-      }
-    }
-  }
-
-  .social-media-nav {
-    .social-links-container {
-      justify-content: center; // Center social icons
-    }
+  .social-links-container {
+    justify-content: center;
   }
 
   .links-section ul {
-    display: flex;
-    flex-direction: column;
-    align-items: center; // Center links
+    align-items: center;
   }
+}
+
+.social-icon-link img {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+.footer-content-wrapper {
+  direction: rtl;
+}
+
+.footer-bottom {
+  direction: rtl;
+}
+
+.newsletter-input-group {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0 !important;
+  padding-bottom: 0.2rem;
+  /* כדי שהקו לא יתנגש עם הטקסט */
+}
+
+.newsletter-email-input {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+.newsletter-email-input::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.newsletter-submit-button {
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+  /* מסתיר טקסט */
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  position: relative;
+}
+
+.newsletter-submit-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/assets/icons/send.svg') no-repeat center;
+  background-size: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: opacity .2s ease;
+}
+
+.newsletter-submit-button:hover::after {
+  opacity: 1;
+}
+
+.newsletter-submit-button {
+  background: transparent !important;
+  padding: 0 !important;
+  min-width: unset !important;
+  width: 24px;
+  height: 24px;
+  color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* מסתיר טקסט אם קיים */
+.newsletter-submit-button span {
+  display: none;
+}
+
+/* כל אייקון מספרייה */
+.newsletter-submit-button mat-icon,
+.newsletter-submit-button i,
+.newsletter-submit-button svg {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  color: white !important;
+  stroke: white !important;
+  fill: none;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.newsletter-submit-button:hover mat-icon,
+.newsletter-submit-button:hover i,
+.newsletter-submit-button:hover svg {
+  opacity: 1;
+}
+
+.newsletter-input-group {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.2rem;
+}
+
+.newsletter-email-input {
+  flex: 1;
+  background: transparent !important;
+  color: #fff !important;
+  font-size: 0.95rem;
+  padding: 0.75rem 0;
+}
+
+.newsletter-submit-button {
+  margin-left: 0.5rem;
+  /* מרחק קטן מהשדה */
+  color: rgba(255, 255, 255, 0.75);
+  transition: color 0.2s ease;
+}
+
+.newsletter-submit-button:hover {
+  color: #fff;
+}
+
+.newsletter-submit-button mat-icon {
+  font-size: 22px;
+}
+
+.store-footer,
+.newsletter-section,
+.links-section,
+.footer-section {
+  font-family: 'Inter', sans-serif;
+}
+
+.newsletter-email-input {
+  background: transparent !important;
+  color: #fff !important;
+  padding: 0.75rem 0;
+  /* רק padding פנימי לשדה */
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+p {
+  color: #e558586e;
+}
+
+.newsletter-email-input:focus {
+  outline: none;
+  /* מבטל את המסגרת שמופיעה בלחיצה */
+  border: none;
 }

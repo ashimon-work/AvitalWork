@@ -68,9 +68,11 @@ export class HomepageComponent implements OnDestroy {
   showErrorMessage = false;
   successMessage = '';
   errorMessage = '';
+  showAll = false; // משתנה ששולט בתצוגה
 
-  selectedCategoryId: string | null = null;
-
+  toggleShowAll() {
+    this.showAll = !this.showAll;
+  }
   constructor() {
     console.log('<<<<< HomepageComponent Constructor Start >>>>>');
     console.log('[HomepageComponent] Fetching featured categories...');
@@ -89,43 +91,10 @@ export class HomepageComponent implements OnDestroy {
         return of([]);
       })
     );
-
-    // Initialize featuredProducts$ to be reactive to store slug changes
-    // This ensures products load when the store slug becomes available
-    this.featuredProducts$ = this.storeContext.currentStoreSlug$.pipe(
-      switchMap((storeSlug) => {
-        if (!storeSlug) {
-          console.warn(
-            '[HomepageComponent] Store slug not available yet, waiting...'
-          );
-          return of([] as Product[]);
-        }
-        console.log(
-          '[HomepageComponent] Fetching featured products for store:',
-          storeSlug
-        );
-        return this.apiService.getFeaturedProducts().pipe(
-          tap((products) =>
-            console.log(
-              '[HomepageComponent] Featured products fetched:',
-              products?.length || 0,
-              'products'
-            )
-          ),
-          catchError((error) => {
-            console.error(
-              '[HomepageComponent] Error fetching featured products on init:',
-              error
-            );
-            return of([] as Product[]);
-          })
-        );
-      })
-    );
-    this.carouselSlides$ = this.apiService
-      .getCarouselImages()
-      .pipe(startWith([]));
-
+   
+    this.featuredProducts$ = this.apiService.getFeaturedProducts();
+    this.carouselSlides$ = this.apiService.getCarouselImages().pipe(startWith([]));
+    
     // Initialize newsletter form
     this.newsletterForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
