@@ -37,6 +37,7 @@ interface NavLink {
     MatSidenavModule,
     MatListModule,
     MatBadgeModule,
+    MatMenuModule,
     SearchBarComponent,
     // FormsModule, ReactiveFormsModule removed
   ],
@@ -63,11 +64,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   cartItemCount$: Observable<number>;
   private subscriptions = new Subscription();
 
-  // All search-related properties removed:
-  // searchQuery, searchSuggestions$, currentSearchSuggestions, searchQueryChanged,
-  // showSuggestions, activeSuggestionIndex, destroy$, searchInputFocused,
-  // desktopSearchInput, mobileSearchInput
-
   public NAV_LINKS: NavLink[] = [
     { label: 'Home', pathSegments: [], isStoreSpecific: true, key: 'home', exact: true },
     { label: 'Contact', pathSegments: ['contact'], isStoreSpecific: true, key: 'contact' },
@@ -80,21 +76,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private storeContext: StoreContextService,
     private authService: AuthService,
+    private apiService: ApiService,
+    private categoryDropdownService: CategoryDropdownService,
     private cartDrawerService: CartDrawerService
   ) {
 
     this.storeSlug$ = this.storeContext.currentStoreSlug$;
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     this.userProfileImageUrl$ = this.authService.currentUser$.pipe(
-      map((user) => user?.profilePictureUrl || null)
+      map(user => user?.profilePictureUrl || null)
     );
-
-    this.storeName$ = this.storeContext.currentStoreDetails$.pipe(
-      map((store) => store?.name)
-    );
-    this.storeLogoUrl$ = this.storeContext.currentStoreDetails$.pipe(
-      map((store) => store?.logoUrl)
-    );
+    this.storeName$ = this.storeContext.currentStoreDetails$.pipe(map(store => store?.name));
+    this.storeLogoUrl$ = this.storeContext.currentStoreDetails$.pipe(map(store => store?.logoUrl));
     this.cartItemCount$ = this.cartService.getItemCount();
   }
 
@@ -107,69 +100,42 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-    // destroy$ for search removed
   }
   toggleCard() {
     this.isSearchOpen = !this.isSearchOpen;
   }
   generateRouterLink(link: NavLink, slug: string | null | undefined): string[] {
     if (link.isStoreSpecific) {
-      if (slug) {
-        const segments =
-          link.pathSegments.length === 0 ? [] : link.pathSegments;
-        return ['/', slug, ...segments].filter(
-          (segment) =>
-            segment !== undefined && segment !== null && segment !== ''
-        );
-      } else {
-        return ['/', ...link.pathSegments].filter(
-          (segment) =>
-            segment !== undefined && segment !== null && segment !== ''
-        );
-      }
+      return slug
+        ? ['/', slug, ...link.pathSegments].filter(s => s)
+        : ['/', ...link.pathSegments].filter(s => s);
     }
-    return ['/', ...link.pathSegments].filter(
-      (segment) => segment !== undefined && segment !== null && segment !== ''
-    );
+    return ['/', ...link.pathSegments].filter(s => s);
   }
-
-  // All search-related methods removed:
-  // onSearchQueryChanged, fetchSearchSuggestions, clearSearch, onSearchFocus,
-  // handleKeyDown, selectSuggestion, slugify, performSearch
 
   async onAccountClick(): Promise<void> {
     const isAuthenticated = await firstValueFrom(this.isAuthenticated$);
     const slug = await firstValueFrom(this.storeSlug$);
-
-    if (isAuthenticated) {
-      this.router.navigate(slug ? ['/', slug, 'account'] : ['/account']);
-    } else {
-      this.router.navigate(slug ? ['/', slug, 'login'] : ['/login']);
-    }
-    if (this.mobileDrawer?.opened) {
-      this.mobileDrawer.close();
-    }
+    const path = isAuthenticated
+      ? slug ? ['/', slug, 'account'] : ['/account']
+      : slug ? ['/', slug, 'login'] : ['/login'];
+    this.router.navigate(path);
+    this.mobileDrawer?.close();
   }
 
   async onCartClick(): Promise<void> {
     this.cartDrawerService.open();
-    if (this.mobileDrawer?.opened) {
-      this.mobileDrawer.close();
-    }
+    this.mobileDrawer?.close();
   }
 
   async onLogoClick(): Promise<void> {
     const slug = await firstValueFrom(this.storeSlug$);
     this.router.navigate(slug ? ['/', slug] : ['/']);
-    if (this.mobileDrawer?.opened) {
-      this.mobileDrawer.close();
-    }
+    this.mobileDrawer?.close();
   }
 
   handleNavLinkClick(): void {
-    if (this.mobileDrawer?.opened) {
-      this.mobileDrawer.close();
-    }
+    this.mobileDrawer?.close();
   }
 
   openSearchPanel(): void {
@@ -177,11 +143,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.searchBar.open();
   }
 
+  toggleShopDropdown(): void {
+    this.categoryDropdownService.toggle();
+  }
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']);
-    if (this.mobileDrawer?.opened) {
-      this.mobileDrawer.close();
-    }
+    this.mobileDrawer?.close();
   }
 }

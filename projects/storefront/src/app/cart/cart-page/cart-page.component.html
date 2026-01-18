@@ -1,10 +1,15 @@
-<div class="cart-page-container" *ngIf="cartState$ | async as cartState; else loadingCart">
+<div
+  class="cart-page-container"
+  *ngIf="cartState$ | async as cartState; else loadingCart"
+>
   <!-- Spacer for header -->
   <div class="header-spacer"></div>
-  
+
   <!-- Breadcrumb -->
   <nav class="breadcrumb">
-    <a [routerLink]="['/', currentStoreSlug$ | async]" class="breadcrumb-link">Home</a>
+    <a [routerLink]="['/', currentStoreSlug$ | async]" class="breadcrumb-link"
+      >Home</a
+    >
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current">Cart</span>
   </nav>
@@ -25,19 +30,46 @@
           </div>
 
           <!-- Cart Items -->
-          <div class="cart-item" *ngFor="let item of cartState.items; trackBy: trackByProductId">
+          <div
+            class="cart-item"
+            *ngFor="let item of cartState.items; trackBy: trackByItemId"
+          >
             <!-- Product Info -->
             <div class="item-product">
-              <a [routerLink]="['/', currentStoreSlug$ | async, 'product', item.product.id]" class="item-image-link">
+              <a
+                [routerLink]="[
+                  '/',
+                  currentStoreSlug$ | async,
+                  'product',
+                  item.product.id,
+                ]"
+                class="item-image-link"
+              >
                 <div class="item-image">
-                  <img [src]="item.product.imageUrls?.[0] || '/assets/images/placeholder.png'" [alt]="item.product.name">
+                  <img
+                    [src]="
+                      item.product.imageUrls?.[0] ||
+                      '/assets/images/placeholder.png'
+                    "
+                    [alt]="item.product.name"
+                  />
                 </div>
               </a>
               <div class="item-details">
                 <div class="item-price-row">
-                  <span class="item-price">{{ item.product.price | currency:'NIS' }}</span>
+                  <span class="item-price">{{
+                    item.product.price | currency: 'NIS'
+                  }}</span>
                 </div>
-                <a [routerLink]="['/', currentStoreSlug$ | async, 'product', item.product.id]" class="item-name">
+                <a
+                  [routerLink]="[
+                    '/',
+                    currentStoreSlug$ | async,
+                    'product',
+                    item.product.id,
+                  ]"
+                  class="item-name"
+                >
                   {{ item.product.name }}
                 </a>
               </div>
@@ -46,27 +78,64 @@
             <!-- Quantity -->
             <div class="item-quantity">
               <div class="quantity-control">
-                <button (click)="decrementQuantity(item)" class="quantity-btn quantity-btn-minus"
-                  [disabled]="item.quantity <= 1" aria-label="Decrease quantity">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button
+                  (click)="decrementQuantity(item)"
+                  class="quantity-btn quantity-btn-minus"
+                  [disabled]="item.quantity <= 1"
+                  aria-label="Decrease quantity"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
                 </button>
                 <span class="quantity-value">{{ item.quantity }}</span>
-                <button (click)="incrementQuantity(item)" class="quantity-btn quantity-btn-plus"
-                  [disabled]="!(item.product.stockLevel && item.quantity < item.product.stockLevel)" aria-label="Increase quantity">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button
+                  (click)="incrementQuantity(item)"
+                  class="quantity-btn quantity-btn-plus"
+                  [disabled]="
+                    !(
+                      item.product.stockLevel &&
+                      item.quantity < item.product.stockLevel
+                    )
+                  "
+                  aria-label="Increase quantity"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
                 </button>
               </div>
-              <button (click)="removeItem(item)" class="remove-btn">Remove</button>
+              <button (click)="removeItem(item)" class="remove-btn">
+                Remove
+              </button>
             </div>
 
             <!-- Total -->
             <div class="item-total">
-              <span class="item-total-price">{{ calculateItemSubtotal(item) | currency:'NIS' }}</span>
+              <span class="item-total-price">{{
+                calculateItemSubtotal(item) | currency: 'NIS'
+              }}</span>
             </div>
           </div>
         </div>
@@ -75,16 +144,31 @@
       <!-- Sidebar -->
       <aside class="cart-sidebar">
         <!-- New Product Suggestion -->
-        <div class="sidebar-card new-product-card" *ngIf="newestProduct$ | async as newestProduct">
+        <div
+          class="sidebar-card new-product-card"
+          *ngIf="newestProduct$ | async as newestProduct"
+        >
           <h3 class="sidebar-card-title">New Product</h3>
           <div class="new-product-content">
             <div class="new-product-image">
-              <img [src]="newestProduct?.imageUrls?.[0] || '/assets/images/placeholder.png'" [alt]="newestProduct?.name">
+              <img
+                [src]="
+                  newestProduct?.imageUrls?.[0] ||
+                  '/assets/images/placeholder.png'
+                "
+                [alt]="newestProduct?.name"
+              />
             </div>
             <div class="new-product-details">
-              <span class="new-product-price">{{ newestProduct?.price | currency:'NIS' }}</span>
+              <span class="new-product-price">{{
+                newestProduct?.price | currency: 'NIS'
+              }}</span>
               <h4 class="new-product-name">{{ newestProduct?.name }}</h4>
-              <button (click)="onAddSuggestedProductToCart(newestProduct)" class="add-to-cart-btn" [disabled]="!newestProduct">
+              <button
+                (click)="onAddSuggestedProductToCart(newestProduct)"
+                class="add-to-cart-btn"
+                [disabled]="!newestProduct"
+              >
                 Add to cart
               </button>
             </div>
@@ -97,11 +181,31 @@
           <div class="discount-section">
             <h3 class="sidebar-card-title">Discount codes</h3>
             <div class="discount-input-group">
-              <input type="text" [(ngModel)]="promoCode" placeholder="" class="discount-input" aria-label="Promo Code">
-              <button (click)="applyPromoCode()" class="apply-btn" [disabled]="!promoCode">Apply</button>
+              <input
+                type="text"
+                [(ngModel)]="promoCode"
+                placeholder=""
+                class="discount-input"
+                aria-label="Promo Code"
+              />
+              <button
+                (click)="applyPromoCode()"
+                class="apply-btn"
+                [disabled]="!promoCode"
+              >
+                Apply
+              </button>
             </div>
-            <div *ngIf="appliedPromoCodeDetails" class="promo-message"
-              [ngClass]="{ 'success': appliedPromoCodeDetails.discountAmount > 0, 'error': appliedPromoCodeDetails.discountAmount === 0 && appliedPromoCodeDetails.message }">
+            <div
+              *ngIf="appliedPromoCodeDetails"
+              class="promo-message"
+              [ngClass]="{
+                success: appliedPromoCodeDetails.discountAmount > 0,
+                error:
+                  appliedPromoCodeDetails.discountAmount === 0 &&
+                  appliedPromoCodeDetails.message,
+              }"
+            >
               <p>{{ appliedPromoCodeDetails.message }}</p>
             </div>
           </div>
@@ -110,10 +214,16 @@
           <div class="total-section">
             <div class="total-row">
               <span class="total-label">Total</span>
-              <span class="total-amount">{{ calculateTotal(cartState.items) | currency:'NIS' }}</span>
+              <span class="total-amount">{{
+                calculateTotal(cartState.items) | currency: 'NIS'
+              }}</span>
             </div>
-            <p class="total-note">Tax included and shipping calculated at checkout</p>
-            <button (click)="proceedToCheckout()" class="checkout-btn">Checkout</button>
+            <p class="total-note">
+              Tax included and shipping calculated at checkout
+            </p>
+            <button (click)="proceedToCheckout()" class="checkout-btn">
+              Checkout
+            </button>
           </div>
         </div>
       </aside>
@@ -122,31 +232,55 @@
     <!-- You May Also Like -->
     <section class="suggested-products-section">
       <h2 class="section-title">You may also like these</h2>
-      <p class="section-subtitle">Don't check out before looking at these great offers!</p>
+      <p class="section-subtitle">
+        Don't check out before looking at these great offers!
+      </p>
       <div class="suggested-products-scroll-container">
         <div class="suggested-products-grid">
-        <a *ngFor="let product of suggestedProducts$ | async"
-          [routerLink]="['/', currentStoreSlug$ | async, 'product', product.id]"
-          class="suggested-product-link">
-          <div class="suggested-product-card">
-            <!-- Badges -->
-            <div class="product-badges">
-              <span *ngIf="product.tags?.includes('Sale')" class="product-badge discount-badge">SALE</span>
-              <span *ngIf="product.tags?.includes('New')" class="product-badge new-badge">NEW</span>
-            </div>
-            <!-- Product Image -->
-            <div class="suggested-product-image">
-              <img [src]="product.imageUrls?.[0] || '/assets/images/placeholder.png'" [alt]="product.name">
-            </div>
-            <!-- Product Info -->
-            <div class="suggested-product-info">
-              <div class="suggested-product-price-row">
-                <span class="suggested-product-price">{{ product.price | currency:'NIS' }}</span>
+          <a
+            *ngFor="let product of suggestedProducts$ | async"
+            [routerLink]="[
+              '/',
+              currentStoreSlug$ | async,
+              'product',
+              product.id,
+            ]"
+            class="suggested-product-link"
+          >
+            <div class="suggested-product-card">
+              <!-- Badges -->
+              <div class="product-badges">
+                <span
+                  *ngIf="product.tags?.includes('Sale')"
+                  class="product-badge discount-badge"
+                  >SALE</span
+                >
+                <span
+                  *ngIf="product.tags?.includes('New')"
+                  class="product-badge new-badge"
+                  >NEW</span
+                >
               </div>
-              <h3 class="suggested-product-name">{{ product.name }}</h3>
+              <!-- Product Image -->
+              <div class="suggested-product-image">
+                <img
+                  [src]="
+                    product.imageUrls?.[0] || '/assets/images/placeholder.png'
+                  "
+                  [alt]="product.name"
+                />
+              </div>
+              <!-- Product Info -->
+              <div class="suggested-product-info">
+                <div class="suggested-product-price-row">
+                  <span class="suggested-product-price">{{
+                    product.price | currency: 'NIS'
+                  }}</span>
+                </div>
+                <h3 class="suggested-product-name">{{ product.name }}</h3>
+              </div>
             </div>
-          </div>
-        </a>
+          </a>
         </div>
       </div>
     </section>
@@ -156,7 +290,10 @@
   <ng-template #emptyCart>
     <div class="empty-cart">
       <p class="empty-cart-text">Your cart is empty</p>
-      <a [routerLink]="['/', currentStoreSlug$ | async, 'products']" class="continue-shopping-link">
+      <a
+        [routerLink]="['/', currentStoreSlug$ | async, 'products']"
+        class="continue-shopping-link"
+      >
         Continue Shopping
       </a>
     </div>

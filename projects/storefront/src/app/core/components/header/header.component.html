@@ -1,10 +1,16 @@
 <mat-sidenav-container class="app-sidenav-container">
   <mat-sidenav
+   
     #mobileDrawer
+   
     mode="over"
+   
     position="start"
+   
     class="mobile-sidenav"
+   
     [autoFocus]="false"
+  
   >
     <div class="mobile-drawer-header">
       <a
@@ -178,6 +184,48 @@
 
 
 
+          <h2
+            *ngIf="storeName$ | async as name"
+            class="brand-name hidden md:block"
+          >
+            {{ name }}
+          </h2>
+        </a>
+
+        <!-- Spacer to push nav to center -->
+        <div class="flex-spacer hidden md:block"></div>
+
+        <!-- Center: Nav (desktop) -->
+        <nav
+          class="desktop-navigation hidden md:flex"
+          aria-label="Main navigation"
+        >
+          <ul class="nav-links-list">
+            <li *ngFor="let link of NAV_LINKS">
+              <a
+                [routerLink]="generateRouterLink(link, storeSlug$ | async)"
+                routerLinkActive="active-link"
+                [routerLinkActiveOptions]="{
+                  exact: link.exact !== undefined ? link.exact : false,
+                }"
+                class="nav-link"
+                (click)="handleNavLinkClick()"
+              >
+                {{ link.label }}
+              </a>
+            </li>
+            <li class="shop-dropdown-wrapper">
+              <button
+                mat-button
+                class="nav-link shop-button"
+                (mouseenter)="toggleShopDropdown()"
+                (click)="toggleShopDropdown()"
+              >
+                Shop
+                <mat-icon>arrow_drop_down</mat-icon>
+              </button>
+            </li>
+          </ul>
         </nav>
 
       </div>
