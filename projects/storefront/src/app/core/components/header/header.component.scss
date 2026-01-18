@@ -1,12 +1,12 @@
 // Base Variables
-$primary-color: #E53E3E;
-$text-gray-900: #1A202C;
-$text-gray-700: #4A5568;
+$primary-color: #e53e3e;
+$text-gray-900: #1a202c;
+$text-gray-700: #4a5568;
 $text-gray-500: #718096;
-$border-gray-200: #EDF2F7;
-$border-gray-300: #E2E8F0; // For input borders
-$background-gray-50: #F9FAFB; // Light background for input field itself
-$background-gray-100: #F7FAFC;
+$border-gray-200: #edf2f7;
+$border-gray-300: #e2e8f0;
+$background-gray-50: #f9fafb;
+$background-gray-100: #f7fafc;
 $white-color: #fff;
 $header-height-desktop: 64px;
 $header-height-mobile: 56px;
@@ -30,11 +30,8 @@ $header-height-mobile: 56px;
   width: 100%;
 }
 
-.app-sidenav-container {
-  // Potential full height if sidenav is global, managed by app.component typically
-  // The mat-sidenav-content within this might be causing overflow issues.
-  // ::ng-deep .mat-drawer-content rule removed.
-}
+.app-sidenav-container {}
+
 .logo-brand-link {
   display: flex;
   align-items: center;
@@ -75,276 +72,294 @@ $header-height-mobile: 56px;
 
 /* TOP */
 .header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 70px;
-  padding: 2px -22px;
-}
-
-.logo-text {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #fff;
-}
-
-/* ACTIONS */
-.header-actions {
-  display: flex;
-  gap: 8px;
-  margin-right: -50px;
-}
-
-.icon-btn {
-  color: #fff;
-  transition: opacity 0.2s ease;
-  font-size: 20px;
-
-  &:hover {
-    opacity: 0.7;
-  }
-}
-
-.icon-btn {
-  /* מקטין את הכפתור עצמו במידה והוא גדול מדי */
-  width: 40px !important;
-  height: 40px !important;
-  line-height: 30px !important;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-
-  /* הניסיון להשתלט על ה-SVG שבפנים */
-  svg {
-    width: 20px !important;
-    height: 20px !important;
-    min-width: 12px !important;
-    min-height: 12px !important;
-    /* לפעמים ה-flex מותח את האייקון, זה ימנע את זה */
-    flex-shrink: 0;
-  }
-}
-
-.cart-btn {
-  position: relative;
-
-  ::ng-deep .mat-badge-content {
-    background: #fff;
-    color: #000;
-    font-size: 11px;
-  }
-}
-
-/* NAV */
-.header-nav {
-  display: flex;
-  gap: 4px;
-  padding-bottom: 0px;
-  margin-left: -50px;
-}
-
-.nav-link {
-  padding: 8px 0px 10px 12px;
-  font-size: 16px;
-  color: #f2eaea;
-  text-decoration: none;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.7;
-  }
-
-  &.active {
-    font-weight: 600;
-    font-weight: 600;
-    position: relative;
-    left: 30px;
-    top: 7px;
-  }
-}
-
-
-
-/* LOGO */
-.combine-header.scrolled .logo-text {
-  color: #111;
-}
-
-/* ICONS */
-.combine-header.scrolled .icon-btn {
-  color: #111;
-}
-
-/* NAV */
-.combine-header.scrolled .nav-link {
-  color: #111;
-}
-
-/* subtle shrink */
-.combine-header.scrolled .header-top {
-  padding: 12px 0;
-}
-
-.combine-header.scrolled .header-nav {
-  padding-bottom: 8px;
-}
-
-.combine-header.scrolled::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.06);
-}
-
-.mobile-nav-list {
-
-  .mat-mdc-list-item {
+  .modern-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: $white-color;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    padding: 0 16px;
+    height: $header-height-mobile;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    margin-top: 70px;
+    padding: 2px -22px;
   }
 
-  .mdc-list-item__start {
+  .logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #fff;
+  }
+
+  /* ACTIONS */
+  .header-actions {
     display: flex;
+    gap: 8px;
+    margin-right: -50px;
+  }
+
+  .icon-btn {
+    color: #fff;
+    transition: opacity 0.2s ease;
+    font-size: 20px;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  .icon-btn {
+    /* מקטין את הכפתור עצמו במידה והוא גדול מדי */
+    width: 40px !important;
+    height: 40px !important;
+    line-height: 30px !important;
+    display: inline-flex !important;
     align-items: center;
-    margin-right: 12px;
+    justify-content: center;
 
-    mat-icon {
-      font-size: 22px;
-      color: $text-gray-700; // או $primary-color
+    /* הניסיון להשתלט על ה-SVG שבפנים */
+    svg {
+      width: 20px !important;
+      height: 20px !important;
+      min-width: 12px !important;
+      min-height: 12px !important;
+      /* לפעמים ה-flex מותח את האייקון, זה ימנע את זה */
+      flex-shrink: 0;
+
+      .header-content-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 16px;
+      }
     }
-  }
-}
 
-.mat-mdc-icon-button .mat-icon {
-  z-index: 1;
-  position: relative;
-  color: white;
-}
+    .cart-btn {
+      position: relative;
 
-.nav-link {
-  background-color: transparent;
-  top: 25px;
-  font-size: 15px;
-  left: 15px;
-  top: 5px;
-}
-
-li {
-  list-style: none;
-  position: relative;
-  top: 6px;
-  font-size: 18px;
-  left: 15px;
-}
-
-.icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-}
-
-.logo-brand-link {
-  padding-left: 10px;
-}
-
-.nav-links {
-  padding: 10px 15px;
-  font-size: 15px;
-  z-index: 9999;
-}
-
-.carousel-container {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100vh;
-}
-
-.slide {
-  width: 100%;
-  flex-shrink: 0;
-  position: relative;
-  height: 100%;
-
-  .slide-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
-    pointer-events: none;
-  }
-
-  .slide-content {
-    position: absolute;
-    z-index: 10;
-    bottom: 24%;
-    left: 6%;
-    max-width: 600px;
-    color: white;
-
-    h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
+      ::ng-deep .mat-badge-content {
+        background: #fff;
+        color: #000;
+        font-size: 11px;
+      }
     }
-  }
-}
 
-.logo-brand-link {
-  margin-left: -50px;
-}
-.app-sidenav-container.header-dark {
-  .logo-text {
-    color: #111;
-  }
-  
-  .icon-btn {
-    color: #111;
-  }
-  
-  .nav-link {
-    color: #111;
-  }
-}
+    /* NAV */
+    .header-nav {
+      display: flex;
+      gap: 4px;
+      padding-bottom: 0px;
+      margin-left: -50px;
+    }
 
-/* Light variant styles */
-.app-sidenav-container.header-light {
-  .logo-text {
-    color: #111;
-  }
-  
-  .icon-btn {
-    color: #111;
-  }
-  
-  .nav-link {
-    color: #111;
-  }
-}
+    .nav-link {
+      padding: 8px 0px 10px 12px;
+      font-size: 16px;
+      color: #f2eaea;
+      text-decoration: none;
+      transition: opacity 0.2s;
 
-/* Transparent variant styles (for homepage - white text) */
-.app-sidenav-container.header-transparent {
-  .logo-text {
-    color: #fff;
-  }
-  
-  .icon-btn {
-    color: #fff;
-  }
-  
-  .nav-link {
-    color: #f2eaea;
+      &:hover {
+        opacity: 0.7;
+      }
+
+      &.active {
+        font-weight: 600;
+        font-weight: 600;
+        position: relative;
+        left: 30px;
+        top: 7px;
+      }
+    }
+
+
+
+    /* LOGO */
+    .combine-header.scrolled .logo-text {
+      color: #111;
+    }
+
+    /* ICONS */
+    .combine-header.scrolled .icon-btn {
+      color: #111;
+    }
+
+    /* NAV */
+    .combine-header.scrolled .nav-link {
+      color: #111;
+    }
+
+    /* subtle shrink */
+    .combine-header.scrolled .header-top {
+      padding: 12px 0;
+    }
+
+    .combine-header.scrolled .header-nav {
+      padding-bottom: 8px;
+    }
+
+    .combine-header.scrolled::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    .mobile-nav-list {
+
+      .mat-mdc-list-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .mdc-list-item__start {
+        display: flex;
+        align-items: center;
+        margin-right: 12px;
+
+        mat-icon {
+          font-size: 22px;
+          color: $text-gray-700; // או $primary-color
+        }
+      }
+    }
+
+    .mat-mdc-icon-button .mat-icon {
+      z-index: 1;
+      position: relative;
+      color: white;
+    }
+
+    .nav-link {
+      background-color: transparent;
+      top: 25px;
+      font-size: 15px;
+      left: 15px;
+      top: 5px;
+    }
+
+    li {
+      list-style: none;
+      position: relative;
+      top: 6px;
+      font-size: 18px;
+      left: 15px;
+    }
+
+    .icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .logo-brand-link {
+      padding-left: 10px;
+    }
+
+    .nav-links {
+      padding: 10px 15px;
+      font-size: 15px;
+      z-index: 9999;
+    }
+
+    .carousel-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .slide {
+      width: 100%;
+      flex-shrink: 0;
+      position: relative;
+      height: 100%;
+
+      .slide-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
+        pointer-events: none;
+      }
+
+      .slide-content {
+        position: absolute;
+        z-index: 10;
+        bottom: 24%;
+        left: 6%;
+        max-width: 600px;
+        color: white;
+
+        h1 {
+          font-size: clamp(2.5rem, 6vw, 4rem);
+          line-height: 1.1;
+          margin-bottom: 1.5rem;
+        }
+      }
+    }
+
+    .logo-brand-link {
+      margin-left: -50px;
+    }
+
+    .app-sidenav-container.header-dark {
+      .logo-text {
+        color: #111;
+      }
+
+      .icon-btn {
+        color: #111;
+      }
+
+      .nav-link {
+        color: #111;
+      }
+    }
+
+    /* Light variant styles */
+    .app-sidenav-container.header-light {
+      .logo-text {
+        color: #111;
+      }
+
+      .icon-btn {
+        color: #111;
+      }
+
+      .nav-link {
+        color: #111;
+      }
+    }
+
+    /* Transparent variant styles (for homepage - white text) */
+    .app-sidenav-container.header-transparent {
+      .logo-text {
+        color: #fff;
+      }
+
+      .icon-btn {
+        color: #fff;
+      }
+
+      .nav-link {
+        color: #f2eaea;
+      }
+    }
   }
 }

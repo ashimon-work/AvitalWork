@@ -1,124 +1,112 @@
-<div class="registration-container">
-      <h1>{{ tKeys.SF_REGISTRATION_PAGE_TITLE | translate }}</h1>
+<div class="min-h-screen bg-background">
+  <div class="container-inner">
+    
+    <div class="page-header">
+      <nav class="breadcrumb">
+        <a routerLink="/">{{ tKeys.SF_MINI_NAVIGATE_HOME | translate }}</a>
+        <span>/</span>
+        <span class="current">{{ tKeys.SF_MINI_NAVIGATE_REGISTER | translate }}</span>
+      </nav>
+      <h1 class="text-display">{{ tKeys.SF_REGISTRATION_PAGE_TITLE | translate }}</h1>
+      <hr class="separator" />
+    </div>
 
-      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="max-w-2xl">
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
+<div class="form-group">
+  <label for="firstName" class="input-label">{{ tKeys.SF_REGISTRATION_FIRST_NAME_LABEL | translate }}</label>
+  <input id="firstName" type="text" formControlName="firstName" class="custom-input"
+         [placeholder]="tKeys.SF_REGISTRATION_FIRST_NAME_LABEL | translate"
+         [ngClass]="{ 'is-invalid': firstName?.invalid && (firstName?.dirty || firstName?.touched) }">
+  <div *ngIf="firstName?.invalid && (firstName?.dirty || firstName?.touched)" class="invalid-feedback">
+    <small>{{ tKeys.SF_REGISTRATION_FIRST_NAME_REQUIRED_ERROR | translate }}</small>
+  </div>
+</div> <div class="form-group">
+  <label for="lastName" class="input-label">{{ tKeys.SF_REGISTRATION_LAST_NAME_LABEL | translate }}</label>
+  <input id="lastName" type="text" formControlName="lastName" class="custom-input"
+         [placeholder]="tKeys.SF_REGISTRATION_LAST_NAME_LABEL | translate"
+         [ngClass]="{ 'is-invalid': lastName?.invalid && (lastName?.dirty || lastName?.touched) }">
+  <div *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)" class="invalid-feedback">
+    <small>{{ tKeys.SF_REGISTRATION_LAST_NAME_REQUIRED_ERROR | translate }}</small>
+  </div>
+</div>
 
-        <!-- Success Message -->
-        <div *ngIf="successMessage" class="alert alert-success">
-          {{ successMessage }}
-        </div>
-
-        <!-- Error Message -->
-        <div *ngIf="errorMessage" class="alert alert-danger">
-          {{ errorMessage }}
-        </div>
-
-        <!-- First Name -->
         <div class="form-group">
-          <label for="firstName">{{ tKeys.SF_REGISTRATION_FIRST_NAME_LABEL | translate }}</label>
-          <input type="text" id="firstName" formControlName="firstName"
-                 [ngClass]="{ 'is-invalid': firstName?.invalid && (firstName?.dirty || firstName?.touched) }">
-          <div *ngIf="firstName?.invalid && (firstName?.dirty || firstName?.touched)" class="invalid-feedback">
-            <div *ngIf="firstName?.errors?.['required']">{{ tKeys.SF_REGISTRATION_FIRST_NAME_REQUIRED_ERROR | translate }}</div>
-            <div *ngIf="firstName?.errors?.['maxlength']">{{ tKeys.SF_REGISTRATION_FIRST_NAME_MAXLENGTH_ERROR | translate: 50 }}</div>
-          </div>
-        </div>
-
-        <!-- Last Name -->
-        <div class="form-group">
-          <label for="lastName">{{ tKeys.SF_REGISTRATION_LAST_NAME_LABEL | translate }}</label>
-          <input type="text" id="lastName" formControlName="lastName"
-                 [ngClass]="{ 'is-invalid': lastName?.invalid && (lastName?.dirty || lastName?.touched) }">
-          <div *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)" class="invalid-feedback">
-            <div *ngIf="lastName?.errors?.['required']">{{ tKeys.SF_REGISTRATION_LAST_NAME_REQUIRED_ERROR | translate }}</div>
-            <div *ngIf="lastName?.errors?.['maxlength']">{{ tKeys.SF_REGISTRATION_LAST_NAME_MAXLENGTH_ERROR | translate: 50 }}</div>
-          </div>
-        </div>
-
-        <!-- Email -->
-        <div class="form-group">
-          <label for="email">{{ tKeys.SF_REGISTRATION_EMAIL_LABEL | translate }}</label>
-          <input type="email" id="email" formControlName="email"
+          <label for="email" class="input-label">{{ tKeys.SF_REGISTRATION_EMAIL_LABEL | translate }}</label>
+          <input id="email" type="email" formControlName="email" class="custom-input"
+                 [placeholder]="tKeys.SF_REGISTRATION_EMAIL_LABEL | translate"
                  [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }">
           <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="invalid-feedback">
-            <div *ngIf="email?.errors?.['required']">{{ tKeys.SF_REGISTRATION_EMAIL_REQUIRED_ERROR | translate }}</div>
-            <div *ngIf="email?.errors?.['email']">{{ tKeys.SF_REGISTRATION_EMAIL_INVALID_ERROR | translate }}</div>
-            <div *ngIf="email?.errors?.['maxlength']">{{ tKeys.SF_REGISTRATION_EMAIL_MAXLENGTH_ERROR | translate: 100 }}</div>
-            <div *ngIf="email?.errors?.['emailExists']">{{ tKeys.SF_REGISTRATION_EMAIL_EXISTS_ERROR | translate }}</div>
+            <small *ngIf="email?.errors?.['required']">{{ tKeys.SF_LOGIN_PAGE_EMAIL_REQUIRED_ERROR | translate }}</small>
+            <small *ngIf="email?.errors?.['email']">{{ tKeys.SF_LOGIN_PAGE_EMAIL_INVALID_ERROR | translate }}</small>
+            <small *ngIf="email?.errors?.['emailExists']">{{ tKeys.SF_REGISTRATION_EMAIL_EXISTS_ERROR | translate }}</small>
           </div>
         </div>
 
-        <!-- Password -->
         <div class="form-group">
-          <label for="password">{{ tKeys.SF_REGISTRATION_PASSWORD_LABEL | translate }}</label>
-          <input type="password" id="password" formControlName="password"
+          <label for="password" class="input-label">{{ tKeys.SF_REGISTRATION_PASSWORD_LABEL | translate }}</label>
+          <input id="password" type="password" formControlName="password" class="custom-input"
+                 [placeholder]="tKeys.SF_REGISTRATION_PASSWORD_LABEL | translate"
                  [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }">
           <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="invalid-feedback">
-            <div *ngIf="password?.errors?.['required']">{{ tKeys.SF_REGISTRATION_PASSWORD_REQUIRED_ERROR | translate }}</div>
-            <div *ngIf="password?.errors?.['minlength']">{{ tKeys.SF_REGISTRATION_PASSWORD_MINLENGTH_ERROR | translate: 8 }}</div>
-            <div *ngIf="password?.errors?.['maxlength']">{{ tKeys.SF_REGISTRATION_PASSWORD_MAXLENGTH_ERROR | translate: 100 }}</div>
-            <div *ngIf="password?.errors?.['pattern']">{{ tKeys.SF_REGISTRATION_PASSWORD_PATTERN_ERROR | translate }}</div>
+            <small *ngIf="password?.errors?.['required']">{{ tKeys.SF_REGISTRATION_PASSWORD_REQUIRED_ERROR | translate }}</small>
+            <small *ngIf="password?.errors?.['minlength']">{{ tKeys.SF_REGISTRATION_PASSWORD_MINLENGTH_ERROR | translate: 8 }}</small>
           </div>
-          <!-- Placeholder for Password Strength Meter -->
-          <div class="password-strength-meter">
-            <!-- Implement strength visualization later (e.g., using a library or custom component) -->
-            {{ tKeys.SF_REGISTRATION_PASSWORD_STRENGTH_PLACEHOLDER | translate }}
-          </div>
-          <ul class="password-requirements">
-            <li>{{ tKeys.SF_REGISTRATION_PASSWORD_REQ_MIN_LENGTH | translate: 8 }}</li>
-            <li>{{ tKeys.SF_REGISTRATION_PASSWORD_REQ_UPPER_LOWER | translate }}</li>
-            <li>{{ tKeys.SF_REGISTRATION_PASSWORD_REQ_NUMBER | translate }}</li>
-            <li>{{ tKeys.SF_REGISTRATION_PASSWORD_REQ_SPECIAL_CHAR | translate }}</li>
-          </ul>
         </div>
 
-        <!-- Confirm Password -->
         <div class="form-group">
-          <label for="confirmPassword">{{ tKeys.SF_REGISTRATION_CONFIRM_PASSWORD_LABEL | translate }}</label>
-          <input type="password" id="confirmPassword" formControlName="confirmPassword"
+          <label for="confirmPassword" class="input-label">{{ tKeys.SF_REGISTRATION_CONFIRM_PASSWORD_LABEL | translate }}</label>
+          <input id="confirmPassword" type="password" formControlName="confirmPassword" class="custom-input"
+                 [placeholder]="tKeys.SF_REGISTRATION_CONFIRM_PASSWORD_LABEL | translate"
                  [ngClass]="{ 'is-invalid': (confirmPassword?.invalid || registrationForm.hasError('passwordMismatch')) && (confirmPassword?.dirty || confirmPassword?.touched) }">
           <div *ngIf="(confirmPassword?.invalid || registrationForm.hasError('passwordMismatch')) && (confirmPassword?.dirty || confirmPassword?.touched)" class="invalid-feedback">
-            <div *ngIf="confirmPassword?.errors?.['required']">{{ tKeys.SF_REGISTRATION_CONFIRM_PASSWORD_REQUIRED_ERROR | translate }}</div>
-            <div *ngIf="registrationForm.hasError('passwordMismatch') && !confirmPassword?.errors?.['required']">{{ tKeys.SF_REGISTRATION_PASSWORD_MISMATCH_ERROR | translate }}</div>
+            <small *ngIf="registrationForm.hasError('passwordMismatch')">{{ tKeys.SF_REGISTRATION_PASSWORD_MISMATCH_ERROR | translate }}</small>
           </div>
         </div>
 
-        <!-- Phone (Optional) -->
         <div class="form-group">
-          <label for="phone">{{ tKeys.SF_REGISTRATION_PHONE_LABEL | translate }}</label>
-          <input type="tel" id="phone" formControlName="phone"
+          <label for="phone" class="input-label">{{ tKeys.SF_REGISTRATION_PHONE_LABEL | translate }}</label>
+          <input id="phone" type="tel" formControlName="phone" class="custom-input" 
+                 [placeholder]="tKeys.SF_REGISTRATION_PHONE_LABEL | translate"
                  [ngClass]="{ 'is-invalid': phone?.invalid && (phone?.dirty || phone?.touched) }">
           <div *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="invalid-feedback">
-             <div *ngIf="phone?.errors?.['pattern']">{{ tKeys.SF_REGISTRATION_PHONE_INVALID_ERROR | translate }}</div>
-             <div *ngIf="phone?.errors?.['maxlength']">{{ tKeys.SF_REGISTRATION_PHONE_MAXLENGTH_ERROR | translate: 20 }}</div>
+             <small>{{ tKeys.SF_REGISTRATION_PHONE_INVALID_ERROR | translate }}</small>
           </div>
         </div>
 
-        <!-- Newsletter Opt-in -->
-        <div class="form-group form-check">
-          <input type="checkbox" id="newsletterOptIn" formControlName="newsletterOptIn" class="form-check-input">
-          <label for="newsletterOptIn" class="form-check-label">{{ tKeys.SF_REGISTRATION_NEWSLETTER_OPT_IN_LABEL | translate }}</label>
-        </div>
-
-        <!-- Terms and Conditions -->
-        <div class="form-group form-check">
-          <input type="checkbox" id="terms" formControlName="terms" class="form-check-input"
-                 [ngClass]="{ 'is-invalid': terms?.invalid && (terms?.dirty || terms?.touched || submitted) }">
-          <label for="terms" class="form-check-label">
-            {{ tKeys.SF_REGISTRATION_TERMS_AGREE_TEXT | translate }} <a href="/terms-and-conditions" target="_blank">{{ tKeys.SF_REGISTRATION_TERMS_AND_CONDITIONS_LINK | translate }}</a> <!-- Link to actual terms page later -->
+        <div class="checkbox-section">
+          <label class="checkbox-container">
+            <input type="checkbox" formControlName="newsletterOptIn">
+            <span class="checkmark"></span>
+            <span class="label-text">{{ tKeys.SF_REGISTRATION_NEWSLETTER_OPT_IN_LABEL | translate }}</span>
           </label>
-          <div *ngIf="terms?.invalid && (terms?.dirty || terms?.touched || submitted)" class="invalid-feedback">
-            {{ tKeys.SF_REGISTRATION_TERMS_REQUIRED_ERROR | translate }}
+
+          <div class="form-group-checkbox">
+            <label class="checkbox-container" [ngClass]="{'has-error': terms?.invalid && (terms?.dirty || terms?.touched || submitted)}">
+              <input type="checkbox" formControlName="terms">
+              <span class="checkmark"></span>
+              <span class="label-text">
+                {{ tKeys.SF_REGISTRATION_TERMS_AGREE_TEXT | translate }} 
+                <a href="/terms-and-conditions" target="_blank" class="link-bold">{{ tKeys.SF_REGISTRATION_TERMS_AND_CONDITIONS_LINK | translate }}</a>
+              </span>
+            </label>
+            <div *ngIf="terms?.invalid && (terms?.dirty || terms?.touched || submitted)" class="invalid-feedback">
+              <small>{{ tKeys.SF_REGISTRATION_TERMS_REQUIRED_ERROR | translate }}</small>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="submit-btn" [disabled]="isSubmitting">
-          {{ (isSubmitting ? tKeys.SF_REGISTRATION_SUBMIT_BUTTON_REGISTERING : tKeys.SF_REGISTRATION_SUBMIT_BUTTON_CREATE_ACCOUNT) | translate }}
-        </button>
+        <div class="form-actions">
+          <button type="submit" class="submit-button" [disabled]="isSubmitting">
+            <span>{{ (isSubmitting ? tKeys.SF_REGISTRATION_SUBMIT_BUTTON_REGISTERING : tKeys.SF_REGISTRATION_SUBMIT_BUTTON_CREATE_ACCOUNT) | translate }}</span>
+          </button>
 
+          <div class="login-link-container">
+            <span>{{ tKeys.SF_REGISTRATION_ALREADY_HAVE_ACCOUNT_TEXT | translate }}</span>
+            <a [routerLink]="['../login']" class="link-bold">{{ tKeys.SF_REGISTRATION_LOGIN_LINK_TEXT | translate }}</a>
+          </div>
+        </div>
       </form>
-
-      <div class="login-link">
-        {{ tKeys.SF_REGISTRATION_ALREADY_HAVE_ACCOUNT_TEXT | translate }} <a [routerLink]="['../login']">{{ tKeys.SF_REGISTRATION_LOGIN_LINK_TEXT | translate }}</a> <!-- Use relative path -->
-      </div>
     </div>
+  </div>
+</div>

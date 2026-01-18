@@ -1,60 +1,72 @@
-<div class="login-container">
-  <h2>{{ tKeys.SF_LOGIN_PAGE_TITLE | translate }}</h2>
-  <p>{{ tKeys.SF_LOGIN_PAGE_SUBTITLE | translate }}</p>
-
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-    <div class="form-group">
-      <label for="email">{{ tKeys.SF_LOGIN_PAGE_EMAIL_LABEL | translate }}</label>
-      <input
-        type="email"
-        id="email"
-        formControlName="email"
-        [placeholder]="tKeys.SF_LOGIN_PAGE_EMAIL_PLACEHOLDER | translate"
-        [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }"
-      />
-      <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="invalid-feedback">
-        <div *ngIf="email?.errors?.['required']">{{ tKeys.SF_LOGIN_PAGE_EMAIL_REQUIRED_ERROR | translate }}</div>
-        <div *ngIf="email?.errors?.['email']">{{ tKeys.SF_LOGIN_PAGE_EMAIL_INVALID_ERROR | translate }}</div>
-      </div>
+<div class="min-h-screen bg-background">
+  <div class="container-inner py-12">
+    <div class="page-header mb-8">
+      <nav class="breadcrumb mb-4">
+        <a routerLink="/">{{ tKeys.SF_MINI_NAVIGATE_HOME | translate }}</a>
+        <span>/</span>
+        <span class="current">{{ tKeys.SF_MINI_NAVIGATE_LOGIN | translate }}</span>
+      </nav>
+      <h1 class="text-display">{{ tKeys.SF_LOGIN_PAGE_TITLE | translate }}</h1>
+      <hr class="separator" />
     </div>
+    
+    <div class="max-w-2xl">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
+        <div class="form-group">
+          <label for="email" class="input-label">{{ tKeys.SF_LOGIN_PAGE_EMAIL_LABEL | translate }}</label>
+          <input id="email" type="email" formControlName="email" class="custom-input"
+            [placeholder]=" tKeys.SF_LOGIN_PAGE_EMAIL_PLACEHOLDER | translate "
+            [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }" />
+          <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="invalid-feedback">
+            <small>{{ tKeys.SF_LOGIN_PAGE_EMAIL_REQUIRED_ERROR | translate }}</small>
+          </div>
+        </div>
 
-    <div class="form-group password-group">
-      <label for="password">{{ tKeys.SF_LOGIN_PAGE_PASSWORD_LABEL | translate }}</label>
-      <div class="input-wrapper">
-        <input
-          [type]="passwordFieldType"
-          id="password"
-          formControlName="password"
-          [placeholder]="tKeys.SF_LOGIN_PAGE_PASSWORD_PLACEHOLDER | translate"
-          [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }"
-        />
-        <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
-          <!-- Use an icon font (like Font Awesome) or text -->
-          {{ (passwordFieldType === 'password' ? tKeys.SF_LOGIN_PAGE_PASSWORD_SHOW_BUTTON : tKeys.SF_LOGIN_PAGE_PASSWORD_HIDE_BUTTON) | translate }}
-        </button>
-      </div>
-      <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="invalid-feedback">
-        <div *ngIf="password?.errors?.['required']">{{ tKeys.SF_LOGIN_PAGE_PASSWORD_REQUIRED_ERROR | translate }}</div>
-        <div *ngIf="password?.errors?.['minlength']">{{ tKeys.SF_LOGIN_PAGE_PASSWORD_MINLENGTH_ERROR | translate }}</div>
-      </div>
+        <div class="form-group">
+          <label for="password" class="input-label">{{ tKeys.SF_REGISTRATION_PASSWORD_LABEL | translate }}</label>
+          <input id="password" [type]="passwordFieldType" formControlName="password"
+            class="custom-input"
+            [placeholder]="tKeys.SF_REGISTRATION_PASSWORD_PLACEHOLDER | translate "
+            [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }"
+          />
+
+          <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="invalid-feedback">
+            <div *ngIf="password?.errors?.['required']">
+              <small>{{ tKeys.SF_LOGIN_PAGE_PASSWORD_REQUIRED_ERROR | translate }}</small>
+            </div>
+            <div *ngIf="password?.errors?.['minlength']">
+              <small>{{ tKeys.SF_LOGIN_PAGE_PASSWORD_MINLENGTH_ERROR | translate }}</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions mt-8">
+          <button
+            type="submit"
+            class="submit-button"
+            (mouseenter)="isSubmitHovered = true"
+            (mouseleave)="isSubmitHovered = false"
+          >
+          <span>
+            <ng-container *ngIf="isSubmitting">
+              {{ tKeys.SF_LOGIN_PAGE_LOGGING_IN_BUTTON | translate }}
+            </ng-container>
+            <ng-container *ngIf="!isSubmitting">
+              {{ tKeys.SF_LOGIN_PAGE_LOGIN_BUTTON | translate }}
+            </ng-container>
+          </span>
+          </button>
+
+          <div class="action-links">
+            <a routerLink="../forgot-password" class="link-muted">
+              {{ tKeys.SF_LOGIN_PAGE_FORGOT_PASSWORD_LINK | translate }}
+            </a>
+            <a routerLink="../register" class="link-bold">
+              {{ tKeys.SF_LOGIN_PAGE_SIGN_UP_LINK | translate }}
+            </a>
+          </div>
+        </div>
+      </form>
     </div>
-
-    <div class="form-group form-check-inline">
-       <input type="checkbox" id="rememberMe" formControlName="rememberMe" class="form-check-input">
-       <label for="rememberMe" class="form-check-label">{{ tKeys.SF_LOGIN_PAGE_REMEMBER_ME_LABEL | translate }}</label>
-       <a routerLink="/forgot-password" class="forgot-password-link">{{ tKeys.SF_LOGIN_PAGE_FORGOT_PASSWORD_LINK | translate }}</a> <!-- Add routerLink later -->
-    </div>
-
-    <div *ngIf="errorMessage" class="error-message">
-      {{ errorMessage }}
-    </div>
-
-    <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || isSubmitting">
-      {{ (isSubmitting ? tKeys.SF_LOGIN_PAGE_LOGGING_IN_BUTTON : tKeys.SF_LOGIN_PAGE_LOGIN_BUTTON) | translate }}
-    </button>
-  </form>
-
-  <div class="register-link">
-    {{ tKeys.SF_LOGIN_PAGE_NO_ACCOUNT_TEXT | translate }} <a [routerLink]="['../register']">{{ tKeys.SF_LOGIN_PAGE_SIGN_UP_LINK | translate }}</a>
   </div>
 </div>

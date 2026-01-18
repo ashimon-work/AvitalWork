@@ -1,18 +1,22 @@
-// Using global variables defined in src/styles.scss
-
 :host {
-  display: block; // Ensure component takes up block space
+  display: block;
+}
+
+// Category Navigation Section
+.category-navigation-section {
+  margin-bottom: var(--spacing-xxl);
 }
 
 // Add vertical spacing between homepage sections
 .hero-carousel,
 .featured-categories,
 .featured-products {
-  margin-bottom: var(--spacing-xxl); // Add significant space below each section (e.g., 48px)
+  margin-bottom: var(
+    --spacing-xxl
+  ); // Add significant space below each section (e.g., 48px)
 }
 
 // Specific adjustments for sections if needed
-
 .featured-categories,
 .featured-products {
 
@@ -26,18 +30,16 @@
 // Grid layout for categories
 .category-grid {
   display: grid;
-  gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
+  gap: var(--spacing-lg);
 
   // Responsive grid columns
   // Start with 1 column on smallest screens
   grid-template-columns: 1fr;
 
-  // Example: 2 columns on small screens and up
   @media (min-width: 576px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  // Example: 3 columns on medium screens and up
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -51,21 +53,16 @@
   display: grid;
   gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
 
-  // Responsive grid columns
-  // Start with 1 column on smallest screens
   grid-template-columns: 1fr;
 
-  // Example: 2 columns on small screens and up
   @media (min-width: 576px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  // Example: 3 columns on medium screens and up
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  // Example: 3 columns on large screens and up (adjust as needed)
   @media (min-width: 992px) {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -175,7 +172,7 @@
     }
 
     button {
-      height: 56px; // Match Material form field height
+      height: 56px;
       min-width: 120px;
     }
   }

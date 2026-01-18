@@ -38,7 +38,7 @@
   );
 }
 
-// Header Spacer (h-24 = 96px)
+// Header Spacer
 .header-spacer {
   height: 26px;
 }
@@ -90,12 +90,4 @@
   .breadcrumb-page {
     color: var(--text-color, #111827);
   }
-}
-
-// Loading Message
-.loading-message {
-  text-align: center;
-  padding: var(--spacing-xl) 0;
-  color: var(--text-color-muted, #6b7280);
-  font-size: 1rem;
 }

@@ -184,6 +184,22 @@ export class ApiService {
   private authService = inject(AuthService); // Inject AuthService
   private apiUrl = '/api';
 
+  getStoreCategories(storeSlug: string): Observable<Category[]> {
+  const url = `${this.apiUrl}/categories?storeSlug=${storeSlug}`;
+
+  console.log(`[ApiService] Fetching ALL store categories from: ${url}`);
+
+  return this.http.get<Category[]>(url).pipe(
+    tap((data) => {
+      console.log(`[ApiService] ALL Categories received (${data.length} items):`, data);
+    }),
+    catchError((error) => {
+      console.error('[ApiService] Error fetching store categories:', error);
+      return of([]); // Return empty array on error
+    })
+  );
+}
+
   getFeaturedCategories(): Observable<Category[]> {
     return this.storeContext.currentStoreSlug$.pipe(
       take(1),

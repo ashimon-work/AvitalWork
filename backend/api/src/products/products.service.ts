@@ -275,6 +275,84 @@ export class ProductsService {
 
     return { products: results, total };
   }
+  // products.service.ts
+  // async findAll(
+  //   params: FindAllProductsParams,
+  // ): Promise<{ products: ProductEntity[]; total: number }> {
+  //   const page = params.page ? +params.page : 1;
+  //   const limit = params.limit ? +params.limit : 12;
+  //   const skip = (page - 1) * limit;
+
+  //   // יצירת QueryBuilder
+  //   let query = this.productsRepository
+  //     .createQueryBuilder('product')
+  //     .leftJoinAndSelect('product.store', 'store')
+  //     .where('product.isActive = :isActive', { isActive: true });
+
+  //   if (params.category_id) {
+  //     query = query
+  //       .innerJoin('product.categories', 'categories')
+  //       .andWhere('categories.id = :categoryId', {
+  //         categoryId: params.category_id,
+  //       });
+  //   } else {
+  //     query = query.leftJoinAndSelect('product.categories', 'categories');
+  //   }
+
+  //   // סינון לפי חנות
+  //   if (params.storeSlug) {
+  //     query = query.andWhere('store.slug = :slug', { slug: params.storeSlug });
+  //   }
+
+  //   // חיפוש לפי שם
+  //   if (params.q) {
+  //     query = query.andWhere('product.name ILIKE :q', { q: `%${params.q}%` });
+  //   }
+
+  //   // סינון לפי מלאי
+  //   if (params.inStockOnly) {
+  //     query = query.andWhere('product.stockLevel > 0');
+  //   }
+
+  //   // סינון לפי מחיר
+  //   if (params.price_min !== undefined) {
+  //     query = query.andWhere('product.price >= :min', {
+  //       min: params.price_min,
+  //     });
+  //   }
+  //   if (params.price_max !== undefined) {
+  //     query = query.andWhere('product.price <= :max', {
+  //       max: params.price_max,
+  //     });
+  //   }
+
+  //   // סידור
+  //   switch (params.sort) {
+  //     case 'price-asc':
+  //       query = query.orderBy('product.price', 'ASC');
+  //       break;
+  //     case 'price-desc':
+  //       query = query.orderBy('product.price', 'DESC');
+  //       break;
+  //     case 'name-asc':
+  //       query = query.orderBy('product.name', 'ASC');
+  //       break;
+  //     case 'newest':
+  //       query = query.orderBy('product.createdAt', 'DESC');
+  //       break;
+  //     default:
+  //       query = query.orderBy('product.name', 'ASC');
+  //       break;
+  //   }
+
+  //   // Pagination
+  //   const [results, total] = await query
+  //     .take(limit)
+  //     .skip(skip)
+  //     .getManyAndCount();
+
+  //   return { products: results, total };
+  // }
 
   async getSearchSuggestions(
     query: string,

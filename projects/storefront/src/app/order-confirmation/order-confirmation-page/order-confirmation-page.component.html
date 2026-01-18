@@ -1,9 +1,14 @@
 <div class="order-confirmation-container">
   <h1>{{ tKeys.SF_ORDER_CONFIRMATION_TITLE | translate }}</h1>
 
-  <div *ngIf="isLoadingOrder">{{ tKeys.SF_ORDER_CONFIRMATION_LOADING_DETAILS | translate }}</div>
+  <div *ngIf="isLoadingOrder">
+    {{ tKeys.SF_ORDER_CONFIRMATION_LOADING_DETAILS | translate }}
+  </div>
 
-  <div *ngIf="!isLoadingOrder && (order$ | async) as order" class="order-details-section">
+  <div
+    *ngIf="!isLoadingOrder && (order$ | async) as order"
+    class="order-details-section"
+  >
     <div class="success-message">
       <!-- TODO: Add a success icon -->
       <h2>{{ tKeys.SF_ORDER_CONFIRMATION_THANK_YOU | translate }}</h2>
@@ -13,71 +18,162 @@
 
     <div class="order-summary-details">
       <h3>{{ tKeys.SF_ORDER_CONFIRMATION_ORDER_SUMMARY_TITLE | translate }}</h3>
-      <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_ORDER_REFERENCE_LABEL | translate }}</strong> {{ order.orderReference }}</p>
-      <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_ORDER_NUMBER_LABEL | translate }}</strong> {{ order.orderNumber }}</p>
-      <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_ORDER_DATE_LABEL | translate }}</strong> {{ order.createdAt | date }}</p>
-      <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_ESTIMATED_DELIVERY_LABEL | translate }}</strong> <!-- TODO: Add estimated delivery date logic --> {{ tKeys.SF_ORDER_CONFIRMATION_TBD | translate }}</p>
+      <p>
+        <strong>{{
+          tKeys.SF_ORDER_CONFIRMATION_ORDER_REFERENCE_LABEL | translate
+        }}</strong>
+        {{ order.orderReference }}
+      </p>
+      <p>
+        <strong>{{
+          tKeys.SF_ORDER_CONFIRMATION_ORDER_NUMBER_LABEL | translate
+        }}</strong>
+        {{ order.orderNumber }}
+      </p>
+      <p>
+        <strong>{{
+          tKeys.SF_ORDER_CONFIRMATION_ORDER_DATE_LABEL | translate
+        }}</strong>
+        {{ order.createdAt | date }}
+      </p>
+      <p>
+        <strong>{{
+          tKeys.SF_ORDER_CONFIRMATION_ESTIMATED_DELIVERY_LABEL | translate
+        }}</strong>
+        <!-- TODO: Add estimated delivery date logic -->
+        {{ tKeys.SF_ORDER_CONFIRMATION_TBD | translate }}
+      </p>
 
       <div class="order-items">
-        <h4>{{ tKeys.SF_ORDER_CONFIRMATION_ITEMS_ORDERED_LABEL | translate }}</h4>
+        <h4>
+          {{ tKeys.SF_ORDER_CONFIRMATION_ITEMS_ORDERED_LABEL | translate }}
+        </h4>
         <ul>
           <li *ngFor="let item of order.items">
-            {{ tKeys.SF_ORDER_CONFIRMATION_ITEM_DETAILS | translate:{ productName: item.productName, quantity: item.quantity, price: (item.price | currency) ?? '' } }}
+            {{
+              tKeys.SF_ORDER_CONFIRMATION_ITEM_DETAILS
+                | translate
+                  : {
+                      productName: item.productName,
+                      quantity: item.quantity,
+                      price: (item.price | currency) ?? '',
+                    }
+            }}
           </li>
         </ul>
       </div>
 
       <div class="order-totals">
-        <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_SUBTOTAL_LABEL | translate }}</strong> {{ order.subtotal | currency }}</p>
-        <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_SHIPPING_LABEL | translate }}</strong> {{ order.shippingCost | currency }}</p>
-        <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_TAX_LABEL | translate }}</strong> {{ order.taxAmount | currency }}</p>
-        <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_TOTAL_LABEL | translate }}</strong> {{ order.totalAmount | currency }}</p>
+        <p>
+          <strong>{{
+            tKeys.SF_ORDER_CONFIRMATION_SUBTOTAL_LABEL | translate
+          }}</strong>
+          {{ order.subtotal | currency }}
+        </p>
+        <p>
+          <strong>{{
+            tKeys.SF_ORDER_CONFIRMATION_SHIPPING_LABEL | translate
+          }}</strong>
+          {{ order.shippingCost | currency }}
+        </p>
+        <p>
+          <strong>{{
+            tKeys.SF_ORDER_CONFIRMATION_TAX_LABEL | translate
+          }}</strong>
+          {{ order.taxAmount | currency }}
+        </p>
+        <p>
+          <strong>{{
+            tKeys.SF_ORDER_CONFIRMATION_TOTAL_LABEL | translate
+          }}</strong>
+          {{ order.totalAmount | currency }}
+        </p>
       </div>
     </div>
 
     <div class="shipping-payment-details">
-      <h3 *ngIf="order.shippingAddress">{{ tKeys.SF_ORDER_CONFIRMATION_SHIPPING_DETAILS_TITLE | translate }}</h3>
+      <h3 *ngIf="order.shippingAddress">
+        {{ tKeys.SF_ORDER_CONFIRMATION_SHIPPING_DETAILS_TITLE | translate }}
+      </h3>
       <div *ngIf="order.shippingAddress">
         <p>{{ order.shippingAddress.fullName }}</p>
         <p>{{ order.shippingAddress.street1 }}</p>
-        <p *ngIf="order.shippingAddress.street2">{{ order.shippingAddress.street2 }}</p>
-        <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.country }} {{ order.shippingAddress.postalCode }}</p> <!-- Assuming zipCode is used -->
-        <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_SHIPPING_METHOD_LABEL | translate }}</strong> {{ order.shippingMethod }}</p> <!-- Assuming shippingMethod is a string name -->
+        <p *ngIf="order.shippingAddress.street2">
+          {{ order.shippingAddress.street2 }}
+        </p>
+        <p>
+          {{ order.shippingAddress.city }}, {{ order.shippingAddress.country }}
+          {{ order.shippingAddress.postalCode }}
+        </p>
+        <!-- Assuming zipCode is used -->
+        <p>
+          <strong>{{
+            tKeys.SF_ORDER_CONFIRMATION_SHIPPING_METHOD_LABEL | translate
+          }}</strong>
+          {{ order.shippingMethod }}
+        </p>
+        <!-- Assuming shippingMethod is a string name -->
       </div>
 
-      <h3>{{ tKeys.SF_ORDER_CONFIRMATION_PAYMENT_DETAILS_TITLE | translate }}</h3>
-      <p><strong>{{ tKeys.SF_ORDER_CONFIRMATION_PAYMENT_METHOD_LABEL | translate }}</strong> {{ order.paymentStatus }}</p> <!-- Assuming paymentStatus indicates method or status -->
+      <h3>
+        {{ tKeys.SF_ORDER_CONFIRMATION_PAYMENT_DETAILS_TITLE | translate }}
+      </h3>
+      <p>
+        <strong>{{
+          tKeys.SF_ORDER_CONFIRMATION_PAYMENT_METHOD_LABEL | translate
+        }}</strong>
+        {{ order.paymentStatus }}
+      </p>
+      <!-- Assuming paymentStatus indicates method or status -->
       <!-- TODO: Display actual payment method used (e.g., Visa ending in 1234) if available in Order object -->
     </div>
 
     <!-- Action Buttons -->
     <div class="action-buttons">
-      <button (click)="continueShopping()">{{ tKeys.SF_ORDER_CONFIRMATION_CONTINUE_SHOPPING_BUTTON | translate }}</button>
-      <button (click)="goToMyAccount()">{{ tKeys.SF_ORDER_CONFIRMATION_MY_ACCOUNT_BUTTON | translate }}</button>
+      <button (click)="continueShopping()">
+        {{ tKeys.SF_ORDER_CONFIRMATION_CONTINUE_SHOPPING_BUTTON | translate }}
+      </button>
+      <button (click)="goToMyAccount()">
+        {{ tKeys.SF_ORDER_CONFIRMATION_MY_ACCOUNT_BUTTON | translate }}
+      </button>
       <!-- TODO: Add Print/Download Invoice button -->
     </div>
   </div>
 
   <div *ngIf="!isLoadingOrder && !orderId">
     <p>{{ tKeys.SF_ORDER_CONFIRMATION_LOAD_ERROR_MESSAGE | translate }}</p>
-    <button (click)="goToMyAccount()">{{ tKeys.SF_ORDER_CONFIRMATION_GO_TO_MY_ACCOUNT_BUTTON | translate }}</button>
+    <button (click)="goToMyAccount()">
+      {{ tKeys.SF_ORDER_CONFIRMATION_GO_TO_MY_ACCOUNT_BUTTON | translate }}
+    </button>
   </div>
-
 
   <!-- Recommended Products -->
   <div class="recommended-products-section">
-    <h3>{{ tKeys.SF_ORDER_CONFIRMATION_RECOMMENDED_PRODUCTS_TITLE | translate }}</h3>
-    <div *ngIf="isLoadingRecommended">{{ tKeys.SF_ORDER_CONFIRMATION_LOADING_RECOMMENDATIONS | translate }}</div>
-    <div *ngIf="!isLoadingRecommended && (recommendedProducts$ | async) as recommendedProducts" class="product-grid">
+    <h3>
+      {{ tKeys.SF_ORDER_CONFIRMATION_RECOMMENDED_PRODUCTS_TITLE | translate }}
+    </h3>
+    <div *ngIf="isLoadingRecommended">
+      {{ tKeys.SF_ORDER_CONFIRMATION_LOADING_RECOMMENDATIONS | translate }}
+    </div>
+    <div
+      *ngIf="
+        !isLoadingRecommended &&
+        (recommendedProducts$ | async) as recommendedProducts
+      "
+      class="product-grid"
+    >
       <!-- TODO: Implement a proper product grid/carousel for recommended products -->
       <div *ngFor="let product of recommendedProducts">
         <!-- Using featured-product-card component -->
         <app-featured-product-card
           [product]="product"
+          [storeSlug]="storeSlדug"
           (addToCart)="onAddToCart($event)"
         ></app-featured-product-card>
       </div>
-      <div *ngIf="recommendedProducts.length === 0">{{ tKeys.SF_ORDER_CONFIRMATION_NO_RECOMMENDATIONS | translate }}</div>
+      <div *ngIf="recommendedProducts.length === 0">
+        {{ tKeys.SF_ORDER_CONFIRMATION_NO_RECOMMENDATIONS | translate }}
+      </div>
     </div>
   </div>
 </div>
