@@ -1,17 +1,7 @@
-<mat-sidenav-container class="app-sidenav-container">
-  <mat-sidenav
-    #mobileDrawer
-    mode="over"
-    position="start"
-    class="mobile-sidenav"
-    [autoFocus]="false"
-  >
+<mat-sidenav-container class="app-sidenav-container" [ngClass]="variantClass">
+  <mat-sidenav #mobileDrawer mode="over" position="start" class="mobile-sidenav" [autoFocus]="false">
     <div class="mobile-drawer-header">
-      <a
-        (click)="onLogoClick()"
-        class="logo-brand-link"
-        [title]="(storeName$ | async) || 'Home'"
-      >
+      <a (click)="onLogoClick()" class="logo-brand-link" [title]="(storeName$ | async) || 'Home'">
         <div class="logo-container">
           <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'"
             class="logo-image small-logo">
@@ -31,13 +21,9 @@
         </div>
         <span *ngIf="storeName$ | async as name" class="brand-name-mobile">{{
           name
-        }}</span>
+          }}</span>
       </a>
-      <button
-        mat-icon-button
-        (click)="mobileDrawer.close()"
-        aria-label="Close navigation menu"
-      >
+      <button mat-icon-button (click)="mobileDrawer.close()" aria-label="Close navigation menu">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -57,31 +43,18 @@
     </div>
 
     <div class="mobile-drawer-actions">
-      <button
-        mat-stroked-button
-        class="full-width-button"
-        (click)="openSearchPanel()"
-      >
+      <button mat-stroked-button class="full-width-button" (click)="openSearchPanel()">
         <mat-icon>search</mat-icon> Search
       </button>
 
-      <button
-        mat-stroked-button
-        class="full-width-button"
-        (click)="onAccountClick()"
-      >
+      <button mat-stroked-button class="full-width-button" (click)="onAccountClick()">
         <mat-icon>person_outline</mat-icon> Account
       </button>
       <button mat-stroked-button class="full-width-button" (click)="onCartClick()" [matBadge]="cartItemCount$ | async"
         matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="(cartItemCount$ | async) === 0">
         <mat-icon>shopping_cart</mat-icon> Cart
       </button>
-      <button
-        mat-stroked-button
-        class="full-width-button"
-        *ngIf="isAuthenticated$ | async"
-        (click)="logout()"
-      >
+      <button mat-stroked-button class="full-width-button" *ngIf="isAuthenticated$ | async" (click)="logout()">
         <mat-icon>logout</mat-icon> Logout
       </button>
     </div>
@@ -108,8 +81,8 @@
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
             </button>
-
-            <button mat-icon-button (click)="toggleCard()" class="icon-btn">
+          
+            <button mat-icon-button (click)="openSearchPanel()" class="icon-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-search">
@@ -117,10 +90,10 @@
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </button>
-            @if (isSearchOpen) {
+            <!-- @if (isSearchOpen) {
             <app-search-bar>
             </app-search-bar>
-            }
+            } -->
 
             <button mat-icon-button class="icon-btn" (click)="onAccountClick()">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -159,7 +132,12 @@
             }
           </a>
           <li class="relative">
-            <button class="nav-link flex items-center gap-1">
+              <button
+                mat-button
+                class="nav-link shop-button"
+                (mouseenter)="toggleShopDropdown()"
+                (click)="toggleShopDropdown()"
+              >
               Shop
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -188,3 +166,5 @@
     <!-- For the purpose of this component, it's outside -->
   </mat-sidenav-content>
 </mat-sidenav-container>
+<app-search-bar></app-search-bar>
+

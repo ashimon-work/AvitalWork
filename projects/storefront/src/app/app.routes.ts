@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-// Import the generated components for direct routing
+// Import of generated components for direct routing
 import { AboutPageComponent } from './about/about-page/about-page.component';
 import { ContactPageComponent } from './contact/contact-page/contact-page.component';
 import { AccountPageComponent } from './account/account-page/account-page.component';
@@ -31,24 +31,31 @@ export const routes: Routes = [
 
   // Redirect /default specifically to /awesome-gadgets
   { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
-  { path: '', redirectTo: '/awesome-gadgets', pathMatch: 'full' }, // Redirect root to a default store slug
+  { path: '', redirectTo: '/stores', pathMatch: 'full' }, // Redirect root to a default store slug
 
-  // Explicit route for the generic 404 page
+  // Route for all stores page
+  {
+    path: 'stores',
+    loadComponent: () =>
+      import('./stores/stores-page/stores-page.component').then((m) => m.StoresPageComponent),
+  },
+
+  // Explicit route for generic 404 page
   { path: '404', component: NotFoundPageComponent },
 
-  // Parent route to capture the store slug (MUST come AFTER explicit /404)
+  // Parent route to capture store slug (MUST come AFTER explicit /404)
   {
     path: ':storeSlug',
-    // Remove the resolve property
+    // Remove resolve property
     // resolve: {
     //     isStoreValid: storeSlugResolver
     // },
-    canActivate: [storeSlugGuard], // Use the CanActivate guard instead
+    canActivate: [storeSlugGuard], // Use to CanActivate guard instead
     children: [
-      // Existing routes moved under the :storeSlug parameter
+      // Existing routes moved under :storeSlug parameter
       {
         path: '', // Default path for a store (e.g., /awesome-gadgets)
-        pathMatch: 'full', // Important: Only match when path is exactly the store root
+        pathMatch: 'full', // Important: Only match when path is exactly store root
         loadComponent: () =>
           import('./home/homepage/homepage.component').then((m) => m.HomepageComponent),
       },
@@ -62,7 +69,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./product/product-page/product-page.component').then((m) => m.ProductPageComponent),
       },
-      // Routes for the newly generated standalone components
+      // Routes for newly generated standalone components
       {
         path: 'about', // e.g., /awesome-gadgets/about
         component: AboutPageComponent

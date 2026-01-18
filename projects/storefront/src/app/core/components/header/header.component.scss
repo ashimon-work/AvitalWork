@@ -305,3 +305,46 @@ li {
 .logo-brand-link {
   margin-left: -50px;
 }
+.app-sidenav-container.header-dark {
+  .logo-text {
+    color: #111;
+  }
+  
+  .icon-btn {
+    color: #111;
+  }
+  
+  .nav-link {
+    color: #111;
+  }
+}
+
+/* Light variant styles */
+.app-sidenav-container.header-light {
+  .logo-text {
+    color: #111;
+  }
+  
+  .icon-btn {
+    color: #111;
+  }
+  
+  .nav-link {
+    color: #111;
+  }
+}
+
+/* Transparent variant styles (for homepage - white text) */
+.app-sidenav-container.header-transparent {
+  .logo-text {
+    color: #fff;
+  }
+  
+  .icon-btn {
+    color: #fff;
+  }
+  
+  .nav-link {
+    color: #f2eaea;
+  }
+}

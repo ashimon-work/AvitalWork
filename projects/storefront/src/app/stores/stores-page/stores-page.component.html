@@ -1,0 +1,45 @@
+<div class="stores-page">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">All Stores</h1>
+      <p class="page-description">Browse through all available stores in our marketplace</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading stores...</p>
+    </div>
+
+    <div *ngIf="error" class="error-container">
+      <p class="error-message">{{ error }}</p>
+      <button class="retry-button" (click)="loadStores()">Try Again</button>
+    </div>
+
+    <div *ngIf="!loading && !error" class="stores-grid">
+      <ng-container *ngIf="stores$ | async as stores">
+        <div *ngIf="stores.length > 0" class="grid">
+          <div *ngFor="let store of stores" class="store-card">
+            <a [routerLink]="['/', store.slug]" class="store-link">
+              <div class="store-image">
+                <img [src]="store.logoUrl || '/assets/images/default-store-logo.png'" 
+                     [alt]="store.name + ' logo'" 
+                     class="store-logo"
+                     (error)="onImageError($event)">
+              </div>
+              <div class="store-info">
+                <h3 class="store-name">{{ store.name }}</h3>
+                <p class="store-description">{{ store.description || 'No description available' }}</p>
+                <div class="store-footer">
+                  <span class="visit-store">Visit Store →</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div *ngIf="stores.length === 0" class="no-stores">
+          <p>No stores available at the moment.</p>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -17,6 +17,9 @@ import { AuthService } from '../../services/auth.service';
 // ApiService removed, SearchBarComponent will use it
 import { CartDrawerService } from '../../services/cart-drawer.service';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { CategoryDropdownService } from '../../services/category-dropdown.service';
+
+
 
 interface NavLink {
   label: string;
@@ -49,10 +52,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Input() variant: 'transparent' | 'light' | 'dark' = 'transparent'; // <--- הוסף כאן
   isScrolled = false;
   shopOpen = false;
-  
+
 
   @ViewChild('mobileDrawer') mobileDrawer!: MatSidenav;
   @ViewChild(SearchBarComponent) searchBar!: SearchBarComponent;
+
 
   public storeSlug$: Observable<string | null>;
   storeName$: Observable<string | undefined>;
@@ -82,7 +86,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private storeContext: StoreContextService,
     private authService: AuthService,
-    private cartDrawerService: CartDrawerService
+    private cartDrawerService: CartDrawerService,
+    private categoryDropdownService: CategoryDropdownService,
   ) {
 
     this.storeSlug$ = this.storeContext.currentStoreSlug$;
@@ -167,23 +172,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.mobileDrawer.close();
     }
   }
-
   handleNavLinkClick(): void {
     if (this.mobileDrawer?.opened) {
       this.mobileDrawer.close();
     }
   }
-
   openSearchPanel(): void {
     console.log('[HeaderComponent] openSearchPanel called');
     this.searchBar.open();
   }
-
+  toggleShopDropdown(): void {
+    this.categoryDropdownService.toggle();
+  }
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']);
     if (this.mobileDrawer?.opened) {
       this.mobileDrawer.close();
     }
+  }
+  get variantClass(): string {
+    return `header-${this.variant}`;
   }
 }

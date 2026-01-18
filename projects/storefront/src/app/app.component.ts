@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject ,Input} from '@angular/core'; // Added OnDestroy, inject
+import { Component, OnInit, OnDestroy, inject, Input } from '@angular/core'; // Added OnDestroy, inject
 import { Observable, Subscription } from 'rxjs'; // Added Subscription
 import { RouterOutlet, Router } from '@angular/router';
 import { T, TranslatePipe } from '@shared/i18n';
@@ -26,7 +26,7 @@ import { CartService } from './core/services/cart.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   constructor(private router: Router) { } // Implemented OnDestroy
-   public tKeys = T;
+  public tKeys = T;
   isAuthenticated$!: Observable<boolean>;
   showCartNotification = false;
   private notificationTimeout: any = null; // Using 'any' for Node.js/Browser compatibility
@@ -38,8 +38,8 @@ export class AppComponent implements OnInit, OnDestroy {
   // Removed constructor injection, using inject() instead
   @Input() variant: 'transparent' | 'light' | 'dark' = 'transparent';
   ngOnInit(): void {
-    
-  
+
+
     this.isAuthenticated$ = this.authService.isAuthenticated$;
 
     // Subscribe to item added events
@@ -63,12 +63,16 @@ export class AppComponent implements OnInit, OnDestroy {
     const urlParts = currentUrl.split('/');
     const pathWithoutStore = urlParts.length > 2 ? '/' + urlParts.slice(2).join('/') : currentUrl;
 
-    if (pathWithoutStore === '/' || pathWithoutStore === '/about') {
+    // Use transparent (white text) for the homepage (both root and store homepage)
+    if (pathWithoutStore === '/' || (urlParts.length === 2 && urlParts[1] !== '')) {
       return 'transparent';
-    } else {
-      return 'light';
     }
+
+    // Use dark (black text) for all other pages
+    return 'dark';
   }
+
+
   ngOnDestroy(): void {
     // Unsubscribe to prevent memory leaks
     if (this.itemAddedSubscription) {
@@ -79,4 +83,5 @@ export class AppComponent implements OnInit, OnDestroy {
       clearTimeout(this.notificationTimeout);
     }
   }
+
 }
