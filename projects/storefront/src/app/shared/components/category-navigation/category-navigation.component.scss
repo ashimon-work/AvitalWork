@@ -1,0 +1,213 @@
+// Category Navigation Styles - Matching exact design specifications
+
+.category-navigation {
+  position: fixed;
+  top: 64px; /* Matches header-height-desktop */
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  z-index: 3000; /* Higher than header (1000) to ensure it's on top layer */
+  animation: fadeIn 0.3s ease-out;
+
+  @media (max-width: 767px) {
+    top: 56px; /* Matches header-height-mobile */
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.category-navigation-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.category-navigation-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 32px;
+  padding: 32px 0;
+}
+
+// Left Column - 25% of menu width (3 columns)
+.category-navigation-nav {
+  grid-column: span 3;
+}
+
+// Right Column - 75% of menu width (9 columns)
+.category-navigation-images {
+  grid-column: span 9;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+// Main "All products" link
+.category-navigation-link-main {
+  display: block;
+  color: #111827;
+  font-weight: 600;
+  font-size: 16px;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  margin-bottom: 24px;
+  text-decoration: none;
+  line-height: 1.5;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Section heading
+.category-navigation-heading {
+  color: #111827;
+  font-weight: 600;
+  font-size: 16px;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+// Category titles container
+.category-navigation-category-titles {
+  margin-bottom: 24px;
+  max-height: calc(
+    100vh - 64px - 32px - 32px - 24px
+  ); /* viewport height - header - grid padding - margins */
+  overflow-y: auto;
+  padding-right: 8px; /* Space for scrollbar */
+
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+}
+
+// Category title link
+.category-navigation-category-title {
+  display: block;
+  color: #111827;
+  text-decoration: none;
+  font-size: 16px;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  font-weight: 600;
+  margin-bottom: 12px;
+  transition: text-decoration 0.2s ease;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.active {
+    text-decoration: underline;
+  }
+}
+
+// Image links
+.category-navigation-image-link {
+  display: block;
+  text-decoration: none;
+}
+
+.category-navigation-image-wrapper {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 16px;
+  position: relative;
+}
+
+.category-navigation-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+
+  .category-navigation-image-link:hover & {
+    transform: scale(1.05);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+  .category-navigation-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .category-navigation-nav {
+    grid-column: span 1;
+  }
+
+  .category-navigation-images {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-navigation-container {
+    padding: 0 16px;
+  }
+
+  .category-navigation-grid {
+    padding: 24px 0;
+    gap: 16px;
+  }
+
+  .category-navigation-category-titles {
+    max-height: calc(
+      100vh - 56px - 24px - 24px - 24px
+    ); /* viewport height - mobile header - grid padding - margins */
+  }
+}

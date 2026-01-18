@@ -1,10 +1,16 @@
 <mat-sidenav-container class="app-sidenav-container">
   <mat-sidenav
+   
     #mobileDrawer
+   
     mode="over"
+   
     position="start"
+   
     class="mobile-sidenav"
+   
     [autoFocus]="false"
+  
   >
     <div class="mobile-drawer-header">
       <a
@@ -180,6 +186,17 @@
               >
                 {{ link.label }}
               </a>
+            </li>
+            <li class="shop-dropdown-wrapper">
+              <button
+                mat-button
+                class="nav-link shop-button"
+                (mouseenter)="toggleShopDropdown()"
+                (click)="toggleShopDropdown()"
+              >
+                Shop
+                <mat-icon>arrow_drop_down</mat-icon>
+              </button>
             </li>
           </ul>
         </nav>

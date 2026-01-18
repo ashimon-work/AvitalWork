@@ -48,7 +48,11 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
       if (!cart || !cart.items) {
         return null;
       }
-      const itemsWithComputed = cart.items.map((item) => ({
+      // Sort items by ID to maintain consistent ordering when cart is updated
+      const sortedItems = [...cart.items].sort((a, b) =>
+        a.id.localeCompare(b.id)
+      );
+      const itemsWithComputed = sortedItems.map((item) => ({
         ...item,
         computedImage: item.product.imageUrls?.[0] ?? '',
         computedPrice: item.price || item.product.price,
@@ -78,11 +82,9 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.isOpen$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((isOpen) => {
-        document.body.style.overflow = isOpen ? 'hidden' : 'unset';
-      });
+    this.isOpen$.pipe(takeUntil(this.destroy$)).subscribe((isOpen) => {
+      document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+    });
   }
 
   ngOnDestroy(): void {
@@ -152,5 +154,4 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
     this.closeDrawer();
     this.router.navigate(['/']);
   }
-
 }

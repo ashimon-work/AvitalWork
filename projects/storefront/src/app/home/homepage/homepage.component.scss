@@ -1,18 +1,22 @@
-// Using global variables defined in src/styles.scss
-
 :host {
-  display: block; // Ensure component takes up block space
+  display: block;
+}
+
+// Category Navigation Section
+.category-navigation-section {
+  margin-bottom: var(--spacing-xxl);
 }
 
 // Add vertical spacing between homepage sections
 .hero-carousel,
 .featured-categories,
 .featured-products {
-  margin-bottom: var(--spacing-xxl); // Add significant space below each section (e.g., 48px)
+  margin-bottom: var(
+    --spacing-xxl
+  ); // Add significant space below each section (e.g., 48px)
 }
 
 // Specific adjustments for sections if needed
-
 .featured-categories,
 .featured-products {
   // The .container class is applied in the HTML, handling horizontal padding/max-width
@@ -25,23 +29,20 @@
 // Grid layout for categories
 .category-grid {
   display: grid;
-  gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
+  gap: var(--spacing-lg);
 
   // Responsive grid columns
   // Start with 1 column on smallest screens
   grid-template-columns: 1fr;
 
-  // Example: 2 columns on small screens and up
   @media (min-width: 576px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  // Example: 3 columns on medium screens and up
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  // Example: 4 columns on large screens and up (adjust as needed)
   @media (min-width: 992px) {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -52,21 +53,16 @@
   display: grid;
   gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
 
-  // Responsive grid columns
-  // Start with 1 column on smallest screens
   grid-template-columns: 1fr;
 
-  // Example: 2 columns on small screens and up
   @media (min-width: 576px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  // Example: 3 columns on medium screens and up
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  // Example: 3 columns on large screens and up (adjust as needed)
   @media (min-width: 992px) {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -85,7 +81,7 @@
 .featured-categories,
 .featured-products {
   margin-bottom: 3rem;
-  
+
   h2 {
     text-align: center;
     margin-bottom: 2rem;
@@ -98,11 +94,11 @@
 .product-grid {
   display: grid;
   gap: 1.5rem;
-  
+
   &.category-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
-  
+
   &.product-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
@@ -114,54 +110,54 @@
 
 .newsletter-signup {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  
+
   h3 {
     font-weight: 600;
     color: #333;
   }
-  
+
   p {
     color: #666;
     font-size: 1.1rem;
   }
-  
+
   .newsletter-form {
     margin-top: 1.5rem;
-    
+
     mat-form-field {
       margin-bottom: 0;
     }
-    
+
     button {
-      height: 56px; // Match Material form field height
+      height: 56px;
       min-width: 120px;
     }
   }
-  
+
   .success-message,
   .error-message {
     max-width: 500px;
     margin: 0 auto 1rem;
-    
+
     mat-card-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0.75rem 1rem;
-      
+
       mat-icon {
         vertical-align: middle;
       }
     }
   }
-  
+
   .success-message {
     mat-card {
       background-color: #d4edda;
       border: 1px solid #c3e6cb;
     }
   }
-  
+
   .error-message {
     mat-card {
       background-color: #f8d7da;
@@ -177,18 +173,35 @@
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
   }
-  
+
   .newsletter-signup {
     .newsletter-form {
       .row {
         flex-direction: column;
-        
+
         .col-md-6,
         .col-md-3 {
           width: 100%;
           margin-bottom: 1rem;
         }
       }
+    }
+  }
+}
+
+// Mobile-only categories navigation
+.categories-navigation-section {
+  // Hide on desktop and tablet (768px and up)
+  display: none;
+
+  // Show only on mobile (less than 768px)
+  @media (max-width: 767px) {
+    display: block;
+    margin-bottom: 1.5rem;
+
+    // Override any default margins from the category navigation component
+    app-category-navigation {
+      margin-bottom: 0;
     }
   }
 }

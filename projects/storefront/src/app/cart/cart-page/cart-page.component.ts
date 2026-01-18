@@ -54,7 +54,17 @@ export class CartPageComponent implements OnInit {
   } | null = null;
 
   // Expose the cart state observable directly to the template
-  cartState$: Observable<CartState | null> = this.cartService.cartState$;
+  // Sort items by ID to maintain consistent ordering when cart is updated
+  cartState$: Observable<CartState | null> = this.cartService.cartState$.pipe(
+    map((cart) => {
+      if (!cart || !cart.items) return cart;
+      // Sort items by ID to maintain consistent ordering
+      return {
+        ...cart,
+        items: [...cart.items].sort((a, b) => a.id.localeCompare(b.id)),
+      };
+    })
+  );
   // Expose the store slug observable
   currentStoreSlug$: Observable<string | null> =
     this.storeContextService.currentStoreSlug$;
@@ -94,8 +104,8 @@ export class CartPageComponent implements OnInit {
         })
       );
   }
-  trackByProductId(index: number, item: CartItem): string {
-    return item.product.id;
+  trackByItemId(index: number, item: CartItem): string {
+    return item.id;
   }
   // Method to calculate item subtotal
   calculateItemSubtotal(item: CartItem): number {

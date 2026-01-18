@@ -1,8 +1,5 @@
 <!-- Main page container -->
-<div
-  class="page-wrapper"
-  *ngIf="category$ | async as category; else loadingCategory"
->
+<div class="page-wrapper">
   <!-- Spacer for fixed header -->
   <div class="header-spacer"></div>
 
@@ -23,21 +20,16 @@
           <span>/</span>
         </li>
         <li class="breadcrumb-item">
-          <span class="breadcrumb-page">{{ category.name }}</span>
+          <span class="breadcrumb-page">{{
+            tKeys.SF_ALL_PRODUCTS_TITLE | translate
+          }}</span>
         </li>
       </ol>
     </nav>
 
-    <!-- Category Navigation -->
-    <app-category-navigation
-      *ngIf="currentCategoryId$ | async"
-    ></app-category-navigation>
-
     <!-- Product Listing Component -->
     <app-product-listing
-      [categoryId]="(currentCategoryId$ | async)!"
-      [pageTitle]="category.name"
-      [showCategoryNavigation]="false"
+      [pageTitle]="tKeys.SF_ALL_PRODUCTS_TITLE | translate"
       [storeSlug]="currentStoreSlug()"
       [queryParams]="queryParams()"
     >
@@ -46,15 +38,3 @@
   <!-- End .content-container -->
 </div>
 <!-- End .page-wrapper -->
-
-<!-- Loading template for category -->
-<ng-template #loadingCategory>
-  <div class="page-wrapper">
-    <div class="header-spacer"></div>
-    <div class="content-container">
-      <p class="loading-message">
-        {{ tKeys.SF_CATEGORY_LOADING_DETAILS | translate }}
-      </p>
-    </div>
-  </div>
-</ng-template>
