@@ -2,20 +2,20 @@
   <div class="container-inner py-12">
     <div class="page-header mb-8">
       <nav class="breadcrumb mb-4">
-        <a routerLink="/">דף הבית</a>
+        <a routerLink="/">{{ tKeys.SF_MINI_NAVIGATE_HOME | translate }}</a>
         <span>/</span>
-        <span class="current">התחברות</span>
+        <span class="current">{{ tKeys.SF_MINI_NAVIGATE_LOGIN | translate }}</span>
       </nav>
       <h1 class="text-display">{{ tKeys.SF_LOGIN_PAGE_TITLE | translate }}</h1>
       <hr class="separator" />
     </div>
+    
     <div class="max-w-2xl">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
-        
         <div class="form-group">
-          <label for="email" class="input-label">אימייל</label>
+          <label for="email" class="input-label">{{ tKeys.SF_LOGIN_PAGE_EMAIL_LABEL | translate }}</label>
           <input id="email" type="email" formControlName="email" class="custom-input"
-            placeholder="אימייל"
+            [placeholder]=" tKeys.SF_LOGIN_PAGE_EMAIL_PLACEHOLDER | translate "
             [ngClass]="{ 'is-invalid': email?.invalid && (email?.dirty || email?.touched) }" />
           <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="invalid-feedback">
             <small>{{ tKeys.SF_LOGIN_PAGE_EMAIL_REQUIRED_ERROR | translate }}</small>
@@ -26,7 +26,7 @@
           <label for="password" class="input-label">{{ tKeys.SF_REGISTRATION_PASSWORD_LABEL | translate }}</label>
           <input id="password" [type]="passwordFieldType" formControlName="password"
             class="custom-input"
-            placeholder="סיסמה"
+            [placeholder]="tKeys.SF_REGISTRATION_PASSWORD_PLACEHOLDER | translate "
             [ngClass]="{ 'is-invalid': password?.invalid && (password?.dirty || password?.touched) }"
           />
 
@@ -44,12 +44,17 @@
           <button
             type="submit"
             class="submit-button"
-            [disabled]="loginForm.invalid || isSubmitting"
             (mouseenter)="isSubmitHovered = true"
             (mouseleave)="isSubmitHovered = false"
           >
-            <span>{{ (isSubmitting ? tKeys.SF_LOGIN_PAGE_LOGGING_IN_BUTTON : tKeys.SF_LOGIN_PAGE_LOGIN_BUTTON) | translate }}</span>
-
+          <span>
+            <ng-container *ngIf="isSubmitting">
+              {{ tKeys.SF_LOGIN_PAGE_LOGGING_IN_BUTTON | translate }}
+            </ng-container>
+            <ng-container *ngIf="!isSubmitting">
+              {{ tKeys.SF_LOGIN_PAGE_LOGIN_BUTTON | translate }}
+            </ng-container>
+          </span>
           </button>
 
           <div class="action-links">

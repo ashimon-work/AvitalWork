@@ -26,12 +26,23 @@ import { authGuard } from './core/guards/auth.guard';
 import { storeSlugGuard } from './core/guards/store-slug.guard';
 
 export const routes: Routes = [
-  // Redirect root path to a default store or a store selection page (TBD)
-  // For now, let's redirect to a default store slug for testing
-
-  // Redirect /default specifically to /awesome-gadgets
-  { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
-  { path: '', redirectTo: '/default-store', pathMatch: 'full' }, // Redirect root to a default store slug
+  // Global Marketplace routes (not store-specific)
+  // This section is intentionally separated from :storeSlug routes
+  // to support future global marketplace features (e.g. global products, stores)
+  // Global Marketplace Home Page - Entry point for the Global Marketplace
+  // This route serves as the dedicated home page at the root path (/)
+  {
+    path: '',
+    loadComponent: () =>
+      import('./marketplace/global-home/global-home.component').then(
+        (m) => m.GlobalHomeComponent
+      ),
+    children: [
+      // Placeholder for future global routes
+      // Example: { path: 'products', loadComponent: ... }
+      // Example: { path: 'stores', loadComponent: ... }
+    ],
+  },
 
   // Explicit route for the generic 404 page
   { path: '404', component: NotFoundPageComponent },
@@ -50,26 +61,39 @@ export const routes: Routes = [
         path: '', // Default path for a store (e.g., /awesome-gadgets)
         pathMatch: 'full', // Important: Only match when path is exactly the store root
         loadComponent: () =>
-          import('./home/homepage/homepage.component').then((m) => m.HomepageComponent),
+          import('./home/homepage/homepage.component').then(
+            (m) => m.HomepageComponent
+          ),
       },
       {
         path: 'category/:id', // e.g., /awesome-gadgets/category/electronics
         loadComponent: () =>
-          import('./category/category-page/category-page.component').then((m) => m.CategoryPageComponent),
+          import('./category/category-page/category-page.component').then(
+            (m) => m.CategoryPageComponent
+          ),
+      },
+      {
+        path: 'products', // e.g., /awesome-gadgets/products
+        loadComponent: () =>
+          import(
+            './products/all-products-page/all-products-page.component'
+          ).then((m) => m.AllProductsPageComponent),
       },
       {
         path: 'product/:id', // e.g., /awesome-gadgets/product/123
         loadComponent: () =>
-          import('./product/product-page/product-page.component').then((m) => m.ProductPageComponent),
+          import('./product/product-page/product-page.component').then(
+            (m) => m.ProductPageComponent
+          ),
       },
       // Routes for the newly generated standalone components
       {
         path: 'about', // e.g., /awesome-gadgets/about
-        component: AboutPageComponent
+        component: AboutPageComponent,
       },
       {
         path: 'contact', // e.g., /awesome-gadgets/contact
-        component: ContactPageComponent
+        component: ContactPageComponent,
       },
       {
         path: 'account', // e.g., /awesome-gadgets/account
@@ -81,37 +105,43 @@ export const routes: Routes = [
           { path: 'orders', component: AccountOrdersComponent },
           { path: 'orders/:orderId', component: AccountOrderDetailComponent }, // Route for order detail
           { path: 'addresses', component: AccountAddressesComponent },
-          { path: 'payment-methods', component: AccountPaymentMethodsComponent },
+          {
+            path: 'payment-methods',
+            component: AccountPaymentMethodsComponent,
+          },
           { path: 'personal-info', component: AccountPersonalInfoComponent },
           { path: 'wishlist', component: AccountWishlistComponent },
-          { path: 'change-password', component: AccountChangePasswordComponent },
-        ]
+          {
+            path: 'change-password',
+            component: AccountChangePasswordComponent,
+          },
+        ],
       },
       {
         path: 'checkout', // e.g., /awesome-gadgets/checkout
-        component: CheckoutPageComponent
+        component: CheckoutPageComponent,
       },
       {
         path: 'order-confirmation', // e.g., /awesome-gadgets/order-confirmation
-        component: OrderConfirmationPageComponent
+        component: OrderConfirmationPageComponent,
       },
       {
         path: 'cart', // e.g., /awesome-gadgets/cart
-        component: CartPageComponent
+        component: CartPageComponent,
       },
       // Routes for footer links
       // Footer links - these might need to be store-specific too
       {
         path: 'faq', // e.g., /awesome-gadgets/faq
-        component: FaqPageComponent
+        component: FaqPageComponent,
       },
       {
         path: 'shipping', // e.g., /awesome-gadgets/shipping
-        component: ShippingPolicyPageComponent
+        component: ShippingPolicyPageComponent,
       },
       {
         path: 'returns', // e.g., /awesome-gadgets/returns
-        component: ReturnPolicyPageComponent
+        component: ReturnPolicyPageComponent,
       },
       // Auth Routes
       // Auth routes - these are likely global, not store-specific, so keep outside :storeSlug
@@ -127,15 +157,15 @@ export const routes: Routes = [
       // Move Auth Routes inside :storeSlug
       {
         path: 'register', // e.g., /awesome-gadgets/register
-        component: RegistrationPageComponent
+        component: RegistrationPageComponent,
       },
       {
         path: 'login', // e.g., /awesome-gadgets/login
-        component: LoginPageComponent
+        component: LoginPageComponent,
       },
-    ]
+    ],
   },
 
   // Wildcard route for 404 page - MUST BE LAST
-  { path: '**', component: NotFoundPageComponent }
+  { path: '**', component: NotFoundPageComponent },
 ];

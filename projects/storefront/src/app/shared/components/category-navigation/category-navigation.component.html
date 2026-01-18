@@ -1,0 +1,54 @@
+<div *ngIf="isOpen" class="category-navigation">
+  <div class="category-navigation-container">
+    <div class="category-navigation-grid">
+      <!-- Left Column - Category Titles Only -->
+      <div class="category-navigation-nav">
+        <!-- All Products Link -->
+        <a
+          [routerLink]="generateAllProductsLink()"
+          class="category-navigation-link category-navigation-link-main"
+          (click)="onClose()"
+        >
+          All products
+        </a>
+
+        <!-- All Categories from Server (as titles only) -->
+        <div class="category-navigation-category-titles">
+          <ng-container *ngIf="categories$ | async as categories">
+            <a
+              *ngFor="let category of categories"
+              [routerLink]="generateCategoryLink(category.id)"
+              class="category-navigation-link category-navigation-category-title"
+              [class.active]="currentCategoryId === category.id"
+              (click)="onClose()"
+            >
+              {{ category.name }}
+            </a>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Right Column - Featured Images (first 2 categories with images) -->
+      <div class="category-navigation-images">
+        <ng-container *ngIf="categories$ | async as categories">
+          <ng-container *ngFor="let category of featuredCategories; let last = last">
+            <a
+              [routerLink]="generateCategoryLink(category.id)"
+              class="category-navigation-image-link"
+              (click)="onClose()"
+            >
+              <div class="category-navigation-image-wrapper">
+                <img
+                  [src]="category.imageUrl"
+                  [alt]="category.name"
+                  class="category-navigation-image"
+                  (error)="onImageError($event)"
+                />
+              </div>
+            </a>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

@@ -70,7 +70,7 @@ services:
       - frontend_node_modules:/usr/src/app/node_modules
       - angular_cache:/usr/src/app/.angular
     # No ports exposed here, Nginx will proxy to it
-    command: sh -c "npm install && npx ng build shared-i18n && npx ng build shared-types && npx ng serve storefront --host 0.0.0.0 --allowed-hosts smartyapp.co.il --poll=3000"
+    command: sh -c "npm install && npx ng build shared-i18n && npx ng build shared-types && npx ng serve storefront --host 0.0.0.0 --allowed-hosts smartyapp.co.il,localhost,frontend --disable-host-check --poll=3000"
     depends_on:
       - api
     restart: unless-stopped
