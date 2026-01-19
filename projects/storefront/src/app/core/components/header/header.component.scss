@@ -118,7 +118,6 @@ $header-height-mobile: 56px;
   }
 
   .icon-btn {
-    /* מקטין את הכפתור עצמו במידה והוא גדול מדי */
     width: 40px !important;
     height: 40px !important;
     line-height: 30px !important;
@@ -126,13 +125,11 @@ $header-height-mobile: 56px;
     align-items: center;
     justify-content: center;
 
-    /* הניסיון להשתלט על ה-SVG שבפנים */
     svg {
       width: 20px !important;
       height: 20px !important;
       min-width: 12px !important;
       min-height: 12px !important;
-      /* לפעמים ה-flex מותח את האייקון, זה ימנע את זה */
       flex-shrink: 0;
 
       .header-content-wrapper {
@@ -233,7 +230,7 @@ $header-height-mobile: 56px;
 
         mat-icon {
           font-size: 22px;
-          color: $text-gray-700; // או $primary-color
+          color: $text-gray-700; 
         }
       }
     }
@@ -341,7 +338,6 @@ $header-height-mobile: 56px;
       }
     }
 
-    /* Light variant styles */
     .app-sidenav-container.header-light {
       .logo-text {
         color: #252121;
@@ -356,7 +352,6 @@ $header-height-mobile: 56px;
       }
     }
 
-    /* Transparent variant styles (for homepage - white text) */
     .app-sidenav-container.header-transparent {
       .logo-text {
         color: #fff;
@@ -395,44 +390,43 @@ li {
   color: white !important;
 }
 
-/* כדי שגם האייקון שליד (ה-SVG) יהיה לבן */
 .shop-button svg {
   stroke: white;
 }
 .lucide-home {
-    margin-right: -30px;  /* מזיז את הטקסט שלידו ימינה */
-    margin-left: 15px;    /* מזיז את האייקון עצמו ימינה */
-    margin-bottom: 4px;  /* מזיז אותו קצת למעלה */
-    vertical-align: middle; /* עוזר ליישר אותו לקו האמצע של הטקסט */
+    margin-right: -30px;  
+    margin-left: 15px;    
+    margin-bottom: 4px;  
+    vertical-align: middle; 
 }
 .nav-links{
   position: relative;
   left: -10px;
   top: 2px;
 }
-/* Dark variant styles (for non-homepage pages - black text) */
+
 .app-sidenav-container.header-dark {
   .logo-text {
-    color: #000000; // Pure black
+    color: #000000; 
   }
 
   .icon-btn {
-    color: #000000; // Pure black
+    color: #000000; 
     
     svg {
-      stroke: #000000; // Ensure SVG icons are also black
+      stroke: #000000; 
     }
   }
 
   .nav-link {
-    color: #000000; // Pure black
+    color: #000000; 
   }
   
   .shop-button {
-    color: #000000 !important; // Pure black
+    color: #000000 !important; 
     
     svg {
-      stroke: #000000; // Ensure SVG icons are also black
+      stroke: #000000; 
     }
   }
 }
