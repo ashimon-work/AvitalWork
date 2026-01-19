@@ -12,12 +12,12 @@ import { Product } from '@shared-types';
 import { RouterModule } from '@angular/router';
 import { WishlistService } from '../../../core/services/wishlist.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import { T, I18nService } from '@shared/i18n';
+import { T, I18nService, TranslatePipe} from '@shared/i18n';
 
 @Component({
   selector: 'app-featured-product-card',
   standalone: true,
-  imports: [CommonModule, MatIconModule, RouterModule],
+  imports: [CommonModule, MatIconModule, RouterModule, TranslatePipe],
   templateUrl: './featured-product-card.component.html',
   styleUrl: './featured-product-card.component.scss',
 })
@@ -30,6 +30,9 @@ export class FeaturedProductCardComponent implements OnInit {
   private i18nService = inject(I18nService);
   public tKeys = T;
 
+  public favorite: boolean = false;
+  public tKeys = T; // Translation keys
+  get href(): string {
   isInWishlist: boolean = false;
 
   public favorite: boolean = false;

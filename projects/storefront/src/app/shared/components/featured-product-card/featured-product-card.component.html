@@ -16,4 +16,12 @@
       <h3 class="product-name">{{ product.name }}</h3>
     </div>
   </a>
+
+  <div class="px-6 pb-6 mt-auto">
+    <button type="button"
+      class="w-full rounded-full py-2 px-6 text-base font-semibold bg-primary text-primary-foreground shadow-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/60 hover:bg-primary/90"
+      (click)="onAddToCartClick()" [attr.aria-label]="'Add ' + product.name + ' to cart'" tabindex="0">
+      {{ tKeys.SM_PRODUCT_ADD_TO_CART }}
+    </button>
+  </div>
 </article>

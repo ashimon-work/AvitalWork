@@ -7,10 +7,10 @@
     <!-- Welcome Header -->
     <header class="welcome-header">
       <h1 class="welcome-title" *ngIf="overview.profile">
-        Welcome back, {{ overview.profile.firstName }}!
+        {{ tKeys.SF_ACCOUNT_WELLCOME_BACK | translate }} , {{ overview.profile.firstName }}!
       </h1>
       <p class="welcome-subtitle">
-        Here's an overview of your account activity
+        {{ tKeys.SF_ACCOUNT_OVERVIEW_ACCOUNT_ACTIVITY | translate }}
       </p>
     </header>
 
@@ -25,23 +25,27 @@
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="table-container" *ngIf="overview.recentOrders && overview.recentOrders.length > 0; else noRecentOrders">
+            <div class="table-container"
+              *ngIf="overview.recentOrders && overview.recentOrders.length > 0; else noRecentOrders">
               <table mat-table [dataSource]="overview.recentOrders" class="orders-table">
                 <!-- Order Number Column -->
                 <ng-container matColumnDef="orderNumber">
-                  <th mat-header-cell *matHeaderCellDef>Order #</th>
+                  <th mat-header-cell *matHeaderCellDef>{{ tKeys.SF_ACCOUNT_ORDERS_TABLE_ORDER_HEADER | translate }}
+                  </th>
                   <td mat-cell *matCellDef="let order" class="order-number">{{ order.orderReference }}</td>
                 </ng-container>
 
                 <!-- Date Column -->
                 <ng-container matColumnDef="date">
-                  <th mat-header-cell *matHeaderCellDef>Date</th>
-                  <td mat-cell *matCellDef="let order" class="order-date">{{ order.orderDate | date:'MMM d, yyyy' }}</td>
+                  <th mat-header-cell *matHeaderCellDef>{{ tKeys.SF_ACCOUNT_ORDERS_TABLE_DATE_HEADER | translate }}</th>
+                  <td mat-cell *matCellDef="let order" class="order-date">{{ order.orderDate | date:'MMM d, yyyy' }}
+                  </td>
                 </ng-container>
 
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <th mat-header-cell *matHeaderCellDef>{{ tKeys.SF_ACCOUNT_ORDERS_TABLE_STATUS_HEADER | translate }}
+                  </th>
                   <td mat-cell *matCellDef="let order">
                     <span class="status-badge" [ngClass]="getStatusClass(order.status)">
                       {{ order.status }}
@@ -51,17 +55,19 @@
 
                 <!-- Total Column -->
                 <ng-container matColumnDef="total">
-                  <th mat-header-cell *matHeaderCellDef>Total</th>
+                  <th mat-header-cell *matHeaderCellDef>{{ tKeys.SF_ACCOUNT_ORDERS_TABLE_TOTAL_HEADER | translate }}
+                  </th>
                   <td mat-cell *matCellDef="let order" class="order-total">{{ order.totalAmount | currency:'ILS' }}</td>
                 </ng-container>
 
                 <!-- Action Column -->
                 <ng-container matColumnDef="action">
-                  <th mat-header-cell *matHeaderCellDef class="action-header">Action</th>
+                  <th mat-header-cell *matHeaderCellDef class="action-header">{{
+                    tKeys.SF_ACCOUNT_ORDERS_TABLE_ACTIONS_HEADER | translate }}</th>
                   <td mat-cell *matCellDef="let order" class="action-cell">
                     <button mat-button [routerLink]="['../orders', order.id]" class="view-button">
                       <img src="assets/icons/eye.svg" alt="" class="button-icon">
-                      View
+                      {{ tKeys.SF_ACCOUNT_ORDERS_VIEW_DETAILS_BUTTON | translate }}
                     </button>
                   </td>
                 </ng-container>
@@ -89,7 +95,8 @@
           </mat-card-header>
           <mat-card-content class="address-content">
             <div class="address-details">
-              <p class="address-line" *ngIf="overview.profile">{{ overview.profile.firstName }} {{ overview.profile.lastName }}</p>
+              <p class="address-line" *ngIf="overview.profile">{{ overview.profile.firstName }} {{
+                overview.profile.lastName }}</p>
               <p class="address-line">{{ getDefaultShippingAddress(overview) }}</p>
             </div>
             <mat-divider></mat-divider>
@@ -108,13 +115,13 @@
           <mat-card-content class="profile-content">
             <div class="progress-section">
               <div class="progress-header">
-                <span class="progress-label">Progress</span>
+                <span class="progress-label">{{ tKeys.SF_ACCOUNT_PROGRESS | translate }}</span>
                 <span class="progress-percentage">{{ profileCompleteness }}%</span>
               </div>
               <mat-progress-bar [value]="profileCompleteness" class="progress-bar"></mat-progress-bar>
             </div>
             <p class="profile-description">
-              Complete your profile to unlock all features and get personalized recommendations.
+              {{ tKeys.SF_COMPLETE_PROFILE | translate }}
             </p>
             <button mat-stroked-button routerLink="../personal-info" class="complete-profile-button">
               {{ tKeys.SF_ACCOUNT_OVERVIEW_COMPLETE_PROFILE_BUTTON | translate }}
