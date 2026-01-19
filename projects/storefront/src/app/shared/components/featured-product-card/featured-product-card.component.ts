@@ -77,6 +77,13 @@ export class FeaturedProductCardComponent implements OnInit {
   onAddToCartClick(): void {
     this.addToCart.emit(this.product);
   }
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('he-IL', {
+      style: 'currency',
+      currency: 'ILS',
+    }).format(amount);
+  }
+}
   // Method to handle adding/removing from wishlist
   toggleWishlist(product: Product | null): void {
     if (!product) {

@@ -14,14 +14,12 @@
            [alt]="product.name"
            class="product-image">
     </div>
-
-    <!-- Product Info -->
     <div class="product-info">
       <!-- Price -->
       <div class="product-price-row">
-        <span class="product-price">{{ product.price | currency:'NIS' }}</span>
+        <span class="product-price">{{ product.price |formatCurrency }}</span>
         <span *ngIf="originalPrice" class="product-original-price">
-          {{ originalPrice | currency:'NIS' }}
+          {{ originalPrice |formatCurrency }}
         </span>
       </div>
 

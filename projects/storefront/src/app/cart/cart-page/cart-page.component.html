@@ -58,7 +58,7 @@
               <div class="item-details">
                 <div class="item-price-row">
                   <span class="item-price">{{
-                    item.product.price | currency: 'NIS'
+                    item.product.price | formatCurrency()
                   }}</span>
                 </div>
                 <a
@@ -161,7 +161,7 @@
             </div>
             <div class="new-product-details">
               <span class="new-product-price">{{
-                newestProduct?.price | currency: 'NIS'
+                newestProduct?.price | formatCurrency()
               }}</span>
               <h4 class="new-product-name">{{ newestProduct?.name }}</h4>
               <button
@@ -179,7 +179,7 @@
         <div class="sidebar-card order-summary-card">
           <!-- Discount codes -->
           <div class="discount-section">
-            <h3 class="sidebar-card-title">Discount codes</h3>
+            <h3 class="sidebar-card-title">{{ tKeys.SF_CART_DISCOUNT_LABEL | translate:appliedPromoCodeDetails.code }}</h3>
             <div class="discount-input-group">
               <input
                 type="text"
@@ -215,7 +215,7 @@
             <div class="total-row">
               <span class="total-label">Total</span>
               <span class="total-amount">{{
-                calculateTotal(cartState.items) | currency: 'NIS'
+                calculateTotal(cartState.items) | formatCurrency()
               }}</span>
             </div>
             <p class="total-note">

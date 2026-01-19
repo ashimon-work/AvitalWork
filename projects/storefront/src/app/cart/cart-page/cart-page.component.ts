@@ -271,4 +271,18 @@ export class CartPageComponent implements OnInit {
       },
     });
   }
+
+  navigateToRecentlyViewedAll(): void {
+    // Placeholder for navigation logic
+    console.log('Navigate to all recently viewed products page - TBD');
+    // Example: this.router.navigate(['/', storeSlug, 'products', 'recently-viewed']);
+    // This would require a new route and component.
+  }
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('he-IL', {
+      style: 'currency',
+      currency: 'ILS',
+    }).format(amount);
+  }
+
 }
