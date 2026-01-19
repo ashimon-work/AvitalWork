@@ -1,0 +1,201 @@
+.global-home {
+  min-height: 100vh;
+
+  // Hero Section
+  .hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+
+      .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.95;
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+      }
+
+      .hero-description {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        animation: fadeInUp 0.6s ease-out 0.2s both;
+      }
+    }
+  }
+
+  // Featured Stores Section
+  .featured-stores {
+    padding: 60px 20px;
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: #333;
+    }
+
+    .stores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+
+      .store-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .store-card-content {
+          .store-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #333;
+          }
+
+          .store-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+          }
+
+          .store-link {
+            color: #667eea;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.2s ease;
+
+            &:hover {
+              color: #764ba2;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Info Section
+  .info-section {
+    padding: 60px 20px;
+    background: #f8f9fa;
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .info-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #333;
+      }
+
+      p {
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+
+        li {
+          padding: 0.5rem 0;
+          padding-left: 1.5rem;
+          position: relative;
+          color: #555;
+
+          &::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .global-home {
+    .hero {
+      padding: 60px 20px;
+
+      .hero-content {
+        .hero-title {
+          font-size: 2rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1.25rem;
+        }
+
+        .hero-description {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .featured-stores {
+      .stores-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .info-section {
+      .info-card {
+        padding: 1.5rem;
+      }
+    }
+  }
+}

@@ -3,7 +3,8 @@ import { Order, OrderItem } from 'projects/shared-types/src/lib/order.interface'
 import { OrderStatus } from 'projects/shared-types/src/lib/order.types';
 
 
-
+import { T } from '@shared/i18n';
+import { TranslatePipe } from '@shared/i18n';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -22,16 +23,16 @@ import { MatTooltipModule } from '@angular/material/tooltip'; // Added for poten
     MatTableModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TranslatePipe
   ]
 })
 export class AccountOrdersSectionComponent implements OnInit, OnChanges {
   @Input() orders: Order[] = [];
-  
+
   @Output() viewOrder = new EventEmitter<string>(); // Emits order.orderNumber
   @Output() downloadInvoice = new EventEmitter<string>(); // Emits order.orderNumber
-
-
+  public tKeys = T;
 
   totalOrdersCount: number = 0;
   totalSpent: number = 0;
@@ -40,7 +41,7 @@ export class AccountOrdersSectionComponent implements OnInit, OnChanges {
   // Columns displayed in the table
   displayedColumns: string[] = ['orderNumber', 'date', 'status', 'items', 'total', 'actions'];
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     this.calculateSummaryStats();
@@ -93,7 +94,7 @@ export class AccountOrdersSectionComponent implements OnInit, OnChanges {
 
   // Helper to map icon names for template consistency (example with Material Icons)
   getIcon(iconName: 'Package' | 'Eye' | 'Download'): string {
-    switch(iconName) {
+    switch (iconName) {
       case 'Package': return 'inventory_2';
       case 'Eye': return 'visibility';
       case 'Download': return 'download';

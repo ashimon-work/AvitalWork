@@ -17,7 +17,7 @@
   <!-- Header -->
   <header class="welcome-header" *ngIf="!showForm">
     <h1 class="welcome-title">{{ tKeys.SF_ACCOUNT_ADDRESSES_TITLE | translate }}</h1>
-    <p class="welcome-subtitle">Manage your saved addresses</p>
+    <p class="welcome-subtitle">{{ tKeys.SF_ACCOUNT_ADDRESSES_MANAGMENT | translate }}</p>
     <button mat-raised-button color="primary" (click)="openAddForm()" class="add-address-button">
       <img src="assets/icons/plus.svg" alt="" class="button-icon">
       {{ tKeys.SF_ACCOUNT_ADDRESSES_ADD_NEW_BUTTON | translate }}
@@ -46,11 +46,11 @@
           <div class="address-badges" *ngIf="address.isDefaultShipping">
             <span class="default-badge">
               <img src="assets/icons/check-circle.svg" alt="" class="badge-icon">
-              Default Address
+              {{ tKeys.SF_ACCOUNT_ADDRESSES_DEFAULT_ADDRESS | translate }}
             </span>
           </div>
 
-          <mat-divider></mat-divider>
+          <mat-divider> </mat-divider>
 
           <!-- Actions -->
           <div class="address-actions">
@@ -58,22 +58,18 @@
               <img src="assets/icons/edit.svg" alt="" class="action-icon">
               {{ tKeys.SF_ACCOUNT_ADDRESSES_EDIT_BUTTON | translate }}
             </button>
-            
+
             <!-- Default Address Toggle -->
-            <button mat-button 
-                    (click)="toggleDefault(address.id)"
-                    [disabled]="isLoading" 
-                    class="action-button"
-                    [ngClass]="address.isDefaultShipping ? 'default-active' : 'default-inactive'">
-              <img [src]="address.isDefaultShipping ? 'assets/icons/check-circle.svg' : 'assets/icons/check.svg'" 
-                   alt="" class="action-icon">
-              {{ address.isDefaultShipping ? 'Remove Default' : 'Make Default' }}
+            <button mat-button (click)="toggleDefault(address.id)" [disabled]="isLoading" class="action-button"
+              [ngClass]="address.isDefaultShipping ? 'default-active' : 'default-inactive'">
+              <img [src]="address.isDefaultShipping ? 'assets/icons/check-circle.svg' : 'assets/icons/check.svg'" alt=""
+                class="action-icon">
+              {{ address.isDefaultShipping ? (tKeys.SF_ACCOUNT_REMOVE_DEFAULT_ADDRESS | translate) :
+              (tKeys.SF_ACCOUNT_MAKE_DEFAULT_ADDRESS | translate) }}
             </button>
-            
-            <button mat-button 
-                    (click)="deleteAddress(address.id)" 
-                    [disabled]="isLoading"
-                    class="action-button delete-button">
+
+            <button mat-button (click)="deleteAddress(address.id)" [disabled]="isLoading"
+              class="action-button delete-button">
               <img src="assets/icons/trash.svg" alt="" class="action-icon">
               {{ tKeys.SF_ACCOUNT_ADDRESSES_DELETE_BUTTON | translate }}
             </button>
@@ -81,11 +77,10 @@
         </mat-card-content>
       </mat-card>
     </div>
-
     <ng-template #noAddresses>
       <div class="empty-state">
         <img src="assets/icons/map-pin.svg" alt="" class="empty-icon">
-        <h3 class="empty-title">No addresses found</h3>
+        <h3 class="empty-title">{{ tKeys.SF_ACCOUNT_NO_ADDRESS_FOUND | translate }}</h3>
         <p class="empty-description">{{ tKeys.SF_ACCOUNT_ADDRESSES_NO_ADDRESSES | translate }}</p>
         <button mat-raised-button color="primary" (click)="openAddForm()" class="empty-action-button">
           <img src="assets/icons/plus.svg" alt="" class="button-icon">
@@ -101,10 +96,11 @@
       <mat-card-header>
         <mat-card-title class="form-title">
           <img src="assets/icons/map-pin.svg" alt="" class="title-icon">
-          {{ isEditing ? (tKeys.SF_ACCOUNT_ADDRESSES_EDIT_FORM_TITLE | translate) : (tKeys.SF_ACCOUNT_ADDRESSES_ADD_FORM_TITLE | translate) }}
+          {{ isEditing ? (tKeys.SF_ACCOUNT_ADDRESSES_EDIT_FORM_TITLE | translate) :
+          (tKeys.SF_ACCOUNT_ADDRESSES_ADD_FORM_TITLE | translate) }}
         </mat-card-title>
       </mat-card-header>
-      
+
       <mat-card-content class="form-content">
         <form [formGroup]="addressForm" (ngSubmit)="saveAddress()" novalidate class="address-form">
           <div class="form-row">
@@ -190,20 +186,15 @@
 
           <!-- Form Actions -->
           <div class="form-actions">
-            <button mat-raised-button 
-                    color="primary" 
-                    type="submit" 
-                    [disabled]="isLoading || addressForm.invalid"
-                    class="save-button">
+            <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || addressForm.invalid"
+              class="save-button">
               <img src="assets/icons/check.svg" alt="" class="button-icon" *ngIf="!isLoading">
-              {{ isLoading ? (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVING | translate) : (isEditing ? (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_UPDATE | translate) : (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVE | translate)) }}
+              {{ isLoading ? (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVING | translate) : (isEditing ?
+              (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_UPDATE | translate) : (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVE
+              | translate)) }}
             </button>
-            
-            <button mat-button 
-                    type="button" 
-                    (click)="closeForm()" 
-                    [disabled]="isLoading"
-                    class="cancel-button">
+
+            <button mat-button type="button" (click)="closeForm()" [disabled]="isLoading" class="cancel-button">
               {{ tKeys.SF_ACCOUNT_ADDRESSES_CANCEL_BUTTON | translate }}
             </button>
           </div>
