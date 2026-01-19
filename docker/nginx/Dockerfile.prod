@@ -52,6 +52,9 @@ FROM nginx:stable-alpine
 COPY --from=storefront_builder /usr/src/app/dist/storefront/browser /usr/share/nginx/html/storefront
 COPY --from=store_management_builder /usr/src/app/dist/store-management/browser /usr/share/nginx/html/store-management
 
+# Copy favicon to the root for direct serving
+COPY --from=storefront_builder /usr/src/app/dist/storefront/browser/favicon.ico /usr/share/nginx/html/favicon.ico
+
 # Copy the custom Nginx configuration
 COPY docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 

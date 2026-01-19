@@ -1,11 +1,10 @@
 <!-- Hero Banner Carousel -->
-<section class="hero-carousel">
+<!-- <section class="hero-carousel">
   <app-carousel></app-carousel>
-</section>
-
+</section> -->
 <!-- Featured Categories -->
 <section class="featured-categories container">
-  <h2>{{ tKeys.SF_HOMEPAGE_FEATURED_CATEGORIES_TITLE | translate }}</h2>
+  <h2>{{ tKeys['SF_HOMEPAGE_FEATURED_CATEGORIES_TITLE'] | translate }}</h2>
   <div class="category-grid" *ngIf="featuredCategories$ | async as categories">
     <app-featured-category-card
       *ngFor="let category of categories"
@@ -18,7 +17,7 @@
 
 <!-- Featured Products -->
 <section class="featured-products container">
-  <h2>{{ tKeys.SF_HOMEPAGE_FEATURED_PRODUCTS_TITLE | translate }}</h2>
+  <h2>{{ tKeys['SF_HOMEPAGE_FEATURED_PRODUCTS_TITLE'] | translate }}</h2>
   <div class="product-grid" *ngIf="featuredProducts$ | async as products">
     <app-featured-product-card
       *ngFor="let product of products"

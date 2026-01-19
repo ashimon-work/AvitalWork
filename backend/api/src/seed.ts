@@ -49,7 +49,7 @@ import { CreditCardEntity } from './tranzila/entities/credit-card.entity';
 const storeData = [
   {
     id: '11111111-1111-1111-1111-111111111111',
-    name: 'Awesome Gadgets & Goods',
+    name: 'גאדג\'טים ומוצרים מעולים',
     slug: 'awesome-gadgets',
     logoUrl: 'https://plus.unsplash.com/premium_photo-1750895096919-1a7f59cbdda4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QXdlc29tZSUyMEdhZGdldHMlMjAlMjYlMjBHb29kc3xlbnwwfHwwfHx8MA%3D%3D',
     isFeaturedInMarketplace: true,
@@ -57,7 +57,7 @@ const storeData = [
   },
   {
     id: '22222222-2222-2222-2222-222222222222',
-    name: 'Fashion & Fun Zone',
+    name: 'אופנה וכיף',
     slug: 'fashion-fun',
     logoUrl: 'https://images.unsplash.com/photo-1617348493867-55244641c60f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RmFzaGlvbiUyMCUyNiUyMEZ1biUyMFpvbmV8ZW58MHx8MHx8fDA%3D',
     isFeaturedInMarketplace: true,
@@ -71,60 +71,60 @@ const storeData = [
 
 // Assign categories to stores
 const categoryData = [
-  // Store 1: Awesome Gadgets & Goods
+  // Store 1: גאדג'טים ומוצרים מעולים
   {
     id: 'aaa00001-c246-4913-9166-f75a99ee0c21',
-    name: 'Electronics',
-    description: 'Gadgets and devices',
+    name: 'אלקטרוניקה',
+    description: 'גאדג\'טים ומכשירים',
     imageUrl: 'https://plus.unsplash.com/premium_photo-1679079456083-9f288e224e96?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RWxlY3Ryb25pY3N8ZW58MHx8MHx8fDA%3D',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
   {
     id: 'aaa00003-c246-4913-9166-f75a99ee0c21',
-    name: 'Home Goods',
-    description: 'Items for your home',
+    name: 'מוצרי בית',
+    description: 'פריטים לבית שלך',
     imageUrl: 'https://plus.unsplash.com/premium_photo-1715071976149-6f26134fc7f0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SG9tZSUyMEdvb2RzfGVufDB8fDB8fHww',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
   {
     id: 'aaa00004-c246-4913-9166-f75a99ee0c21',
-    name: 'Books',
-    description: 'Literature and reading materials',
+    name: 'ספרים',
+    description: 'ספרות וחומרי קריאה',
     imageUrl: 'https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Qm9va3N8ZW58MHx8MHx8fDA%3D',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
   {
     id: 'aaa00007-c246-4913-9166-f75a99ee0c21',
-    name: 'Kitchen products',
-    description: 'A new category',
+    name: 'מוצרי מטבח',
+    description: 'קטגוריה חדשה',
     imageUrl: 'https://plus.unsplash.com/premium_photo-1714702844124-be1377d19666?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8S2l0Y2hlbiUyMHByb2R1Y3RzfGVufDB8fDB8fHww',
     storeId: storeData[0].id,
   },
-  // Store 2: Fashion & Fun Zone
+  // Store 2: אופנה וכיף
   {
     id: 'aaa00002-c246-4913-9166-f75a99ee0c21',
-    name: 'Apparel',
-    description: 'Clothing and fashion',
+    name: 'הלבשה',
+    description: 'בגדים ואופנה',
     imageUrl: 'https://images.unsplash.com/photo-1732257119998-b66cda63dcfc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Q2xvdGhpbmclMjBhbmQlMjBmYXNoaW9ufGVufDB8fDB8fHww',
     storeId: storeData[1].id,
     isFeaturedInMarketplace: true,
   },
   {
     id: 'aaa00005-c246-4913-9166-f75a99ee0c21',
-    name: 'Sports & Outdoors',
-    description: 'Equipment for sports and outdoor activities.',
+    name: 'ספורט וחוץ',
+    description: 'ציוד לספורט ופעילויות חוץ.',
     imageUrl: 'https://images.unsplash.com/photo-1598046655252-f0f143557dcb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fFNwb3J0cyUyMCUyNiUyME91dGRvb3JzfGVufDB8fDB8fHww',
     storeId: storeData[1].id,
     isFeaturedInMarketplace: true,
   },
   {
     id: 'aaa00006-c246-4913-9166-f75a99ee0c21',
-    name: 'Toys & Games',
-    description: 'Fun for all ages.',
-    imageUrl: 'https://images.unsplash.com/photo-1708032563896-06d7a8aef4e5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    name: 'צעצועים ומשחקים',
+    description: 'כיף לכל הגילאים.',
+    imageUrl: 'https://images.unsplash.com/photo-1708032563896-06d7a8aef4e5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q2hpbGRyZW4ncyUyMFBpY3R1cmUlMjBCb29rfGVufDB8fDB8fHww',
     storeId: storeData[1].id,
   },
   ...gjCategoryData,
@@ -137,7 +137,7 @@ const productData: any[] = [
   {
     sku: 'FP1v2',
     name: 'אוזניות ללא חוטים מבטלות רעש',
-    description: 'חווה צליל עמוק עם אוזניות פרימיום אלה.',
+    description: 'חוויית צליל עמוק עם אוזניות פרימיום אלה.',
     price: 199.99,
     imageUrls: [
       'https://images.unsplash.com/photo-1496957961599-e35b69ef5d7c?w=500&h=500&fit=crop',
@@ -169,7 +169,7 @@ const productData: any[] = [
   },
   {
     sku: 'FP3',
-    name: 'רמקול בלוטות\' נייד',
+    name: 'רמקול בלוטות',
     description:
       'רמקול קומפקטי עם איכות צליל חזקה למוזיקה בדרכים.',
     price: 49.99,
@@ -1024,9 +1024,9 @@ const aboutContentData = [
   // Awesome Gadgets & Goods
   {
     storeId: storeData[0].id,
-    title: 'About Us',
+    title: 'אודותינו',
     content:
-      'Awesome Gadgets & Goods is an online store specializing in smart gadgets and selected products for a more convenient and enjoyable life. The store offers a wide range of advanced technology products, audio accessories, smart home devices, quality kitchen and lifestyle products. All products are carefully selected to combine innovation, design and functionality – for a smart and updated shopping experience.',
+      'גאדג\'טים ומוצרים מעולים היא חנות מקוונת המתמחה בגאדג\'טים חכמים ומוצרים נבחרים לחיים נוחים ומענגים יותר. החנות מציעה מגוון רחב של מוצרי טכנולוגיה מתקדמים, אביזרי אודיו, מכשירי בית חכם, מוצרי מטבח ואורח חיים באיכות גבוהה. כל המוצרים נבחרים בקפידה לשלב חדשנות, עיצוב ופונקציונליות – לחוויית קניות חכמה ומעודכנת.',
     imageUrl: 'https://images.unsplash.com/photo-1597664607810-e59e0318e775?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXdlc29tZSUyMGdhZGdldHN8ZW58MHx8MHx8fDA%3D',
   },
   {

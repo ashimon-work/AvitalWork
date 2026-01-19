@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core'; // Added O
 import { Observable, Subscription } from 'rxjs'; // Added Subscription
 import { RouterOutlet } from '@angular/router';
 import { T, TranslatePipe } from '@shared/i18n';
+import { I18nService } from '@shared/i18n';
 import { HeaderComponent } from './core/components/header/header.component';
 import { FooterComponent } from './core/components/footer/footer.component';
 import { AuthService } from './core/services/auth.service';
@@ -25,10 +26,12 @@ export class AppComponent implements OnInit, OnDestroy { // Implemented OnDestro
 
   private authService = inject(AuthService); // Using inject
   private cartService = inject(CartService); // Using inject
+  public i18nService = inject(I18nService); // Using inject
 
   // Removed constructor injection, using inject() instead
 
   ngOnInit(): void {
+    this.i18nService.setLanguage('he');
     this.isAuthenticated$ = this.authService.isAuthenticated$;
 
     // Subscribe to item added events

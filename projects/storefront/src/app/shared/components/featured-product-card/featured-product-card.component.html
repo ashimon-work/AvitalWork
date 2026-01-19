@@ -15,7 +15,7 @@
       <div class="image-overlay"></div>
       <div class="product-info-overlay">
         <h3 class="product-title">{{ product.name }}</h3>
-        <p class="product-price">{{ product.price | currency }}</p>
+        <p class="product-price">{{ product.price | currency : 'ILS' : 'symbol' : '1.0-2' : 'he' }}</p>
       </div>
     </div>
   </a>

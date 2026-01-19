@@ -9,7 +9,7 @@
            [alt]="product.name"
            class="product-image">
       <mat-chip *ngIf="isOutOfStock" class="out-of-stock-badge" color="warn">
-        {{ tKeys.SF_PRODUCT_CARD_OUT_OF_STOCK | translate }}
+        {{ tKeys['SF_PRODUCT_CARD_OUT_OF_STOCK'] | translate }}
       </mat-chip>
     </div>
     <mat-card-content class="product-info">
@@ -25,7 +25,7 @@
             (click)="onAddToCart()" 
             [disabled]="isOutOfStock">
       <mat-icon>shopping_cart</mat-icon>
-      {{ tKeys.SF_PRODUCT_CARD_ADD_TO_CART_BUTTON | translate }}
+      {{ tKeys['SF_PRODUCT_CARD_ADD_TO_CART_BUTTON'] | translate }}
     </button>
     <!-- Optional: Add wishlist button -->
     <button mat-icon-button 

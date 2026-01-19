@@ -6,8 +6,7 @@ import { map } from 'rxjs/operators';
 import { ApiService, AboutContent } from '../../core/services/api.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { CartService } from '../../core/services/cart.service';
-import { T } from '@shared/i18n';
-import { TranslatePipe } from '@shared/i18n';
+import { T, TranslatePipe } from '@shared/i18n';
 import { MaterialModule } from '../../shared/material.module';
 import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component';
 import { Product } from '@shared-types';
@@ -22,7 +21,7 @@ interface Testimonial {
 @Component({
   selector: 'app-about-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, MaterialModule, FeaturedProductCardComponent],
+  imports: [CommonModule, RouterModule, MaterialModule, FeaturedProductCardComponent, TranslatePipe],
   templateUrl: './about-page.component.html',
   styleUrl: './about-page.component.scss'
 })
