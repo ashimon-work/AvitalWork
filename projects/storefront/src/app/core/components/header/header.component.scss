@@ -75,8 +75,8 @@ $header-height-mobile: 56px;
 /* TOP */
 .header-top {
   position: fixed;
-  right: 80px;
-  top: 15px;
+  right: 90px;
+  top: 25px;
 
   .modern-header {
     position: sticky;
@@ -323,7 +323,7 @@ $header-height-mobile: 56px;
 
     .logo-brand-link {
       margin-left: -50px;
-      position: fixed;
+      position: relative;
       top: 10px;
     }
 
@@ -409,4 +409,30 @@ li {
   position: relative;
   left: -10px;
   top: 2px;
+}
+/* Dark variant styles (for non-homepage pages - black text) */
+.app-sidenav-container.header-dark {
+  .logo-text {
+    color: #000000; // Pure black
+  }
+
+  .icon-btn {
+    color: #000000; // Pure black
+    
+    svg {
+      stroke: #000000; // Ensure SVG icons are also black
+    }
+  }
+
+  .nav-link {
+    color: #000000; // Pure black
+  }
+  
+  .shop-button {
+    color: #000000 !important; // Pure black
+    
+    svg {
+      stroke: #000000; // Ensure SVG icons are also black
+    }
+  }
 }
