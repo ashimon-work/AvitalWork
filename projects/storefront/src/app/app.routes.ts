@@ -31,14 +31,14 @@ export const routes: Routes = [
 
   // Redirect /default specifically to /awesome-gadgets
   { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
-  { path: '', redirectTo: '/stores', pathMatch: 'full' }, // Redirect root to a default store slug
+  { path: '', redirectTo: '/awesome-gadgets', pathMatch: 'full' }, // Redirect root to a default store slug
 
   // Route for all stores page
-  {
-    path: 'stores',
-    loadComponent: () =>
-      import('./stores/stores-page/stores-page.component').then((m) => m.StoresPageComponent),
-  },
+  // {
+  //   path: 'stores',
+  //   loadComponent: () =>
+  //     import('./stores/stores-page/stores-page.component').then((m) => m.StoresPageComponent),
+  // },
 
   // Explicit route for generic 404 page
   { path: '404', component: NotFoundPageComponent },

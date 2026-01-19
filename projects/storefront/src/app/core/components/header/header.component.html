@@ -68,7 +68,7 @@
         <div class="header-top">
           <!-- Logo -->
           <a (click)="onLogoClick()" class="logo" class="logo-brand-link">
-            <span class="logo-text">Awesome Gadgets & Goods</span>
+           <span *ngIf="storeName$ | async as name" class="logo-text">{{ name }}</span>
           </a>
 
           <!-- Actions -->
