@@ -40,7 +40,9 @@ $header-height-mobile: 56px;
   color: $text-gray-900;
   cursor: pointer;
   flex-shrink: 0;
-
+  position: fixed;
+  top: 25px;
+  left: 90px;
 }
 
 // ::ng-deep .mat-mdc-autocomplete-panel styles removed as it's no longer used.
@@ -72,6 +74,10 @@ $header-height-mobile: 56px;
 
 /* TOP */
 .header-top {
+  position: fixed;
+  right: 80px;
+  top: 15px;
+
   .modern-header {
     position: sticky;
     top: 0;
@@ -143,7 +149,7 @@ $header-height-mobile: 56px;
 
       ::ng-deep .mat-badge-content {
         background: #fff;
-        color: #000;
+        color: #141313;
         font-size: 11px;
       }
     }
@@ -180,17 +186,17 @@ $header-height-mobile: 56px;
 
     /* LOGO */
     .combine-header.scrolled .logo-text {
-      color: #111;
+      color: #1c1b1b;
     }
 
     /* ICONS */
     .combine-header.scrolled .icon-btn {
-      color: #111;
+      color: #131212;
     }
 
     /* NAV */
     .combine-header.scrolled .nav-link {
-      color: #111;
+      color: #131212;
     }
 
     /* subtle shrink */
@@ -236,14 +242,15 @@ $header-height-mobile: 56px;
       z-index: 1;
       position: relative;
       color: white;
+      font-size: 18px;
     }
 
     .nav-link {
       background-color: transparent;
       top: 25px;
       font-size: 15px;
-      left: 15px;
-      top: 5px;
+      left: 18px;
+      top: 20px;
     }
 
     li {
@@ -262,12 +269,12 @@ $header-height-mobile: 56px;
     }
 
     .logo-brand-link {
-      padding-left: 10px;
+      padding-left: 12px;
     }
 
     .nav-links {
       padding: 10px 15px;
-      font-size: 15px;
+      font-size: 8px;
       z-index: 9999;
     }
 
@@ -316,34 +323,36 @@ $header-height-mobile: 56px;
 
     .logo-brand-link {
       margin-left: -50px;
+      position: fixed;
+      top: 10px;
     }
 
     .app-sidenav-container.header-dark {
       .logo-text {
-        color: #111;
+        color: #231d1d;
       }
 
       .icon-btn {
-        color: #111;
+        color: #111010;
       }
 
       .nav-link {
-        color: #111;
+        color: #1b1919;
       }
     }
 
     /* Light variant styles */
     .app-sidenav-container.header-light {
       .logo-text {
-        color: #111;
+        color: #252121;
       }
 
       .icon-btn {
-        color: #111;
+        color: #111010;
       }
 
       .nav-link {
-        color: #111;
+        color: #060606;
       }
     }
 
@@ -362,4 +371,42 @@ $header-height-mobile: 56px;
       }
     }
   }
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+  top: 58px;
+  left: -15px;
+  position: relative;
+  font-size: 15px;
+
+}
+
+li {
+  list-style: none;
+}
+
+.nav-link {
+  color: #f2eaea;
+}
+
+.shop-button {
+  color: white !important;
+}
+
+/* כדי שגם האייקון שליד (ה-SVG) יהיה לבן */
+.shop-button svg {
+  stroke: white;
+}
+.lucide-home {
+    margin-right: -30px;  /* מזיז את הטקסט שלידו ימינה */
+    margin-left: 15px;    /* מזיז את האייקון עצמו ימינה */
+    margin-bottom: 4px;  /* מזיז אותו קצת למעלה */
+    vertical-align: middle; /* עוזר ליישר אותו לקו האמצע של הטקסט */
+}
+.nav-links{
+  position: relative;
+  left: -10px;
+  top: 2px;
 }

@@ -53,6 +53,13 @@ export class FeaturedProductCardComponent implements OnInit {
     // Fallback or default link
     return null;
   }
+  get href(): string {
+    if (this.storeSlug && this.product) {
+      return `/${this.storeSlug}/product/${this.product.id}`;
+    }
+    // Fallback or default link
+    return '/products';
+  }
 
   get imageUrl(): string {
     return this.product &&
