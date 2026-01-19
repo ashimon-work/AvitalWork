@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { T, TranslatePipe, I18nService } from '@shared/i18n';
 
 export interface ShippingAddressData {
   fullName: string;
@@ -19,13 +20,14 @@ export interface ShippingAddressData {
 @Component({
   selector: 'app-shipping-address-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,TranslatePipe],
   templateUrl: './shipping-address-form.component.html',
   styleUrls: ['./shipping-address-form.component.scss']
 })
 export class ShippingAddressFormComponent implements OnInit {
   @Input() initialValues?: Partial<ShippingAddressData>;
   @Output() formUpdate = new EventEmitter<ShippingAddressData>();
+  public tKeys = T;
 
   form!: FormGroup;
 

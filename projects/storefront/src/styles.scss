@@ -132,7 +132,7 @@ $custom-theme: mat.m2-define-light-theme((color: (primary: $custom-primary,
 html {
   font-size: var(--font-size-base); // Typically 16px
   scroll-behavior: smooth;
-  overflow-x: hidden; // Prevent horizontal scroll at the root
+  overflow-x:  visible !important; // Prevent horizontal scroll at the root
 }
 
 body {
