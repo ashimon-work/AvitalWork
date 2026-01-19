@@ -4,13 +4,13 @@ import { Router, RouterModule } from '@angular/router'; // Import RouterModule f
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../core/services/auth.service'; // Import AuthService
 import { T, TranslatePipe } from '@shared/i18n'; // Import T and TranslatePipe
-
+import { MatIconModule } from '@angular/material/icon'; // Import Material Icons
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, TranslatePipe], // Add TranslatePipe
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TranslatePipe, MatIconModule], // Add TranslatePipe, Header, Footer, MatIconModule
   providers: [HttpClient],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss']
@@ -21,6 +21,7 @@ export class LoginPageComponent implements OnInit {
   isSubmitting = false;
   errorMessage: string | null = null;
   passwordFieldType: 'password' | 'text' = 'password'; // Property for password field type
+  isSubmitHovered = false; // State for submit button hover animation
 
   constructor(
     private fb: FormBuilder,

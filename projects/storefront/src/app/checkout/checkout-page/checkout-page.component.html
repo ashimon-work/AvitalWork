@@ -1,32 +1,40 @@
-<div class="checkout-page">
-  <header class="checkout-page__header">
-    <div class="checkout-page__container">
-      <app-checkout-progress-indicator [currentStep]="2"></app-checkout-progress-indicator>
-    </div>
-  </header>
+<div class="checkout-page" dir="rtl">
   <main class="checkout-page__main">
-    <div class="checkout-page__grid">
-      <div class="checkout-page__grid-left">
-        <app-shipping-address-form (formUpdate)="handleShippingSubmit($event)"></app-shipping-address-form>
-        <app-shipping-method
-          [shippingMethods]="(shippingMethods$ | async) || []"
-          [selectedMethod]="selectedShippingMethod"
-          (selectionChange)="handleShippingMethodChange($event)">
-        </app-shipping-method>
-        <app-payment-method-section
-          [storedCard]="storedCard"
-          (cardUpdate)="handleCardUpdate($event)">
-        </app-payment-method-section>
+    <div class="checkout-page__container">
+      
+      <div class="checkout-page__header-wrapper">
+        <header class="page-header">
+          <nav class="breadcrumb">
+            <a routerLink="/">{{ tKeys.SF_MINI_NAVIGATE_HOME | translate }}</a>
+            <span class="separator">/</span>
+            <a routerLink="/cart">{{ tKeys.SF_MINI_NAVIGATE_CART | translate }}</a>
+            <span class="separator">/</span>
+            <span class="current">{{ tKeys.SF_MINI_NAVIGATE_CHECKOUT | translate }}</span>
+          </nav>
+          <h1 class="text-display">תשלום</h1>
+        </header>
       </div>
-      <div class="checkout-page__grid-right">
-        <app-order-summary-card
-          [items]="orderItems"
-          [shipping]="selectedShippingMethod?.cost || 0"
-          [taxes]="(taxEstimate$ | async) || 0"
-          [canPlaceOrder]="canPlaceOrder()"
-          [isPlacingOrder]="isLoading"
-          (placeOrder)="placeOrder()">
-        </app-order-summary-card>
+
+      <div class="checkout-page__grid">
+        <div class="checkout-page__grid-right">
+          <app-shipping-address-form (formUpdate)="handleShippingSubmit($event)"></app-shipping-address-form>
+          <app-shipping-method
+              [shippingMethods]="(shippingMethods$ | async) || []"
+              [selectedMethod]="selectedShippingMethod"
+              (selectionChange)="handleShippingMethodChange($event)">
+            </app-shipping-method>
+          <app-payment-method-section [storedCard]="storedCard"></app-payment-method-section>
+          <button type="submit" class="complete-order-btn" (click)="placeOrder()">
+            <span>סיום הזמנה</span>
+            <span class="arrow-icon">←</span>
+          </button>
+        </div>
+        <div class="checkout-page__grid-left">
+          <app-order-summary-card 
+            [items]="orderItems" 
+            [shipping]="selectedShippingMethod?.cost || 0">
+           </app-order-summary-card>  
+        </div>
       </div>
     </div>
   </main>

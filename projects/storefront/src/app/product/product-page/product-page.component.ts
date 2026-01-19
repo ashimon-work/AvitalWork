@@ -6,13 +6,14 @@ import { Observable, switchMap, tap, map, of, filter, catchError, combineLatest 
 import { Product, Category, ProductVariant, ProductVariantOption } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { CartService } from '../../core/services/cart.service';
+import { CartDrawerService } from '../../core/services/cart-drawer.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
 import { ImageCarouselComponent } from '../../shared/components/image-carousel/image-carousel.component';
-import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component'; // Corrected import
+import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component';
 import { T, TranslatePipe } from '@shared/i18n';
 import { I18nService } from '@shared/i18n';
 
@@ -36,11 +37,12 @@ export class ProductPageComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private cartService = inject(CartService);
+  private cartDrawerService = inject(CartDrawerService);
   private storeContext = inject(StoreContextService);
   private wishlistService = inject(WishlistService);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
-  private recentlyViewedService = inject(RecentlyViewedService); // Added injection
+  private recentlyViewedService = inject(RecentlyViewedService);
   private i18nService = inject(I18nService);
 
   public currentStoreSlug$ = this.storeContext.currentStoreSlug$;
@@ -48,6 +50,7 @@ export class ProductPageComponent implements OnInit {
   product$: Observable<Product | null> | undefined;
   category$: Observable<Category | null>;
   quantity: number = 1;
+  currentStoreSlug: string | null = null;
 
   // New properties for variant selection and display
   availableOptions: { name: string, values: { value: string, disabled: boolean }[] }[] = [];
@@ -101,6 +104,11 @@ export class ProductPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Subscribe to current store slug
+    this.currentStoreSlug$.subscribe(slug => {
+      this.currentStoreSlug = slug;
+    });
+    
     // Fetch Product Details
     this.product$ = this.route.paramMap.pipe(
       map(params => params.get('id')),
@@ -324,14 +332,11 @@ export class ProductPageComponent implements OnInit {
     this.cartService.addItem(itemToAdd, this.quantity).subscribe({
       next: () => {
         console.log('Item added successfully via service');
-        this.notificationService.showSuccess(
-          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, this.quantity, product.name)
-        );
+        // Cart drawer is opened automatically by CartService
         // TODO: Add button state change (e.g., temporarily disable or show added state)
       },
       error: (err: any) => {
         console.error('Failed to add item via service:', err);
-        this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
       }
     });
   }

@@ -74,7 +74,17 @@ export class StoreContextService {
       }
       
       // Additional validation: check if it's not a known static route
-      const staticRoutes = ['404', 'default'];
+      // These routes are NOT store slugs and should be excluded from store context
+      const staticRoutes = [
+        '404',           // 404 error page
+        'default',       // Default redirect route
+        'marketplace',   // Global marketplace routes (future: /marketplace/stores, /marketplace/products, etc.)
+        'stores',        // Global stores listing (future)
+        'search',        // Global search (future)
+        'account',       // Global account routes (if any)
+        'checkout',      // Global checkout (if any)
+        'cart',          // Global cart (if any)
+      ];
       if (staticRoutes.includes(potentialSlug)) {
         console.log('[StoreContextService] Potential slug is a static route, returning null.');
         return null;
@@ -142,3 +152,4 @@ export class StoreContextService {
     }
   }
 }
+

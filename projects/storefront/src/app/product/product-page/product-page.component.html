@@ -3,11 +3,11 @@
 
   <!-- Breadcrumbs (Example - Needs category data if available) -->
   <div class="breadcrumbs">
-    <a [routerLink]="['/']">{{ tKeys.SF_NAV_HOME | translate }}</a>
+    <a [routerLink]="['/', (currentStoreSlug$ | async)]">{{ tKeys.SF_NAV_HOME | translate }}</a>
     <!-- Add category link if product data includes it -->
     <ng-container *ngIf="productCategory">
       <img src="assets/icons/chevron-right.svg" alt="" class="breadcrumb-separator-icon" /> <a
-        [routerLink]="['/category', productCategory.id]">{{ productCategory.name }}</a>
+        [routerLink]="['/', (currentStoreSlug$ | async), 'category', productCategory.id]">{{ productCategory.name }}</a>
     </ng-container>
     <img src="assets/icons/chevron-right.svg" alt="" class="breadcrumb-separator-icon" /> <span>{{ product.name
       }}</span>
@@ -196,7 +196,7 @@
         <ng-template #displayRelatedProducts>
           <div class="related-products-list">
             <app-featured-product-card *ngFor="let relatedProduct of relatedProducts" [product]="relatedProduct"
-              (addToCart)="onAddToCart($event)"></app-featured-product-card>
+              [storeSlug]="currentStoreSlug" (addToCart)="onAddToCart($event)"></app-featured-product-card>
           </div>
         </ng-template>
       </div>
