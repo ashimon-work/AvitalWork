@@ -19,6 +19,22 @@ export class CategoriesService {
     return this.categoriesRepository.find(options);
   }
 
+  async findAllForStoreBySlug(storeSlug: string): Promise<CategoryEntity[]> {
+  const findOptions: FindManyOptions<CategoryEntity> = {
+    where: { store: { slug: storeSlug } },
+    relations: ['store'],
+    order: { name: 'ASC' },
+  };
+  
+  this.logger.log(`Finding all categories for store slug: ${storeSlug} with options: ${JSON.stringify(findOptions)}`);
+  
+  const categories = await this.categoriesRepository.find(findOptions);
+  
+  this.logger.log(`Found ${categories.length} total categories for store: ${storeSlug}`);
+  
+  return categories;
+}
+
   async getFeaturedCategories(storeSlug?: string): Promise<CategoryEntity[]> {
     // Add storeSlug parameter
     const where: FindOptionsWhere<CategoryEntity> = {};

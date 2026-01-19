@@ -1,182 +1,112 @@
-@use '../../styles/variables' as *;
-
-.order-summary-card {
+:host {
+display: block;
+  position: -webkit-sticky;
   position: sticky;
   top: 2rem;
-  border: 1px solid $border-color;
-  border-radius: $border-radius-lg;
-  background-color: $background-color;
+  z-index: 10;
+  align-self: start; 
+  height: auto;      
+  width: 100%;
+}
 
-  &__header, &__content, &__footer {
-    padding: 1.5rem;
-  }
-  
-  &__header {
-    border-bottom: 1px solid $border-color;
-  }
-
+.order-summary-card {
+  overflow: visible;
+  width: 100%;
+  height: fit-content; 
+  background: #ffffff;
+  border: 1px solid #e5e7eb; 
+  border-radius: 0.75rem;     
+  padding: 1.25rem;   
+  margin-left: 2rem;        
+  box-sizing: border-box;
   &__title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-
-  &__icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: $text-color-muted;
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  &__accordion-trigger {
-    cursor: pointer;
-    font-weight: 500;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .accordion-arrow {
-    transition: transform 0.2s ease-in-out;
-  }
-
-  details[open] .accordion-arrow {
-    transform: rotate(180deg);
-  }
-
-  &__accordion-content {
-    margin-top: 1.5rem;
+  color:#000000;
+  font-size: 1.25rem;
+    margin-bottom: 1.5rem;   
   }
 
   &__item-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 1.5rem 0;    
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;              
   }
 
   &__item {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    gap: 1rem;              
+    align-items: flex-start;
   }
 
   &__item-image {
-    width: 4rem;
-    height: 4rem;
-    border-radius: $border-radius-md;
+    width: 64px;          
+    height: 64px;          
     object-fit: cover;
+    background-color: #f3f4f6; 
+    border-radius: 2.5rem;   
+    
   }
 
   &__item-details {
+    display: flex;
+    flex-direction: column;
     flex: 1;
   }
 
   &__item-name {
+    font-size: 0.875rem;     
     font-weight: 500;
+    color: #111827;  
+    margin-bottom: 0rem;        
   }
 
-  &__item-options, &__item-quantity {
-    font-size: 0.875rem;
-    color: $text-color-muted;
+  &__item-quantity {
+    font-size: 0.75rem;      
+    color: #6b7280;          
   }
 
   &__item-price {
-    font-weight: 500;
+    font-size: 0.875rem;    
+    color: #111827;
   }
 
   &__separator {
-    border-color: $border-color;
-    margin: 0.5rem 0;
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 0;
   }
 
   &__totals {
+    padding: 1rem 0;        
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.3rem;           
   }
 
   &__total-row {
     display: flex;
     justify-content: space-between;
-
-    &--discount {
-      color: #16a34a; // success color
+    font-size: 0.875rem;     
+    span:first-child {
+      color: #6b7280;   
     }
-  }
-
-  &__total-label {
-    color: $text-color-muted;
+    span:last-child {
+      color: #6b7280;        
+    }
   }
 
   &__grand-total {
+    padding-top: 0.3rem;     
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 0.5rem;
-  }
-
-  &__grand-total-label {
-    font-size: 1.125rem;
-    font-weight: 600;
-  }
-
-  &__grand-total-amount {
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-
-  &__footer {
-    border-top: 1px solid $border-color;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    .btn {
-      &.btn--success {
-        background-color: #16a34a;
-        color: white;
-        &:hover {
-          background-color: #15803d;
-        }
-      }
-    }
-  }
-
-  &__secure-checkout {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: $text-color-muted;
-  }
-
-  &__secure-checkout-icon {
-    width: 1rem;
-    height: 1rem;
+    font-size: 1rem;        
+    font-weight: 500;        
+    color: #111827;
   }
 }
-
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+  :host-context(html), :host-context(body) {
+    overflow: visible !important;
+    height: auto !important;
   }
-  to {
-    transform: rotate(360deg);
-  }
-}
