@@ -44,6 +44,9 @@ export const routes: Routes = [
     ],
   },
 
+  // Redirect /default specifically to /awesome-gadgets
+  { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
+  { path: '', redirectTo: '/awesome-gadgets', pathMatch: 'full' }, // Redirect root to a default store slug
   // Route for all stores page
   // {
   //   path: 'stores',
@@ -71,6 +74,11 @@ export const routes: Routes = [
           import('./home/homepage/homepage.component').then(
             (m) => m.HomepageComponent
           ),
+      },
+      {
+        path: 'products', // e.g., /awesome-gadgets/products
+        loadComponent: () =>
+          import('./home/homepage/homepage.component').then((m) => m.HomepageComponent),
       },
       {
         path: 'category/:id', // e.g., /awesome-gadgets/category/electronics

@@ -1,14 +1,14 @@
-<app-header  [variant]="getHeaderVariant()">
-</app-header>
+<div [dir]="i18nService.currentLang$() === 'he' ? 'rtl' : 'ltr'">
+  <app-header></app-header>
 
-<!-- Category Navigation Dropdown - outside header to avoid stacking context issues -->
-<app-category-navigation (close)="closeCategoryDropdown()"></app-category-navigation>
+  <main style="overflow-x: hidden;">
+    <router-outlet></router-outlet>
+    <app-notification-toast></app-notification-toast>
+  </main>
+  <!-- Cart Notification -->
+  <div *ngIf="showCartNotification" class="cart-notification">
+    {{ tKeys['SF_CART_NOTIFICATION_ITEM_ADDED'] | translate }}
+  </div>
 
-<main style="overflow-x: visibale;">
-  <router-outlet></router-outlet>
-  <app-notification-toast></app-notification-toast>
-</main>
-
-<app-cart-drawer></app-cart-drawer>
-
-<app-footer></app-footer>
+  <app-footer></app-footer>
+</div>

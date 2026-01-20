@@ -34,6 +34,8 @@ export class FeaturedProductCardComponent implements OnInit {
  
   isInWishlist: boolean = false;
 
+  private cacheBuster = '&t=' + Date.now();
+
   ngOnInit(): void {
     // Initialize isInWishlist based on whether the product is already in the wishlist
     if (this.product) {
@@ -63,11 +65,15 @@ export class FeaturedProductCardComponent implements OnInit {
   }
 
   get imageUrl(): string {
+    const url = (this.product && this.product.imageUrls && this.product.imageUrls.length > 0)
     return this.product &&
       this.product.imageUrls &&
       this.product.imageUrls.length > 0
       ? this.product.imageUrls[0]
       : 'assets/images/placeholder-image.webp';
+    console.log('Featured product image URL:', url, 'for product:', this.product?.name);
+    const separator = url.includes('?') ? '&' : '?';
+    return url + separator + 'v=1';
   }
 
   get altText(): string {
@@ -82,6 +88,11 @@ export class FeaturedProductCardComponent implements OnInit {
   onAddToCartClick(): void {
     this.addToCart.emit(this.product);
   }
+
+  onImageError(event: Event): void {
+    console.error('Image failed to load:', (event.target as HTMLImageElement).src);
+  }
+}
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('he-IL', {
       style: 'currency',

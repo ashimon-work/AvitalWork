@@ -43,6 +43,8 @@
       <form [formGroup]="newsletterForm" (ngSubmit)="handleSubmit()" class="newsletter-form-flex"
         aria-label="Newsletter signup">
         <div class="newsletter-input-group">
+          <input type="email" formControlName="email" placeholder="{{ tKeys.SF_FORM_FIELD_EMAIL_LABEL | translate }}" required class="newsletter-email-input">
+          <button type="submit" class="newsletter-submit-button" [disabled]="newsletterLoading || newsletterForm.invalid">
           <button type="submit" class="newsletter-submit-button"
             [disabled]="newsletterLoading || newsletterForm.invalid">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"

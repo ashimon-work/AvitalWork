@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap, catchError, throwError, map, first, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError, map, first, Subject, of, switchMap } from 'rxjs';
 import { Product, Cart, CartItem } from '@shared-types';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service'; // For login/logout events
+import { StoreContextService } from './store-context.service';
 import { CartDrawerService } from './cart-drawer.service';
 // Removed incorrect NestJS Logger import
 
@@ -38,6 +39,7 @@ export class CartService {
   constructor(
     private apiService: ApiService,
     private authService: AuthService, // Inject AuthService
+    private storeContext: StoreContextService
     private cartDrawerService: CartDrawerService // Inject CartDrawerService
   ) {
     this.guestCartId = localStorage.getItem(this.GUEST_CART_ID_KEY);
@@ -91,10 +93,20 @@ export class CartService {
 
   public loadInitialCart(guestId?: string | null): void {
     console.log(`CartService: Loading initial cart. Guest ID: ${guestId}`);
-    // ApiService.getCart will need to be updated to send guestId as a header
-    this.apiService.getCart(guestId).pipe(
+    // Only load cart if store context is available
+    this.storeContext.currentStoreSlug$.pipe(
+      first(),
+      switchMap(storeSlug => {
+        if (!storeSlug) {
+          console.log('CartService: No store slug available, skipping initial cart load.');
+          return of(null);
+        }
+        return this.apiService.getCart(guestId);
+      })
+    ).pipe(
       first(),
       tap((response: Cart | any) => { // Use 'any' for now due to potential new guest cart structure
+        if (!response) return; // No store slug, skip
         // Backend returns guest_session_id field
         const responseGuestId = response?.guest_session_id || response?.guestCartId;
         if (response && responseGuestId) {

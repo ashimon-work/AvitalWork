@@ -1,3 +1,25 @@
+<article class="relative flex flex-col w-full bg-white transition-all" style="border-radius: 0;" tabindex="-1">
+  
+  <button type="button"
+    [attr.aria-label]="favorite ? 'Remove ' + product.name + ' from favorites' : 'Add ' + product.name + ' to favorites'"
+    class="favorite-btn-always"
+    (click)="toggleFavorite()" tabindex="0">
+    <mat-icon [class.is-favorite]="favorite">
+      {{ favorite ? 'favorite' : 'favorite_border' }}
+    </mat-icon>
+  </button>
+
+  <a [routerLink]="href" class="block focus:outline-none" style="text-decoration: none;">
+    <div class="image-container-fixed">
+      <img [src]="imageUrl" [alt]="altText" class="product-img" (error)="onImageError($event)" />
+      <div class="image-overlay"></div>
+      <div class="product-info-overlay">
+        <h3 class="product-title">{{ product.name }}</h3>
+        <p class="product-price">{{ product.price | currency : 'ILS' : 'symbol' : '1.0-2' : 'he' }}</p>
+      </div>
+    </div>
+  </a>
+</article>
 <article class="product-card group">
   <button type="button"
     [attr.aria-label]="isInWishlist ? 'Remove ' + product.name + ' from favorites' : 'Add ' + product.name + ' to favorites'"

@@ -1,3 +1,106 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+article {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%; // גורם לכל הכרטיסיות להיות באותו גובה בשורה
+  background-color: #ffffff;
+  position: relative;
+}
+
+/* 1. נעילת גובה התמונה - זה הסוד לאחידות */
+.image-container-fixed, .relative.w-full {
+  position: relative;
+  width: 100%;
+  height: 430px !important; // גובה ארוך ומרשים כמו שביקשת
+  overflow: hidden;
+}
+
+img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important; // חותך את התמונה בדיוק למידה בלי לעוות אותה
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%; // Adjust as needed
+  background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); // Semi-transparent white gradient for visibility
+}
+
+.product-info-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  color: black;
+
+  .product-title {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 1.2rem !important;
+    font-weight: 400 !important;
+    color: #1a1a1a !important;
+    margin: 5px 0 !important;
+    line-height: 1.4 !important;
+    transition: text-decoration 0.2s ease;
+  }
+
+  .product-title:hover {
+    text-decoration: underline !important;
+  }
+
+  .product-price {
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    color: #1a1a1a !important;
+    margin: 5px 0 0 0 !important;
+    transition: text-decoration 0.2s ease;
+  }
+
+  .product-price:hover {
+    text-decoration: underline !important;
+  }
+}
+
+/* 3. כפתור הלב - רק אייקון */
+button[aria-label*="favorites"] {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: white !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    color: #000 !important;
+  }
+  span { display: none !important; }
+}
+
+
+
 /* קונטיינר ראשי */
 .product-card {
   position: relative;

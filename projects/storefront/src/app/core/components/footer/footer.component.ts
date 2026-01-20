@@ -103,6 +103,7 @@ export class FooterComponent implements OnInit {
       this.newsletterLoading = true;
       this.showSuccessMessage = false;
       this.showErrorMessage = false;
+      this.newsletterForm.get('email')?.disable();
 
       const email = this.newsletterForm.value.email;
 
@@ -112,6 +113,7 @@ export class FooterComponent implements OnInit {
           this.showSuccessMessage = true;
           this.successMessage = 'Thank you for subscribing!';
           this.newsletterForm.reset();
+          this.newsletterForm.get('email')?.enable();
           this.newsletterLoading = false;
           setTimeout(() => {
             this.showSuccessMessage = false;
@@ -128,6 +130,7 @@ export class FooterComponent implements OnInit {
           } else {
             this.errorMessage = 'Subscription failed. Please try again.';
           }
+          this.newsletterForm.get('email')?.enable();
           this.newsletterLoading = false;
           setTimeout(() => {
             this.showErrorMessage = false;

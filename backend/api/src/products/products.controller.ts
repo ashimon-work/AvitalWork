@@ -21,6 +21,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   private mapProductEntityToDto(product: ProductEntity): ProductDto {
+    console.log('Mapping product:', product.name, 'imageUrls:', product.imageUrls);
     const productDto: ProductDto = {
       id: product.id,
       sku: product.sku,

@@ -631,6 +631,13 @@ export const enMessages: TranslationSchema = {
   SF_PRODUCT_PAGE_RELATED_PRODUCTS_TITLE: "Related Products",
   SF_PRODUCT_PAGE_NO_RELATED_PRODUCTS: "No related products found.",
   SF_PRODUCT_PAGE_LOADING_DETAILS: "Loading product details...",
+  SF_PRODUCT_PAGE_BREADCRUMB_COLLECTIONS: "Collections",
+  SF_PRODUCT_PAGE_RETURN_INFO: "Return Information",
+  SF_PRODUCT_PAGE_RETURN_POLICY_LINK: "Return Policy",
+  SF_PRODUCT_PAGE_SHOW_LESS: "Show Less",
+  SF_PRODUCT_PAGE_SHOW_MORE: "Show More",
+  SF_PRODUCT_PAGE_PRICE_LABEL: "Price:",
+  SF_PRODUCT_PAGE_YOU_MAY_ALSO_LIKE: "You May Also Like",
 
   // Product Page Notifications & Errors
   SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION: (quantity: number, productName: string) => `${quantity} x ${productName} added to cart.`,

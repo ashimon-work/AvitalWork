@@ -1,41 +1,100 @@
-<div class="about-page-container">
-  <h1>{{ tKeys.SF_ABOUT_PAGE_TITLE | translate }}</h1>
-
-  <!-- About Content Section -->
-  <section class="about-content-section" *ngIf="aboutContent$ | async as content; else loadingAbout">
-    <div *ngIf="content">
-      <h2 *ngIf="content.title">{{ content.title }}</h2>
-      <img *ngIf="content.imageUrl" [src]="content.imageUrl" [alt]="tKeys.SF_ABOUT_IMAGE_ALT | translate" class="about-image">
-      <p [innerHTML]="content.body"></p>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<div class="min-h-screen bg-[#FDFDFD]">
+  
+  <section style="position: relative; width: 100%; height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #000;">
+  
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+      <img src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=2000" 
+           style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;" alt="Background">
     </div>
-    <ng-template #noAboutContent>
-      <p>{{ tKeys.SF_ABOUT_NO_CONTENT | translate }}</p>
-    </ng-template>
+  
+    <div style="position: relative; z-index: 5; text-align: center; color: white !important;">
+      <p style="text-transform: uppercase; letter-spacing: 0.4em; font-size: 14px; margin-bottom: 20px; color: white;">
+        אודות ומסורת
+      </p>
+      <h1 style="font-family: 'Playfair Display', serif; color: white !important; font-size: clamp(2.5rem, 7vw, 5rem); font-style: italic; margin: 0;">
+        גאדג'טים ומוצרים מעולים
+      </h1>
+    </div>
+  
   </section>
-  <ng-template #loadingAbout>
-    <p>{{ tKeys.SF_ABOUT_LOADING_CONTENT | translate }}</p>
-  </ng-template>
 
-  <!-- Testimonials Section -->
-  <section class="testimonials-section">
-    <h2>{{ tKeys.SF_ABOUT_TESTIMONIALS_TITLE | translate }}</h2>
-    <div *ngIf="testimonials$ | async as testimonials; else loadingTestimonials">
-      <div *ngIf="testimonials && testimonials.length > 0; else noTestimonials" class="testimonials-grid">
-        <div *ngFor="let testimonial of testimonials" class="testimonial-card">
-          <p class="testimonial-quote">"{{ testimonial.quote }}"</p>
-          <p class="testimonial-author">- {{ testimonial.author }}</p>
-          <p *ngIf="testimonial.date" class="testimonial-date">{{ testimonial.date | date:'mediumDate' }}</p>
-          <div *ngIf="testimonial.rating" class="testimonial-rating">
-            {{ tKeys.SF_ABOUT_TESTIMONIAL_RATING | translate:testimonial.rating }}
-          </div>
+  <section style="display: block; width: 100%; padding: 100px 0; background-color: #ffffff;">
+    <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 0 20px;">
+      
+      <h2 style="font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 48px); font-weight: 400; color: #1a1a1a; margin-bottom: 40px; line-height: 1.2;">
+        היכן החדשנות פוגשת את החיים היומיים
+      </h2>
+  
+      <div style="font-family: 'Inter', sans-serif; font-size: 18px; color: #555555; line-height: 1.8; font-weight: 300; display: flex; flex-direction: column; gap: 30px;">
+        
+        <p style="margin: 0;">
+          למעלה מעשור, אנו מקדישים את עצמנו למציאת טכנולוגיה מתקדמת המשתלבת בצורה חלקה בשגרת היום שלכם. המסע שלנו החל עם משימה ברורה: להוכיח שגאדג'טים מתקדמים לא רק פונקציונליים אלא גם מביאים השראה, קלות ופתרונות חכמים לבית המודרני.
+        </p>
+        
+        <p style="margin: 0;">
+          כל מכשיר באוסף שלנו נבדק בקפדנות, תוך איזון בין הנדסה בעלת ביצועים גבוהים לעיצוב נקי ואינטואיטיבי. אנו משתפים פעולה עם חלוצי טכנולוגיה חושבים המשתפים את החזון שלנו לאיכות, עמידות עתידית ורדיפת המצוינות הדיגיטלית.
+        </p>
+  
+        <p style="margin: 0;">
+          מכשירי בית חכמים ועד לטכנולוגיית לבישה העדכנית ביותר, כל גאדג'ט משרת מטרה—לפשט את העולם שלכם, לשפר את הקישוריות שלכם ולהגדיר מחדש את האופן שבו אתם מתקשרים עם העתיד, היום.
+        </p>
+        
+      </div>
+  
+    </div>
+  </section>
+
+
+  <section style="display: flex; align-items: center; width: 100%; min-height: 400px; padding: 80px 0; background-color: #ececec; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0;">
+    <div style="max-width: 850px; margin: 0 auto; text-align: center; padding: 0 20px;">
+      
+      <blockquote style="margin: 0;">
+        <p style="font-family: 'Inter', sans-serif; font-size: clamp(30px, 3vw, 28px); font-style: italic; color: #1a1a1a; line-height: 1.6; margin-bottom: 30px; font-weight: 300; letter-spacing: -0.01em;">
+          "אנו לא רק מוכרים מוצרים—אנו מארגנים חוויות. כל חלק נבחר להביא תחושה של רוגע, יופי וכוונה לחיי היום יום שלכם."
+        </p>
+        
+        <footer style="font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 0.3em; color: #777777; text-transform: uppercase; font-weight: 500;">
+          — המייסדים
+        </footer>
+      </blockquote>
+  
+    </div>
+  </section>
+
+  <section style="display: block; width: 100%; padding: 80px 0; background-color: #ffffff;">
+    <div style="width: 100%; padding: 0 40px;">
+      
+      <div style="display: flex; align-items: baseline; gap: 20px; margin-bottom: 40px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px;">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 400; color: #1a1a1a; margin: 0;">
+          המוכרים ביותר שלנו
+        </h2>
+        <span style="color: #d1d1d1; font-size: 24px; font-weight: 100;">|</span>
+        <a [routerLink]="['../']" 
+           style="font-family: 'Inter', sans-serif; font-size: 14px; color: #888888; text-decoration: none; text-transform: none; transition: color 0.3s ease;"
+           onmouseover="this.style.color='#000000'" 
+           onmouseout="this.style.color='#888888'">
+          חקור את המוצרים שלנו
+        </a>
+      </div>
+  
+      <div style="display: flex; flex-direction: row; flex-wrap: nowrap; justify-content: space-between; gap: 20px; width: 100%; margin-bottom: 50px;">
+        <div *ngFor="let product of products$ | async" 
+             style="flex: 1; min-width: 0; font-family: 'Inter', sans-serif;">
+          <app-featured-product-card [product]="product" [storeSlug]="currentStoreSlug$ | async" (addToCart)="onAddToCart($event)"></app-featured-product-card>
         </div>
       </div>
-      <ng-template #noTestimonials>
-        <p>{{ tKeys.SF_ABOUT_NO_TESTIMONIALS | translate }}</p>
-      </ng-template>
+  
+      <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+        <a [routerLink]="['../']" 
+           style="display: inline-block; padding: 14px 45px; border: 1px solid #000000; border-radius: 50px; color: #1a1a1a; text-decoration: none; text-transform: none; font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 400; transition: all 0.3s ease; background-color: transparent; cursor: pointer;"
+           onmouseover="this.style.backgroundColor='#000000'; this.style.color='#ffffff';"
+           onmouseout="this.style.backgroundColor='transparent'; this.style.color='#1a1a1a';">
+          צפה בכל המוצרים
+        </a>
+      </div>
+  
     </div>
-    <ng-template #loadingTestimonials>
-      <p>{{ tKeys.SF_ABOUT_LOADING_TESTIMONIALS | translate }}</p>
-    </ng-template>
   </section>
 </div>

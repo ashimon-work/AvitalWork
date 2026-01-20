@@ -24,21 +24,9 @@ export class I18nService {
   }
 
   private initLanguage(): void {
-    // 1. Check localStorage for a saved language preference
-    let preferredLang = localStorage.getItem('preferred_lang') as SupportedLanguage | null;
-
-    // 2. If not found, check browser's navigator.language
-    if (!preferredLang) {
-      const browserLang = navigator.language.split('-')[0] as SupportedLanguage; // e.g., "en-US" -> "en"
-      if (this.isSupportedLanguage(browserLang)) {
-        preferredLang = browserLang;
-      }
-    }
-
-    // 3. Fallback to default language if no preference or unsupported browser lang
-    const initialLang = preferredLang && this.isSupportedLanguage(preferredLang) ? preferredLang : DEFAULT_LANGUAGE;
-
-    this.setLanguage(initialLang, false); // Don't save to localStorage again if it was just read
+    // For now, force Hebrew for the store
+    const initialLang = DEFAULT_LANGUAGE;
+    this.setLanguage(initialLang, true);
   }
 
   private isSupportedLanguage(lang: string): lang is SupportedLanguage {
@@ -76,12 +64,8 @@ export class I18nService {
     }
   }
 
-  translate<K extends TranslationKey>(
-    key: K,
-    // Type for args: if the message is a function, use its parameters, otherwise, it's an empty array.
-    ...args: TranslationSchema[K] extends (...a: any[]) => string ? Parameters<TranslationSchema[K]> : []
-  ): string {
-    const messageEntry = this.translationsSignal()[key]; // Access signal's value
+  translate(key: string, ...args: any[]): string {
+    const messageEntry = this.translationsSignal()[key as TranslationKey]; // Access signal's value
 
     if (typeof messageEntry === 'function') {
       // Call the function with the provided arguments
