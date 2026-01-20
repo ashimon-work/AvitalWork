@@ -15,7 +15,13 @@ import { CartService } from '../../services/cart.service';
 import { StoreContextService } from '../../services/store-context.service';
 import { AuthService } from '../../services/auth.service';
 // ApiService removed, SearchBarComponent will use it
-import { SearchBarComponent } from '../search-bar/search-bar.component'; // Import SearchBarComponent
+import { CartDrawerService } from '../../services/cart-drawer.service';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
+import { CategoryDropdownService } from '../../services/category-dropdown.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { ApiService } from '../../services/api.service';
+
+
 interface NavLink {
   label: string;
   pathSegments: string[];
@@ -48,10 +54,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Input() variant: 'transparent' | 'light' | 'dark' = 'transparent'; // <--- הוסף כאן
   isScrolled = false;
   shopOpen = false;
-  
+
 
   @ViewChild('mobileDrawer') mobileDrawer!: MatSidenav;
   @ViewChild(SearchBarComponent) searchBar!: SearchBarComponent;
+
 
   public storeSlug$: Observable<string | null>;
   storeName$: Observable<string | undefined>;
@@ -76,9 +83,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private storeContext: StoreContextService,
     private authService: AuthService,
-    private apiService: ApiService,
+    private cartDrawerService: CartDrawerService,
     private categoryDropdownService: CategoryDropdownService,
-    private cartDrawerService: CartDrawerService
+    private apiService: ApiService,
   ) {
 
     this.storeSlug$ = this.storeContext.currentStoreSlug$;
@@ -133,23 +140,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(slug ? ['/', slug] : ['/']);
     this.mobileDrawer?.close();
   }
-
   handleNavLinkClick(): void {
     this.mobileDrawer?.close();
   }
-
   openSearchPanel(): void {
     console.log('[HeaderComponent] openSearchPanel called');
     this.searchBar.open();
   }
-
   toggleShopDropdown(): void {
     this.categoryDropdownService.toggle();
   }
-
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']);
     this.mobileDrawer?.close();
+  }
+  get variantClass(): string {
+    return `header-${this.variant}`;
   }
 }

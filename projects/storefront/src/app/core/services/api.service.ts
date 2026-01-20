@@ -572,6 +572,19 @@ export class ApiService {
     );
   }
 
+  // Method to get all stores
+  getAllStores(): Observable<Store[]> {
+    const url = `${this.apiUrl}/store/all`;
+    console.log(`[ApiService] Fetching all stores from: ${url}`);
+    return this.http.get<Store[]>(url).pipe(
+      tap(response => console.log('[ApiService] All stores response:', response)),
+      catchError(error => {
+        console.error('[ApiService] Error fetching all stores:', error);
+        return of([]); // Return empty array on error
+      })
+    );
+  }
+
   // Method to check if a store slug is valid
   checkStoreSlug(slug: string): Observable<boolean> {
     const url = `${this.apiUrl}/store/slug/${slug}`; // Changed "stores" to "store"

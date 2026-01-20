@@ -1,9 +1,6 @@
-
-import { Component, OnInit, OnDestroy, inject ,Input} from '@angular/core'; // Added OnDestroy, inject
+import { Component, OnInit, OnDestroy, inject, Input } from '@angular/core'; // Added OnDestroy, inject
 import { Observable, Subscription } from 'rxjs'; // Added Subscription
 import { RouterOutlet, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { RouterOutlet } from '@angular/router';
 import { T, TranslatePipe } from '@shared/i18n';
 import { HeaderComponent } from './core/components/header/header.component';
 import { FooterComponent } from './core/components/footer/footer.component';
@@ -29,7 +26,7 @@ import { CategoryDropdownService } from './core/services/category-dropdown.servi
     CartDrawerComponent,
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit, OnDestroy {
   constructor(private router: Router) { } // Implemented OnDestroy
@@ -48,8 +45,8 @@ export class AppComponent implements OnInit, OnDestroy {
   // Removed constructor injection, using inject() instead
   @Input() variant: 'transparent' | 'light' | 'dark' = 'transparent';
   ngOnInit(): void {
-    
-  
+
+
     this.isAuthenticated$ = this.authService.isAuthenticated$;
 
     // Subscribe to item added events
@@ -73,12 +70,16 @@ export class AppComponent implements OnInit, OnDestroy {
     const urlParts = currentUrl.split('/');
     const pathWithoutStore = urlParts.length > 2 ? '/' + urlParts.slice(2).join('/') : currentUrl;
 
-    if (pathWithoutStore === '/' || pathWithoutStore === '/about') {
+    // Use transparent (white text) for the homepage (both root and store homepage)
+    if (pathWithoutStore === '/' || (urlParts.length === 2 && urlParts[1] !== '')) {
       return 'transparent';
-    } else {
-      return 'light';
     }
+
+    // Use dark (black text) for all other pages
+    return 'dark';
   }
+
+
   ngOnDestroy(): void {
     // Unsubscribe to prevent memory leaks
     if (this.itemAddedSubscription) {
@@ -99,19 +100,10 @@ export class AppComponent implements OnInit, OnDestroy {
       }, 2000);
     });
   }
-
-  ngOnDestroy(): void {
-    if (this.itemAddedSubscription) {
-      this.itemAddedSubscription.unsubscribe();
-    }
-    if (this.notificationTimeout) {
-      clearTimeout(this.notificationTimeout);
-    }
-  }
-
   closeCategoryDropdown(): void {
     this.categoryDropdownService.close(); // עכשיו השירות קיים
   }
+
 }
 
 // export class AppComponent implements OnInit, OnDestroy { // Implemented OnDestroy

@@ -1335,10 +1335,6 @@ export const heMessages = {
   SF_MINI_NAVIGATE_CONTACT_US: "צור קשר",
 
     //Mini Navigate
-  SF_MINI_NAVIGATE_HOME: "דף הבית",
-  SF_MINI_NAVIGATE_REGISTER: "הרשמה",
-  SF_MINI_NAVIGATE_LOGIN: "התחברות",
-  SF_MINI_NAVIGATE_CONTACT_US: "צור קשר",
   SF_MINI_NAVIGATE_CART:"עגלה",
   SF_MINI_NAVIGATE_CHECKOUT: "תשלום",
   // Footer component - Newsletter form

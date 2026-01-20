@@ -31,11 +31,9 @@ export class FeaturedProductCardComponent implements OnInit {
   public tKeys = T;
 
   public favorite: boolean = false;
-  public tKeys = T; // Translation keys
-  get href(): string {
+ 
   isInWishlist: boolean = false;
 
-  public favorite: boolean = false;
   ngOnInit(): void {
     // Initialize isInWishlist based on whether the product is already in the wishlist
     if (this.product) {
@@ -55,6 +53,13 @@ export class FeaturedProductCardComponent implements OnInit {
     }
     // Fallback or default link
     return null;
+  }
+  get href(): string {
+    if (this.storeSlug && this.product) {
+      return `/${this.storeSlug}/product/${this.product.id}`;
+    }
+    // Fallback or default link
+    return '/products';
   }
 
   get imageUrl(): string {

@@ -12,7 +12,7 @@ $header-height-desktop: 64px;
 $header-height-mobile: 56px;
 
 @mixin media-breakpoint-up($breakpoint) {
-  @if $breakpoint == md {
+  @if $breakpoint ==md {
     @media (min-width: 768px) {
       @content;
     }
@@ -30,8 +30,8 @@ $header-height-mobile: 56px;
   width: 100%;
 }
 
-.app-sidenav-container {
-}
+.app-sidenav-container {}
+
 .logo-brand-link {
   display: flex;
   align-items: center;
@@ -40,7 +40,9 @@ $header-height-mobile: 56px;
   color: $text-gray-900;
   cursor: pointer;
   flex-shrink: 0;
-
+  position: fixed;
+  top: 25px;
+  left: 90px;
 }
 
 // ::ng-deep .mat-mdc-autocomplete-panel styles removed as it's no longer used.
@@ -72,640 +74,359 @@ $header-height-mobile: 56px;
 
 /* TOP */
 .header-top {
-.modern-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background-color: $white-color;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  padding: 0 16px;
-  height: $header-height-mobile;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 70px;
-  padding: 2px -22px;
-}
+  position: fixed;
+  right: 90px;
+  top: 25px;
 
-.logo-text {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #fff;
-}
-
-/* ACTIONS */
-.header-actions {
-  display: flex;
-  gap: 8px;
-  margin-right: -50px;
-}
-
-.icon-btn {
-  color: #fff;
-  transition: opacity 0.2s ease;
-  font-size: 20px;
-
-  &:hover {
-    opacity: 0.7;
-  }
-}
-
-.icon-btn {
-  /* מקטין את הכפתור עצמו במידה והוא גדול מדי */
-  width: 40px !important;
-  height: 40px !important;
-  line-height: 30px !important;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-
-  /* הניסיון להשתלט על ה-SVG שבפנים */
-  svg {
-    width: 20px !important;
-    height: 20px !important;
-    min-width: 12px !important;
-    min-height: 12px !important;
-    /* לפעמים ה-flex מותח את האייקון, זה ימנע את זה */
-    flex-shrink: 0;
-  .header-content-wrapper {
+  .modern-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: $white-color;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    padding: 0 16px;
+    height: $header-height-mobile;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    gap: 16px;
-  }
-}
-
-.cart-btn {
-  position: relative;
-
-  ::ng-deep .mat-badge-content {
-    background: #fff;
-    color: #000;
-    font-size: 11px;
-  }
-}
-
-/* NAV */
-.header-nav {
-  display: flex;
-  gap: 4px;
-  padding-bottom: 0px;
-  margin-left: -50px;
-}
-
-.nav-link {
-  padding: 8px 0px 10px 12px;
-  font-size: 16px;
-  color: #f2eaea;
-  text-decoration: none;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.7;
+    margin-top: 70px;
+    padding: 2px -22px;
   }
 
-  &.active {
-    font-weight: 600;
-    font-weight: 600;
-    position: relative;
-    left: 30px;
-    top: 7px;
+  .logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #fff;
   }
-}
 
-
-
-/* LOGO */
-.combine-header.scrolled .logo-text {
-  color: #111;
-}
-
-/* ICONS */
-.combine-header.scrolled .icon-btn {
-  color: #111;
-}
-
-/* NAV */
-.combine-header.scrolled .nav-link {
-  color: #111;
-}
-
-/* subtle shrink */
-.combine-header.scrolled .header-top {
-  padding: 12px 0;
-}
-
-.combine-header.scrolled .header-nav {
-  padding-bottom: 8px;
-}
-
-.combine-header.scrolled::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.06);
-}
-
-.mobile-nav-list {
-
-  .mat-mdc-list-item {
+  /* ACTIONS */
+  .header-actions {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    gap: 8px;
+    margin-right: -50px;
   }
 
-  .mdc-list-item__start {
-    display: flex;
-    align-items: center;
-    margin-right: 12px;
+  .icon-btn {
+    color: #fff;
+    transition: opacity 0.2s ease;
+    font-size: 20px;
 
-    mat-icon {
-      font-size: 22px;
-      color: $text-gray-700; // או $primary-color
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  .icon-btn {
+    width: 40px !important;
+    height: 40px !important;
+    line-height: 30px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 20px !important;
+      height: 20px !important;
+      min-width: 12px !important;
+      min-height: 12px !important;
+      flex-shrink: 0;
+
+      .header-content-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 16px;
+      }
+    }
+
+    .cart-btn {
+      position: relative;
+
+      ::ng-deep .mat-badge-content {
+        background: #fff;
+        color: #141313;
+        font-size: 11px;
+      }
+    }
+
+    /* NAV */
+    .header-nav {
+      display: flex;
+      gap: 4px;
+      padding-bottom: 0px;
+      margin-left: -50px;
+    }
+
+    .nav-link {
+      padding: 8px 0px 10px 12px;
+      font-size: 16px;
+      color: #f2eaea;
+      text-decoration: none;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.7;
+      }
+
+      &.active {
+        font-weight: 600;
+        font-weight: 600;
+        position: relative;
+        left: 30px;
+        top: 7px;
+      }
+    }
+
+
+
+    /* LOGO */
+    .combine-header.scrolled .logo-text {
+      color: #1c1b1b;
+    }
+
+    /* ICONS */
+    .combine-header.scrolled .icon-btn {
+      color: #131212;
+    }
+
+    /* NAV */
+    .combine-header.scrolled .nav-link {
+      color: #131212;
+    }
+
+    /* subtle shrink */
+    .combine-header.scrolled .header-top {
+      padding: 12px 0;
+    }
+
+    .combine-header.scrolled .header-nav {
+      padding-bottom: 8px;
+    }
+
+    .combine-header.scrolled::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    .mobile-nav-list {
+
+      .mat-mdc-list-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .mdc-list-item__start {
+        display: flex;
+        align-items: center;
+        margin-right: 12px;
+
+        mat-icon {
+          font-size: 22px;
+          color: $text-gray-700; 
+        }
+      }
+    }
+
+    .mat-mdc-icon-button .mat-icon {
+      z-index: 1;
+      position: relative;
+      color: white;
+      font-size: 18px;
+    }
+
+    .nav-link {
+      background-color: transparent;
+      top: 25px;
+      font-size: 15px;
+      left: 18px;
+      top: 20px;
+    }
+
+    li {
+      list-style: none;
+      position: relative;
+      top: 6px;
+      font-size: 18px;
+      left: 15px;
+    }
+
+    .icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .logo-brand-link {
+      padding-left: 12px;
+    }
+
+    .nav-links {
+      padding: 10px 15px;
+      font-size: 8px;
+      z-index: 9999;
+    }
+
+    .carousel-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .slide {
+      width: 100%;
+      flex-shrink: 0;
+      position: relative;
+      height: 100%;
+
+      .slide-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
+        pointer-events: none;
+      }
+
+      .slide-content {
+        position: absolute;
+        z-index: 10;
+        bottom: 24%;
+        left: 6%;
+        max-width: 600px;
+        color: white;
+
+        h1 {
+          font-size: clamp(2.5rem, 6vw, 4rem);
+          line-height: 1.1;
+          margin-bottom: 1.5rem;
+        }
+      }
+    }
+
+    .logo-brand-link {
+      margin-left: -50px;
+      position: relative;
+      top: 10px;
+    }
+
+    .app-sidenav-container.header-dark {
+      .logo-text {
+        color: #231d1d;
+      }
+
+      .icon-btn {
+        color: #111010;
+      }
+
+      .nav-link {
+        color: #1b1919;
+      }
+    }
+
+    .app-sidenav-container.header-light {
+      .logo-text {
+        color: #252121;
+      }
+
+      .icon-btn {
+        color: #111010;
+      }
+
+      .nav-link {
+        color: #060606;
+      }
+    }
+
+    .app-sidenav-container.header-transparent {
+      .logo-text {
+        color: #fff;
+      }
+
+      .icon-btn {
+        color: #fff;
+      }
+
+      .nav-link {
+        color: #f2eaea;
+      }
     }
   }
 }
 
-.mat-mdc-icon-button .mat-icon {
-  z-index: 1;
+.header-nav {
+  display: flex;
+  gap: 20px;
+  top: 58px;
+  left: -15px;
   position: relative;
-  color: white;
-}
-
-.nav-link {
-  background-color: transparent;
-  top: 25px;
   font-size: 15px;
-  left: 15px;
-  top: 5px;
+
 }
 
 li {
   list-style: none;
-  position: relative;
-  top: 6px;
-  font-size: 18px;
-  left: 15px;
 }
 
-.icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-}
-
-.logo-brand-link {
-  padding-left: 10px;
-}
-
-.nav-links {
-  padding: 10px 15px;
-  font-size: 15px;
-  z-index: 9999;
-}
-
-.carousel-container {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100vh;
-}
-
-.slide {
-  width: 100%;
-  flex-shrink: 0;
-  position: relative;
-  height: 100%;
-
-  .slide-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
-    pointer-events: none;
-  }
-
-  .slide-content {
-    position: absolute;
-    z-index: 10;
-    bottom: 24%;
-    left: 6%;
-    max-width: 600px;
-    color: white;
-
-    h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
-    }
-  }
-}
-
-.logo-brand-link {
-  margin-left: -50px;
-}
-  .logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 32px;
-    @include media-breakpoint-up(md) {
-      height: 40px;
-    }
-    .logo-image,
-    .logo-svg-fallback {
-      height: 100%;
-      width: auto;
-      max-width: 120px;
-      object-fit: contain;
-      &.small-logo {
-        height: 28px;
-        max-width: 100px;
-      }
-    }
-    .logo-svg-fallback {
-      color: $primary-color;
-    }
-  }
-  .brand-name {
-    font-size: 1.125rem;
-    font-weight: 600;
-    line-height: 1.25;
-    margin: 0;
-    color: $text-gray-900;
-    white-space: nowrap;
-    @include media-breakpoint-up(md) {
-      font-size: 1.25rem;
-    }
-  }
-  .brand-name-mobile {
-    font-size: 1rem;
-    font-weight: 600;
-    color: $text-gray-900;
-    white-space: nowrap;
-  }
-}
-
-.flex-spacer {
-  flex-grow: 1;
-}
-
-.desktop-navigation {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .nav-links-list {
-    display: flex;
-    gap: 4px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    @include media-breakpoint-up(lg) {
-      gap: 8px;
-    }
-
-    .nav-link {
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: $text-gray-700;
-      text-decoration: none;
-      border-radius: 6px;
-      transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
-      white-space: nowrap;
-
-      &:hover {
-        background-color: $background-gray-100;
-        color: $primary-color;
-      }
-      &.active-link {
-        color: $primary-color;
-        font-weight: 600;
-        background-color: rgba($primary-color, 0.08);
-      }
-    }
-  }
+.nav-link {
+  color: #f2eaea;
 }
 
 .shop-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  mat-icon {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-  }
+  color: white !important;
 }
 
-.shop-dropdown-wrapper {
+.shop-button svg {
+  stroke: white;
+}
+.lucide-home {
+    margin-right: -30px;  
+    margin-left: 15px;    
+    margin-bottom: 4px;  
+    vertical-align: middle; 
+}
+.nav-links{
   position: relative;
+  left: -10px;
+  top: 2px;
 }
 
-// Keep old styles for backward compatibility if needed
-.categories-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  mat-icon {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-  }
-}
-
-.categories-menu {
-  mat-menu-content {
-    padding: 0;
-    max-height: 400px;
-    overflow-y: auto;
-  }
-}
-
-.categories-menu-content {
-  width: auto;
-  min-width: 200px;
-}
-
-.category-menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  min-height: 60px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: $background-gray-50;
-  }
-  .category-name {
-    flex-grow: 1;
-    text-align: right;
-    margin-left: 12px;
-    margin-right: 0;
+.app-sidenav-container.header-dark {
+  .logo-text {
+    color: #000000; 
   }
 
-  .category-image {
-    width: 36px;
-    height: 36px;
-    flex-shrink: 0;
-    border-radius: 6px;
-    object-fit: cover;
-  }
-
-  .category-no-image {
-    width: 36px;
-    height: 36px;
-    flex-shrink: 0;
-    border-radius: 6px;
-    object-fit: cover;
-
-    mat-icon {
-      font-size: 20px;
-      color: $text-gray-500;
-    }
-  }
-}
-
-// Override Angular Material menu item padding to stick to right edge
-::ng-deep .mat-mdc-menu-item {
-  padding-right: 0 !important;
-}
-
-::ng-deep .mat-mdc-menu-content {
-  padding: 0 !important;
-}
-
-::ng-deep .categories-menu .mat-mdc-menu-panel {
-  min-width: auto !important;
-  max-width: none !important;
-}
-
-.desktop-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.desktop-search-area {
-  position: relative;
-  width: 300px;
-  @include media-breakpoint-up(lg) {
-    width: 350px;
-  }
-  display: flex;
-  align-items: center;
-}
-
-.action-icon-button {
-  color: $text-gray-700;
-  &:hover {
-    background-color: $background-gray-100;
-    color: $primary-color;
-  }
-  ::ng-deep .mat-badge-content {
-    font-size: 10px;
-  }
-}
-
-.mobile-menu-button {
-  color: $text-gray-700;
-  margin-right: 8px;
-}
-
-.md\:hidden {
-  @include media-breakpoint-up(md) {
-    display: none !important;
-  }
-}
-.hidden {
-  display: none !important;
-}
-.md\:flex {
-  @include media-breakpoint-up(md) {
-    display: flex !important;
-  }
-}
-.md\:block {
-  @include media-breakpoint-up(md) {
-    display: block !important;
-  }
-}
-
-.mobile-sidenav {
-  width: clamp(280px, 85vw, 340px);
-  padding: 0;
-  background-color: $white-color;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-
-  .mobile-drawer-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    border-bottom: 1px solid $border-gray-200;
-    min-height: $header-height-mobile;
-    flex-shrink: 0;
-
-    .logo-brand-link {
-      gap: 12px;
-    }
-    button[mat-icon-button] {
-      color: $text-gray-700;
+  .icon-btn {
+    color: #000000; 
+    
+    svg {
+      stroke: #000000; 
     }
   }
 
-  .mobile-nav-list {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    flex-grow: 1;
-    overflow-y: auto;
-
-    .mat-mdc-list-item {
-      color: $text-gray-900;
-      font-weight: 500;
-      height: 48px !important;
-      padding: 0 24px !important;
-
-      .mdc-list-item__primary-text {
-        font-size: 1rem;
-      }
-
-      &:hover {
-        background-color: $background-gray-50;
-      }
-
-      &.active-link {
-        color: $primary-color;
-        font-weight: 600;
-        background-color: rgba($primary-color, 0.05);
-
-        &::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 8px;
-          bottom: 8px;
-          width: 4px;
-          background-color: $primary-color;
-          border-top-right-radius: 4px;
-          border-bottom-right-radius: 4px;
-        }
-      }
+  .nav-link {
+    color: #000000; 
+  }
+  
+  .shop-button {
+    color: #000000 !important; 
+    
+    svg {
+      stroke: #000000; 
     }
   }
-
-  .mobile-drawer-search {
-    padding: 16px 24px;
-    border-top: 1px solid $border-gray-200;
-    flex-shrink: 0;
-    position: relative;
-  }
-
-  .mobile-drawer-actions {
-    padding: 16px 24px 24px;
-    border-top: 1px solid $border-gray-200;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex-shrink: 0;
-
-    .full-width-button {
-      width: 100%;
-      justify-content: center;
-      padding: 10px 16px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: $text-gray-700;
-      border: 1px solid $border-gray-300;
-      border-radius: 8px;
-
-      mat-icon {
-        margin-right: 8px;
-        color: $text-gray-500;
-      }
-
-      &:hover {
-        background-color: $background-gray-50;
-        border-color: $text-gray-500;
-        color: $text-gray-900;
-      }
-    }
-  }
-}
-
-button[mat-icon-button] {
-  border-radius: 50%;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
-  }
-}
-
-::ng-deep mat-list-item.category-menu-item {
-  padding: 12px 16px !important;
-}
-
-/* כאן עושים את הפלקס האמיתי */
-::ng-deep mat-list-item.category-menu-item .mdc-list-item__primary-text {
-  display: flex !important;
-  flex-direction: row-reverse !important; /* טקסט בימין, תמונה בשמאל */
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-  width: 100% !important;
-}
-
-::ng-deep mat-list-item.category-menu-item img.category-image {
-  margin-left: 0 !important;
-  margin-right: auto !important; /* דוחף לשמאל */
-}
-
-::ng-deep mat-list-item.category-menu-item .category-name {
-  text-align: right !important;
-  margin-right: 0 !important;
-}
-
-// Add CSS variables for the shop dropdown if not already defined globally
-:root {
-  --background: 0 0% 100%; /* hsl(0 0% 100%) - white */
-  --foreground: 222.2 84% 4.9%; /* hsl(222.2 84% 4.9%) - dark text */
-  --border: 214.3 31.8% 91.4%; /* hsl(214.3 31.8% 91.4%) - light border */
-}
-
-// Shop button styling
-.shop-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  mat-icon {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-  }
-}
-
-.shop-dropdown-wrapper {
-  position: relative;
 }

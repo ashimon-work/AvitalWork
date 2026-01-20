@@ -14,18 +14,11 @@
     <!-- Quick Links Section -->
     <div class="footer-section links-section">
       <h4>{{ tKeys.SF_FOOTER_QUICK_LINKS_TITLE | translate }}</h4>
-      <ul *ngIf="currentStoreSlug$ | async as storeSlug">
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'about' }">{{
-            tKeys.SF_FOOTER_ABOUT_US | translate }}</a></li>
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'contact' }">{{
-            tKeys.SF_FOOTER_CONTACT_US | translate }}</a></li>
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'faq' }">{{ tKeys.SF_FOOTER_FAQ
-            | translate }}</a></li>
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'shipping' }">{{
-            tKeys.SF_FOOTER_SHIPPING_POLICY | translate }}</a></li>
-        <li><a [routerLink]="['/']" [queryParams]="{ storeSlug: storeSlug, categorySlug: 'returns' }">{{
-            tKeys.SF_FOOTER_RETURN_POLICY | translate }}</a></li>
-      </ul>
+       <ul>
+         <li *ngFor="let link of NAV_LINKS">
+           <a [routerLink]="generateRouterLink(link, currentStoreSlug$ | async)">{{ tKeys[link.translationKey] | translate }}</a>
+         </li>
+       </ul>
     </div>
     <!-- Contact Information Section -->
       <nav class="footer-section contact-info-section" aria-label="Contact information">
