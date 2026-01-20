@@ -1,60 +1,58 @@
-// Using global variables defined in src/styles.scss
+@use "sass:color";
+@use '../../../../styles/variables' as variables;
 
 :host {
-  display: block; // Ensure the component takes up block space
+  display: block;
+}
+
+.product-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .product-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  cursor: pointer;
-  
+  position: relative;
+  background-color: variables.$white;
+  border-radius: variables.$border-radius-md;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: block;
+
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  &.out-of-stock {
-    opacity: 0.6;
-    
+    box-shadow: 0 10px 15px -3px rgba(variables.$black, 0.1), 0 4px 6px -2px rgba(variables.$black, 0.05);
+
     .product-image {
-      filter: grayscale(50%);
+      transform: scale(1.05);
+    }
+
+    .product-name {
+      text-decoration: underline;
     }
   }
-  
-  .product-link {
-    text-decoration: none;
-    color: inherit;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    
-    &:hover {
-      text-decoration: none;
-    }
-  }
-  
-  .product-image-container {
-    position: relative;
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    
-    .product-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-    
-    .out-of-stock-badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      z-index: 2;
-    }
+}
+
+// Badges
+.product-badges {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.product-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+
+  &.discount-badge {
+    background-color: #f59e0b;
+    color: #fff;
   }
   
   .product-info {
@@ -79,57 +77,57 @@
       margin: 0;
       font-family: 'Nunito', sans-serif;
     }
-  }
-  
-  .product-actions {
-    padding: 8px 16px 16px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    
-    .add-to-cart-btn {
-      flex: 1;
-      
-      mat-icon {
-        margin-right: 8px;
-      }
-    }
-    
-    .wishlist-btn {
-      flex-shrink: 0;
-    }
+
+  &.new-badge {
+    background-color: variables.$white;
+    color: variables.$text-color;
+    border: 1px solid variables.$border-color;
   }
 }
 
-// Responsive design
-@media (max-width: 768px) {
-  .product-card {
-    .product-image-container {
-      height: 180px;
-    }
-    
-    .product-info {
-      padding: 12px;
-      
-      .product-name {
-        font-size: 1rem;
-      }
-      
-      .product-price {
-        font-size: 1.1rem;
-      }
-    }
-    
-    .product-actions {
-      padding: 8px 12px 12px;
-      
-      .add-to-cart-btn {
-        font-size: 0.9rem;
-        
-        mat-icon {
-          margin-right: 4px;
-        }
-      }
-    }
+// Product Image Container
+.product-image-container {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background-color: variables.$neutral-light;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+// Product Info
+.product-info {
+  padding: 0 0.25rem;
+
+  .product-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .product-price {
+    color: variables.$text-color;
+    font-weight: 500;
+  }
+
+  .product-original-price {
+    color: variables.$text-muted;
+    text-decoration: line-through;
+    font-size: variables.$font-size-sm;
+  }
+
+  .product-name {
+    font-size: variables.$font-size-base;
+    font-weight: 500;
+    color: variables.$text-color;
+    margin: 0;
+    transition: text-decoration 0.2s ease;
   }
 }

@@ -46,6 +46,138 @@
               <img [src]="getImageUrl(index)" [alt]="'View ' + (index + 1)" class="w-full h-full object-cover" (error)="onImageError($event)" />
             </button>
           </div>
+  <!-- Breadcrumbs (Example - Needs category data if available) -->
+  <div class="breadcrumbs">
+    <a [routerLink]="['/', (currentStoreSlug$ | async)]">{{ tKeys.SF_NAV_HOME | translate }}</a>
+    <!-- Add category link if product data includes it -->
+    <ng-container *ngIf="productCategory">
+      <img src="assets/icons/chevron-right.svg" alt="" class="breadcrumb-separator-icon" /> <a
+        [routerLink]="['/', (currentStoreSlug$ | async), 'category', productCategory.id]">{{ productCategory.name }}</a>
+    </ng-container>
+    <img src="assets/icons/chevron-right.svg" alt="" class="breadcrumb-separator-icon" /> <span>{{ product.name
+      }}</span>
+  </div>
+
+  <div class="product-details-flex-container">
+    <!-- Left Section: Images (using Image Carousel Component) -->
+    <div class="product-image-section">
+      <app-image-carousel [images]="product.imageUrls"></app-image-carousel>
+    </div>
+
+    <!-- Right Section: Info & Actions -->
+    <div class="product-info-section">
+      <h1 class="product-name">{{ product.name }}</h1>
+
+      <!-- Price - Use currentPrice which updates with variant selection -->
+      <p class="product-price">{{ currentPrice | formatCurrency() }}</p>
+
+      <!-- Average Rating Display -->
+      <div class="product-rating">
+        <span *ngFor="let star of getStarArray(averageRating); let i = index" class="star">
+          <img [src]="star ? 'assets/icons/star-filled.svg' : 'assets/icons/star-outline.svg'"
+            alt="{{ star ? 'Filled Star' : 'Empty Star' }}" class="rating-star-icon" />
+        </span>
+        <span>{{ tKeys.SF_PRODUCT_PAGE_RATING_SUMMARY | translate:averageRating:reviews.length }}</span>
+      </div>
+
+      <!-- Description -->
+      <div class="product-description">
+        <p>{{ product.description || (tKeys.SF_PRODUCT_PAGE_NO_DESCRIPTION | translate) }}</p>
+        <!-- Add formatted text/bullets later -->
+      </div>
+
+      <!-- Variant Selection -->
+      <div class="product-variants" *ngIf="availableOptions.length > 0">
+        <div *ngFor="let option of availableOptions" class="variant-option">
+          <label>{{ option.name }}:</label> <!-- Assuming option.name is not for translation or comes translated -->
+          <select [(ngModel)]="selectedOptions[option.name]" (change)="onOptionChange(option.name, $event)">
+            <option *ngFor="let optValue of option.values" [value]="optValue.value" [disabled]="optValue.disabled">
+              {{ optValue.value }} <!-- Assuming optValue.value is not for translation or comes translated -->
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Stock Level -->
+      <div class="product-stock">
+        <span *ngIf="currentStock !== undefined">
+          {{ tKeys.SF_PRODUCT_PAGE_STOCK_LEVEL | translate:(currentStock > 0 ? currentStock :
+          (tKeys.SF_PRODUCT_PAGE_OUT_OF_STOCK | translate)) }}
+        </span>
+      </div>
+
+      <!-- Quantity & Add to Cart -->
+      <div class="product-actions">
+        <div class="quantity-selector">
+          <label for="quantity">{{ tKeys.SF_PRODUCT_PAGE_QUANTITY_LABEL | translate }}</label>
+          <button (click)="decrementQuantity()" [disabled]="quantity <= 1">-</button>
+          <input type="number" id="quantity" [(ngModel)]="quantity" min="1" [max]="currentStock || 0"
+            (change)="onQuantityChange($event)" class="quantity-input">
+          <button (click)="incrementQuantity()" [disabled]="quantity >= (currentStock || 0)">+</button>
+        </div>
+        <button class="add-to-cart-btn" (click)="onAddToCart(product)"
+          [disabled]="(currentStock || 0) <= 0 || quantity <= 0">{{ tKeys.SF_PRODUCT_CARD_ADD_TO_CART_BUTTON | translate
+          }}</button>
+        <!-- Add Wishlist button -->
+        <button *ngIf="isLoggedIn$ | async" class="add-to-wishlist-btn" [class.in-wishlist]="isInWishlist"
+          (click)="toggleWishlist(product)">
+          <img src="assets/icons/heart.svg" alt="" class="wishlist-icon" [class.filled]="isInWishlist" />
+          <span>{{ isInWishlist ? (tKeys.SF_PRODUCT_PAGE_REMOVE_FROM_WISHLIST | translate) :
+            (tKeys.SF_PRODUCT_PAGE_ADD_TO_WISHLIST | translate) }}</span>
+        </button>
+      </div>
+
+      <!-- Shipping/Return Info -->
+      <div class="product-meta-info">
+        <h4>{{ tKeys.SF_PRODUCT_PAGE_SHIPPING_INFO_TITLE | translate }}</h4>
+        <p>{{ tKeys.SF_PRODUCT_PAGE_ESTIMATED_DELIVERY | translate }}</p>
+        <p>{{ tKeys.SF_PRODUCT_PAGE_SHIPPING_COST_NOTE | translate }}</p>
+        <h4>{{ tKeys.SF_PRODUCT_PAGE_RETURN_POLICY_TITLE | translate }}</h4>
+        <p [innerHTML]="tKeys.SF_PRODUCT_PAGE_RETURN_POLICY_DETAILS_HTML | translate:'/return-policy'"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lower Sections: Tabs for Specs/Reviews, and Related Products -->
+  <div class="product-lower-sections">
+    <div class="product-tabs">
+      <div class="tab-headers">
+        <button class="tab-button" [class.active]="selectedTab === 'specs'" (click)="selectTab('specs')">{{
+          tKeys.SF_PRODUCT_PAGE_SPECS_TAB_TITLE | translate }}</button>
+        <button class="tab-button" [class.active]="selectedTab === 'reviews'" (click)="selectTab('reviews')">{{
+          tKeys.SF_PRODUCT_PAGE_REVIEWS_TAB_TITLE | translate:reviews.length }}</button>
+      </div>
+      <div class="tab-content">
+        <!-- Product Specifications Tab -->
+        <div *ngIf="selectedTab === 'specs'" class="product-specs">
+          <h3>{{ tKeys.SF_PRODUCT_PAGE_SPECS_SECTION_TITLE | translate }}</h3>
+          <!-- Add dynamic spec display later -->
+          <dl class="product-specs-list">
+            <div class="spec-item">
+              <dt>{{ tKeys.SF_PRODUCT_PAGE_SPEC_MATERIAL_LABEL | translate }}</dt>
+              <dd>{{ tKeys.SF_PRODUCT_PAGE_SPEC_MATERIAL_VALUE_FABRIC | translate }}</dd>
+            </div>
+            <div class="spec-item">
+              <dt>{{ tKeys.SF_PRODUCT_PAGE_SPEC_WEIGHT_LABEL | translate }}</dt>
+              <dd>{{ tKeys.SF_PRODUCT_PAGE_SPEC_WEIGHT_VALUE_HALF_KG | translate }}</dd>
+            </div>
+            <div class="spec-item">
+              <dt>{{ tKeys.SF_PRODUCT_PAGE_SPEC_DIMENSIONS_LABEL | translate }}</dt>
+              <dd>{{ tKeys.SF_PRODUCT_PAGE_SPEC_DIMENSIONS_VALUE_20_15_5_CM | translate }}</dd>
+            </div>
+            <div class="spec-item">
+              <dt>{{ tKeys.SF_PRODUCT_PAGE_SPEC_MANUFACTURER_LABEL | translate }}</dt>
+              <dd>{{ tKeys.SF_PRODUCT_PAGE_SPEC_MANUFACTURER_VALUE_ACME | translate }}</dd>
+            </div>
+            <!-- Example for dynamic specs if product.specifications is an array of {label: string, value: string}
+            <ng-container *ngFor="let spec of product.specifications">
+              <div class="spec-item">
+                <dt>{{ spec.label }}</dt>
+                <dd>{{ spec.value }}</dd>
+              </div>
+            </ng-container>
+            -->
+          </dl>
         </div>
 
         <div class="space-y-6">
@@ -115,6 +247,17 @@
               (addToCart)="onAddToCart($event)"
               class="flex-shrink-0 w-56"
             ></app-featured-product-card>
+    <!-- Related Products Section (outside of tabs) -->
+    <div class="related-products-section">
+      <h3>{{ tKeys.SF_PRODUCT_PAGE_RELATED_PRODUCTS_TITLE | translate }}</h3>
+      <div class="related-products-scroll-container">
+        <div *ngIf="relatedProducts.length === 0; else displayRelatedProducts">
+          <p>{{ tKeys.SF_PRODUCT_PAGE_NO_RELATED_PRODUCTS | translate }}</p>
+        </div>
+        <ng-template #displayRelatedProducts>
+          <div class="related-products-list">
+            <app-featured-product-card *ngFor="let relatedProduct of relatedProducts" [product]="relatedProduct"
+              [storeSlug]="currentStoreSlug" (addToCart)="onAddToCart($event)"></app-featured-product-card>
           </div>
         </div>
       </section>

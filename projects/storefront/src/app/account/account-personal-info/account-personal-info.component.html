@@ -18,7 +18,7 @@
     <!-- Header -->
     <header class="welcome-header">
       <h1 class="welcome-title">{{ tKeys.SF_ACCOUNT_PERSONAL_INFO_TITLE | translate }}</h1>
-      <p class="welcome-subtitle">Update your personal information and contact details</p>
+      <p class="welcome-subtitle">{{ tKeys.SF_ACCOUNT_PERSONAL_INFO | translate }}</p>
     </header>
 
     <!-- Form Card -->
@@ -26,13 +26,13 @@
       <mat-card-header>
         <mat-card-title class="card-title-with-icon">
           <img src="assets/icons/user.svg" alt="" class="title-icon">
-          Personal Details
+          {{ tKeys.SF_ACCOUNT_PERSONAL_DETAILS_LABEL | translate }}
         </mat-card-title>
       </mat-card-header>
-      
+
       <mat-card-content class="form-content">
         <form [formGroup]="personalInfoForm" (ngSubmit)="savePersonalInfo()" novalidate class="personal-info-form">
-          
+
           <!-- Email (Display Only) -->
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field full-width">
@@ -85,13 +85,11 @@
 
           <!-- Form Actions -->
           <div class="form-actions">
-            <button mat-raised-button 
-                    color="primary" 
-                    type="submit" 
-                    [disabled]="isLoading || personalInfoForm.invalid || personalInfoForm.pristine"
-                    class="save-button">
+            <button mat-raised-button color="primary" type="submit"
+              [disabled]="isLoading || personalInfoForm.invalid || personalInfoForm.pristine" class="save-button">
               <img src="assets/icons/check.svg" alt="" class="button-icon" *ngIf="!isLoading">
-              {{ isLoading ? (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVING | translate) : (tKeys.SF_ACCOUNT_PERSONAL_INFO_SAVE_BUTTON_SAVE | translate) }}
+              {{ isLoading ? (tKeys.SF_ACCOUNT_ADDRESSES_SAVE_BUTTON_SAVING | translate) :
+              (tKeys.SF_ACCOUNT_PERSONAL_INFO_SAVE_BUTTON_SAVE | translate) }}
             </button>
           </div>
 

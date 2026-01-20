@@ -1,23 +1,28 @@
-// Using global variables defined in src/styles.scss
-
 :host {
-  display: block; // Ensure component takes up block space
+  display: block;
+}
+
+// Category Navigation Section
+.category-navigation-section {
+  margin-bottom: var(--spacing-xxl);
 }
 
 // Add vertical spacing between homepage sections
 .hero-carousel,
 .featured-categories,
 .featured-products {
-  margin-bottom: var(--spacing-xxl); // Add significant space below each section (e.g., 48px)
+  margin-bottom: var(
+    --spacing-xxl
+  ); // Add significant space below each section (e.g., 48px)
 }
 
 // Specific adjustments for sections if needed
-
 .featured-categories,
 .featured-products {
+
   // The .container class is applied in the HTML, handling horizontal padding/max-width
   h2 {
-    text-align: center; // Center the section titles
+    text-align: right; // Center the section titles
     margin-bottom: var(--spacing-xl); // Add space below the title (e.g., 32px)
   }
 }
@@ -25,26 +30,22 @@
 // Grid layout for categories
 .category-grid {
   display: grid;
-  gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
+  gap: var(--spacing-lg);
 
   // Responsive grid columns
   // Start with 1 column on smallest screens
   grid-template-columns: 1fr;
 
-  // Example: 2 columns on small screens and up
   @media (min-width: 576px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  // Example: 3 columns on medium screens and up
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
   // Example: 4 columns on large screens and up (adjust as needed)
-  @media (min-width: 992px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  @media (min-width: 992px) {}
 }
 
 // Grid layout for products
@@ -52,29 +53,24 @@
   display: grid;
   gap: var(--spacing-lg); // Gap between cards (e.g., 24px)
 
-  // Responsive grid columns
-  // Start with 1 column on smallest screens
   grid-template-columns: 1fr;
 
-  // Example: 2 columns on small screens and up
   @media (min-width: 576px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  // Example: 3 columns on medium screens and up
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  // Example: 3 columns on large screens and up (adjust as needed)
   @media (min-width: 992px) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 // Ensure cards within the grid don't have extra bottom margin if they have it internally
-.category-grid > *,
-.product-grid > * {
+.category-grid>*,
+.product-grid>* {
   margin-bottom: 0;
 }
 
@@ -85,12 +81,57 @@
 .featured-categories,
 .featured-products {
   margin-bottom: 3rem;
-  
+
   h2 {
-    text-align: center;
+    text-align: end;
     margin-bottom: 2rem;
-    font-weight: 600;
+    font-weight: 100;
     color: #333;
+    font-family: "Georgia", "Times New Roman", Times, serif;
+  }
+}
+
+.featured-products {
+  width: 100%;
+  /* שימוש ב-margin: 0 auto מבטיח שהסקשן תמיד יהיה במרכז */
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3rem;
+  
+  /* הגבלת רוחב כדי שהמוצרים לא יימרחו מדי במסכי ענק */
+  max-width: 1400px; 
+  
+  /* פאדינג מהצדדים כדי שבמסכים קטנים זה לא ייגע בקצה */
+  padding: 0 76px;
+  box-sizing: border-box;
+
+  h2 {
+    text-align: end;
+    margin-bottom: 2rem;
+    font-weight: 100;
+    color: #333;
+    font-family: "Georgia", "Times New Roman", Times, serif;
+    /* לוודא שהכותרת מתיישרת לקצה של הגריד */
+    width: 100%;
+  }
+}
+
+.product-grid {
+  display: grid !important;
+  /* 4 עמודות שוות שמתחלקות ברוחב הפנוי */
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem;
+  width: 100%;
+  justify-items: center; /* ממרכז את הכרטיסים בתוך ה"תא" שלהם */
+
+  /* התאמה לרספונסיביות */
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr !important;
+    padding: 0 10px;
   }
 }
 
@@ -98,13 +139,11 @@
 .product-grid {
   display: grid;
   gap: 1.5rem;
-  
-  &.category-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-  
+
+  &.category-grid {}
+
   &.product-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -114,54 +153,54 @@
 
 .newsletter-signup {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  
+
   h3 {
     font-weight: 600;
     color: #333;
   }
-  
+
   p {
     color: #666;
     font-size: 1.1rem;
   }
-  
+
   .newsletter-form {
     margin-top: 1.5rem;
-    
+
     mat-form-field {
       margin-bottom: 0;
     }
-    
+
     button {
-      height: 56px; // Match Material form field height
+      height: 56px;
       min-width: 120px;
     }
   }
-  
+
   .success-message,
   .error-message {
     max-width: 500px;
     margin: 0 auto 1rem;
-    
+
     mat-card-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0.75rem 1rem;
-      
+
       mat-icon {
         vertical-align: middle;
       }
     }
   }
-  
+
   .success-message {
     mat-card {
       background-color: #d4edda;
       border: 1px solid #c3e6cb;
     }
   }
-  
+
   .error-message {
     mat-card {
       background-color: #f8d7da;
@@ -172,17 +211,18 @@
 
 // Responsive design
 @media (max-width: 768px) {
-  .category-grid,
+
+
   .product-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
   }
-  
+
   .newsletter-signup {
     .newsletter-form {
       .row {
         flex-direction: column;
-        
+
         .col-md-6,
         .col-md-3 {
           width: 100%;
@@ -191,4 +231,142 @@
       }
     }
   }
+}
+
+.featured-categories {
+  padding: 4rem 0 6rem;
+  /* כמו py-16 lg:py-24 */
+  margin-bottom: 0;
+  /* מבטלים margin ישן */
+
+  &.container {
+    max-width: 1280px;
+  }
+
+  h2 {
+    text-align: right;
+    /* בריאקט זה לא ממורכז */
+    margin-bottom: 2.5rem;
+    font-weight: 100;
+    font-size: 1.5rem;
+    color: var(--foreground, #111);
+    font-family: "Georgia", "Times New Roman", Times, serif;
+
+    @media (min-width: 1024px) {
+      font-size: 1.875rem;
+      /* כמו text-3xl */
+    }
+  }
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  /* gap-6 */
+
+  @media (min-width: 640px) {
+    // grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    // grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* מנקה עיצובים ישנים */
+.category-grid>* {
+  max-width: unset;
+  margin: 0;
+
+}
+
+.hero-carousel {
+  width: 100%;
+  height: 100vh;
+  margin-top: -80px;
+  /* הזיזי את הקרוסלה למעלה תחת ה-Header (שני לפי גובה ה-Header שלך) */
+  margin-bottom: 0;
+}
+
+:host {
+  display: block;
+}
+
+.hero-carousel {
+  width: 100%;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+/* מוודא שאין פאדינג מהקונטיינר שיפריע לתמונה */
+::ng-deep .mat-sidenav-content {
+  padding: 0 !important;
+}
+
+.featured-categories {
+  width: 100%;
+  padding: 65px;
+  /* רווח קטן מהצדדים של המסך */
+  box-sizing: border-box;
+}
+
+.category-grid {
+  display: grid;
+  /* שתי עמודות שוות שמתחלקות ב-50% מהמסך כל אחת */
+  grid-template-columns: 1fr 1fr;
+  gap: 31px;
+  /* רווח בין הכרטיסים */
+  width: 100%;
+}
+
+.view-all-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+/* עיצוב כפתור "הצג הכל" בסגנון יוקרתי */
+.view-all-btn {
+  background: #fff;
+  color: black;
+  border: 1px solid #374151;
+  border-radius: 25px;
+  padding: 12px 30px;
+  font-family: "Cormorant Garamond", serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.view-all-btn:hover {
+  background: #f1f3f5;
+  color: rgb(21, 19, 19);
+}
+
+.view-all-products-btn {
+  background: #fff;
+  color: black;
+  border: 1px solid #374151;
+  border-radius: 25px;
+  padding: 12px 30px;
+  font-family: "Cormorant Garamond", serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+  align-items: center;
+}
+
+.view-all-products-btn:hover {
+  background: #f1f3f5;
+  color: rgb(21, 19, 19);
+}
+
+.view-all-products-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
 }

@@ -41,6 +41,22 @@ import {
   // will be reconstructed within the bootstrap function using their respective logic,
   // after dependent entities (products, users, addresses) are created.
 } from './seeds/green-jewelry.data';
+import {
+  LUXURY_JEWELRY_STORE_ID,
+  luxuryJewelryStoreData as ljStoreData,
+  luxuryJewelryCategoryData as ljCategoryData,
+  luxuryJewelryProductData as ljProductData,
+  luxuryJewelryAboutContentData as ljAboutContentData,
+  luxuryJewelryTestimonialData as ljTestimonialData,
+  luxuryJewelryFaqData as ljFaqData,
+  luxuryJewelryCarouselItemData as ljCarouselItemData,
+  luxuryJewelryUserData as ljUserData,
+  luxuryJewelryAddressData as ljAddressData,
+  luxuryJewelryPromoCodeData as ljPromoCodeData,
+  luxuryJewelryOrderData as ljOrderData,
+  luxuryJewelryWishlistData as ljWishlistData,
+  luxuryJewelryReviewData as ljReviewData,
+} from './seeds/luxury-jewelry.data';
 import { shippingMethodData } from './seeds/shipping-method.data'; // Import shipping method seed data
 import { CreditCardEntity } from './tranzila/entities/credit-card.entity';
 
@@ -67,6 +83,10 @@ const storeData = [
     ...gjStoreData,
     authorizedPhoneNumbers: ['+972583215251', '+972534758922', '+972506105590'],
   }, // This will be updated in its own file
+  {
+    ...ljStoreData,
+    authorizedPhoneNumbers: ['+972583215251', '+972534758922', '+972506105590'],
+  }, // Luxury Jewelry store
 ];
 
 // Assign categories to stores
@@ -128,6 +148,7 @@ const categoryData = [
     storeId: storeData[1].id,
   },
   ...gjCategoryData,
+  ...ljCategoryData,
 ];
 
 // Assign products to stores based on their category
@@ -916,6 +937,7 @@ const productData: any[] = [
     categoryIds: [categoryData[6].id],
   },
   ...gjProductData,
+  ...ljProductData,
 ];
 
 // Define which product SKUs are used in the carousel for easier lookup
@@ -932,6 +954,13 @@ const carouselProductSkus = [
         : '',
     )
     .filter((sku) => sku), // Extract SKUs from Green Jewelry carousel
+  ...ljCarouselItemData
+    .map((item) =>
+      item.linkUrl?.startsWith('product_sku:')
+        ? item.linkUrl.split(':')[1]
+        : '',
+    )
+    .filter((sku) => sku), // Extract SKUs from Luxury Jewelry carousel
 ];
 
 // Placeholder for carousel data - will be populated after fetching product IDs
@@ -973,6 +1002,10 @@ const baseUserData = [
     ...u,
     roles: u.roles,
   })), // Add Green Jewelry users (profilePictureUrl will be handled in green-jewelry.data.ts)
+  ...ljUserData.map((u) => ({
+    ...u,
+    roles: u.roles,
+  })), // Add Luxury Jewelry users (profilePictureUrl will be handled in luxury-jewelry.data.ts)
 ];
 
 // --- Address Data ---
@@ -1009,6 +1042,7 @@ const addressData = [
     isDefaultBilling: true,
   },
   ...gjAddressData, // Add Green Jewelry addresses
+  ...ljAddressData, // Add Luxury Jewelry addresses
 ];
 
 // --- Order Data (Placeholder - needs product IDs) ---
@@ -1094,6 +1128,7 @@ const aboutContentData = [
     imageUrl: undefined,
   },
   gjAboutContentData,
+  ljAboutContentData,
 ];
 
 // --- Testimonial Data ---
@@ -1121,6 +1156,7 @@ const testimonialData = [
     rating: 5,
   },
   ...gjTestimonialData,
+  ...ljTestimonialData,
 ];
 // --- FAQ Data ---
 const faqData = [
@@ -1140,6 +1176,7 @@ const faqData = [
     answer: 'Yes, we ship to select international destinations.',
   },
   ...gjFaqData,
+  ...ljFaqData,
 ];
 
 // --- Review Data (Placeholder - needs product and user IDs) ---
@@ -1180,6 +1217,11 @@ const promoCodeData: Partial<PromoCodeEntity>[] = [
     validTo: pc.validTo ? new Date(pc.validTo) : undefined,
     validFrom: pc.validFrom ? new Date(pc.validFrom) : undefined,
   })), // Add Green Jewelry promo codes
+  ...ljPromoCodeData.map((pc) => ({
+    ...pc,
+    validTo: pc.validTo ? new Date(pc.validTo) : undefined,
+    validFrom: pc.validFrom ? new Date(pc.validFrom) : undefined,
+  })), // Add Luxury Jewelry promo codes
 ];
 
 async function bootstrap() {
@@ -1365,7 +1407,20 @@ async function bootstrap() {
       };
     });
 
-    carouselData = [...genericCarouselData, ...greenJewelryCarouselData].filter(
+    const luxuryJewelryCarouselData = ljCarouselItemData.map((item) => {
+      const sku = item.linkUrl?.startsWith('product_sku:')
+        ? item.linkUrl.split(':')[1]
+        : undefined;
+      const productId = sku ? skuToIdMap.get(sku) : undefined;
+      return {
+        imageUrl: item.imageUrl,
+        altText: item.altText,
+        linkUrl: productId, // Use resolved product ID
+        storeId: item.storeId,
+      };
+    });
+
+    carouselData = [...genericCarouselData, ...greenJewelryCarouselData, ...luxuryJewelryCarouselData].filter(
       (item) => !!item.linkUrl && !!item.storeId,
     );
 
@@ -1920,6 +1975,263 @@ async function bootstrap() {
     const finalOrderCountAfterAaUser = await orderRepository.count();
     logger.log(
       `Total orders in DB after A@A.com user orders: ${finalOrderCountAfterAaUser}`,
+    );
+
+    // --- Seed Luxury Jewelry Specific Data ---
+    logger.log(
+      'Seeding Luxury Jewelry specific orders, wishlists, and reviews...',
+    );
+
+    // --- Seed Luxury Jewelry Orders ---
+    const ljUserForOrder1 = findSeededUser(ljUserData[0].id); // Corresponds to LJ_USER_ID_1
+    const ljUserForOrder2 = findSeededUser(ljUserData[1].id); // Corresponds to LJ_USER_ID_2
+
+    let ljAddressForOrder1: AddressEntity | undefined;
+    let ljAddressForOrder2: AddressEntity | undefined;
+    const ljAddressIdForOrder1Raw = ljAddressData.length > 0 ? ljAddressData[0].id : undefined;
+    const ljAddressIdForOrder2Raw = ljAddressData.length > 1 ? ljAddressData[1].id : undefined;
+    if (ljAddressIdForOrder1Raw) {
+      ljAddressForOrder1 = findSeededAddress(ljAddressIdForOrder1Raw);
+    }
+    if (ljAddressIdForOrder2Raw) {
+      ljAddressForOrder2 = findSeededAddress(ljAddressIdForOrder2Raw);
+    }
+
+    const ljProductForOrder1Sku = 'LJ-RNG-001';
+    const ljProductForOrder2Sku = 'LJ-NECK-001';
+    const ljProductForOrder3Sku = 'LJ-BRACE-001';
+
+    const ljDbProductForOrder1 = await productRepository.findOneBy({
+      sku: ljProductForOrder1Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+    const ljDbProductForOrder2 = await productRepository.findOneBy({
+      sku: ljProductForOrder2Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+    const ljDbProductForOrder3 = await productRepository.findOneBy({
+      sku: ljProductForOrder3Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+
+    // Seed Order 1 for Luxury Jewelry
+    if (
+      ljUserForOrder1 &&
+      ljAddressForOrder1 &&
+      ljDbProductForOrder1
+    ) {
+      const ljOrderItems1: Partial<OrderItemEntity>[] = [
+        {
+          product: ljDbProductForOrder1,
+          quantity: 1,
+          pricePerUnit: ljDbProductForOrder1.price,
+          productName: ljDbProductForOrder1.name,
+        },
+      ];
+
+      const ljSubtotal1 = ljOrderItems1.reduce(
+        (sum, item) => sum + (item.pricePerUnit || 0) * (item.quantity || 0),
+        0,
+      );
+      const ljShippingCost1 = 15.0;
+      const ljTaxRate1 = 0.08;
+      const ljTaxAmount1 = parseFloat((ljSubtotal1 * ljTaxRate1).toFixed(2));
+      const ljTotalAmount1 = parseFloat(
+        (ljSubtotal1 + ljShippingCost1 + ljTaxAmount1).toFixed(2),
+      );
+
+      const luxuryJewelryOrder1 = orderRepository.create({
+        id: ljOrderData[0].id,
+        orderReference: `LJ-ORD-${Date.now()}-001`,
+        user: { id: ljUserForOrder1.id },
+        store: { id: LUXURY_JEWELRY_STORE_ID },
+        status: OrderStatus.DELIVERED,
+        paymentStatus: PaymentStatus.PAID,
+        subtotal: ljSubtotal1,
+        shippingCost: ljShippingCost1,
+        taxAmount: ljTaxAmount1,
+        totalAmount: ljTotalAmount1,
+        shippingAddress: { id: ljAddressForOrder1.id },
+        shippingMethod: 'Express Delivery',
+        trackingNumber: 'LJTRK123456789',
+        items: ljOrderItems1.map((item) => orderItemRepository.create(item)),
+        orderDate: new Date(),
+      });
+      await orderRepository.save(luxuryJewelryOrder1);
+      logger.log(
+        `Seeded Luxury Jewelry order 1: ${luxuryJewelryOrder1.orderReference}`,
+      );
+    }
+
+    // Seed Order 2 for Luxury Jewelry
+    if (
+      ljUserForOrder2 &&
+      ljAddressForOrder2 &&
+      ljDbProductForOrder2 &&
+      ljDbProductForOrder3
+    ) {
+      const ljOrderItems2: Partial<OrderItemEntity>[] = [
+        {
+          product: ljDbProductForOrder2,
+          quantity: 2,
+          pricePerUnit: ljDbProductForOrder2.price,
+          productName: ljDbProductForOrder2.name,
+        },
+        {
+          product: ljDbProductForOrder3,
+          quantity: 1,
+          pricePerUnit: ljDbProductForOrder3.price,
+          productName: ljDbProductForOrder3.name,
+        },
+      ];
+
+      const ljSubtotal2 = ljOrderItems2.reduce(
+        (sum, item) => sum + (item.pricePerUnit || 0) * (item.quantity || 0),
+        0,
+      );
+      const ljShippingCost2 = 25.0;
+      const ljTaxRate2 = 0.08;
+      const ljTaxAmount2 = parseFloat((ljSubtotal2 * ljTaxRate2).toFixed(2));
+      const ljTotalAmount2 = parseFloat(
+        (ljSubtotal2 + ljShippingCost2 + ljTaxAmount2).toFixed(2),
+      );
+
+      const luxuryJewelryOrder2 = orderRepository.create({
+        id: ljOrderData[1].id,
+        orderReference: `LJ-ORD-${Date.now()}-002`,
+        user: { id: ljUserForOrder2.id },
+        store: { id: LUXURY_JEWELRY_STORE_ID },
+        status: OrderStatus.PROCESSING,
+        paymentStatus: PaymentStatus.PAID,
+        subtotal: ljSubtotal2,
+        shippingCost: ljShippingCost2,
+        taxAmount: ljTaxAmount2,
+        totalAmount: ljTotalAmount2,
+        shippingAddress: { id: ljAddressForOrder2.id },
+        shippingMethod: 'Standard Delivery',
+        trackingNumber: 'LJTRK987654321',
+        items: ljOrderItems2.map((item) => orderItemRepository.create(item)),
+        orderDate: new Date(),
+      });
+      await orderRepository.save(luxuryJewelryOrder2);
+      logger.log(
+        `Seeded Luxury Jewelry order 2: ${luxuryJewelryOrder2.orderReference}`,
+      );
+    }
+
+    // --- Seed Luxury Jewelry Wishlists ---
+    const ljUserForWishlist1 = findSeededUser(ljUserData[0].id); // Sophia
+    const ljUserForWishlist2 = findSeededUser(ljUserData[1].id); // Alexander
+    const ljProductForWishlist1Sku = 'LJ-EARR-001';
+    const ljProductForWishlist2Sku = 'LJ-WATCH-001';
+
+    const ljDbProductForWishlist1 = await productRepository.findOneBy({
+      sku: ljProductForWishlist1Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+    const ljDbProductForWishlist2 = await productRepository.findOneBy({
+      sku: ljProductForWishlist2Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+
+    if (ljUserForWishlist1 && ljDbProductForWishlist1) {
+      const luxuryJewelryWishlist1 = wishlistRepository.create({
+        id: ljWishlistData[0].id,
+        user: { id: ljUserForWishlist1.id },
+        store: { id: LUXURY_JEWELRY_STORE_ID },
+        items: [
+          wishlistItemRepository.create({ product: ljDbProductForWishlist1 }),
+        ],
+      });
+      await wishlistRepository.save(luxuryJewelryWishlist1);
+      logger.log(
+        `Seeded Luxury Jewelry wishlist 1 for user ${ljUserForWishlist1.id}`,
+      );
+    }
+
+    if (ljUserForWishlist2 && ljDbProductForWishlist2) {
+      const luxuryJewelryWishlist2 = wishlistRepository.create({
+        id: ljWishlistData[1].id,
+        user: { id: ljUserForWishlist2.id },
+        store: { id: LUXURY_JEWELRY_STORE_ID },
+        items: [
+          wishlistItemRepository.create({ product: ljDbProductForWishlist2 }),
+        ],
+      });
+      await wishlistRepository.save(luxuryJewelryWishlist2);
+      logger.log(
+        `Seeded Luxury Jewelry wishlist 2 for user ${ljUserForWishlist2.id}`,
+      );
+    }
+
+    // --- Seed Luxury Jewelry Reviews ---
+    const ljUserForReview1 = findSeededUser(ljUserData[0].id); // Sophia
+    const ljUserForReview2 = findSeededUser(ljUserData[1].id); // Alexander
+    const ljProductForReview1Sku = 'LJ-RNG-002';
+    const ljProductForReview2Sku = 'LJ-NECK-002';
+
+    const ljDbProductForReview1 = await productRepository.findOneBy({
+      sku: ljProductForReview1Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+    const ljDbProductForReview2 = await productRepository.findOneBy({
+      sku: ljProductForReview2Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+
+    if (ljDbProductForReview1 && ljUserForReview1 && ljUserForReview2) {
+      const luxuryJewelryReviews1 = reviewRepository.create([
+        {
+          id: ljReviewData[0].id,
+          product: ljDbProductForReview1,
+          user: { id: ljUserForReview1.id },
+          store: { id: LUXURY_JEWELRY_STORE_ID },
+          rating: 5,
+          comment: 'Absolutely stunning! The craftsmanship is exceptional.',
+        },
+        {
+          id: ljReviewData[1].id,
+          product: ljDbProductForReview1,
+          user: { id: ljUserForReview2.id },
+          store: { id: LUXURY_JEWELRY_STORE_ID },
+          rating: 4,
+          comment: 'Beautiful piece, worth every penny.',
+        },
+      ]);
+      await reviewRepository.save(luxuryJewelryReviews1);
+      logger.log(
+        `Seeded ${luxuryJewelryReviews1.length} Luxury Jewelry reviews for product ${ljDbProductForReview1.sku}`,
+      );
+    }
+
+    if (ljDbProductForReview2 && ljUserForReview1 && ljUserForReview2) {
+      const luxuryJewelryReviews2 = reviewRepository.create([
+        {
+          id: ljReviewData[2].id,
+          product: ljDbProductForReview2,
+          user: { id: ljUserForReview1.id },
+          store: { id: LUXURY_JEWELRY_STORE_ID },
+          rating: 5,
+          comment: 'Elegant and timeless design. Perfect for special occasions.',
+        },
+      ]);
+      await reviewRepository.save(luxuryJewelryReviews2);
+      logger.log(
+        `Seeded ${luxuryJewelryReviews2.length} Luxury Jewelry reviews for product ${ljDbProductForReview2.sku}`,
+      );
+    }
+
+    const finalOrderCountAfterLuxury = await orderRepository.count();
+    logger.log(
+      `Total orders in DB after Luxury Jewelry seeding: ${finalOrderCountAfterLuxury}`,
+    );
+    const finalWishlistCountAfterLuxury = await wishlistRepository.count();
+    logger.log(
+      `Total wishlists in DB after Luxury Jewelry seeding: ${finalWishlistCountAfterLuxury}`,
+    );
+    const finalReviewCountAfterLuxury = await reviewRepository.count();
+    logger.log(
+      `Total reviews in DB after Luxury Jewelry seeding: ${finalReviewCountAfterLuxury}`,
     );
 
     // --- Seed Promo Codes ---

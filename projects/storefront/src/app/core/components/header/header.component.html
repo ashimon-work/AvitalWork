@@ -1,44 +1,57 @@
-<mat-sidenav-container class="app-sidenav-container">
+<mat-sidenav-container class="app-sidenav-container" [ngClass]="variantClass">
   <mat-sidenav #mobileDrawer mode="over" position="start" class="mobile-sidenav" [autoFocus]="false">
     <div class="mobile-drawer-header">
       <a (click)="onLogoClick()" class="logo-brand-link" [title]="(storeName$ | async) || 'Home'">
         <div class="logo-container">
-          <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'" class="logo-image small-logo">
-          <svg *ngIf="!(storeLogoUrl$ | async)" class="logo-svg-fallback small-logo" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'"
+            class="logo-image small-logo">
+          <svg *ngIf="!(storeLogoUrl$ | async)" class="logo-svg-fallback small-logo" fill="none" viewBox="0 0 48 48"
+            xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_6_319_header_logo_fallback_mobile)">
-              <path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+              <path
+                d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                fill="currentColor"></path>
             </g>
             <defs>
-              <clipPath id="clip0_6_319_header_logo_fallback_mobile"><rect fill="white" height="48" width="48"></rect></clipPath>
+              <clipPath id="clip0_6_319_header_logo_fallback_mobile">
+                <rect fill="white" height="48" width="48"></rect>
+              </clipPath>
             </defs>
           </svg>
         </div>
-        <span *ngIf="storeName$ | async as name" class="brand-name-mobile">{{ name }}</span>
+        <span *ngIf="storeName$ | async as name" class="brand-name-mobile">{{
+          name
+          }}</span>
       </a>
       <button mat-icon-button (click)="mobileDrawer.close()" aria-label="Close navigation menu">
         <mat-icon>close</mat-icon>
       </button>
     </div>
-
     <mat-nav-list class="mobile-nav-list">
-      <a mat-list-item *ngFor="let link of NAV_LINKS"
-         [routerLink]="generateRouterLink(link, storeSlug$ | async)"
-         routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: link.exact !== undefined ? link.exact : false}"
-         (click)="handleNavLinkClick()">
-        {{ link.label }}
+      <a mat-list-item *ngFor="let link of NAV_LINKS" [routerLink]="generateRouterLink(link, storeSlug$ | async)"
+        routerLinkActive="active-link" (click)="handleNavLinkClick()">
+
+
+        <span matListItemTitle>{{ link.label }}</span>
+
       </a>
     </mat-nav-list>
+
 
     <div class="mobile-drawer-search">
       <app-search-bar></app-search-bar>
     </div>
 
     <div class="mobile-drawer-actions">
+      <button mat-stroked-button class="full-width-button" (click)="openSearchPanel()">
+        <mat-icon>search</mat-icon> Search
+      </button>
+
       <button mat-stroked-button class="full-width-button" (click)="onAccountClick()">
         <mat-icon>person_outline</mat-icon> Account
       </button>
-      <button mat-stroked-button class="full-width-button" (click)="onCartClick()"
-        [matBadge]="cartItemCount$ | async" matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="(cartItemCount$ | async) === 0">
+      <button mat-stroked-button class="full-width-button" (click)="onCartClick()" [matBadge]="cartItemCount$ | async"
+        matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="(cartItemCount$ | async) === 0">
         <mat-icon>shopping_cart</mat-icon> Cart
       </button>
       <button mat-stroked-button class="full-width-button" *ngIf="isAuthenticated$ | async" (click)="logout()">
@@ -48,71 +61,107 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar color="background" class="modern-header">
-      <div class="header-content-wrapper">
-        <!-- Mobile Hamburger -->
-        <button mat-icon-button (click)="mobileDrawer.toggle()" aria-label="Open navigation menu" class="mobile-menu-button md:hidden">
-          <mat-icon>menu</mat-icon>
-        </button>
+    <mat-toolbar class="combine-header" [class.scrolled]="isScrolled">
+      <div class="container">
 
-        <!-- Left: Logo -->
-        <a (click)="onLogoClick()" class="logo-brand-link" [title]="(storeName$ | async) || 'Home'">
-          <div class="logo-container">
-            <img *ngIf="storeLogoUrl$ | async as logoUrl" [src]="logoUrl" [alt]="(storeName$ | async) || 'Store Logo'" class="logo-image">
-            <svg *ngIf="!(storeLogoUrl$ | async)" class="logo-svg-fallback" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <g clip-path="url(#clip0_6_319_header_logo_fallback_desktop)">
-                <path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
-              </g>
-              <defs>
-                <clipPath id="clip0_6_319_header_logo_fallback_desktop"><rect fill="white" height="48" width="48"></rect></clipPath>
-              </defs>
-            </svg>
+        <!-- TOP ROW -->
+        <div class="header-top">
+          <!-- Logo -->
+          <a (click)="onLogoClick()" class="logo" class="logo-brand-link">
+           <span *ngIf="storeName$ | async as name" class="logo-text">{{ name }}</span>
+          </a>
+
+          <!-- Actions -->
+          <div class="header-actions">
+            <button mat-icon-button class="icon-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+            </button>
+          
+            <button mat-icon-button (click)="openSearchPanel()" class="icon-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-search">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+          
+
+            <button mat-icon-button class="icon-btn" (click)="onAccountClick()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-user">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </button>
+
+            <button mat-icon-button class="icon-btn cart-btn" (click)="onCartClick()"
+              [matBadge]="cartItemCount$ | async" matBadgeColor="warn"
+              [matBadgeHidden]="(cartItemCount$ | async) === 0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-shopping-cart">
+                <circle cx="8" cy="21" r="1" />
+                <circle cx="19" cy="21" r="1" />
+                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+              </svg>
+            </button>
           </div>
-          <h2 *ngIf="storeName$ | async as name" class="brand-name hidden md:block">{{ name }}</h2>
-        </a>
+        </div>
 
-        <!-- Spacer to push nav to center -->
-        <div class="flex-spacer hidden md:block"></div>
+        <!-- BOTTOM ROW -->
+        <nav class="header-nav">
+          <a *ngFor="let link of NAV_LINKS" [routerLink]="generateRouterLink(link, storeSlug$ | async)"
+            routerLinkActive="active" class="nav-link">
+            @if (link.key === 'home') {
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-home transition-colors">
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            }
+          </a>
+          <li class="relative">
+              <button
+                mat-button
+                class="nav-link shop-button"
+                (mouseenter)="toggleShopDropdown()"
+                (click)="toggleShopDropdown()"
+              >
+              Shop
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-chevron-down">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+          </li>
+          <a *ngFor="let link of NAV_LINKS" [routerLink]="generateRouterLink(link, storeSlug$ | async)"
+            routerLinkActive="active" class="nav-links nav-link">
 
-        <!-- Center: Nav (desktop) -->
-        <nav class="desktop-navigation hidden md:flex" aria-label="Main navigation">
-          <ul class="nav-links-list">
-            <li *ngFor="let link of NAV_LINKS">
-              <a [routerLink]="generateRouterLink(link, storeSlug$ | async)"
-                 routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: link.exact !== undefined ? link.exact : false}"
-                 class="nav-link" (click)="handleNavLinkClick()">
-                {{ link.label }}
-              </a>
-            </li>
-          </ul>
+            <span *ngIf="link.key !== 'home'">
+              {{ link.label }}
+            </span>
+          </a>
+
+
+
         </nav>
 
-        <!-- Spacer to push search & actions to right -->
-        <div class="flex-spacer"></div>
-
-        <!-- Right: Search + Icons (desktop) -->
-        <div class="desktop-actions hidden md:flex">
-          <!-- Search -->
-          <div class="desktop-search-area">
-            <app-search-bar></app-search-bar>
-          </div>
-
-          <!-- Account -->
-          <button mat-icon-button aria-label="Account" (click)="onAccountClick()" class="action-icon-button">
-            <mat-icon>person_outline</mat-icon>
-          </button>
-
-          <!-- Cart -->
-          <button mat-icon-button aria-label="Cart" (click)="onCartClick()" class="action-icon-button"
-            [matBadge]="cartItemCount$ | async" matBadgePosition="above after" matBadgeColor="warn" [matBadgeHidden]="(cartItemCount$ | async) === 0">
-            <mat-icon>shopping_cart</mat-icon>
-          </button>
-        </div>
       </div>
+
     </mat-toolbar>
 
     <!-- This is where your <router-outlet> or main page content would go -->
     <!-- For the purpose of this component, it's outside -->
-
   </mat-sidenav-content>
 </mat-sidenav-container>
+<app-search-bar></app-search-bar>
+

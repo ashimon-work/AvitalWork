@@ -55,3 +55,5 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+.angular-config.json
+.cursor-server/

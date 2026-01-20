@@ -14,7 +14,7 @@
           <!-- Header -->
           <header class="sidebar-header">
             <h2>{{ tKeys.SF_ACCOUNT_TITLE | translate }}</h2>
-            <p class="sidebar-description">Manage your account settings</p>
+            <p class="sidebar-description">{{ tKeys.SF_ACCOUNT_MANAGE_SETTINGS | translate }}</p>
           </header>
 
           <!-- Navigation Menu -->
@@ -39,13 +39,15 @@
                 </a>
               </li>
               <li role="listitem">
-                <a routerLink="payment-methods" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                <a routerLink="payment-methods" routerLinkActive="active-link" (click)="toggleMobileMenu()"
+                  class="nav-item">
                   <img src="assets/icons/credit-card.svg" alt="" class="nav-icon">
                   <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_PAYMENT_METHODS | translate }}</span>
                 </a>
               </li>
               <li role="listitem">
-                <a routerLink="personal-info" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                <a routerLink="personal-info" routerLinkActive="active-link" (click)="toggleMobileMenu()"
+                  class="nav-item">
                   <img src="assets/icons/user.svg" alt="" class="nav-icon">
                   <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_PERSONAL_INFO | translate }}</span>
                 </a>
@@ -57,7 +59,8 @@
                 </a>
               </li>
               <li role="listitem">
-                <a routerLink="change-password" routerLinkActive="active-link" (click)="toggleMobileMenu()" class="nav-item">
+                <a routerLink="change-password" routerLinkActive="active-link" (click)="toggleMobileMenu()"
+                  class="nav-item">
                   <img src="assets/icons/lock.svg" alt="" class="nav-icon">
                   <span class="nav-label">{{ tKeys.SF_ACCOUNT_NAV_CHANGE_PASSWORD | translate }}</span>
                 </a>
@@ -68,11 +71,7 @@
           <!-- Footer with Logout -->
           <footer class="sidebar-footer">
             <mat-divider></mat-divider>
-            <button 
-              mat-button 
-              class="logout-btn" 
-              (click)="logout()"
-            >
+            <button mat-button class="logout-btn" (click)="logout()">
               <img src="assets/icons/log-out.svg" alt="" class="logout-icon">
               <span>{{ tKeys.SF_ACCOUNT_LOGOUT_BUTTON | translate }}</span>
             </button>
@@ -86,9 +85,7 @@
       <!-- Stats Bar -->
       <div class="stats-section">
         <ng-container *ngIf="accountData$ | async as accountData">
-          <app-account-stats-bar 
-            [totalOrders]="accountData.totalOrders" 
-            [rewardPoints]="accountData.rewardPoints">
+          <app-account-stats-bar [totalOrders]="accountData.totalOrders" [rewardPoints]="accountData.rewardPoints">
           </app-account-stats-bar>
         </ng-container>
       </div>

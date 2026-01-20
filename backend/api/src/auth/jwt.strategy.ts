@@ -30,6 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // We could fetch the full user entity here if needed for more complex validation/roles
     const user = await this.usersService.findOneById(payload.sub);
     if (!user) {
+      console.error(`JWT Strategy: User not found for ID ${payload.sub}`);
       throw new UnauthorizedException();
     }
     // We can trust the payload because Passport already verified the signature.
