@@ -5,25 +5,46 @@
 <!-- Featured Categories -->
 <section class="featured-categories container">
   <h2>{{ tKeys['SF_HOMEPAGE_FEATURED_CATEGORIES_TITLE'] | translate }}</h2>
+</section>
+
+<!-- Categories Navigation Bar - Mobile Only -->
+<section class="categories-navigation-section mobile-only">
+  <app-category-navigation></app-category-navigation>
+</section>
+
+<!-- Featured Categories -->
+<section class="featured-categories">
+  <h2 class="section-title">{{ tKeys.SF_HOMEPAGE_FEATURED_CATEGORIES_TITLE | translate }}</h2>
+
   <div class="category-grid" *ngIf="featuredCategories$ | async as categories">
-    <app-featured-category-card
-      *ngFor="let category of categories"
-      [storeSlug]="currentStoreSlug$ | async"
-      [category]="category"
-    ></app-featured-category-card>
+    <app-featured-category-card *ngFor="let category of (showAll ? categories : categories.slice(0, 2))"
+      [storeSlug]="currentStoreSlug$ | async" [category]="category"></app-featured-category-card>
   </div>
-  <!-- Add loading/error state handling later -->
+
+  <div class="view-all-container" *ngIf="featuredCategories$ | async as categories">
+    <button (click)="toggleShowAll()" class="view-all-btn">
+      {{ showAll ? 'הצג פחות' : 'הצג כל הקטגוריות' }}
+    </button>
+  </div>
 </section>
 
 <!-- Featured Products -->
 <section class="featured-products container">
   <h2>{{ tKeys['SF_HOMEPAGE_FEATURED_PRODUCTS_TITLE'] | translate }}</h2>
+  <h2>{{ tKeys.SF_HOMEPAGE_FEATURED_PRODUCTS_TITLE | translate }}</h2>
+  
   <div class="product-grid" *ngIf="featuredProducts$ | async as products">
-    <app-featured-product-card
-      *ngFor="let product of products"
+    <app-featured-product-card 
+      *ngFor="let product of products.slice(0, 4)" 
       [product]="product"
-      [storeSlug]="currentStoreSlug$ | async"
-      (addToCart)="onAddToCart($event)"
-    ></app-featured-product-card>
+      [storeSlug]="currentStoreSlug$ | async" 
+      (addToCart)="onAddToCart($event)">
+    </app-featured-product-card>
+  </div>
+
+  <div class="view-all-products-container">
+    <button class="view-all-products-btn">
+      צפה בכל המוצרים
+    </button>
   </div>
 </section>

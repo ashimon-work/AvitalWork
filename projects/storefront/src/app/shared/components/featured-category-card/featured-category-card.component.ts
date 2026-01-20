@@ -13,7 +13,10 @@ import { RouterModule } from '@angular/router'; // Import RouterModule
 export class FeaturedCategoryCardComponent {
   @Input() category!: Category;
   @Input() storeSlug: string | null = null;
-
+  showAll = false;
+  toggleShowAll() {
+    this.showAll = !this.showAll;
+  }
   get href(): string {
     if (this.storeSlug && this.category) {
       // Prefer category.slug if available, otherwise category.id

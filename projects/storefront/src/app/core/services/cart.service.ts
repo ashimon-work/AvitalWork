@@ -4,6 +4,7 @@ import { Product, Cart, CartItem } from '@shared-types';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service'; // For login/logout events
 import { StoreContextService } from './store-context.service';
+import { CartDrawerService } from './cart-drawer.service';
 // Removed incorrect NestJS Logger import
 
 export { type CartItem, type Cart as CartState } from '@shared-types';
@@ -39,6 +40,7 @@ export class CartService {
     private apiService: ApiService,
     private authService: AuthService, // Inject AuthService
     private storeContext: StoreContextService
+    private cartDrawerService: CartDrawerService // Inject CartDrawerService
   ) {
     this.guestCartId = localStorage.getItem(this.GUEST_CART_ID_KEY);
     this.loadInitialCart(this.guestCartId);
@@ -57,22 +59,26 @@ export class CartService {
 
   private mergeAndLoadUserCart(): void {
     const localGuestCartId = localStorage.getItem(this.GUEST_CART_ID_KEY);
+    console.log(`Merging guest cart ID: ${localGuestCartId} into user cart.`);
     if (localGuestCartId) {
       this.apiService.mergeCart(localGuestCartId).pipe(
-        tap(() => {
-          console.log('Guest cart merged successfully.');
-          this.clearLocalGuestCartId();
-          this.loadInitialCart(); // Load the now-merged user cart
+        tap((mergedCart) => {
+          console.log('Guest cart merged successfully.', mergedCart);
+          // this.clearLocalGuestCartId();
+          // Update the cart state directly with the merged cart from the response
+          this._updateStateFromBackendCart(mergedCart);
         }),
         catchError(err => {
           console.error('Error merging cart:', err);
           this.clearLocalGuestCartId(); // Clear local guest ID even if merge fails to avoid issues
-          this.loadInitialCart(); // Attempt to load user cart anyway
+          // Still try to load user cart as fallback
+          this.loadInitialCart();
           return throwError(() => new Error('Failed to merge cart'));
         })
       ).subscribe();
     } else {
-      this.loadInitialCart(); // No guest cart to merge, just load user cart
+      // No guest cart to merge, just load user cart
+      this.loadInitialCart();
     }
   }
 
@@ -142,6 +148,7 @@ export class CartService {
         this._updateStateFromBackendCart(response);
         console.log(`Item added successfully. New state updated.`);
         this.itemAddedSource.next();
+        this.cartDrawerService.open(); // Open cart drawer when item is added
       }),
       catchError(error => {
         console.error('Error adding item to cart:', error);
@@ -151,39 +158,67 @@ export class CartService {
   }
 
   updateItemQuantity(productId: string, quantity: number): Observable<any> {
-     console.log(`CartService: Updating item ${productId} qty ${quantity}. Guest ID: ${this.guestCartId}`);
-     // ApiService.updateCartItemQuantity will need to be updated
-     return this.apiService.updateCartItemQuantity(productId, quantity, this.guestCartId).pipe(
-       tap((response: Cart) => {
-         this._updateStateFromBackendCart(response);
-           console.log(`Item quantity updated successfully.`);
-       }),
-       catchError(error => {
-         console.error('Error updating item quantity:', error);
-         return throwError(() => new Error('Failed to update item quantity'));
-       })
-     );
-   }
+    console.log(`CartService: Updating item ${productId} qty ${quantity}. Guest ID: ${this.guestCartId}`);
+    console.log('Current cart state:', this.getCurrentCart());
+    console.log('Cart items:', this.getCurrentCart()?.items);
 
-   removeItem(productId: string): Observable<any> {
-     console.log(`CartService: Removing item ${productId}. Guest ID: ${this.guestCartId}`);
-     // ApiService.removeCartItem will need to be updated
-     return this.apiService.removeCartItem(productId, this.guestCartId).pipe(
-       tap((response: Cart) => {
-         this._updateStateFromBackendCart(response);
-           console.log(`Item removed successfully.`);
-       }),
-       catchError(error => {
-         console.error('Error removing item from cart:', error);
-         return throwError(() => new Error('Failed to remove item from cart'));
-       })
-     );
-   }
+    // For logged-in users, we should not pass the guest cart ID
+    //const cart = this.getCurrentCart();
+
+    const isLoggedIn = !!this.authService.getToken();
+    console.log(`User is ${isLoggedIn ? 'logged in' : 'not logged in'}.`);
+
+    const guestCartId = isLoggedIn ? null : this.guestCartId;
+
+    // Double-check that we're using the product ID, not the cart ID
+    // console.log(`CartService: Using productId: ${productId}, cartId: ${cart?.id}`);
+
+
+    // ApiService.updateCartItemQuantity will need to be updated
+    return this.apiService.updateCartItemQuantity(productId, quantity, guestCartId).pipe(
+      tap((response: Cart) => {
+        this._updateStateFromBackendCart(response);
+        console.log(`Item quantity updated successfully.`);
+      }),
+      catchError(error => {
+        console.error('Error updating item quantity:', error);
+        return throwError(() => new Error('Failed to update item quantity'));
+      })
+    );
+  }
+
+  removeItem(productId: string): Observable<any> {
+    console.log(`CartService: Removing item ${productId}. Guest ID: ${this.guestCartId}`);
+    // For logged-in users, we should not pass the guest cart ID
+    const isLoggedIn = !!this.authService.getToken();
+
+    console.log(`User is ${isLoggedIn ? 'logged in' : 'not logged in'}.`);
+
+    const guestCartId = isLoggedIn ? null : this.guestCartId;
+
+
+    return this.apiService.removeCartItem(productId, guestCartId).pipe(
+      tap((response: Cart) => {
+        this._updateStateFromBackendCart(response);
+        console.log(`Item removed successfully.`);
+      }),
+      catchError(error => {
+        console.error('Error removing item from cart:', error);
+        return throwError(() => new Error('Failed to remove item from cart'));
+      })
+    );
+  }
 
   // Helper to update local state from the backend's full Cart object
   private _updateStateFromBackendCart(backendCart: Cart | null): void {
-    // Sync guest_session_id if present in response
-    if (backendCart) {
+    // For logged-in users, clear the guest cart ID since we now have a user cart
+    const isUserCart = backendCart && backendCart.userId;
+    if (isUserCart) {
+      this.clearLocalGuestCartId();
+    }
+
+    // Sync guest_session_id if present in response (for guest carts only)
+    if (backendCart && !isUserCart) {
       const responseGuestId = (backendCart as any)?.guest_session_id || backendCart?.guestCartId;
       if (responseGuestId) {
         const storedGuestId = localStorage.getItem(this.GUEST_CART_ID_KEY);
@@ -195,8 +230,9 @@ export class CartService {
         }
       }
     }
+
     this.cartStateSubject.next(backendCart);
-    console.log('Cart state updated from backend response:', this.cartStateSubject.getValue()); // Replaced logger
+    console.log('Cart state updated from backend response:', this.cartStateSubject.getValue());
   }
 
   // Method to get the current cart state synchronously

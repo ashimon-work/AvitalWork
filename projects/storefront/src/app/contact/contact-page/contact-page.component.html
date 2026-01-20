@@ -1,143 +1,56 @@
-<div class="contact-page-container">
-  <!-- Page Title Section -->
-  <section class="page-header text-center">
-    <h1>{{ tKeys.SF_CONTACT_PAGE_GET_IN_TOUCH_TITLE | translate }}</h1>
-    <p>{{ tKeys.SF_CONTACT_PAGE_SUBTITLE | translate }}</p>
-  </section>
+<div class="min-h-screen bg-background">
+  <div class="container-inner">
 
-  <!-- Main Content: Two Columns -->
-  <section class="main-content-grid">
-    <!-- Left Column: Contact Form -->
-    <div class="contact-form-section">
-      <div class="card contact-form-card">
-        <h2>{{ tKeys.SF_CONTACT_FORM_TITLE | translate }}</h2>
-        <form [formGroup]="contactForm" (ngSubmit)="onContactSubmit()">
-          <div class="form-group">
-            <label for="name">{{ tKeys.SF_CONTACT_FORM_FULL_NAME_LABEL | translate }}</label>
-            <input type="text" id="name" formControlName="name" [placeholder]="tKeys.SF_CONTACT_FORM_FULL_NAME_PLACEHOLDER | translate"
-                   [ngClass]="{'invalid-input': contactForm.get('name')?.invalid && contactForm.get('name')?.touched}">
-            <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" class="validation-error">
-              <span *ngIf="contactForm.get('name')?.errors?.['required']">{{ tKeys.SF_CONTACT_FORM_FULL_NAME_REQUIRED_ERROR | translate }}</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="email">{{ tKeys.SF_CONTACT_FORM_EMAIL_LABEL | translate }}</label>
-            <input type="email" id="email" formControlName="email" [placeholder]="tKeys.SF_CONTACT_FORM_EMAIL_PLACEHOLDER | translate"
-                   [ngClass]="{'invalid-input': contactForm.get('email')?.invalid && contactForm.get('email')?.touched}">
-            <div *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched" class="validation-error">
-              <span *ngIf="contactForm.get('email')?.errors?.['required']">{{ tKeys.SF_CONTACT_FORM_EMAIL_REQUIRED_ERROR | translate }}</span>
-              <span *ngIf="contactForm.get('email')?.errors?.['email']">{{ tKeys.SF_CONTACT_FORM_EMAIL_INVALID_ERROR | translate }}</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="subject">{{ tKeys.SF_CONTACT_FORM_SUBJECT_LABEL | translate }}</label>
-            <input type="text" id="subject" formControlName="subject" [placeholder]="tKeys.SF_CONTACT_FORM_SUBJECT_PLACEHOLDER | translate"
-                   [ngClass]="{'invalid-input': contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched}">
-            <div *ngIf="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched" class="validation-error">
-              <span *ngIf="contactForm.get('subject')?.errors?.['required']">{{ tKeys.SF_CONTACT_FORM_SUBJECT_REQUIRED_ERROR | translate }}</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="message">{{ tKeys.SF_CONTACT_FORM_MESSAGE_LABEL | translate }}</label>
-            <textarea id="message" formControlName="message" [placeholder]="tKeys.SF_CONTACT_FORM_MESSAGE_PLACEHOLDER | translate" rows="5"
-                      [ngClass]="{'invalid-input': contactForm.get('message')?.invalid && contactForm.get('message')?.touched}"></textarea>
-            <div *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched" class="validation-error">
-              <span *ngIf="contactForm.get('message')?.errors?.['required']">{{ tKeys.SF_CONTACT_FORM_MESSAGE_REQUIRED_ERROR | translate }}</span>
-            </div>
-          </div>
-
-          <!-- Success Message -->
-          <div *ngIf="submitSuccess" class="success-message">
-            <p>{{ tKeys.SF_CONTACT_FORM_SUCCESS_MESSAGE | translate }}</p>
-          </div>
-
-          <!-- Error Message -->
-          <div *ngIf="submitError" class="error-message">
-            <p>✗ {{ submitError }}</p>
-          </div>
-
-          <button type="submit" class="submit-button" [disabled]="contactForm.invalid || isSubmitting">
-            <span *ngIf="isSubmitting">{{ tKeys.SF_CONTACT_FORM_SENDING_BUTTON_TEXT | translate }}</span>
-            <span *ngIf="!isSubmitting">{{ tKeys.SF_CONTACT_FORM_SEND_BUTTON | translate }}</span>
-          </button>
-        </form>
-      </div>
+    <div class="page-header">
+      <nav class="breadcrumb">
+        <a href="/">{{tKeys.SF_MINI_NAVIGATE_HOME | translate}}</a>
+        <span>/</span>
+        <span class="current">{{tKeys.SF_MINI_NAVIGATE_CONTACT_US | translate}}</span>
+      </nav>
+      <h1 class="text-display">{{tKeys.SF_CONTACT_PAGE_TITLE | translate}}</h1>
     </div>
 
-    <!-- Right Column: Info, FAQ, Map -->
-    <div class="contact-info-section">
-      <!-- Store Contact Info -->
-      <div class="card store-info-card">
-        <h3><img src="assets/icons/map-pin.svg" alt="Location" class="icon"> {{ tKeys.SF_CONTACT_LOCATION_AND_CONTACT_TITLE | translate }}</h3>
-        <p>
-          <strong>{{ tKeys.SF_CONTACT_ADDRESS_LABEL | translate }}</strong><br>
-          {{ storeDetails.street }}<br>
-          {{ storeDetails.city }}, {{ storeDetails.state }} {{ storeDetails.zipCode }}<br>
-          {{ storeDetails.country }}
-        </p>
-        <p>
-          <img src="assets/icons/phone.svg" alt="Phone" class="icon">
-          <strong>{{ tKeys.SF_CONTACT_PHONE_LABEL | translate }}</strong> <a [href]="'tel:' + storeDetails.phone">{{ storeDetails.phone }}</a>
-        </p>
-        <p>
-          <img src="assets/icons/email.svg" alt="Email" class="icon">
-          <strong>{{ tKeys.SF_CONTACT_EMAIL_LABEL | translate }}</strong> <a [href]="'mailto:' + storeDetails.email">{{ storeDetails.email }}</a>
-        </p>
+    <div class="max-w-3xl">
+      <form [formGroup]="contactForm" (ngSubmit)="onContactSubmit()" class="contact-form" novalidate>
 
-        <div class="social-media-links">
-          <h4>{{ tKeys.SF_CONTACT_FOLLOW_US_TITLE | translate }}</h4>
-          <a href="#" target="_blank" rel="noopener noreferrer" [attr.aria-label]="tKeys.SF_CONTACT_FOLLOW_US_FACEBOOK_ARIA_LABEL | translate" class="social-icon-link">
-            <img src="assets/icons/social/facebook.svg" alt="Facebook" class="social-icon">
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" [attr.aria-label]="tKeys.SF_CONTACT_FOLLOW_US_TWITTER_ARIA_LABEL | translate" class="social-icon-link">
-            <img src="assets/icons/social/twitter.svg" alt="Twitter" class="social-icon">
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" [attr.aria-label]="tKeys.SF_CONTACT_FOLLOW_US_INSTAGRAM_ARIA_LABEL | translate" class="social-icon-link">
-            <img src="assets/icons/social/instagram.svg" alt="Instagram" class="social-icon">
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" [attr.aria-label]="tKeys.SF_CONTACT_FOLLOW_US_YOUTUBE_ARIA_LABEL | translate" class="social-icon-link">
-            <img src="assets/icons/social/youtube.svg" alt="YouTube" class="social-icon">
-          </a>
+        <div class="form-group">
+          <input type="text" formControlName="name" class="custom-input" placeholder="{{ tKeys.SF_CONTACT_FORM_FULL_NAME_PLACEHOLDER | translate }}"
+            [ngClass]="{'is-invalid': contactForm.get('name')?.invalid && contactForm.get('name')?.touched}">
         </div>
-      </div>
 
-      <!-- FAQ Section -->
-      <div class="card faq-accordion-card">
-        <h3>{{ tKeys.SF_CONTACT_FAQ_TITLE | translate }}</h3>
-        <div *ngFor="let faq of faqList" class="faq-item">
-          <button (click)="toggleFaq(faq)" class="faq-question" [attr.aria-expanded]="faq.isOpen">
-            {{ faq.question }}
-            <img src="assets/icons/chevron-down.svg" [alt]="tKeys.SF_CONTACT_FAQ_TOGGLE_ARIA_LABEL | translate" class="icon faq-icon" [class.rotated]="faq.isOpen">
+        <div class="form-group">
+          <input type="email" formControlName="email" class="custom-input" placeholder="{{ tKeys.SF_CONTACT_FORM_EMAIL_PLACEHOLDER | translate }}"
+            [ngClass]="{'is-invalid': contactForm.get('email')?.invalid && contactForm.get('email')?.touched}">
+        </div>
+
+        <div class="form-group">
+          <input type="text" formControlName="subject" class="custom-input" placeholder="{{ tKeys.SF_CONTACT_FORM_SUBJECT_LABEL | translate }}"
+            [ngClass]="{'is-invalid': contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched}">
+        </div>
+
+        <div class="form-group">
+          <textarea formControlName="message" class="custom-textarea" rows="6" placeholder="{{ tKeys.SF_CONTACT_FORM_MESSAGE_PLACEHOLDER | translate }}"
+            [ngClass]="{'is-invalid': contactForm.get('message')?.invalid && contactForm.get('message')?.touched}"></textarea>
+        </div>
+
+        <div *ngIf="submitSuccess" class="alert alert-success">{{ tKeys.SF_CONTACT_FORM_SUCCESS_MESSAGE | translate }}
+        </div>
+        <div *ngIf="submitError" class="alert alert-danger">{{ submitError }}</div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-button">
+            <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+
+            <span>{{ (isSubmitting ? tKeys.SF_CONTACT_FORM_SENDING_BUTTON_TEXT : tKeys.SF_CONTACT_FORM_SEND_BUTTON) |
+              translate }}</span>
+
           </button>
-          <div *ngIf="faq.isOpen" class="faq-answer">
-            <p>{{ faq.answer }}</p>
-          </div>
         </div>
-      </div>
-
-      <!-- Map Card -->
-      <div class="card map-card" *ngIf="storeDetails">
-        <h3><img src="assets/icons/map-pin.svg" alt="Map" class="icon"> {{ tKeys.SF_CONTACT_MAP_TITLE | translate }}</h3>
-        <iframe *ngIf="getMapUrl() as mapUrl; else mapPlaceholder"
-          width="100%"
-          height="300"
-          frameborder="0"
-          style="border:0;"
-          [src]="mapUrl"
-          allowfullscreen=""
-          aria-hidden="false"
-          tabindex="0">
-        </iframe>
-        <ng-template #mapPlaceholder>
-          <div class="map-placeholder">
-            {{ tKeys.SF_CONTACT_MAP_LOADING_OR_API_KEY_NOT_CONFIGURED | translate }}
-          </div>
-        </ng-template>
-      </div>
+      </form>
     </div>
-  </section>
+  </div>
 </div>
-

@@ -1,165 +1,306 @@
-<div class="cart-page-container" *ngIf="cartState$ | async as cartState; else loadingCart">
-  <h1>{{ tKeys.SF_CART_TITLE | translate }}</h1>
+<div
+  class="cart-page-container"
+  *ngIf="cartState$ | async as cartState; else loadingCart"
+>
+  <!-- Spacer for header -->
+  <div class="header-spacer"></div>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a [routerLink]="['/', currentStoreSlug$ | async]" class="breadcrumb-link"
+      >Home</a
+    >
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Cart</span>
+  </nav>
+
+  <!-- Title -->
+  <h1 class="page-title">Shopping Cart</h1>
 
   <ng-container *ngIf="cartState.items.length > 0; else emptyCart">
     <div class="cart-layout">
-      <!-- Left Section: Cart Items -->
+      <!-- Cart Items Section -->
       <div class="cart-items-section">
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>{{ tKeys.SF_CART_PRODUCT_HEADER | translate }}</th>
-              <th>{{ tKeys.SF_CART_PRICE_HEADER | translate }}</th>
-              <th>{{ tKeys.SF_CART_QUANTITY_HEADER | translate }}</th>
-              <th>{{ tKeys.SF_CART_SUBTOTAL_HEADER | translate }}</th>
-              <th></th> <!-- For remove button -->
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of cartState.items" class="cart-item">
-              <td class="item-image">
-                <a [routerLink]="['/', currentStoreSlug$ | async, 'product', item.product.id]">
-                  <img [src]="item.product.imageUrls[0] || '/assets/images/placeholder.png'" [alt]="item.product.name">
-                </a>
-              </td>
-              <td class="item-details">
-                <a [routerLink]="['/', currentStoreSlug$ | async, 'product', item.product.id]" class="item-name">{{
-                  item.product.name }}</a>
-                <!-- Display selected variants later if applicable -->
-              </td>
-              <td class="item-price">{{ item.product.price | currency }}</td>
-              <td class="item-quantity">
-                <div class="quantity-control">
-                  <button (click)="decrementQuantity(item)" [disabled]="item.quantity <= 1"
-                    [title]="tKeys.SF_CART_DECREASE_QUANTITY_ARIA | translate"
-                    [attr.aria-label]="'Decrease quantity of ' + item.product.name">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-minus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                  </button>
-                  <input type="number" [ngModel]="item.quantity"
-                    (ngModelChange)="updateQuantity(item, $event.toString())" min="1" [max]="item.product.stockLevel"
-                    step="1" [attr.aria-label]="'Quantity of ' + item.product.name">
-                  <button (click)="incrementQuantity(item)"
-                    [disabled]="!(item.product.stockLevel && item.quantity < item.product.stockLevel)"
-                    [title]="tKeys.SF_CART_INCREASE_QUANTITY_ARIA | translate"
-                    [attr.aria-label]="'Increase quantity of ' + item.product.name">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                  </button>
+        <div class="cart-table">
+          <!-- Table Header -->
+          <div class="table-header">
+            <div class="header-cell header-product">Product</div>
+            <div class="header-cell header-quantity">Quantity</div>
+            <div class="header-cell header-total">Total</div>
+          </div>
+
+          <!-- Cart Items -->
+          <div
+            class="cart-item"
+            *ngFor="let item of cartState.items; trackBy: trackByItemId"
+          >
+            <!-- Product Info -->
+            <div class="item-product">
+              <a
+                [routerLink]="[
+                  '/',
+                  currentStoreSlug$ | async,
+                  'product',
+                  item.product.id,
+                ]"
+                class="item-image-link"
+              >
+                <div class="item-image">
+                  <img
+                    [src]="
+                      item.product.imageUrls?.[0] ||
+                      '/assets/images/placeholder.png'
+                    "
+                    [alt]="item.product.name"
+                  />
                 </div>
-              </td>
-              <td class="item-subtotal">{{ calculateItemSubtotal(item) | currency }}</td>
-              <td class="item-remove">
-                <button (click)="removeItem(item)" class="remove-item-btn"
-                  [title]="tKeys.SF_CART_REMOVE_ITEM_TITLE | translate"
-                  [attr.aria-label]="'Remove ' + item.product.name + ' from cart'">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+              </a>
+              <div class="item-details">
+                <div class="item-price-row">
+                  <span class="item-price">{{
+                    item.product.price | formatCurrency()
+                  }}</span>
+                </div>
+                <a
+                  [routerLink]="[
+                    '/',
+                    currentStoreSlug$ | async,
+                    'product',
+                    item.product.id,
+                  ]"
+                  class="item-name"
+                >
+                  {{ item.product.name }}
+                </a>
+              </div>
+            </div>
+
+            <!-- Quantity -->
+            <div class="item-quantity">
+              <div class="quantity-control">
+                <button
+                  (click)="decrementQuantity(item)"
+                  class="quantity-btn quantity-btn-minus"
+                  [disabled]="item.quantity <= 1"
+                  aria-label="Decrease quantity"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
                 </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="cart-actions-lower">
-          <button class="continue-shopping-btn" (click)="goBack()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            {{ tKeys.SF_CART_CONTINUE_SHOPPING_BUTTON | translate }}
-          </button>
-          <button class="update-cart-btn" (click)="updateCart()">{{ tKeys.SF_CART_UPDATE_CART_BUTTON | translate }}</button>
-          <!-- Might not be needed if quantity updates automatically -->
+                <span class="quantity-value">{{ item.quantity }}</span>
+                <button
+                  (click)="incrementQuantity(item)"
+                  class="quantity-btn quantity-btn-plus"
+                  [disabled]="
+                    !(
+                      item.product.stockLevel &&
+                      item.quantity < item.product.stockLevel
+                    )
+                  "
+                  aria-label="Increase quantity"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+              </div>
+              <button (click)="removeItem(item)" class="remove-btn">
+                Remove
+              </button>
+            </div>
+
+            <!-- Total -->
+            <div class="item-total">
+              <span class="item-total-price">{{
+                calculateItemSubtotal(item) | currency: 'NIS'
+              }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Right Section: Order Summary -->
-      <aside class="order-summary-section">
-        <div class="summary-header">
-          <h2>{{ tKeys.SF_CART_ORDER_SUMMARY_TITLE | translate }}</h2>
-        </div>
-        <div class="summary-content">
-          <div class="summary-row">
-            <span>{{ tKeys.SF_CART_SUBTOTAL_HEADER | translate }}:</span>
-            <span>{{ calculateCartSubtotal(cartState.items) | currency }}</span>
-          </div>
-          <div class="summary-row">
-            <span>{{ tKeys.SF_CART_SHIPPING_LABEL | translate }}</span>
-            <span>{{ tKeys.SF_CART_CALCULATED_AT_CHECKOUT | translate }}</span>
-          </div>
-          <div class="summary-row">
-            <span>{{ tKeys.SF_CART_TAXES_LABEL | translate }}</span>
-            <span>{{ tKeys.SF_CART_CALCULATED_AT_CHECKOUT | translate }}</span>
-          </div>
-          <hr class="summary-separator">
-          <!-- Promo Code Section -->
-          <div class="promo-code-section">
-            <label for="promo-code-input">{{ tKeys.SF_CART_PROMO_CODE_LABEL | translate }}</label>
-            <div class="promo-input-group">
-              <input type="text" id="promo-code-input" [placeholder]="tKeys.SF_CART_PROMO_CODE_PLACEHOLDER | translate"
-                [(ngModel)]="promoCode" aria-label="Promo Code">
-              <button (click)="applyPromoCode()" class="apply-promo-btn" [disabled]="!promoCode">{{
-                tKeys.SF_CART_APPLY_BUTTON | translate }}</button>
+      <!-- Sidebar -->
+      <aside class="cart-sidebar">
+        <!-- New Product Suggestion -->
+        <div
+          class="sidebar-card new-product-card"
+          *ngIf="newestProduct$ | async as newestProduct"
+        >
+          <h3 class="sidebar-card-title">New Product</h3>
+          <div class="new-product-content">
+            <div class="new-product-image">
+              <img
+                [src]="
+                  newestProduct?.imageUrls?.[0] ||
+                  '/assets/images/placeholder.png'
+                "
+                [alt]="newestProduct?.name"
+              />
             </div>
-            <div *ngIf="appliedPromoCodeDetails" class="promo-message"
-              [ngClass]="{ 'success': appliedPromoCodeDetails.discountAmount > 0, 'error': appliedPromoCodeDetails.discountAmount === 0 && appliedPromoCodeDetails.message }">
+            <div class="new-product-details">
+              <span class="new-product-price">{{
+                newestProduct?.price | formatCurrency()
+              }}</span>
+              <h4 class="new-product-name">{{ newestProduct?.name }}</h4>
+              <button
+                (click)="onAddSuggestedProductToCart(newestProduct)"
+                class="add-to-cart-btn"
+                [disabled]="!newestProduct"
+              >
+                Add to cart
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Discount Code + Total & Checkout -->
+        <div class="sidebar-card order-summary-card">
+          <!-- Discount codes -->
+          <div class="discount-section">
+            <h3 class="sidebar-card-title">{{ tKeys.SF_CART_DISCOUNT_LABEL | translate:appliedPromoCodeDetails.code }}</h3>
+            <div class="discount-input-group">
+              <input
+                type="text"
+                [(ngModel)]="promoCode"
+                placeholder=""
+                class="discount-input"
+                aria-label="Promo Code"
+              />
+              <button
+                (click)="applyPromoCode()"
+                class="apply-btn"
+                [disabled]="!promoCode"
+              >
+                Apply
+              </button>
+            </div>
+            <div
+              *ngIf="appliedPromoCodeDetails"
+              class="promo-message"
+              [ngClass]="{
+                success: appliedPromoCodeDetails.discountAmount > 0,
+                error:
+                  appliedPromoCodeDetails.discountAmount === 0 &&
+                  appliedPromoCodeDetails.message,
+              }"
+            >
               <p>{{ appliedPromoCodeDetails.message }}</p>
             </div>
           </div>
 
-          <div class="summary-row" *ngIf="appliedPromoCodeDetails && appliedPromoCodeDetails.discountAmount > 0">
-            <span>{{ tKeys.SF_CART_DISCOUNT_LABEL | translate:appliedPromoCodeDetails.code }}</span>
-            <span>- {{ appliedPromoCodeDetails.discountAmount | currency }}</span>
+          <!-- Total -->
+          <div class="total-section">
+            <div class="total-row">
+              <span class="total-label">Total</span>
+              <span class="total-amount">{{
+                calculateTotal(cartState.items) | formatCurrency()
+              }}</span>
+            </div>
+            <p class="total-note">
+              Tax included and shipping calculated at checkout
+            </p>
+            <button (click)="proceedToCheckout()" class="checkout-btn">
+              Checkout
+            </button>
           </div>
-          <hr class="summary-separator" *ngIf="appliedPromoCodeDetails && appliedPromoCodeDetails.discountAmount > 0">
-
-          <div class="summary-row total">
-            <span>{{ tKeys.SF_CART_TOTAL_LABEL | translate }}</span>
-            <span>{{ (calculateCartSubtotal(cartState.items) - (appliedPromoCodeDetails?.discountAmount || 0)) |
-              currency }}</span>
-          </div>
-        </div>
-        <div class="summary-footer">
-          <button class="checkout-btn" (click)="proceedToCheckout()">{{ tKeys.SF_CART_PROCEED_TO_CHECKOUT_BUTTON |
-            translate }}</button>
         </div>
       </aside>
     </div>
 
-    <!-- Recently Viewed Products Section -->
-    <ng-container *ngIf="recentlyViewedProducts$ | async as recentlyViewed; else loadingRecentlyViewed">
-      <div *ngIf="recentlyViewed.length > 0" class="recently-viewed-section">
-        <div class="recently-viewed-header">
-          <h2>{{ tKeys.SF_CART_RECENTLY_VIEWED_TITLE | translate }}</h2>
-          <button class="view-all-btn" (click)="navigateToRecentlyViewedAll()">
-            {{ tKeys.SF_PRODUCT_GRID_VIEW_ALL_BUTTON | translate }}
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </button>
-        </div>
-        <div class="recently-viewed-scroll-container">
-          <ul class="recently-viewed-list">
-            <li *ngFor="let product of recentlyViewed" class="recently-viewed-item">
-              <app-featured-product-card [product]="product"
-                (addToCart)="onAddToCartFromRecentlyViewed($event)"></app-featured-product-card>
-            </li>
-          </ul>
+    <!-- You May Also Like -->
+    <section class="suggested-products-section">
+      <h2 class="section-title">You may also like these</h2>
+      <p class="section-subtitle">
+        Don't check out before looking at these great offers!
+      </p>
+      <div class="suggested-products-scroll-container">
+        <div class="suggested-products-grid">
+          <a
+            *ngFor="let product of suggestedProducts$ | async"
+            [routerLink]="[
+              '/',
+              currentStoreSlug$ | async,
+              'product',
+              product.id,
+            ]"
+            class="suggested-product-link"
+          >
+            <div class="suggested-product-card">
+              <!-- Badges -->
+              <div class="product-badges">
+                <span
+                  *ngIf="product.tags?.includes('Sale')"
+                  class="product-badge discount-badge"
+                  >SALE</span
+                >
+                <span
+                  *ngIf="product.tags?.includes('New')"
+                  class="product-badge new-badge"
+                  >NEW</span
+                >
+              </div>
+              <!-- Product Image -->
+              <div class="suggested-product-image">
+                <img
+                  [src]="
+                    product.imageUrls?.[0] || '/assets/images/placeholder.png'
+                  "
+                  [alt]="product.name"
+                />
+              </div>
+              <!-- Product Info -->
+              <div class="suggested-product-info">
+                <div class="suggested-product-price-row">
+                  <span class="suggested-product-price">{{
+                    product.price | currency: 'NIS'
+                  }}</span>
+                </div>
+                <h3 class="suggested-product-name">{{ product.name }}</h3>
+              </div>
+            </div>
+          </a>
         </div>
       </div>
-    </ng-container>
-    <ng-template #loadingRecentlyViewed>
-      <!-- Optional: loading indicator for recently viewed -->
-    </ng-template>
-
+    </section>
   </ng-container>
 
+  <!-- Empty Cart -->
   <ng-template #emptyCart>
-    <div class="empty-cart-illustration">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-shopping-bag empty-cart-icon-svg"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-      <h2 class="empty-cart-heading">{{ tKeys.SF_CART_EMPTY_MESSAGE_TITLE | translate }}</h2>
-      <p class="empty-cart-text">{{ tKeys.SF_CART_EMPTY_MESSAGE | translate }}</p>
-      <button class="shop-now-btn" [routerLink]="['/', currentStoreSlug$ | async]">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-shopping-cart"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-        {{ tKeys.SF_CART_SHOP_NOW_BUTTON | translate }}
-      </button>
+    <div class="empty-cart">
+      <p class="empty-cart-text">Your cart is empty</p>
+      <a
+        [routerLink]="['/', currentStoreSlug$ | async, 'products']"
+        class="continue-shopping-link"
+      >
+        Continue Shopping
+      </a>
     </div>
   </ng-template>
 </div>
 
+<!-- Loading State -->
 <ng-template #loadingCart>
-  <p>{{ tKeys.SF_CART_LOADING_MESSAGE | translate }}</p>
+  <p class="loading-text">Loading cart...</p>
 </ng-template>

@@ -20,3 +20,30 @@
     </div>
   </a>
 </article>
+<article class="product-card group">
+  <button type="button"
+    [attr.aria-label]="isInWishlist ? 'Remove ' + product.name + ' from favorites' : 'Add ' + product.name + ' to favorites'"
+    class="favorite-btn"
+    (click)="toggleWishlist(product)" tabindex="0">
+    <mat-icon>{{ isInWishlist ? 'favorite' : 'favorite_border' }}</mat-icon>
+  </button>
+
+  <a [routerLink]="href" class="product-link">
+    <div class="image-container">
+      <img [src]="imageUrl" [alt]="altText" class="product-image" draggable="false" />
+    </div>
+    
+    <div class="content-area">
+      <p class="price">{{ product.price | formatCurrency() }}</p>
+      <h3 class="product-name">{{ product.name }}</h3>
+    </div>
+  </a>
+
+  <div class="px-6 pb-6 mt-auto">
+    <button type="button"
+      class="w-full rounded-full py-2 px-6 text-base font-semibold bg-primary text-primary-foreground shadow-lg transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/60 hover:bg-primary/90"
+      (click)="onAddToCartClick()" [attr.aria-label]="'Add ' + product.name + ' to cart'" tabindex="0">
+      {{ tKeys.SM_PRODUCT_ADD_TO_CART }}
+    </button>
+  </div>
+</article>

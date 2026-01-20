@@ -1,9 +1,14 @@
-<mat-card class="product-card" *ngIf="product" [class.out-of-stock]="isOutOfStock">
-  <!-- Make the link conditional, but display content regardless -->
-  <a [routerLink]="storeSlug ? ['/', storeSlug, 'product', product.id] : null" 
-     [queryParams]="{ categoryId: categoryId }" 
-     class="product-link"
-     mat-ripple>
+<a [routerLink]="storeSlug ? ['/', storeSlug, 'product', product.id] : null"
+   [queryParams]="{ categoryId: categoryId }"
+   class="product-card-link">
+  <div class="product-card">
+    <!-- Badges -->
+    <div class="product-badges">
+      <span *ngIf="discount" class="product-badge discount-badge">-{{ discount }}%</span>
+      <span *ngIf="isNew" class="product-badge new-badge">NEW</span>
+    </div>
+
+    <!-- Product Image -->
     <div class="product-image-container">
       <img [src]="product.imageUrls[0] || '/assets/images/placeholder.png'"
            [alt]="product.name"
@@ -36,3 +41,18 @@
     </button>
   </mat-card-actions>
 </mat-card>
+    </div>
+    <div class="product-info">
+      <!-- Price -->
+      <div class="product-price-row">
+        <span class="product-price">{{ product.price |formatCurrency }}</span>
+        <span *ngIf="originalPrice" class="product-original-price">
+          {{ originalPrice |formatCurrency }}
+        </span>
+      </div>
+
+      <!-- Name -->
+      <h3 class="product-name">{{ product.name }}</h3>
+    </div>
+  </div>
+</a>

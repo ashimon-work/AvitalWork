@@ -8,6 +8,8 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
 // MatIconModule, MatIconRegistry, and DomSanitizer might still be needed if other icons use them.
 // For now, assuming only social icons were the target, we can comment/remove parts related to them.
 // If MatIconModule is used by other parts of the template, it should remain.
@@ -34,8 +36,8 @@ interface NavLink {
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
-    // MatIconModule, // Remove if no other mat-icons are used in the template
+    MatButtonModule,
+    MatIconModule // Add MatIconModule for the send icon
   ],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss'

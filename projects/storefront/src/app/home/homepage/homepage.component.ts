@@ -2,16 +2,33 @@ import { CommonModule } from '@angular/common';
 import { CarouselComponent } from '../components/carousel/carousel.component';
 import { FeaturedCategoryCardComponent } from '../../shared/components/featured-category-card/featured-category-card.component';
 import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component';
-import { Component, inject } from '@angular/core';
-import { startWith, tap, catchError, Observable, of } from 'rxjs';
+import { CategoryNavigationComponent } from '../../shared/components/category-navigation/category-navigation.component';
+import { Component, inject, OnDestroy } from '@angular/core';
+import {
+  startWith,
+  tap,
+  catchError,
+  Observable,
+  of,
+  switchMap,
+  Subject,
+  takeUntil,
+  take,
+} from 'rxjs';
 import { T, TranslatePipe } from '@shared/i18n';
 import { Category, Product } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { CarouselSlide } from '../components/carousel/carousel.component';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { MaterialModule } from '../../shared/material.module';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-homepage',
@@ -21,6 +38,7 @@ import { MaterialModule } from '../../shared/material.module';
     CarouselComponent,
     FeaturedCategoryCardComponent,
     FeaturedProductCardComponent,
+    CategoryNavigationComponent,
     TranslatePipe,
     ReactiveFormsModule,
     MaterialModule,
@@ -28,86 +46,82 @@ import { MaterialModule } from '../../shared/material.module';
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.scss',
 })
-export class HomepageComponent {
+export class HomepageComponent implements OnDestroy {
   public tKeys = T;
 
   private apiService = inject(ApiService);
   private storeContext = inject(StoreContextService);
   private formBuilder = inject(FormBuilder);
   private cartService = inject(CartService);
-  
+  private router = inject(Router);
+  private destroy$ = new Subject<void>();
+
   featuredCategories$: Observable<Category[]>;
   featuredProducts$: Observable<Product[]>;
-  currentStoreSlug$: Observable<string | null> = this.storeContext.currentStoreSlug$;
+  currentStoreSlug$: Observable<string | null> =
+    this.storeContext.currentStoreSlug$;
   carouselSlides$: Observable<CarouselSlide[]>;
-  
+
   newsletterForm: FormGroup;
   isSubmittingNewsletter = false;
   showSuccessMessage = false;
   showErrorMessage = false;
   successMessage = '';
   errorMessage = '';
+  showAll = false; // משתנה ששולט בתצוגה
 
+  toggleShowAll() {
+    this.showAll = !this.showAll;
+  }
   constructor() {
-    console.log('<<<<< HomepageComponent Constructor Start >>>>>'); // Add this very first line
+    console.log('<<<<< HomepageComponent Constructor Start >>>>>');
     console.log('[HomepageComponent] Fetching featured categories...');
     this.featuredCategories$ = this.apiService.getFeaturedCategories().pipe(
-      tap(categories => console.log('[HomepageComponent] Featured categories fetched:', categories)),
-      catchError(error => {
-        console.error('[HomepageComponent] Error fetching featured categories:', error);
+      tap((categories) =>
+        console.log(
+          '[HomepageComponent] Featured categories fetched:',
+          categories
+        )
+      ),
+      catchError((error) => {
+        console.error(
+          '[HomepageComponent] Error fetching featured categories:',
+          error
+        );
         return of([]);
       })
     );
-
+   
     this.featuredProducts$ = this.apiService.getFeaturedProducts();
     this.carouselSlides$ = this.apiService.getCarouselImages().pipe(startWith([]));
     
     // Initialize newsletter form
     this.newsletterForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
   }
-  
+
   onAddToCart(event: any): void {
     // Check if event is a Product object or contains product data
     const product = event?.product || event;
-    
+
     if (!product || !product.id) {
       console.error('Invalid product data received:', event);
-      this.showErrorMessage = true;
-      this.errorMessage = 'Invalid product data';
-      setTimeout(() => {
-        this.showErrorMessage = false;
-      }, 3000);
       return;
     }
 
     this.cartService.addItem(product).subscribe({
-      next: () => {
-        // Show success message
-        this.showSuccessMessage = true;
-        this.successMessage = 'Product added to cart';
-        setTimeout(() => {
-          this.showSuccessMessage = false;
-        }, 3000);
-      },
       error: (error: any) => {
         console.error('Error adding product to cart:', error);
-        // Show error message
-        this.showErrorMessage = true;
-        this.errorMessage = 'Error adding product to cart';
-        setTimeout(() => {
-          this.showErrorMessage = false;
-        }, 3000);
-      }
+      },
     });
   }
-  
+
   onNewsletterSubmit(): void {
     if (this.newsletterForm.valid) {
       this.isSubmittingNewsletter = true;
       const email = this.newsletterForm.get('email')?.value;
-      
+
       this.apiService.subscribeNewsletter(email).subscribe({
         next: () => {
           this.showSuccessMessage = true;
@@ -126,8 +140,13 @@ export class HomepageComponent {
           setTimeout(() => {
             this.showErrorMessage = false;
           }, 3000);
-        }
+        },
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

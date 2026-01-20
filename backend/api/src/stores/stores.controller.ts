@@ -42,6 +42,12 @@ export class StoresController {
     return this.storesService.searchStores(query.trim(), searchLimit);
   }
 
+  // Endpoint to get all stores
+  @Get('all')
+  async getAllStores(): Promise<StoreEntity[]> {
+    return this.storesService.findAllStores();
+  }
+
   // Endpoint to check slug validity / get basic store info by slug
   @Get('slug/:slug')
   async findBySlug(@Param('slug') slug: string): Promise<StoreEntity> {
