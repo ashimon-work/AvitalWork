@@ -97,6 +97,7 @@ button[aria-label*="favorites"] {
   right: 0;
   height: 50%; // Adjust as needed
   background: none; // Remove transparent background
+  background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); // Semi-transparent white gradient for visibility
 }
 
 .product-info-overlay {
@@ -112,6 +113,7 @@ button[aria-label*="favorites"] {
     font-size: 1.2rem !important;
     font-weight: 400 !important;
     color: black !important;
+    color: #1a1a1a !important;
     margin: 5px 0 !important;
     line-height: 1.4 !important;
     transition: text-decoration 0.2s ease;
@@ -126,6 +128,7 @@ button[aria-label*="favorites"] {
     font-size: 16px !important;
     font-weight: 500 !important;
     color: black !important;
+    color: #1a1a1a !important;
     margin: 5px 0 0 0 !important;
     transition: text-decoration 0.2s ease;
   }
@@ -134,6 +137,34 @@ button[aria-label*="favorites"] {
     text-decoration: underline !important;
   }
 }
+
+/* 3. כפתור הלב - רק אייקון */
+button[aria-label*="favorites"] {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: white !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    color: #000 !important;
+  }
+  span { display: none !important; }
+}
+
+
 
 /* קונטיינר ראשי */
 .product-card {

@@ -44,6 +44,9 @@ export const routes: Routes = [
     ],
   },
 
+  // Redirect /default specifically to /awesome-gadgets
+  { path: 'default', redirectTo: '/awesome-gadgets', pathMatch: 'full' },
+  { path: '', redirectTo: '/awesome-gadgets', pathMatch: 'full' }, // Redirect root to a default store slug
   // Route for all stores page
   // {
   //   path: 'stores',

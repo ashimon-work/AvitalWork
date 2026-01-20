@@ -621,6 +621,13 @@ export const heMessages = {
   SF_PRODUCT_PAGE_RELATED_PRODUCTS_TITLE: "מוצרים קשורים",
   SF_PRODUCT_PAGE_NO_RELATED_PRODUCTS: "לא נמצאו מוצרים קשורים.",
   SF_PRODUCT_PAGE_LOADING_DETAILS: "טוען פרטי מוצר...",
+  SF_PRODUCT_PAGE_BREADCRUMB_COLLECTIONS: "קולקציות",
+  SF_PRODUCT_PAGE_RETURN_INFO: "מידע על החזרה",
+  SF_PRODUCT_PAGE_RETURN_POLICY_LINK: "מדיניות החזרות",
+  SF_PRODUCT_PAGE_SHOW_LESS: "הצג פחות",
+  SF_PRODUCT_PAGE_SHOW_MORE: "הצג עוד",
+  SF_PRODUCT_PAGE_PRICE_LABEL: "מחיר:",
+  SF_PRODUCT_PAGE_YOU_MAY_ALSO_LIKE: "אולי יעניין אותך גם",
 
   // Product Page Notifications & Errors
   SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION: (quantity: number, productName: string) => `${quantity} x ${productName} נוספו לעגלה.`,
