@@ -94,6 +94,8 @@ const categoryData = [
   // Store 1: גאדג'טים ומוצרים מעולים
   {
     id: 'aaa00001-c246-4913-9166-f75a99ee0c21',
+    name: 'Electronics',
+    description: 'Gadgets and devices',
     name: 'אלקטרוניקה',
     description: 'גאדג\'טים ומכשירים',
     imageUrl: 'https://plus.unsplash.com/premium_photo-1679079456083-9f288e224e96?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RWxlY3Ryb25pY3N8ZW58MHx8MHx8fDA%3D',
@@ -102,6 +104,8 @@ const categoryData = [
   },
   {
     id: 'aaa00003-c246-4913-9166-f75a99ee0c21',
+    name: 'Home Goods',
+    description: 'Items for your home',
     name: 'מוצרי בית',
     description: 'פריטים לבית שלך',
     imageUrl: 'https://plus.unsplash.com/premium_photo-1715071976149-6f26134fc7f0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SG9tZSUyMEdvb2RzfGVufDB8fDB8fHww',
@@ -110,6 +114,8 @@ const categoryData = [
   },
   {
     id: 'aaa00004-c246-4913-9166-f75a99ee0c21',
+    name: 'Books',
+    description: 'Literature and reading materials',
     name: 'ספרים',
     description: 'ספרות וחומרי קריאה',
     imageUrl: 'https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Qm9va3N8ZW58MHx8MHx8fDA%3D',
@@ -118,6 +124,8 @@ const categoryData = [
   },
   {
     id: 'aaa00007-c246-4913-9166-f75a99ee0c21',
+    name: 'Kitchen products',
+    description: 'A new category',
     name: 'מוצרי מטבח',
     description: 'קטגוריה חדשה',
     imageUrl: 'https://plus.unsplash.com/premium_photo-1714702844124-be1377d19666?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8S2l0Y2hlbiUyMHByb2R1Y3RzfGVufDB8fDB8fHww',
@@ -126,6 +134,8 @@ const categoryData = [
   // Store 2: אופנה וכיף
   {
     id: 'aaa00002-c246-4913-9166-f75a99ee0c21',
+    name: 'Apparel',
+    description: 'Clothing and fashion',
     name: 'הלבשה',
     description: 'בגדים ואופנה',
     imageUrl: 'https://images.unsplash.com/photo-1732257119998-b66cda63dcfc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Q2xvdGhpbmclMjBhbmQlMjBmYXNoaW9ufGVufDB8fDB8fHww',
@@ -134,6 +144,8 @@ const categoryData = [
   },
   {
     id: 'aaa00005-c246-4913-9166-f75a99ee0c21',
+    name: 'Sports & Outdoors',
+    description: 'Equipment for sports and outdoor activities.',
     name: 'ספורט וחוץ',
     description: 'ציוד לספורט ופעילויות חוץ.',
     imageUrl: 'https://images.unsplash.com/photo-1598046655252-f0f143557dcb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fFNwb3J0cyUyMCUyNiUyME91dGRvb3JzfGVufDB8fDB8fHww',
@@ -142,6 +154,9 @@ const categoryData = [
   },
   {
     id: 'aaa00006-c246-4913-9166-f75a99ee0c21',
+    name: 'Toys & Games',
+    description: 'Fun for all ages.',
+    imageUrl: 'https://images.unsplash.com/photo-1708032563896-06d7a8aef4e5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     name: 'צעצועים ומשחקים',
     description: 'כיף לכל הגילאים.',
     imageUrl: 'https://images.unsplash.com/photo-1708032563896-06d7a8aef4e5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q2hpbGRyZW4ncyUyMFBpY3R1cmUlMjBCb29rfGVufDB8fDB8fHww',
@@ -157,6 +172,8 @@ const productData: any[] = [
   // Electronics (Store 1)
   {
     sku: 'FP1v2',
+    name: 'Wireless Noise-Cancelling Headphones',
+    description: 'Experience immersive sound with these premium headphones.',
     name: 'אוזניות ללא חוטים מבטלות רעש',
     description: 'חוויית צליל עמוק עם אוזניות פרימיום אלה.',
     price: 199.99,
@@ -174,6 +191,8 @@ const productData: any[] = [
   },
   {
     sku: 'FP2v2',
+    name: 'Smartwatch Series 8',
+    description: 'Stay connected and track your fitness goals effortlessly.',
     name: 'שעון חכם סדרה 8',
     description: 'הישאר מחובר ועקוב אחר מטרות הכושר שלך בקלות.',
     price: 349.0,
@@ -190,6 +209,7 @@ const productData: any[] = [
   },
   {
     sku: 'FP3',
+    name: 'Portable Bluetooth Speaker',
     name: 'רמקול בלוטות',
     description:
       'רמקול קומפקטי עם איכות צליל חזקה למוזיקה בדרכים.',
@@ -204,6 +224,8 @@ const productData: any[] = [
   },
   {
     sku: 'FP4',
+    name: '4K Ultra HD Smart TV',
+    description: 'Stunning picture quality with smart features.',
     name: 'טלוויזיה חכמה 4K אולטרה HD',
     description: 'איכות תמונה מדהימה עם תכונות חכמות.',
     price: 799.99,
@@ -221,6 +243,8 @@ const productData: any[] = [
   },
   {
     sku: 'FP5',
+    name: 'Gaming Laptop',
+    description: 'High-performance laptop for gaming enthusiasts.',
     name: 'מחשב נייד לגיימינג',
     description: 'מחשב נייד בעל ביצועים גבוהים לחובבי גיימינג.',
     price: 1299.0,
@@ -784,6 +808,8 @@ const productData: any[] = [
   },
   {
     sku: 'BOOK-002',
+    name: 'Babies book',
+    description: 'A concise and accessible guide to the cosmos.',
     name: 'ספר תינוקות',
     description: 'מדריך תמציתי ונגיש לקוסמוס.',
     price: 12.99,
@@ -1060,6 +1086,7 @@ const aboutContentData = [
     storeId: storeData[0].id,
     title: 'אודותינו',
     content:
+      'Awesome Gadgets & Goods is an online store specializing in smart gadgets and selected products for a more convenient and enjoyable life. The store offers a wide range of advanced technology products, audio accessories, smart home devices, quality kitchen and lifestyle products. All products are carefully selected to combine innovation, design and functionality – for a smart and updated shopping experience.',
       'גאדג\'טים ומוצרים מעולים היא חנות מקוונת המתמחה בגאדג\'טים חכמים ומוצרים נבחרים לחיים נוחים ומענגים יותר. החנות מציעה מגוון רחב של מוצרי טכנולוגיה מתקדמים, אביזרי אודיו, מכשירי בית חכם, מוצרי מטבח ואורח חיים באיכות גבוהה. כל המוצרים נבחרים בקפידה לשלב חדשנות, עיצוב ופונקציונליות – לחוויית קניות חכמה ומעודכנת.',
     imageUrl: 'https://images.unsplash.com/photo-1597664607810-e59e0318e775?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXdlc29tZSUyMGdhZGdldHN8ZW58MHx8MHx8fDA%3D',
   },

@@ -182,6 +182,9 @@
 
         <div class="space-y-6">
           <nav class="flex items-center gap-3 text-sm" style="color: #9ca3af; display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem;">
+            <a [routerLink]="['../../']" class="hover:text-black transition-colors">Home</a>
+            <span>/</span>
+            <a [routerLink]="['../../products']" class="hover:text-black transition-colors">Collections</a>
             <a [routerLink]="['../../']" class="hover:text-black transition-colors">{{ tKeys['SF_NAV_HOME'] | translate }}</a>
             <span>/</span>
             <a [routerLink]="['../../products']" class="hover:text-black transition-colors">{{ tKeys['SF_PRODUCT_PAGE_BREADCRUMB_COLLECTIONS'] | translate }}</a>
@@ -195,11 +198,15 @@
 
           <div class="flex items-baseline gap-3">
             <span style="font-size: 1.5rem; font-weight: 600;">
+              {{ currentPrice | currency }}
               {{ currentPrice | currency : 'ILS' : 'symbol' : '1.0-2' : 'he' }}
             </span>
           </div>
 
           <p style="font-size: 0.875rem; color: #6b7280; font-style: italic;">
+            You can return it within 5 business days. For more details, refer to the
+            <a [routerLink]="['../../returns']" style="font-weight: 600; text-decoration: underline; color: #000;">
+              return policy page
             {{ tKeys['SF_PRODUCT_PAGE_RETURN_INFO'] | translate }}
             <a [routerLink]="['../../returns']" style="font-weight: 600; text-decoration: underline; color: #000;">
               {{ tKeys['SF_PRODUCT_PAGE_RETURN_POLICY_LINK'] | translate }}
@@ -213,11 +220,15 @@
               (click)="toggleDescription()"
               style="color: #000; text-decoration: underline; margin-top: 0.5rem; background: none; border: none; cursor: pointer; font-weight: 500;"
             >
+              {{ showFullDescription ? "Show less" : "Show more" }}
               {{ showFullDescription ? (tKeys['SF_PRODUCT_PAGE_SHOW_LESS'] | translate) : (tKeys['SF_PRODUCT_PAGE_SHOW_MORE'] | translate) }}
             </button>
           </div>
 
           <div style="border: 1px solid #e5e7eb; padding: 1.5rem; margin-top: 1.5rem;">
+            <p style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem;">Price</p>
+            <p style="font-size: 1.875rem; font-weight: 600; color: #000;">
+              {{ currentPrice | currency }}
             <p style="font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem;">{{ tKeys['SF_PRODUCT_PAGE_PRICE_LABEL'] | translate }}</p>
             <p style="font-size: 1.875rem; font-weight: 600; color: #000;">
               {{ currentPrice | currency : 'ILS' : 'symbol' : '1.0-2' : 'he' }}
@@ -228,6 +239,7 @@
             style="width: 100%; background-color: #000; color: #fff; padding: 1.25rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; border-radius: 9999px; border: none; cursor: pointer; margin-top: 1.5rem;"
             (click)="onAddToCart(product)"
             [disabled]="(currentStock || 0) <= 0 || quantity <= 0">
+            {{ tKeys.SF_PRODUCT_CARD_ADD_TO_CART_BUTTON | translate }}
             {{ tKeys['SF_PRODUCT_CARD_ADD_TO_CART_BUTTON'] | translate }}
           </button>
         </div>
@@ -235,6 +247,7 @@
 
       <section style="margin-top: 6rem;">
         <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 400; margin-bottom: 2.5rem; color: #1a1a1a;">
+          You may also like
           {{ tKeys['SF_PRODUCT_PAGE_YOU_MAY_ALSO_LIKE'] | translate }}
         </h2>
         
@@ -266,5 +279,6 @@
 </div>
 
 <ng-template #loadingProduct>
+  <p style="text-align: center; padding: 3rem; color: #9ca3af;">{{ tKeys.SF_PRODUCT_PAGE_LOADING_DETAILS | translate }}</p>
   <p style="text-align: center; padding: 3rem; color: #9ca3af;">{{ tKeys['SF_PRODUCT_PAGE_LOADING_DETAILS'] | translate }}</p>
 </ng-template>

@@ -28,6 +28,7 @@ import { plainToInstance } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StoreEntity } from '../stores/entities/store.entity';
+import { OptionalJwtAuthGuard } from '../auth/optional-jwt.guard';
 
 // DTO for the merge cart request
 export class MergeCartDto {
@@ -44,6 +45,7 @@ export class CartController {
     @InjectRepository(StoreEntity)
     private readonly storeRepository: Repository<StoreEntity>,
   ) {}
+  constructor(private readonly cartService: CartService) { }
 
   // Note: The StoreContextGuard will use req.params.storeSlug to validate the store
   // and attach req.storeId. The controller methods will use req.params.storeSlug
