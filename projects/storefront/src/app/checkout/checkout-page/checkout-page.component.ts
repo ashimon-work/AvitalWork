@@ -25,11 +25,12 @@ import { ShippingMethodComponent } from '../components/shipping-method/shipping-
     ShippingAddressFormComponent,
     PaymentMethodSectionComponent,
     OrderSummaryCardComponent,
-    ShippingMethodComponent
+    ShippingMethodComponent,
+    TranslatePipe
   ],
   templateUrl: './checkout-page.component.html',
   styleUrls: ['./checkout-page.component.scss'],
-  providers: [TranslatePipe, I18nService]
+  providers: [I18nService]
 })
 export class CheckoutPageComponent implements OnInit {
   public tKeys = T;
@@ -59,7 +60,7 @@ export class CheckoutPageComponent implements OnInit {
     private storeContextService: StoreContextService,
     private notificationService: NotificationService,
     private router: Router,
-    private translatePipe: TranslatePipe
+    private i18nService: I18nService
   ) {
     this.cart$ = this.cartService.cartState$;
   }
@@ -75,7 +76,7 @@ export class CheckoutPageComponent implements OnInit {
     this.storeContextService.currentStoreSlug$.pipe(
       switchMap(storeSlug => {
         if (!storeSlug) {
-          const storeContextErrorMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_STORE_CONTEXT_ERROR);
+          const storeContextErrorMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_STORE_CONTEXT_ERROR);
           this.notificationService.showError(storeContextErrorMsg);
           return of([]);
         }
@@ -85,125 +86,153 @@ export class CheckoutPageComponent implements OnInit {
       this.shippingMethods$.next(methods);
       this.isLoading = false;
       if (methods.length > 0) {
-              // Pre-select the first method if not already set or if current selection is invalid
-              if (!this.selectedShippingMethod || !methods.find(m => m.id === this.selectedShippingMethod?.id)) {
-                this.selectedShippingMethod = methods[0];
-                this.cart$.subscribe(cart => {
-                  if(cart) this.calculateTotals(cart)
-                 });
-              }
-            } else {
-        const noShippingInfoMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_NO_SHIPPING_METHODS);
+        // Pre-select the first method if not already set or if current selection is invalid
+        if (!this.selectedShippingMethod || !methods.find(m => m.id === this.selectedShippingMethod?.id)) {
+          this.selectedShippingMethod = methods[0];
+          this.cart$.subscribe(cart => {
+            if (cart) this.calculateTotals(cart)
+          });
+        }
+      } else {
+        const noShippingInfoMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_NO_SHIPPING_METHODS);
         this.notificationService.showInfo(noShippingInfoMsg); // Changed to showInfo
       }
     });
   }
 
-    subscribeToCartChanges(): void {
-      this.cart$.subscribe(cart => {
-        if (cart) {
-          this.orderItems = cart.items.map(item => ({
-            id: item.product.id,
-            name: item.product.name,
-            options: '', // Add logic to get options if available
-            price: item.product.price,
-            quantity: item.quantity,
-            image: item.product.imageUrls?.[0] || ''
-          }));
-          this.calculateTotals(cart);
-        }
-      });
-    }
-  
-    calculateTotals(cart: Cart): void {
-      const shippingCost = this.selectedShippingMethod?.cost || 0;
-      // Tax calculation logic will be simplified for now
-      const taxAmount = (cart.subtotal || 0) * 0.1; // Example 10% tax
-          this.taxEstimate$.next(taxAmount);
-          this.orderTotal$.next((cart.subtotal || 0) + shippingCost + taxAmount);
-    }
-  
-  
-    // --- Multi-step form navigation removed ---
-  
-    handleShippingSubmit(data: ShippingAddressData) {
-      this.shippingAddressData = data;
+  subscribeToCartChanges(): void {
+    this.cart$.subscribe(cart => {
+      if (cart) {
+        this.orderItems = cart.items.map(item => ({
+          id: item.product.id,
+          name: item.product.name,
+          options: '', // Add logic to get options if available
+          price: item.product.price,
+          quantity: item.quantity,
+          image: item.product.imageUrls?.[0] || ''
+        }));
+        this.calculateTotals(cart);
+      }
+    });
+  }
+
+  calculateTotals(cart: Cart): void {
+    const shippingCost = this.selectedShippingMethod?.cost || 0;
+    // Tax calculation logic will be simplified for now
+    const taxAmount = (cart.subtotal || 0) * 0.1; // Example 10% tax
+    this.taxEstimate$.next(taxAmount);
+    this.orderTotal$.next((cart.subtotal || 0) + shippingCost + taxAmount);
+  }
+
+
+  // --- Multi-step form navigation removed ---
+
+  handleShippingSubmit(data: ShippingAddressData) {
+    this.shippingAddressData = data;
+  }
+
+  handleShippingMethodChange(method: ShippingMethod) {
+    this.selectedShippingMethod = method;
+    this.cart$.subscribe(cart => {
+      if (cart) {
+        this.calculateTotals(cart);
+      }
+    });
+  }
+
+  handleCardUpdate(card: { last4: string; brand: string; }) {
+    this.storedCard = card;
+  }
+
+  canPlaceOrder(): boolean {
+    return !!this.shippingAddressData && !!this.storedCard && this.shippingAddressData.terms;
+  }
+
+  placeOrder(): void {
+    if (!this.shippingAddressData || !this.storedCard) {
+      this.notificationService.showError('Please complete all steps.');
+      return;
     }
 
-    handleShippingMethodChange(method: ShippingMethod) {
-      this.selectedShippingMethod = method;
-      this.cart$.subscribe(cart => {
-        if (cart) {
-          this.calculateTotals(cart);
-        }
-      });
-    }
-  
-    handleCardUpdate(card: { last4: string; brand: string; }) {
-        this.storedCard = card;
+    this.isLoading = true;
+    const splitName = (fullName: string) => {
+      const parts = fullName.trim().split(' ');
+      if (parts.length === 1) {
+        // If only one word, use it as firstName and leave lastName empty
+        return { firstName: parts[0], lastName: '' };
       }
-    
-      canPlaceOrder(): boolean {
-        return !!this.shippingAddressData && !!this.storedCard && this.shippingAddressData.terms;
-      }
-    
-      placeOrder(): void {
-      if (!this.shippingAddressData || !this.storedCard) {
-        this.notificationService.showError('Please complete all steps.');
-        return;
-      }
-  
-      this.isLoading = true;
-  
-      const orderData = {
-        storeSlug: this.storeContextService.getCurrentStoreSlug(),
-        cartItems: this.cartService.getCurrentCart()!.items.map((item: CartItem) => ({
-          productId: item.product.id,
-          quantity: item.quantity,
-          price: item.product.price
-        })),
-        shippingAddress: {
-          firstName: this.shippingAddressData.fullName.split(' ')[0],
-          lastName: this.shippingAddressData.fullName.split(' ').slice(1).join(' '),
-          address1: this.shippingAddressData.address1,
-          address2: this.shippingAddressData.address2,
-          city: this.shippingAddressData.city,
-          zipCode: this.shippingAddressData.zip,
-          country: this.shippingAddressData.country,
-        },
-        billingAddress: { // Assuming same as shipping for now
-          firstName: this.shippingAddressData.fullName.split(' ')[0],
-          lastName: this.shippingAddressData.fullName.split(' ').slice(1).join(' '),
-          address1: this.shippingAddressData.address1,
-          address2: this.shippingAddressData.address2,
-          city: this.shippingAddressData.city,
-          zipCode: this.shippingAddressData.zip,
-          country: this.shippingAddressData.country,
-        },
-        shippingMethodId: this.selectedShippingMethod?.id,
-        newsletterOptIn: this.shippingAddressData.newsletter,
-        termsAccepted: this.shippingAddressData.terms,
-        subtotal: this.cartService.getCurrentCart()!.subtotal,
-        shippingCost: this.selectedShippingMethod?.cost || 0,
-        taxAmount: this.taxEstimate$.value,
-        total: this.orderTotal$.value
+      // Otherwise, first word is firstName, rest is lastName
+      return {
+        firstName: parts[0],
+        lastName: parts.slice(1).join(' ')
       };
-  
-      this.apiService.placeOrder(orderData).subscribe({
-        next: (response: { orderId: string, orderNumber: string }) => {
-          this.isLoading = false;
-          const successMessage = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_ORDER_SUCCESS, { orderNumber: response.orderNumber } as any);
-          this.notificationService.showSuccess(successMessage);
-          this.cartService.loadInitialCart();
-          const storeSlug = this.storeContextService.getCurrentStoreSlug();
-          this.router.navigate(['/', storeSlug, 'order-confirmation', response.orderId]);
-        },
-        error: (error: any) => {
-          this.isLoading = false;
-          this.notificationService.showError(error.error?.message || 'Failed to place order.');
-          console.error('Error placing order:', error);
-        }
-      });
+    };
+
+    const nameParts = splitName(this.shippingAddressData.fullName);
+
+    // Get current cart and ensure it's not null
+    const currentCart = this.cartService.getCurrentCart();
+    if (!currentCart) {
+      this.notificationService.showError('Cart is empty. Please add items to your cart.');
+      this.isLoading = false;
+      return;
+    }
+
+    // Calculate totals to ensure they're not NaN
+    const subtotal = Number(currentCart.subtotal) || 0;
+    const shippingCost = Number(this.selectedShippingMethod?.cost) || 0;
+    const taxAmount = Number(this.taxEstimate$.value) || 0;
+    const total = subtotal + shippingCost + taxAmount;
+
+    const orderData = {
+      storeSlug: this.storeContextService.getCurrentStoreSlug(),
+      cartItems: currentCart.items.map((item: CartItem) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.product.price
+      })),
+      shippingAddress: {
+        firstName: nameParts.firstName,
+        lastName: nameParts.lastName,
+        address1: this.shippingAddressData.address1,
+        address2: this.shippingAddressData.address2,
+        city: this.shippingAddressData.city,
+        zipCode: this.shippingAddressData.zip,
+        country: this.shippingAddressData.country,
+      },
+      billingAddress: { // Assuming same as shipping for now
+        firstName: nameParts.firstName,
+        lastName: nameParts.lastName,
+        address1: this.shippingAddressData.address1,
+        address2: this.shippingAddressData.address2,
+        city: this.shippingAddressData.city,
+        zipCode: this.shippingAddressData.zip,
+        country: this.shippingAddressData.country,
+      },
+      shippingMethodId: this.selectedShippingMethod?.id,
+      newsletterOptIn: this.shippingAddressData.newsletter,
+      termsAccepted: this.shippingAddressData.terms,
+      subtotal: subtotal,
+      shippingCost: shippingCost,
+      taxAmount: taxAmount,
+      total: total
+    };
+
+    this.apiService.placeOrder(orderData).subscribe({
+      next: (response: { orderId: string, orderNumber: string }) => {
+        this.isLoading = false;
+        const successMessage = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_ORDER_SUCCESS, { orderNumber: response.orderNumber } as any);
+        this.notificationService.showSuccess(successMessage);
+        this.cartService.loadInitialCart();
+        const storeSlug = this.storeContextService.getCurrentStoreSlug();
+        this.router.navigate(['/', storeSlug, 'order-confirmation', response.orderId]);
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.notificationService.showError(error.error?.message || 'Failed to place order.');
+        console.error('Error placing order:', error);
+      }
+    });
   }
 
   public get creditCardDisplay(): string {
@@ -247,7 +276,7 @@ export class CheckoutPageComponent implements OnInit {
 
         if (!tokenizationWindow) {
           this.isLoading = false;
-          const popupBlockedMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
+          const popupBlockedMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
           this.notificationService.showError(popupBlockedMsg);
           return;
         }
@@ -284,7 +313,7 @@ export class CheckoutPageComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        const errorMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
+        const errorMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_CARD_TOKENIZATION_ERROR);
         this.notificationService.showError(errorMsg);
         console.error('Error getting tokenization URL:', error);
       }
@@ -299,7 +328,7 @@ export class CheckoutPageComponent implements OnInit {
   removeCreditCard(): void {
     // For now, we'll just show a message that the user needs to contact support
     // In a full implementation, you might want to add a backend endpoint to remove cards
-    const removeCardMsg = this.translatePipe.transform(this.tKeys.SF_CHECKOUT_NOTIFICATION_REMOVE_CARD_CONTACT_SUPPORT);
+    const removeCardMsg = this.i18nService.translate(this.tKeys.SF_CHECKOUT_NOTIFICATION_REMOVE_CARD_CONTACT_SUPPORT);
     this.notificationService.showInfo(removeCardMsg);
   }
 }

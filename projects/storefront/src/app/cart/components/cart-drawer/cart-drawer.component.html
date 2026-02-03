@@ -1,0 +1,219 @@
+<ng-container *ngIf="isOpen$ | async as isOpen">
+  <!-- Overlay -->
+  <div class="cart-drawer-overlay" *ngIf="isOpen" (click)="closeDrawer()"></div>
+
+  <!-- Drawer -->
+  <div class="cart-drawer" [class.open]="isOpen">
+    <div class="cart-drawer-content">
+      <!-- Header -->
+      <div class="cart-drawer-header">
+        <h2 class="cart-drawer-title">
+          {{ tKeys.SF_CART_DRAWER_TITLE | translate }} ({{
+            itemCount$ | async
+          }})
+        </h2>
+        <button
+          class="cart-drawer-close-btn"
+          (click)="closeDrawer()"
+          aria-label="Close cart"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Content -->
+      <ng-container *ngIf="cart$ | async as cart">
+        <div class="cart-drawer-body">
+          <!-- Empty Cart -->
+          <div
+            *ngIf="!cart || !cart.items || cart.items.length === 0"
+            class="cart-empty"
+          >
+            <p class="cart-empty-message">
+              {{ tKeys.SF_CART_DRAWER_EMPTY | translate }}
+            </p>
+            <button class="cart-continue-btn" (click)="navigateToProducts()">
+              {{ tKeys.SF_CART_DRAWER_CONTINUE | translate }}
+            </button>
+          </div>
+
+          <!-- Cart Items -->
+          <ng-container *ngIf="cart && cart.items && cart.items.length > 0">
+            <!-- Items List -->
+            <div class="cart-items-list">
+              <div
+                *ngFor="let item of cart.items; trackBy: trackByItemId"
+                class="cart-item"
+              >
+                <div class="cart-item-image">
+                  <img
+                    [src]="item.computedImage"
+                    [alt]="item.product.name"
+                    *ngIf="item.computedImage"
+                  />
+                  <div
+                    *ngIf="!item.computedImage"
+                    class="cart-item-image-placeholder"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect
+                        x="3"
+                        y="3"
+                        width="18"
+                        height="18"
+                        rx="2"
+                        ry="2"
+                      ></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="cart-item-details">
+                  <div class="cart-item-prices">
+                    <span class="cart-item-price">{{
+                      item.computedPrice | currency
+                    }}</span>
+                    <span
+                      *ngIf="item.computedOriginalPrice"
+                      class="cart-item-original-price"
+                    >
+                      {{ item.computedOriginalPrice | currency }}
+                    </span>
+                  </div>
+                  <h3 class="cart-item-name">{{ item.product.name }}</h3>
+
+                  <!-- Quantity Controls -->
+                  <div class="cart-item-quantity">
+                    <div class="quantity-controls">
+                      <button
+                        class="quantity-btn"
+                        (click)="decrementQuantity(item)"
+                        [disabled]="item.quantity <= 1"
+                        aria-label="Decrease quantity"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
+                      <span class="quantity-value">{{ item.quantity }}</span>
+                      <button
+                        class="quantity-btn"
+                        (click)="incrementQuantity(item)"
+                        aria-label="Increase quantity"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <line x1="12" y1="5" x2="12" y2="19"></line>
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                      </button>
+                    </div>
+                    <button
+                      class="cart-item-remove"
+                      (click)="removeItem(item.id)"
+                    >
+                      {{ tKeys.SF_CART_DRAWER_REMOVE | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Footer -->
+        <div
+          class="cart-drawer-footer"
+          *ngIf="cart && cart.items && cart.items.length > 0"
+        >
+          <!-- Subtotal -->
+          <div class="cart-summary-row">
+            <span>{{ tKeys.SF_CART_DRAWER_SUBTOTAL | translate }}</span>
+            <span class="cart-summary-value">{{
+              cart.computedSubtotal | currency
+            }}</span>
+          </div>
+
+          <!-- Discounts -->
+          <div class="cart-summary-row" *ngIf="cart.computedDiscountAmount > 0">
+            <span>{{ tKeys.SF_CART_DRAWER_DISCOUNTS | translate }}</span>
+            <div class="cart-summary-discount">
+              <span class="cart-discount-label">{{
+                tKeys.SF_CART_DRAWER_DISCOUNT_REASON | translate
+              }}</span>
+              <span class="cart-summary-value"
+                >-{{ cart.computedDiscountAmount | currency }}</span
+              >
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="cart-summary-row cart-summary-total">
+            <span>{{ tKeys.SF_CART_DRAWER_TOTAL | translate }}</span>
+            <span class="cart-summary-value cart-total-value">{{
+              cart.computedTotal | currency
+            }}</span>
+          </div>
+
+          <p class="cart-tax-note">
+            {{ tKeys.SF_CART_DRAWER_TAX_NOTE | translate }}
+          </p>
+
+          <!-- Buttons -->
+          <div class="cart-drawer-actions">
+            <button class="cart-view-cart-btn" (click)="navigateToCart()">
+              {{ tKeys.SF_CART_DRAWER_VIEW_CART | translate }}
+            </button>
+            <button class="cart-checkout-btn" (click)="navigateToCheckout()">
+              {{ tKeys.SF_CART_DRAWER_CHECKOUT | translate }}
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>

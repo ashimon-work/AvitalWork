@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError,take } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from '@shared-types';
+import { StoreContextService } from '../services/store-context.service';
 
 // Define interfaces for API responses if not already in shared-types
 interface AuthResponse {
@@ -37,7 +38,9 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private storeContextService: StoreContextService
+
   ) {
     // Optionally load user profile if token exists on init
     if (this.hasToken()) { this.loadUserProfile().subscribe(); }
@@ -64,7 +67,7 @@ export class AuthService {
 
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.authApiUrl}/login`, credentials).pipe(
-      tap(response => {
+      tap((response:any) => {
         if (response.access_token) {
           this.storeToken(response.access_token);
           // Fetch profile after successful login
@@ -86,7 +89,7 @@ export class AuthService {
 
   register(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'roles' | 'passwordHash'> & { password: string }): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.authApiUrl}/register`, userData).pipe(
-      tap(response => {
+      tap((response: RegisterResponse) => {
         // Optionally auto-login or just show success message
         console.log('Registration successful:', response.message);
         // Maybe navigate to login page: this.router.navigate(['/login']);
@@ -96,23 +99,19 @@ export class AuthService {
   }
 
   logout(): void {
-    this.removeToken();
-    // Get current storeSlug for redirection
-    // Need to get it asynchronously as logout might be called from anywhere
-    // Use the root route's first child to find the component with the slug
-    let currentRoute = this.router.routerState.root;
-    while (currentRoute.firstChild) {
-      currentRoute = currentRoute.firstChild;
-    }
-    const storeSlug = currentRoute.snapshot.params['storeSlug'];
+   this.storeContextService.currentStoreSlug$
+    .pipe(take(1))
+    .subscribe(storeSlug => {
+      // קודם ניווט
+      if (storeSlug) {
+        this.router.navigate(['/', storeSlug, 'login']);
+      } else {
+        this.router.navigate(['/awesome-gadgets/login']);
+      }
 
-    if (storeSlug) {
-      this.router.navigate(['/', storeSlug, 'login']); // Redirect to store-specific login page
-    } else {
-      console.error('AuthService: Could not determine storeSlug for redirect after logout.');
-      // Fallback? Maybe redirect to root or a generic error page?
-      this.router.navigate(['/']); // Redirect to root as fallback
-    }
+      // רק אחרי זה למחוק token
+      this.removeToken();
+    });
   }
 
   // Basic error handler
@@ -138,7 +137,7 @@ export class AuthService {
   loadUserProfile(): Observable<Omit<User, 'passwordHash'>> {
     // Assumes a /api/account/profile endpoint protected by JwtAuthGuard
     return this.http.get<Omit<User, 'passwordHash'>>(`${this.accountApiUrl}/profile`).pipe(
-      tap(user => {
+      tap((user: Omit<User, 'passwordHash'>) => {
         this._currentUser.next(user);
         this._isAuthenticated.next(true); // Update authentication status
       }), // Store user data on success

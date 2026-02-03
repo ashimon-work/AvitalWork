@@ -25,6 +25,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { IsNotEmpty, IsUUID } from 'class-validator';
 import { CartDto } from './dto/cart.dto';
 import { plainToInstance } from 'class-transformer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { StoreEntity } from '../stores/entities/store.entity';
+import { OptionalJwtAuthGuard } from '../auth/optional-jwt.guard';
 
 // DTO for the merge cart request
 export class MergeCartDto {
@@ -36,20 +40,25 @@ export class MergeCartDto {
 @Controller('stores/:storeSlug/cart')
 export class CartController {
   private readonly logger = new Logger(CartController.name);
-  constructor(private readonly cartService: CartService) {}
+  constructor(
+    private readonly cartService: CartService,
+    @InjectRepository(StoreEntity)
+    private readonly storeRepository: Repository<StoreEntity>,
+  ) {}
+  constructor(private readonly cartService: CartService) { }
 
   // Note: The StoreContextGuard will use req.params.storeSlug to validate the store
   // and attach req.storeId. The controller methods will use req.params.storeSlug
   // to pass to the service, as the service layer expects the slug.
 
   @Post('add')
-  @UseGuards(StoreContextGuard) // JwtAuthGuard is optional here, handled by checking req.user
+  @UseGuards(OptionalJwtAuthGuard, StoreContextGuard) // JwtAuthGuard is optional here, handled by checking req.user
   @HttpCode(HttpStatus.CREATED)
   async addItemToCart(
     @Req() req: AuthenticatedRequest,
     @Body() addToCartDto: AddToCartDto,
     @Headers('x-guest-session-id') guestSessionIdHeader?: string,
-  ): Promise<CartDto[]> {
+  ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
     let guestSessionId = guestSessionIdHeader;
@@ -72,10 +81,11 @@ export class CartController {
     if (!carts) {
       throw new NotFoundException('Cart not found or item could not be added.');
     }
-    return plainToInstance(CartDto, carts, {
-      excludeExtraneousValues: true,
-      enableImplicitConversion: true,
-    });
+    const currentCart = Array.isArray(carts)
+      ? carts.find(c => c.store.slug === req.params.storeSlug)
+      : carts;
+
+    return plainToInstance(CartDto, currentCart);
   }
 
   @Get()
@@ -87,12 +97,19 @@ export class CartController {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
     const guestSessionId = guestSessionIdHeader;
+    const storeId = req.storeId; // From StoreContextGuard
 
     // storeSlug presence is validated by the guard.
 
     this.logger.log(
       `CartController: getCart called. UserID: ${userId}, GuestSessionID Header: ${guestSessionIdHeader}, StoreSlug from params: ${storeSlug}`,
     );
+
+    const store = await this.storeRepository.findOneBy({ id: storeId });
+    if (!store) {
+      this.logger.error(`Store not found with id: ${storeId} for slug: ${storeSlug}`);
+      throw new NotFoundException('Store not found.');
+    }
 
     const cart = await this.cartService.getCart(
       storeSlug,
@@ -117,7 +134,7 @@ export class CartController {
             grandTotal: 0,
             discountAmount: 0,
             appliedPromoCode: null,
-            store: { slug: storeSlug }, // Include store slug for context
+            store: store,
             user: null, // No user for guest cart
             // Ensure all fields expected by Cart interface are present
             createdAt: new Date().toISOString(),
@@ -146,17 +163,25 @@ export class CartController {
     });
   }
 
-  @Patch(':productId')
-  @UseGuards(StoreContextGuard) // JwtAuthGuard is optional
-  async updateItemQuantity(
+  @Patch(':cartItemId')
+  @UseGuards(OptionalJwtAuthGuard, StoreContextGuard) async updateItemQuantity(
     @Req() req: AuthenticatedRequest,
-    @Param('productId') productId: string,
-    @Body('quantity', ParseIntPipe) quantity: number,
+    @Param('cartItemId') cartItemId: string,
+    @Body() updateDto: { quantity: number },
     @Headers('x-guest-session-id') guestSessionIdHeader?: string,
   ): Promise<CartDto> {
+    this.logger.error('--- DEBUG CART UPDATE ---');
+    this.logger.error('req.user:', req.user);
+    this.logger.error('req.user?.id:', req.user?.id);
+    this.logger.error('x-guest-session-id:', guestSessionIdHeader);
+    this.logger.error('storeSlug:', req.params.storeSlug);
+    this.logger.error('cartItemId:', cartItemId);
+    this.logger.error('quantity:', updateDto.quantity);
+
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
-    const guestSessionId = guestSessionIdHeader;
+    // Only use guestSessionId if user is not logged in
+    const guestSessionId = userId ? undefined : guestSessionIdHeader;
 
     // storeSlug presence is validated by the guard.
 
@@ -166,10 +191,14 @@ export class CartController {
       );
     }
 
+    this.logger.log(
+      `updateItemQuantity: Updating item ${cartItemId} to quantity ${updateDto.quantity} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`,
+    );
+
     const updatedCart = await this.cartService.updateItemQuantity(
       storeSlug,
-      productId,
-      quantity,
+      cartItemId,
+      updateDto.quantity,
       userId,
       guestSessionId,
     );
@@ -182,17 +211,18 @@ export class CartController {
     });
   }
 
-  @Delete(':productId')
-  @UseGuards(StoreContextGuard) // JwtAuthGuard is optional
+  @Delete(':cartItemId')
+  @UseGuards(OptionalJwtAuthGuard, StoreContextGuard) // JwtAuthGuard is optional
   @HttpCode(HttpStatus.OK)
   async removeItem(
     @Req() req: AuthenticatedRequest,
-    @Param('productId') productId: string,
+    @Param('cartItemId') cartItemId: string,
     @Headers('x-guest-session-id') guestSessionIdHeader?: string,
   ): Promise<CartDto> {
     const userId = req.user?.id;
     const storeSlug: string = req.params.storeSlug; // Correctly get from route params
-    const guestSessionId = guestSessionIdHeader;
+    // Only use guestSessionId if user is not logged in
+    const guestSessionId = userId ? undefined : guestSessionIdHeader;
 
     // storeSlug presence is validated by the guard.
 
@@ -202,9 +232,13 @@ export class CartController {
       );
     }
 
+    this.logger.log(
+      `removeItem: Removing item ${cartItemId} for user ${userId || 'guest'} (guestSessionId: ${guestSessionId}) in store ${storeSlug}`,
+    );
+
     const updatedCart = await this.cartService.removeItem(
       storeSlug,
-      productId,
+      cartItemId,
       userId,
       guestSessionId,
     );
@@ -302,6 +336,7 @@ export class CartController {
     const mergedCart = await this.cartService.mergeCarts(
       userId,
       storeId,
+      storeSlug,
       mergeCartDto.guestSessionId,
     );
     if (!mergedCart) {

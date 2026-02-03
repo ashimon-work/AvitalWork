@@ -1,49 +1,47 @@
 import { WhatsappService } from './whatsapp.service';
 import { ConversationStateEntity } from './entities/conversation-state.entity';
-import { i18n } from './i18n';
-import { CategoryEntity } from '../categories/entities/category.entity';
-import { ProductEntity } from 'src/products/entities/product.entity';
-import { ProductVariantEntity } from 'src/products/entities/product-variant.entity';
+import { getLang } from './helpers';
 import {
-  getLang,
-  getMessage,
-  isMainMenuCommand,
-  isYes,
-  isNo,
-  isDoneMessage,
-  computeFinalPrice,
-  parseStockLevels,
-  validateStockLevels,
-  formatNumberedList,
-  summaryButtons,
-  mapEditChoice,
-  generateVariants,
-  invalidThenPrompt,
-} from './helpers';
-import {
-  createStateTransition,
-  withNavigationHandling,
-  handleListSelection,
   sendMessage as sendMessageHelper,
   sendWelcomeMessage as sendWelcomeMessageHelper,
   presentLanguageChoice as presentLanguageChoiceHelper,
   validateAndRetry,
+} from './utils/message.utils';
+import { withNavigationHandling, handleListSelection } from './utils/navigation.utils';
+import { createStateTransition, isMainMenuCommand } from './utils/common.utils';
+import {
   extractProductData,
   isSimpleProduct,
-} from './state-machine-helpers';
+  generateProductSummary,
+} from './utils/product.utils';
+import {
+  getMessage,
+  isYes,
+  isNo,
+  mapEditChoice,
+  generateVariants,
+  formatNumberedList,
+  parseStockLevels,
+  validateStockLevels,
+  isDoneMessage,
+  summaryButtons,
+  computeFinalPrice,
+} from './helpers';
 import {
   findEntityById,
   createProductWithVariants,
   updateProductWithVariants,
   categoryNameExists,
-  getProductsByCategory,
-  canDeleteCategory,
 } from './repository-helpers';
+import { i18n } from './i18n';
+import { CategoryEntity } from '../categories/entities/category.entity';
 
 type Language = 'en' | 'he';
 
 // Use the helper function instead of defining it here
 const sendMessage = sendMessageHelper;
+const sendWelcomeMessage = sendWelcomeMessageHelper;
+const presentLanguageChoice = presentLanguageChoiceHelper;
 
 export const handleState = async (
   service: WhatsappService,
@@ -52,7 +50,7 @@ export const handleState = async (
   message: any,
 ): Promise<ConversationStateEntity> => {
   return withNavigationHandling(service, state, messageText, async () => {
-    const { currentState, context, userId } = state;
+    const { currentState, userId } = state;
     const lang = getLang(state);
 
     switch (currentState) {
@@ -145,11 +143,7 @@ export const handleState = async (
           messageText,
         );
       case 'manageCategories_editName':
-        return await handleManageCategoriesEditName(
-          service,
-          state,
-          messageText,
-        );
+        return await handleCategoryEditName(service, state, messageText);
       case 'reportsAndSettings':
         return await handleReportsAndSettings(service, state, messageText);
       case 'addProduct_editName':
@@ -583,9 +577,6 @@ ${getMessage(lang, 'summary_missing_variants_note')}
   return state;
 };
 
-// Use the helper function instead of defining it here
-const presentLanguageChoice = presentLanguageChoiceHelper;
-
 const handleLanguageSelection = async (
   service: WhatsappService,
   state: ConversationStateEntity,
@@ -605,9 +596,6 @@ const handleLanguageSelection = async (
     languageUpdatedMessage,
   );
 };
-
-// Use the helper function instead of defining it here
-const sendWelcomeMessage = sendWelcomeMessageHelper;
 
 const handleMainMenu = async (
   service: WhatsappService,
@@ -1208,7 +1196,7 @@ const handleManageCategoriesAskAction = async (
   }
 };
 
-const handleManageCategoriesEditName = async (
+const handleCategoryEditName = async (
   service: WhatsappService,
   state: ConversationStateEntity,
   messageText: string,
@@ -1229,7 +1217,11 @@ const handleManageCategoriesEditName = async (
     );
     return state;
   }
-
+  const exists = await categoryNameExists(service.categoryRepository, newName, context.storeId);
+  if (exists) {
+    await sendMessage(service, userId, lang, 'manageStore_categoryExists');
+    return state;
+  }
   // Update category name
   console.log(
     `Updating category ${context.selectedCategoryId} name from "${context.selectedCategoryName}" to "${newName}"`,
@@ -1256,7 +1248,7 @@ const handleManageCategoriesEditName = async (
     ],
   );
 
-  return { ...state, currentState: 'manageStore_selectCategory' };
+  return { ...state, currentState: 'manageStore_main' };
 };
 
 const handleManageStoreMain = async (
@@ -2602,63 +2594,4 @@ const presentSummary = async (
     );
     return { ...state, currentState: 'addProduct_awaitingConfirmation' };
   }
-};
-
-const generateProductSummary = (context: any, lang: Language): string => {
-  const {
-    productName,
-    categoryId,
-    finalPrice,
-    price,
-    description,
-    colors,
-    sizes,
-    stock,
-  } = context;
-
-  // Calculate final price with VAT if not provided
-  let displayPrice = finalPrice;
-  if (!displayPrice && price) {
-    const vatPercent = parseFloat(process.env.DEFAULT_VAT_PERCENT || '18');
-    displayPrice = computeFinalPrice(price, vatPercent);
-  }
-
-  let summary = `---
-- ${getMessage(lang, 'summary_product')}: *${productName}*
-- ${getMessage(lang, 'summary_category')}: ${context.categoryName}
-- ${getMessage(lang, 'summary_price')}: *${finalPrice ? finalPrice.toFixed(2) : 'N/A'} ILS* ${getMessage(lang, 'summary_vat_included')}
-- ${getMessage(lang, 'summary_description')}: ${description}
-- ${getMessage(lang, 'summary_variations_stock')}:
-`;
-
-  // Check if this is a simple product (no variations) or has variations
-  const isSimpleProduct =
-    colors &&
-    colors.length === 1 &&
-    colors === getMessage(lang, 'no_color_default') &&
-    sizes &&
-    sizes.length === 1 &&
-    sizes === getMessage(lang, 'standard_size_default');
-
-  if (isSimpleProduct) {
-    // Simple product - show total stock
-    const totalStock = stock?.[getMessage(lang, 'no_color_default')]?.[0] ?? 0;
-    summary += `- ${getMessage(lang, 'summary_stock')}: *${totalStock} units*\n`;
-  } else {
-    // Product with variations
-    if (colors && colors.length > 0) {
-      colors.forEach((color) => {
-        summary += `  - ${getMessage(lang, 'summary_color')}: *${color}*\n`;
-        if (sizes && sizes.length > 0) {
-          sizes.forEach((size, i) => {
-            const stockLevel = stock?.[color]?.[i] ?? 'N/A';
-            summary += `    - ${getMessage(lang, 'summary_size')} ${size} (${getMessage(lang, 'summary_stock')}: ${stockLevel})\n`;
-          });
-        }
-      });
-    }
-  }
-
-  summary += `---`;
-  return summary;
 };

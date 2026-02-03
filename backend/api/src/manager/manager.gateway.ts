@@ -10,6 +10,7 @@ import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   namespace: '/manager', // Namespace for manager-specific WebSocket connections
+  path: '/api/socket.io',
   cors: {
     origin: '*', // TODO: Configure CORS appropriately for production
   },

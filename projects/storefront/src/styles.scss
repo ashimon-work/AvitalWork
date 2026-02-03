@@ -1,28 +1,35 @@
 // Angular Material theme imports and all @use rules must come first
-@use '@angular/material' as mat;
+// @use '@angular/material' as mat;
 @use './styles/variables' as variables;
 
 // Include core styles for Material Design components
-@include mat.core();
+// @include mat.core();
 
 // Define a custom color palette for Angular Material using newer syntax
-$custom-primary: mat.m2-define-palette(mat.$m2-blue-palette, 500);
-$custom-accent: mat.m2-define-palette(mat.$m2-indigo-palette, A200, A100, A400);
-$custom-warn: mat.m2-define-palette(mat.$m2-red-palette);
+// $custom-primary: mat.m2-define-palette(mat.$m2-blue-palette, 500);
+// $custom-accent: mat.m2-define-palette(mat.$m2-indigo-palette, A200, A100, A400);
+// $custom-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
 // Create the theme object using M2 (legacy) theme
-$custom-theme: mat.m2-define-light-theme((
-  color: (
-    primary: $custom-primary,
-    accent: $custom-accent,
-    warn: $custom-warn,
-  ),
-  typography: mat.m2-define-typography-config(),
-  density: 0,
-));
+// $custom-theme: mat.m2-define-light-theme((
+//   color: (
+//     primary: $custom-primary,
+//     accent: $custom-accent,
+//     warn: $custom-warn,
+//   ),
+//   typography: mat.m2-define-typography-config(),
+//   density: 0,
+// ));
+$custom-theme: mat.m2-define-light-theme((color: (primary: $custom-primary,
+        accent: $custom-accent,
+        warn: $custom-warn,
+      ),
+      typography: mat.m2-define-typography-config(),
+      density: 0,
+    ));
 
 // Include theme styles for all Material components
-@include mat.all-component-themes($custom-theme);
+// @include mat.all-component-themes($custom-theme);
 
 /* Global Styles - Modern & Minimalist Theme */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
@@ -31,6 +38,9 @@ $custom-theme: mat.m2-define-light-theme((
 /* 1. CSS Custom Properties (Variables) */
 :root {
   // Color Palette
+  --text-color: #333333;
+  --background-color: #ffffff;
+  --border-color: #e0e0e0;
   --primary-color: #2B2B2B; // Modern Blue
   --secondary-color: #f0f2f5; // Light Gray Accent
   --text-color: #333333; // Dark Gray (Primary Text)
@@ -131,7 +141,7 @@ $custom-theme: mat.m2-define-light-theme((
 html {
   font-size: var(--font-size-base); // Typically 16px
   scroll-behavior: smooth;
-  overflow-x: hidden; // Prevent horizontal scroll at the root
+  overflow-x:  visible !important; // Prevent horizontal scroll at the root
 }
 
 body {
@@ -145,19 +155,48 @@ body {
 }
 
 /* 3. Typography Defaults */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin-bottom: var(--spacing-sm);
   font-weight: var(--font-weight-bold);
   line-height: 1.3;
   color: variables.$text-color; // Ensure headings use primary text color
 }
 
-h1 { font-size: 2.5rem; } // ~40px
-h2 { font-size: 2rem; }   // ~32px
-h3 { font-size: 1.75rem; } // ~28px
-h4 { font-size: 1.5rem; }  // ~24px
-h5 { font-size: 1.25rem; } // ~20px
-h6 { font-size: 1rem; }    // ~16px
+h1 {
+  font-size: 2.5rem;
+}
+
+// ~40px
+h2 {
+  font-size: 2rem;
+}
+
+// ~32px
+h3 {
+  font-size: 1.75rem;
+}
+
+// ~28px
+h4 {
+  font-size: 1.5rem;
+}
+
+// ~24px
+h5 {
+  font-size: 1.25rem;
+}
+
+// ~20px
+h6 {
+  font-size: 1rem;
+}
+
+// ~16px
 
 p {
   margin-bottom: var(--spacing-md);
@@ -169,14 +208,16 @@ a {
   transition: var(--transition-base);
 }
 
-a:hover, a:focus {
+a:hover,
+a:focus {
   text-decoration: underline;
   opacity: 0.8;
 }
 
 /* 4. Button Base Styles */
 button,
-.button { // Allow applying button styles to other elements like links
+.button {
+  // Allow applying button styles to other elements like links
   display: inline-block;
   font-family: inherit;
   font-size: 1rem;
@@ -194,7 +235,8 @@ button,
   // Default Button Style (Primary)
   color: variables.$white;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     opacity: 0.85;
     text-decoration: none; // Prevent underline on buttons
   }
@@ -211,7 +253,8 @@ button,
   background-color: transparent;
   border-color: variables.$primary-color;
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: rgba(variables.$primary-color, 0.1); // Light primary background on hover
     opacity: 1;
   }
@@ -251,7 +294,8 @@ button,
 /* Media query for mobile devices */
 @media (max-width: 768px) {
   .container {
-    width: 100%; /* Make container full width on smaller screens */
+    width: 100%;
+    /* Make container full width on smaller screens */
   }
 }
 
@@ -260,8 +304,14 @@ button,
 /* You can add global styles to this file, and also import other style files */
 
 // Override MatDrawerContainer to allow search suggestions to overflow
-.mat-drawer-container, .mat-drawer-content {
+.mat-drawer-container,
+.mat-drawer-content {
   overflow: visible !important;
 }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+  font-family: 'Inter', sans-serif, system-ui;
+}

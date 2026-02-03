@@ -1,0 +1,53 @@
+{
+  "typescript.tsserver.maxTsServerMemory": 2048,
+  "typescript.tsserver.watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority",
+    "synchronousWatchDirectory": false,
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/dist",
+      "**/.git",
+      "**/out-tsc",
+      "**/.angular"
+    ]
+  },
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": false,
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "typescript.preferences.useLabelDetailsInCompletionEntries": false,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/out-tsc/**": true,
+    "**/.angular/**": true,
+    "**/coverage/**": true,
+    "**/.nyc_output/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/out-tsc": true,
+    "**/.angular": true,
+    "**/coverage": true
+  },
+  "editor.suggest.showWords": false,
+  "editor.quickSuggestions": {
+    "other": false,
+    "comments": false,
+    "strings": false
+  },
+  "editor.quickSuggestionsDelay": 500,
+  "editor.suggest.localityBonus": true,
+  "angular.experimental-ivy": true,
+  "angular.enable-strict-mode-prompt": false,
+  "typescript.preferences.quoteStyle": "single",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "typescript.experimental.useTsgo": true
+}

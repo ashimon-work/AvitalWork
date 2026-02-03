@@ -1,17 +1,18 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShippingAddressFormComponent, ShippingAddressData } from '../shipping-address-form/shipping-address-form.component';
-
+import { T, TranslatePipe, I18nService } from '@shared/i18n';
 @Component({
   selector: 'app-payment-method-section',
   standalone: true,
-  imports: [CommonModule, ShippingAddressFormComponent],
+  imports: [CommonModule, ShippingAddressFormComponent,TranslatePipe],
   templateUrl: './payment-method-section.component.html',
   styleUrls: ['./payment-method-section.component.scss']
 })
 export class PaymentMethodSectionComponent {
   @Input() storedCard?: { last4: string; brand: string; };
   @Output() cardUpdate = new EventEmitter<{ last4: string; brand: string; }>();
+  public tKeys = T;
 
   showBillingForm = false;
   isModalOpen = false;

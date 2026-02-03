@@ -14,7 +14,7 @@ export class TranslatePipe implements PipeTransform {
   private i18nService = inject(I18nService);
   private cdr = inject(ChangeDetectorRef);
 
-  private lastKey: TranslationKey | undefined;
+  private lastKey: string | undefined;
   private lastArgs: any[] = [];
   private lastValue: string = '';
 
@@ -36,11 +36,7 @@ export class TranslatePipe implements PipeTransform {
     });
   }
 
-  transform<K extends TranslationKey>(
-    key: K,
-    // Type for args: if the message is a function, use its parameters, otherwise, it's an empty array.
-    ...args: TranslationSchema[K] extends (...a: any[]) => string ? Parameters<TranslationSchema[K]> : []
-  ): string {
+  transform(key: string, ...args: any[]): string {
     // Store the key and args for re-evaluation if language changes
     this.lastKey = key;
     this.lastArgs = args;

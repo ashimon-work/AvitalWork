@@ -1,0 +1,54 @@
+<section class="global-home">
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Welcome to the Global Marketplace</h1>
+      <p class="hero-subtitle">Discover amazing products from stores around the world</p>
+      <p class="hero-description">
+        This is the entry point for the Global Marketplace. Future enhancements will include
+        featured stores, global product listings, and much more.
+      </p>
+    </div>
+  </div>
+
+  <!-- Featured Stores Section -->
+  <div class="featured-stores">
+    <div class="container">
+      <h2 class="section-title">Featured Stores</h2>
+      <div class="stores-grid">
+        <div
+          *ngFor="let store of featuredStores"
+          class="store-card"
+          [routerLink]="['/', store.slug]"
+          (click)="navigateToStore(store.slug)"
+        >
+          <div class="store-card-content">
+            <h3 class="store-name">{{ store.name }}</h3>
+            <p class="store-description">{{ store.description }}</p>
+            <span class="store-link">Visit Store →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-section">
+    <div class="container">
+      <div class="info-card">
+        <h3>Global Marketplace MVP</h3>
+        <p>
+          This is a placeholder page for the Global Marketplace. The final design and content
+          will be implemented in a future iteration. The marketplace will feature:
+        </p>
+        <ul>
+          <li>Browse and search across multiple stores</li>
+          <li>Unified shopping cart across stores</li>
+          <li>Global product catalog</li>
+          <li>Store ratings and reviews</li>
+          <li>And much more!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

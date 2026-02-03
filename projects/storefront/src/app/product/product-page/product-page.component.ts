@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,13 +6,14 @@ import { Observable, switchMap, tap, map, of, filter, catchError, combineLatest 
 import { Product, Category, ProductVariant, ProductVariantOption } from '@shared-types';
 import { ApiService } from '../../core/services/api.service';
 import { CartService } from '../../core/services/cart.service';
+import { CartDrawerService } from '../../core/services/cart-drawer.service';
 import { StoreContextService } from '../../core/services/store-context.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { RecentlyViewedService } from '../../core/services/recently-viewed.service';
 import { ImageCarouselComponent } from '../../shared/components/image-carousel/image-carousel.component';
-import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component'; // Corrected import
+import { FeaturedProductCardComponent } from '../../shared/components/featured-product-card/featured-product-card.component';
 import { T, TranslatePipe } from '@shared/i18n';
 import { I18nService } from '@shared/i18n';
 
@@ -23,8 +24,7 @@ import { I18nService } from '@shared/i18n';
     CommonModule,
     RouterModule,
     FormsModule,
-    ImageCarouselComponent,
-    FeaturedProductCardComponent, // This should now be correct
+    FeaturedProductCardComponent,
     TranslatePipe
   ],
   templateUrl: './product-page.component.html',
@@ -36,18 +36,22 @@ export class ProductPageComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
   private cartService = inject(CartService);
+  private cartDrawerService = inject(CartDrawerService);
   private storeContext = inject(StoreContextService);
   private wishlistService = inject(WishlistService);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
-  private recentlyViewedService = inject(RecentlyViewedService); // Added injection
+  private recentlyViewedService = inject(RecentlyViewedService);
   private i18nService = inject(I18nService);
 
   public currentStoreSlug$ = this.storeContext.currentStoreSlug$;
+  private cacheBuster = '&t=' + Date.now();
   categoryId$: Observable<string | null>;
   product$: Observable<Product | null> | undefined;
+  public product: Product | null = null;
   category$: Observable<Category | null>;
   quantity: number = 1;
+  currentStoreSlug: string | null = null;
 
   // New properties for variant selection and display
   availableOptions: { name: string, values: { value: string, disabled: boolean }[] }[] = [];
@@ -58,11 +62,12 @@ export class ProductPageComponent implements OnInit {
 
   isLoggedIn$: Observable<boolean> = this.authService.isAuthenticated$;
 
-  // New properties for reviews
-  reviews: any[] = [];
-  newReviewRating: number = 0;
-  newReviewComment: string = '';
-  reviewSubmissionError: string | null = null;
+  // Image gallery
+  selectedImageIndex: number = 0;
+
+  // Description
+  showFullDescription: boolean = false;
+  descriptionPreviewLength: number = 200;
 
   // New property for related products
   relatedProducts: Product[] = [];
@@ -70,14 +75,10 @@ export class ProductPageComponent implements OnInit {
   // New property for product category
   productCategory: Category | null = null;
 
-  // New property for average rating
-  averageRating: number = 0;
-
-  // Property to manage active tab (specs or reviews)
-  selectedTab: 'specs' | 'reviews' = 'specs';
-
   // Property to track if the current product is in the wishlist
   isInWishlist: boolean = false;
+
+  @ViewChild('relatedContainer', { static: false }) relatedContainer!: ElementRef<HTMLDivElement>;
 
   constructor(private activatedRoute: ActivatedRoute) {
     this.categoryId$ = this.activatedRoute.queryParamMap.pipe(
@@ -101,6 +102,11 @@ export class ProductPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Subscribe to current store slug
+    this.currentStoreSlug$.subscribe(slug => {
+      this.currentStoreSlug = slug;
+    });
+    
     // Fetch Product Details
     this.product$ = this.route.paramMap.pipe(
       map(params => params.get('id')),
@@ -115,22 +121,22 @@ export class ProductPageComponent implements OnInit {
         if (!id) {
           return new Observable<Product | null>(subscriber => subscriber.next(null));
         }
-        // Fetch product details, reviews, related products, and category in parallel
+        // Fetch product details, related products, and category in parallel
         return combineLatest([
           this.apiService.getProductDetails(id),
-          this.apiService.getProductReviews(id),
           this.apiService.getRelatedProducts(id)
         ]).pipe(
-          tap(([product, reviews, relatedProducts]) => {
+          tap(([product, relatedProducts]) => {
             if (!product) {
               console.error(`Product with ID ${id} not found`);
               this.router.navigate(['/not-found']);
             } else {
+              this.product = product;
               // Initialize variant selection and display data
               this.initializeVariantData(product);
-              this.reviews = reviews;
-              this.calculateAverageRating(); // Calculate average rating after fetching reviews
-              this.relatedProducts = relatedProducts;
+              this.relatedProducts = relatedProducts.slice(0, 4);
+              // Reset image index for new product
+              this.selectedImageIndex = 0;
               if (product.id) { // Add product to recently viewed
                 this.recentlyViewedService.addProduct(product.id);
               }
@@ -162,30 +168,13 @@ export class ProductPageComponent implements OnInit {
               });
             }
           }),
-          map(([product, reviews, relatedProducts]) => product)
+          map(([product, relatedProducts]) => product)
         );
       })
     );
   }
 
-  // Calculate the average rating from the reviews array
-  private calculateAverageRating(): void {
-    if (this.reviews && this.reviews.length > 0) {
-      const totalRating = this.reviews.reduce((sum, review) => sum + review.rating, 0);
-      this.averageRating = totalRating / this.reviews.length;
-    } else {
-      this.averageRating = 0;
-    }
-  }
 
-  // Generate an array of stars for display (e.g., [true, true, false, false, false] for 2 stars)
-  getStarArray(rating: number): boolean[] {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(i <= rating);
-    }
-    return stars;
-  }
 
   // Initialize variant data and set initial selected variant
   private initializeVariantData(product: Product): void {
@@ -260,12 +249,10 @@ export class ProductPageComponent implements OnInit {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedOptions[optionName] = selectElement.value;
     // Re-evaluate the selected variant and update display
-    this.product$?.subscribe(product => {
-      if (product) {
-        this.updateSelectedVariant(product);
-        this.updateAvailableOptionsWithStock(product);
-      }
-    }).unsubscribe();
+    if (this.product) {
+      this.updateSelectedVariant(this.product);
+      this.updateAvailableOptionsWithStock(this.product);
+    }
   }
 
   private updateAvailableOptionsWithStock(product: Product): void {
@@ -324,14 +311,11 @@ export class ProductPageComponent implements OnInit {
     this.cartService.addItem(itemToAdd, this.quantity).subscribe({
       next: () => {
         console.log('Item added successfully via service');
-        this.notificationService.showSuccess(
-          this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_SUCCESS_NOTIFICATION, this.quantity, product.name)
-        );
+        // Cart drawer is opened automatically by CartService
         // TODO: Add button state change (e.g., temporarily disable or show added state)
       },
       error: (err: any) => {
         console.error('Failed to add item via service:', err);
-        this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_ADD_TO_CART_ERROR_NOTIFICATION));
       }
     });
   }
@@ -408,83 +392,7 @@ export class ProductPageComponent implements OnInit {
     }
   }
 
-  // Method to submit a new review
-  submitReview(productId: string | undefined): void {
-    if (!productId) {
-      console.error('Cannot submit review: Product ID is missing.');
-      this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_ERROR_PRODUCT_ID_MISSING);
-      return;
-    }
 
-    if (!this.authService.isAuthenticated$) { // This check needs to be performed on the observable's value, typically via async pipe or subscription
-      console.warn('Cannot submit review: User is not logged in.');
-      this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_ERROR_USER_NOT_LOGGED_IN);
-      // It might be better to rely on the isLoggedIn$ observable in the template to hide the form
-      // or check its current value if synchronous access is needed and available.
-      // For now, this logic might not work as expected if isAuthenticated$ is not subscribed to here.
-      return;
-    }
-
-    if (this.newReviewRating < 1 || this.newReviewRating > 5) {
-      console.warn('Cannot submit review: Invalid rating.');
-      this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_ERROR_INVALID_RATING);
-      return;
-    }
-
-    if (!this.newReviewComment || this.newReviewComment.trim() === '') {
-      console.warn('Cannot submit review: Comment is empty.');
-      this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_ERROR_COMMENT_EMPTY);
-      return;
-    }
-
-    this.reviewSubmissionError = null;
-
-    const reviewData = {
-      productId: productId,
-      rating: this.newReviewRating,
-      comment: this.newReviewComment.trim()
-    };
-
-    this.apiService.submitReview(reviewData).subscribe({
-      next: () => {
-        // Removed duplicate next: () => {
-        console.log('Review submitted successfully');
-        this.notificationService.showSuccess(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_SUBMIT_SUCCESS_NOTIFICATION));
-        // Refresh reviews list after successful submission
-        this.fetchReviews(productId);
-        // Reset form
-        this.newReviewRating = 0;
-        this.newReviewComment = '';
-      },
-      error: (err: any) => { // Add type for err
-        console.error('Failed to submit review:', err);
-        this.reviewSubmissionError = this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_SUBMIT_ERROR_NOTIFICATION);
-        this.notificationService.showError(this.i18nService.translate(this.tKeys.SF_PRODUCT_PAGE_REVIEW_SUBMIT_ERROR_NOTIFICATION));
-        // TODO: Add more specific error handling based on API response
-      }
-    });
-  }
-
-  // Helper method to fetch reviews (called internally)
-  private fetchReviews(productId: string): void {
-    this.apiService.getProductReviews(productId).subscribe({
-      next: (reviews) => {
-        this.reviews = reviews;
-        this.calculateAverageRating();
-        console.log(`Fetched ${reviews.length} reviews for product ${productId}`);
-      },
-      error: (err) => {
-        console.error(`Failed to fetch reviews for product ${productId}:`, err);
-        this.reviews = [];
-        this.calculateAverageRating();
-      }
-    });
-  }
-
-  // Method to change the active tab
-  selectTab(tabName: 'specs' | 'reviews'): void {
-    this.selectedTab = tabName;
-  }
 
   // Method to check if the current product is in the user's wishlist
   private checkIfInWishlist(productId: string): void {
@@ -502,5 +410,86 @@ export class ProductPageComponent implements OnInit {
         this.isInWishlist = false;
       }
     });
+  }
+
+  // Image navigation methods
+  handlePrevImage(): void {
+    if (this.product && this.product.imageUrls && this.product.imageUrls.length > 1) {
+      this.selectedImageIndex = this.selectedImageIndex === 0
+        ? this.product.imageUrls.length - 1
+        : this.selectedImageIndex - 1;
+    }
+  }
+
+  handleNextImage(): void {
+    if (this.product && this.product.imageUrls && this.product.imageUrls.length > 1) {
+      this.selectedImageIndex = this.selectedImageIndex === this.product.imageUrls.length - 1
+        ? 0
+        : this.selectedImageIndex + 1;
+    }
+  }
+
+  setSelectedImageIndex(index: number): void {
+    this.selectedImageIndex = index;
+  }
+
+  // Related products scroll method
+  scrollRelated(direction: 'left' | 'right'): void {
+    if (this.relatedContainer) {
+      const scrollAmount = 300;
+      this.relatedContainer.nativeElement.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  // Description toggle method
+  toggleDescription(): void {
+    this.showFullDescription = !this.showFullDescription;
+  }
+
+  // Computed getters for template
+  get displayedDescription(): string {
+    if (!this.product) return '';
+    const desc = this.product.description || '';
+    if (!desc) return '';
+    const isLong = desc.length > this.descriptionPreviewLength;
+    return this.showFullDescription || !isLong
+      ? desc
+      : desc.slice(0, this.descriptionPreviewLength) + "...";
+  }
+
+  get isLongDescription(): boolean {
+    if (!this.product) return false;
+    const desc = this.product.description || '';
+    return desc.length > this.descriptionPreviewLength;
+  }
+
+  get savings(): number {
+    if (!this.product) return 0;
+    let price = this.currentPrice || 0;
+    // Assuming no originalPrice for now, savings is 0
+    return 0;
+  }
+
+  getImageUrl(index: number): string {
+    if (!this.product || !this.product.imageUrls || index >= this.product.imageUrls.length) {
+      return '';
+    }
+    const url = this.product.imageUrls[index];
+    const separator = url.includes('?') ? '&' : '?';
+    return url + separator + 'v=1';
+  }
+
+  onImageError(event: Event): void {
+    console.error('Image failed to load:', (event.target as HTMLImageElement).src);
+  }
+}
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('he-IL', {
+      style: 'currency',
+      currency: 'ILS',
+    }).format(amount);
   }
 }

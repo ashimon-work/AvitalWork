@@ -249,6 +249,8 @@ export const canDeleteCategory = async (
   return count === 0;
 };
 
+
+
 /**
  * Batch operations
  */
@@ -275,3 +277,4 @@ export const batchToggleProductStatus = async (
 ): Promise<void> => {
   await productRepository.update(productIds, { isActive });
 };
+

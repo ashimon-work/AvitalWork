@@ -183,23 +183,17 @@ export class ContactPageComponent implements OnInit {
   }
 
   getMapUrl(): SafeResourceUrl {
-    const baseUrl = "https://www.google.com/maps/embed/v1/place";
-    // IMPORTANT: Replace with your actual Google Maps API Key
-    const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
-    const queryParts = [
-      this.storeDetails.street,
-      this.storeDetails.city,
-      this.storeDetails.state,
-      this.storeDetails.zipCode,
-      this.storeDetails.country
-    ];
-    const query = encodeURIComponent(queryParts.filter(part => !!part).join(', '));
+    // Use Google Maps embed without API key for basic functionality
+    const address = encodeURIComponent(
+      `${this.storeDetails.street}, ${this.storeDetails.city}, ${this.storeDetails.state} ${this.storeDetails.zipCode}, ${this.storeDetails.country}`
+    );
+    const mapUrl = `https://maps.google.com/maps?q=${address}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(mapUrl);
+  }
 
-    if (!apiKey || apiKey === "YOUR_GOOGLE_MAPS_API_KEY") {
-      console.warn("Google Maps API Key is not configured. Map will not display correctly.");
-      // Return a placeholder or an empty safe URL if the key is missing
-      return this.sanitizer.bypassSecurityTrustResourceUrl('');
-    }
-    return this.sanitizer.bypassSecurityTrustResourceUrl(`${baseUrl}?key=${apiKey}&q=${query}`);
+  getGoogleMapsSearchQuery(): string {
+    return encodeURIComponent(
+      `${this.storeDetails.street}, ${this.storeDetails.city}, ${this.storeDetails.state} ${this.storeDetails.zipCode}, ${this.storeDetails.country}`
+    );
   }
 }

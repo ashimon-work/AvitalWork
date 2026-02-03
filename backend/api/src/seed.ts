@@ -41,6 +41,22 @@ import {
   // will be reconstructed within the bootstrap function using their respective logic,
   // after dependent entities (products, users, addresses) are created.
 } from './seeds/green-jewelry.data';
+import {
+  LUXURY_JEWELRY_STORE_ID,
+  luxuryJewelryStoreData as ljStoreData,
+  luxuryJewelryCategoryData as ljCategoryData,
+  luxuryJewelryProductData as ljProductData,
+  luxuryJewelryAboutContentData as ljAboutContentData,
+  luxuryJewelryTestimonialData as ljTestimonialData,
+  luxuryJewelryFaqData as ljFaqData,
+  luxuryJewelryCarouselItemData as ljCarouselItemData,
+  luxuryJewelryUserData as ljUserData,
+  luxuryJewelryAddressData as ljAddressData,
+  luxuryJewelryPromoCodeData as ljPromoCodeData,
+  luxuryJewelryOrderData as ljOrderData,
+  luxuryJewelryWishlistData as ljWishlistData,
+  luxuryJewelryReviewData as ljReviewData,
+} from './seeds/luxury-jewelry.data';
 import { shippingMethodData } from './seeds/shipping-method.data'; // Import shipping method seed data
 import { CreditCardEntity } from './tranzila/entities/credit-card.entity';
 
@@ -49,17 +65,17 @@ import { CreditCardEntity } from './tranzila/entities/credit-card.entity';
 const storeData = [
   {
     id: '11111111-1111-1111-1111-111111111111',
-    name: 'Awesome Gadgets & Goods',
+    name: 'גאדג\'טים ומוצרים מעולים',
     slug: 'awesome-gadgets',
-    logoUrl: 'https://picsum.photos/seed/logo-awesome-gadgets/150/50',
+    logoUrl: 'https://plus.unsplash.com/premium_photo-1750895096919-1a7f59cbdda4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8QXdlc29tZSUyMEdhZGdldHMlMjAlMjYlMjBHb29kc3xlbnwwfHwwfHx8MA%3D%3D',
     isFeaturedInMarketplace: true,
     authorizedPhoneNumbers: ['+972583215251', '+972534758922', '+972506105590'],
   },
   {
     id: '22222222-2222-2222-2222-222222222222',
-    name: 'Fashion & Fun Zone',
+    name: 'אופנה וכיף',
     slug: 'fashion-fun',
-    logoUrl: 'https://picsum.photos/seed/logo-fashion-fun/150/50',
+    logoUrl: 'https://images.unsplash.com/photo-1617348493867-55244641c60f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RmFzaGlvbiUyMCUyNiUyMEZ1biUyMFpvbmV8ZW58MHx8MHx8fDA%3D',
     isFeaturedInMarketplace: true,
     authorizedPhoneNumbers: ['+972583215251', '+972534758922', '+972506105590'],
   },
@@ -67,16 +83,22 @@ const storeData = [
     ...gjStoreData,
     authorizedPhoneNumbers: ['+972583215251', '+972534758922', '+972506105590'],
   }, // This will be updated in its own file
+  {
+    ...ljStoreData,
+    authorizedPhoneNumbers: ['+972583215251', '+972534758922', '+972506105590'],
+  }, // Luxury Jewelry store
 ];
 
 // Assign categories to stores
 const categoryData = [
-  // Store 1: Awesome Gadgets & Goods
+  // Store 1: גאדג'טים ומוצרים מעולים
   {
     id: 'aaa00001-c246-4913-9166-f75a99ee0c21',
     name: 'Electronics',
     description: 'Gadgets and devices',
-    imageUrl: 'https://picsum.photos/seed/aaa00001/300/200',
+    name: 'אלקטרוניקה',
+    description: 'גאדג\'טים ומכשירים',
+    imageUrl: 'https://plus.unsplash.com/premium_photo-1679079456083-9f288e224e96?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RWxlY3Ryb25pY3N8ZW58MHx8MHx8fDA%3D',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
@@ -84,7 +106,9 @@ const categoryData = [
     id: 'aaa00003-c246-4913-9166-f75a99ee0c21',
     name: 'Home Goods',
     description: 'Items for your home',
-    imageUrl: 'https://picsum.photos/seed/aaa00003/300/200',
+    name: 'מוצרי בית',
+    description: 'פריטים לבית שלך',
+    imageUrl: 'https://plus.unsplash.com/premium_photo-1715071976149-6f26134fc7f0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8SG9tZSUyMEdvb2RzfGVufDB8fDB8fHww',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
@@ -92,23 +116,29 @@ const categoryData = [
     id: 'aaa00004-c246-4913-9166-f75a99ee0c21',
     name: 'Books',
     description: 'Literature and reading materials',
-    imageUrl: 'https://picsum.photos/seed/aaa00004/300/200',
+    name: 'ספרים',
+    description: 'ספרות וחומרי קריאה',
+    imageUrl: 'https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Qm9va3N8ZW58MHx8MHx8fDA%3D',
     storeId: storeData[0].id,
     isFeaturedInMarketplace: true,
   },
   {
     id: 'aaa00007-c246-4913-9166-f75a99ee0c21',
-    name: 'Category_4',
+    name: 'Kitchen products',
     description: 'A new category',
-    imageUrl: 'https://picsum.photos/seed/aaa00007/300/200',
+    name: 'מוצרי מטבח',
+    description: 'קטגוריה חדשה',
+    imageUrl: 'https://plus.unsplash.com/premium_photo-1714702844124-be1377d19666?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8S2l0Y2hlbiUyMHByb2R1Y3RzfGVufDB8fDB8fHww',
     storeId: storeData[0].id,
   },
-  // Store 2: Fashion & Fun Zone
+  // Store 2: אופנה וכיף
   {
     id: 'aaa00002-c246-4913-9166-f75a99ee0c21',
     name: 'Apparel',
     description: 'Clothing and fashion',
-    imageUrl: 'https://picsum.photos/seed/aaa00002/300/200',
+    name: 'הלבשה',
+    description: 'בגדים ואופנה',
+    imageUrl: 'https://images.unsplash.com/photo-1732257119998-b66cda63dcfc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Q2xvdGhpbmclMjBhbmQlMjBmYXNoaW9ufGVufDB8fDB8fHww',
     storeId: storeData[1].id,
     isFeaturedInMarketplace: true,
   },
@@ -116,7 +146,9 @@ const categoryData = [
     id: 'aaa00005-c246-4913-9166-f75a99ee0c21',
     name: 'Sports & Outdoors',
     description: 'Equipment for sports and outdoor activities.',
-    imageUrl: 'https://picsum.photos/seed/aaa00005/300/200',
+    name: 'ספורט וחוץ',
+    description: 'ציוד לספורט ופעילויות חוץ.',
+    imageUrl: 'https://images.unsplash.com/photo-1598046655252-f0f143557dcb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fFNwb3J0cyUyMCUyNiUyME91dGRvb3JzfGVufDB8fDB8fHww',
     storeId: storeData[1].id,
     isFeaturedInMarketplace: true,
   },
@@ -124,10 +156,14 @@ const categoryData = [
     id: 'aaa00006-c246-4913-9166-f75a99ee0c21',
     name: 'Toys & Games',
     description: 'Fun for all ages.',
-    imageUrl: 'https://picsum.photos/seed/aaa00006/300/200',
+    imageUrl: 'https://images.unsplash.com/photo-1708032563896-06d7a8aef4e5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    name: 'צעצועים ומשחקים',
+    description: 'כיף לכל הגילאים.',
+    imageUrl: 'https://images.unsplash.com/photo-1708032563896-06d7a8aef4e5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q2hpbGRyZW4ncyUyMFBpY3R1cmUlMjBCb29rfGVufDB8fDB8fHww',
     storeId: storeData[1].id,
   },
   ...gjCategoryData,
+  ...ljCategoryData,
 ];
 
 // Assign products to stores based on their category
@@ -135,14 +171,16 @@ const productData: any[] = [
   // Added 'any[]' for type compatibility with gjProductData
   // Electronics (Store 1)
   {
-    sku: 'ELEC-001',
+    sku: 'FP1v2',
     name: 'Wireless Noise-Cancelling Headphones',
     description: 'Experience immersive sound with these premium headphones.',
+    name: 'אוזניות ללא חוטים מבטלות רעש',
+    description: 'חוויית צליל עמוק עם אוזניות פרימיום אלה.',
     price: 199.99,
     imageUrls: [
-      'https://picsum.photos/seed/ELEC-001a/500/500',
-      'https://picsum.photos/seed/ELEC-001b/500/500',
-      'https://picsum.photos/seed/ELEC-001c/500/500',
+      'https://images.unsplash.com/photo-1496957961599-e35b69ef5d7c?w=500&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop',
+      'https://images.unsplash.com/photo-1524678714210-9917a6c619c2?w=500&h=500&fit=crop',
     ],
     tags: ['New', 'Featured', 'Audio'],
     stockLevel: 50,
@@ -152,13 +190,15 @@ const productData: any[] = [
     isFeaturedInMarketplace: true,
   },
   {
-    sku: 'ELEC-002',
+    sku: 'FP2v2',
     name: 'Smartwatch Series 8',
     description: 'Stay connected and track your fitness goals effortlessly.',
+    name: 'שעון חכם סדרה 8',
+    description: 'הישאר מחובר ועקוב אחר מטרות הכושר שלך בקלות.',
     price: 349.0,
     imageUrls: [
-      'https://picsum.photos/seed/ELEC-002a/500/500',
-      'https://picsum.photos/seed/ELEC-002b/500/500',
+      'https://media.istockphoto.com/id/539215939/photo/smart-watch-displaying-apps-icons.webp?a=1&b=1&s=612x612&w=0&k=20&c=-xaY3cEkxpHYv7kbomdaX_MXrTVReTnqCfCQ_iKEgiw=',
+      'https://images.unsplash.com/photo-1660844817855-3ecc7ef21f12?w=300&h=200&fit=crop',
     ],
     tags: ['New', 'Featured', 'Wearable'],
     stockLevel: 25,
@@ -168,12 +208,13 @@ const productData: any[] = [
     isFeaturedInMarketplace: true,
   },
   {
-    sku: 'ELEC-003',
+    sku: 'FP3',
     name: 'Portable Bluetooth Speaker',
+    name: 'רמקול בלוטות',
     description:
-      'Compact speaker with powerful sound quality for music on the go.',
+      'רמקול קומפקטי עם איכות צליל חזקה למוזיקה בדרכים.',
     price: 49.99,
-    imageUrls: ['https://picsum.photos/seed/ELEC-003a/500/500'],
+    imageUrls: ['https://plus.unsplash.com/premium_photo-1677159499898-b061fb5bd2d7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8UG9ydGFibGUlMjBCbHVldG9vdGglMjBTcGVha2VyfGVufDB8fDB8fHww'],
     tags: ['Sale', 'Featured', 'Audio'],
     stockLevel: 40,
     isActive: true,
@@ -182,15 +223,17 @@ const productData: any[] = [
     isFeaturedInMarketplace: true,
   },
   {
-    sku: 'ELEC-004',
+    sku: 'FP4',
     name: '4K Ultra HD Smart TV',
     description: 'Stunning picture quality with smart features.',
+    name: 'טלוויזיה חכמה 4K אולטרה HD',
+    description: 'איכות תמונה מדהימה עם תכונות חכמות.',
     price: 799.99,
     imageUrls: [
-      'https://picsum.photos/seed/ELEC-004a/500/500',
-      'https://picsum.photos/seed/ELEC-004b/500/500',
-      'https://picsum.photos/seed/ELEC-004c/500/500',
-      'https://picsum.photos/seed/ELEC-004d/500/500',
+      'https://plus.unsplash.com/premium_photo-1683121217848-44dde7d393e6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8NEslMjBVbHRyYSUyMEhEJTIwU21hcnQlMjBUVnxlbnwwfHwwfHx8MA%3D%3D',
+      'https://media.istockphoto.com/id/611294444/photo/uhd-4k-smart-tv-on-black-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=RQQnVLoUV9_tjUWEAe2h0BZTgJJxq-aqJTv9kICrvhY=',
+      'https://images.unsplash.com/photo-1698047484467-9680294b55fd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzR8fDRLJTIwVWx0cmElMjBIRCUyMFNtYXJ0JTIwVFZ8ZW58MHx8MHx8fDA%3D',
+      'https://plus.unsplash.com/premium_photo-1682274001252-cd39d7158ae3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8NEslMjBVbHRyYSUyMEhEJTIwU21hcnQlMjBUVnxlbnwwfHwwfHx8MA%3D%3D',
     ],
     tags: ['Featured', 'Home Entertainment'],
     stockLevel: 15,
@@ -199,11 +242,13 @@ const productData: any[] = [
     categoryIds: [categoryData[0].id],
   },
   {
-    sku: 'ELEC-005',
+    sku: 'FP5',
     name: 'Gaming Laptop',
     description: 'High-performance laptop for gaming enthusiasts.',
+    name: 'מחשב נייד לגיימינג',
+    description: 'מחשב נייד בעל ביצועים גבוהים לחובבי גיימינג.',
     price: 1299.0,
-    imageUrls: ['https://picsum.photos/seed/ELEC-005a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1611078489935-0cb964de46d6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8R2FtaW5nJTIwTGFwdG9wfGVufDB8fDB8fHww'],
     tags: ['New', 'Gaming'],
     stockLevel: 10,
     isActive: true,
@@ -214,14 +259,14 @@ const productData: any[] = [
   // Apparel (Store 2)
   {
     sku: 'APPA-001',
-    name: 'Classic Cotton T-Shirt',
+    name: 'חולצת טי קלאסית מכותנה',
     description:
-      'A comfortable and stylish everyday essential, available in multiple colors.',
+      'פריט חובה יומי נוח ואופנתי, זמין במגוון צבעים.',
     price: 24.99,
     imageUrls: [
-      'https://picsum.photos/seed/APPA-001a/500/500',
-      'https://picsum.photos/seed/APPA-001b/500/500',
-      'https://picsum.photos/seed/APPA-001c/500/500',
+      'https://images.unsplash.com/photo-1713881587420-113c1c43e28a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Q2xhc3NpYyUyMENvdHRvbiUyMFQtU2hpcnR8ZW58MHx8MHx8fDA%3D',
+      'https://images.unsplash.com/photo-1623658580851-3b25bf83b4ea?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fENsYXNzaWMlMjBDb3R0b24lMjBULVNoaXJ0fGVufDB8fDB8fHww',
+      'https://images.unsplash.com/photo-1633966887768-64f9a867bdba?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODh8fENsYXNzaWMlMjBDb3R0b24lMjBULVNoaXJ0fGVufDB8fDB8fHww',
     ],
     tags: ['Best Seller', 'Featured', 'Basics'],
     stockLevel: 0,
@@ -346,12 +391,12 @@ const productData: any[] = [
   },
   {
     sku: 'APPA-002',
-    name: 'Slim Fit Denim Jeans',
-    description: 'Classic slim fit denim jeans for a modern look.',
+    name: 'ג\'ינס דנימ סקיני פיט',
+    description: 'ג\'ינס דנימ קלאסי סקיני פיט למראה מודרני.',
     price: 59.99,
     imageUrls: [
-      'https://picsum.photos/seed/APPA-002a/500/500',
-      'https://picsum.photos/seed/APPA-002b/500/500',
+      'https://picsum.photos/seed/newAPPA-002a/500/500',
+      'https://picsum.photos/seed/newAPPA-002b/500/500',
     ],
     tags: ['Menswear'],
     stockLevel: 0,
@@ -437,10 +482,10 @@ const productData: any[] = [
   },
   {
     sku: 'APPA-003',
-    name: 'Lightweight Hoodie',
-    description: 'Perfect for layering or cool evenings.',
+    name: 'הודי קל משקל',
+    description: 'מושלם לשכבות או ערבים קרירים.',
     price: 45.0,
-    imageUrls: ['https://picsum.photos/seed/APPA-003a/500/500'],
+    imageUrls: ['https://picsum.photos/seed/newAPPA-003a/500/500'],
     tags: ['New', 'Casual'],
     stockLevel: 0,
     isActive: true,
@@ -506,12 +551,12 @@ const productData: any[] = [
   },
   {
     sku: 'APPA-004',
-    name: 'Summer Dress',
-    description: 'Flowy and comfortable dress for warm weather.',
+    name: 'שמלת קיץ',
+    description: 'שמלה זורמת ונוחה למזג אוויר חם.',
     price: 65.0,
     imageUrls: [
-      'https://picsum.photos/seed/APPA-004a/500/500',
-      'https://picsum.photos/seed/APPA-004b/500/500',
+      'https://picsum.photos/seed/newAPPA-004a/500/500',
+      'https://picsum.photos/seed/newAPPA-004b/500/500',
     ],
     tags: ['Womenswear', 'Sale'],
     stockLevel: 0,
@@ -587,8 +632,8 @@ const productData: any[] = [
   },
   {
     sku: 'APPA-005',
-    name: 'Running Sneakers',
-    description: 'Lightweight and supportive sneakers for your runs.',
+    name: 'נעלי ריצה',
+    description: 'נעלי ספורט קלות ותומכות לריצות שלך.',
     price: 89.99,
     imageUrls: [
       'https://picsum.photos/seed/APPA-005a/500/500',
@@ -680,10 +725,10 @@ const productData: any[] = [
   // Home Goods (Store 1)
   {
     sku: 'HOME-001',
-    name: 'Ceramic Coffee Mug Set (4)',
-    description: 'Start your day right with this durable set of mugs.',
+    name: 'סט ספלי קפה קרמיקה (4)',
+    description: 'התחל את היום שלך נכון עם סט עמיד של ספלים.',
     price: 39.99,
-    imageUrls: ['https://picsum.photos/seed/HOME-001a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1651936020103-1156d5390b25?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fENlcmFtaWMlMjBDb2ZmZWUlMjBNdWclMjBTZXR8ZW58MHx8MHx8fDA%3D'],
     tags: ['Kitchen', 'Gift Idea'],
     stockLevel: 80,
     isActive: true,
@@ -693,12 +738,12 @@ const productData: any[] = [
   },
   {
     sku: 'HOME-002',
-    name: 'Luxury Scented Candle',
-    description: 'Relaxing lavender and vanilla scented candle in a glass jar.',
+    name: 'נר ריחני יוקרתי',
+    description: 'נר ריחני מרגיע של לבנדר ווניל בקנקן זכוכית.',
     price: 22.5,
     imageUrls: [
-      'https://picsum.photos/seed/HOME-002a/500/500',
-      'https://picsum.photos/seed/HOME-002b/500/500',
+      'https://images.unsplash.com/photo-1707839568938-f9b50bb88454?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8THV4dXJ5JTIwU2NlbnRlZCUyMENhbmRsZXxlbnwwfHwwfHx8MA%3D%3D',
+      'https://images.unsplash.com/photo-1707839568443-912e7206c726?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8THV4dXJ5JTIwU2NlbnRlZCUyMENhbmRsZXxlbnwwfHwwfHx8MA%3D%3D',
     ],
     tags: ['New', 'Home Decor'],
     stockLevel: 70,
@@ -708,10 +753,10 @@ const productData: any[] = [
   },
   {
     sku: 'HOME-003',
-    name: 'Plush Throw Blanket',
-    description: 'Soft and cozy blanket for your sofa or bed.',
+    name: 'שמיכת זריקה רכה',
+    description: 'שמיכה רכה ונוחה לספה או למיטה.',
     price: 49.99,
-    imageUrls: ['https://picsum.photos/seed/HOME-003a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1640794334953-47993ef59351?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8UGx1c2glMjBUaHJvdyUyMEJsYW5rZXR8ZW58MHx8MHx8fDA%3D'],
     tags: ['Comfort', 'Home Decor'],
     stockLevel: 60,
     isActive: true,
@@ -720,13 +765,13 @@ const productData: any[] = [
   },
   {
     sku: 'HOME-004',
-    name: 'Stainless Steel Cookware Set',
-    description: 'Durable 10-piece cookware set for your kitchen.',
+    name: 'סט כלי בישול פלדת אל-חלד',
+    description: 'סט כלי בישול עמיד בן 10 חלקים למטבח שלך.',
     price: 149.99,
     imageUrls: [
-      'https://picsum.photos/seed/HOME-004a/500/500',
-      'https://picsum.photos/seed/HOME-004b/500/500',
-      'https://picsum.photos/seed/HOME-004c/500/500',
+      'https://plus.unsplash.com/premium_photo-1664391825760-17aacf4cb3b4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8U3RhaW5sZXNzJTIwU3RlZWwlMjBDb29rd2FyZSUyMFNldHxlbnwwfHwwfHx8MA%3D%3D',
+      'https://images.unsplash.com/photo-1760537440650-37ccbfe91d2c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fFN0YWlubGVzcyUyMFN0ZWVsJTIwQ29va3dhcmUlMjBTZXR8ZW58MHx8MHx8fDA%3D',
+      'https://images.unsplash.com/photo-1596411912876-0714b94a68bd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fFN0YWlubGVzcyUyMFN0ZWVsJTIwQ29va3dhcmUlMjBTZXR8ZW58MHx8MHx8fDA%3D',
     ],
     tags: ['Kitchen', 'Featured'],
     stockLevel: 20,
@@ -736,10 +781,10 @@ const productData: any[] = [
   },
   {
     sku: 'HOME-005',
-    name: 'Wall Art Print',
-    description: 'Abstract art print to enhance your living space.',
+    name: 'הדפס אומנות קיר',
+    description: 'הדפס אומנות אבסטרקטית לשיפור המרחב המחיה שלך.',
     price: 75.0,
-    imageUrls: ['https://picsum.photos/seed/HOME-005a/500/500'],
+    imageUrls: ['https://plus.unsplash.com/premium_photo-1723759219493-6287376860f0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8V2FsbCUyMEFydCUyMFByaW50fGVufDB8fDB8fHww'],
     tags: ['Home Decor'],
     stockLevel: 35,
     isActive: true,
@@ -750,10 +795,10 @@ const productData: any[] = [
   // Books (Store 1)
   {
     sku: 'BOOK-001',
-    name: 'The Midnight Library',
-    description: 'A captivating novel about choices and regrets.',
+    name: 'ספריית חצות',
+    description: 'רומן מרתק על בחירות וחרטות.',
     price: 15.99,
-    imageUrls: ['https://picsum.photos/seed/BOOK-001a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1563135629-4850a3517799?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fFRoZSUyME1pZG5pZ2h0JTIwTGlicmFyeXxlbnwwfHwwfHx8MA%3D%3D'],
     tags: ['Featured', 'Fiction', 'Best Seller'],
     stockLevel: 30,
     isActive: true,
@@ -763,10 +808,12 @@ const productData: any[] = [
   },
   {
     sku: 'BOOK-002',
-    name: 'Astrophysics for People in a Hurry',
+    name: 'Babies book',
     description: 'A concise and accessible guide to the cosmos.',
+    name: 'ספר תינוקות',
+    description: 'מדריך תמציתי ונגיש לקוסמוס.',
     price: 12.99,
-    imageUrls: ['https://picsum.photos/seed/BOOK-002a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1589123066574-165d71809555?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8QmFiaWVzJTIwYm9va3xlbnwwfHwwfHx8MA%3D%3D'],
     tags: ['Non-Fiction', 'Science'],
     stockLevel: 45,
     isActive: true,
@@ -775,10 +822,10 @@ const productData: any[] = [
   },
   {
     sku: 'BOOK-003',
-    name: 'Cookbook: Simple Recipes',
-    description: 'Easy and delicious recipes for everyday cooking.',
+    name: 'ספר בישול: מתכונים פשוטים',
+    description: 'מתכונים קלים וטעימים לבישול יומיומי.',
     price: 25.0,
-    imageUrls: ['https://picsum.photos/seed/BOOK-003a/500/500'],
+    imageUrls: ['https://images.unsplash.com/photo-1542010589005-d1eacc3918f2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q29va2Jvb2slM0ElMjBTaW1wbGUlMjBSZWNpcGVzfGVufDB8fDB8fHww'],
     tags: ['Cooking', 'Gift Idea'],
     stockLevel: 50,
     isActive: true,
@@ -787,10 +834,10 @@ const productData: any[] = [
   },
   {
     sku: 'BOOK-004',
-    name: "Children's Picture Book",
-    description: 'A beautifully illustrated story for young readers.',
+    name: "ספר תמונות לילדים",
+    description: 'סיפור מאויר יפה לקוראים צעירים.',
     price: 9.99,
-    imageUrls: ['https://picsum.photos/seed/BOOK-004a/500/500'],
+    imageUrls: ['hhttps://images.unsplash.com/photo-1616802099190-5a4485319df6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Q2hpbGRyZW4ncyUyMFBpY3R1cmUlMjBCb29rfGVufDB8fDB8fHww'],
     tags: ['Children', 'Illustrated'],
     stockLevel: 100,
     isActive: true,
@@ -801,8 +848,8 @@ const productData: any[] = [
   // Sports & Outdoors (Store 2)
   {
     sku: 'SPRT-001',
-    name: 'Premium Yoga Mat',
-    description: 'Extra thick, comfortable, and non-slip yoga mat.',
+    name: 'מחצלת יוגה פרימיום',
+    description: 'מחצלת יוגה עבה במיוחד, נוחה ולא מחליקה.',
     price: 34.99,
     imageUrls: [
       'https://picsum.photos/seed/SPRT-001a/500/500',
@@ -817,8 +864,8 @@ const productData: any[] = [
   },
   {
     sku: 'SPRT-002',
-    name: 'Hiking Backpack (40L)',
-    description: 'Durable and spacious backpack for day hikes or travel.',
+    name: 'תיק גב טיולים (40 ליטר)',
+    description: 'תיק גב עמיד ומרווח לטיולים יומיים או נסיעות.',
     price: 79.99,
     imageUrls: [
       'https://picsum.photos/seed/SPRT-002a/500/500',
@@ -833,8 +880,8 @@ const productData: any[] = [
   },
   {
     sku: 'SPRT-003',
-    name: 'Resistance Band Set',
-    description: 'Versatile resistance bands for home workouts.',
+    name: 'סט רצועות התנגדות',
+    description: 'רצועות התנגדות מגוונות לאימונים ביתיים.',
     price: 19.99,
     imageUrls: ['https://picsum.photos/seed/SPRT-003a/500/500'],
     tags: ['Fitness', 'Workout'],
@@ -845,8 +892,8 @@ const productData: any[] = [
   },
   {
     sku: 'SPRT-004',
-    name: 'Insulated Water Bottle',
-    description: 'Keeps drinks cold for 24 hours or hot for 12.',
+    name: 'בקבוק מים מבודד',
+    description: 'שומר על משקאות קרים למשך 24 שעות או חמים למשך 12.',
     price: 24.99,
     imageUrls: [
       'https://picsum.photos/seed/SPRT-004a/500/500',
@@ -862,9 +909,9 @@ const productData: any[] = [
   // Toys & Games (Store 2)
   {
     sku: 'TOY-001',
-    name: 'Wooden Building Blocks Set (100pcs)',
+    name: 'סט קוביות בנייה עץ (100 חלקים)',
     description:
-      'Classic wooden building blocks for creative and educational play.',
+      'קוביות בנייה עץ קלאסיות למשחק יצירתי וחינוכי.',
     price: 45.99,
     imageUrls: ['https://picsum.photos/seed/TOY-001a/500/500'],
     tags: ['Educational', 'Kids'],
@@ -875,8 +922,8 @@ const productData: any[] = [
   },
   {
     sku: 'TOY-002',
-    name: 'Strategy Board Game',
-    description: 'Engaging board game for family game night.',
+    name: 'משחק לוח אסטרטגיה',
+    description: 'משחק לוח מרתק לערב משפחתי.',
     price: 39.99,
     imageUrls: [
       'https://picsum.photos/seed/TOY-002a/500/500',
@@ -890,8 +937,8 @@ const productData: any[] = [
   },
   {
     sku: 'TOY-003',
-    name: 'Plush Teddy Bear',
-    description: 'Soft and cuddly teddy bear companion.',
+    name: 'דובי פלוש',
+    description: 'בן לוויה דובי רך ומחבק.',
     price: 19.99,
     imageUrls: ['https://picsum.photos/seed/TOY-003a/500/500'],
     tags: ['Gift Idea', 'Kids'],
@@ -902,8 +949,8 @@ const productData: any[] = [
   },
   {
     sku: 'TOY-004',
-    name: 'Remote Control Car',
-    description: 'Fast and fun remote control car for indoor/outdoor play.',
+    name: 'מכונית שלט רחוק',
+    description: 'מכונית שלט רחוק מהירה וכיפית למשחק בפנים/חוץ.',
     price: 29.99,
     imageUrls: [
       'https://picsum.photos/seed/TOY-004a/500/500',
@@ -916,15 +963,16 @@ const productData: any[] = [
     categoryIds: [categoryData[6].id],
   },
   ...gjProductData,
+  ...ljProductData,
 ];
 
 // Define which product SKUs are used in the carousel for easier lookup
 const carouselProductSkus = [
-  'ELEC-001',
+  'FP1v2',
   'HOME-001',
   'BOOK-001',
   'APPA-001',
-  'SPRT-001',
+  'BOOK-004',
   ...gjCarouselItemData
     .map((item) =>
       item.linkUrl?.startsWith('product_sku:')
@@ -932,6 +980,13 @@ const carouselProductSkus = [
         : '',
     )
     .filter((sku) => sku), // Extract SKUs from Green Jewelry carousel
+  ...ljCarouselItemData
+    .map((item) =>
+      item.linkUrl?.startsWith('product_sku:')
+        ? item.linkUrl.split(':')[1]
+        : '',
+    )
+    .filter((sku) => sku), // Extract SKUs from Luxury Jewelry carousel
 ];
 
 // Placeholder for carousel data - will be populated after fetching product IDs
@@ -973,6 +1028,10 @@ const baseUserData = [
     ...u,
     roles: u.roles,
   })), // Add Green Jewelry users (profilePictureUrl will be handled in green-jewelry.data.ts)
+  ...ljUserData.map((u) => ({
+    ...u,
+    roles: u.roles,
+  })), // Add Luxury Jewelry users (profilePictureUrl will be handled in luxury-jewelry.data.ts)
 ];
 
 // --- Address Data ---
@@ -1009,6 +1068,7 @@ const addressData = [
     isDefaultBilling: true,
   },
   ...gjAddressData, // Add Green Jewelry addresses
+  ...ljAddressData, // Add Luxury Jewelry addresses
 ];
 
 // --- Order Data (Placeholder - needs product IDs) ---
@@ -1021,21 +1081,81 @@ const wishlistItemData: any[] = []; // Will populate after fetching products
 
 // --- About Content Data ---
 const aboutContentData = [
+  // Awesome Gadgets & Goods
   {
     storeId: storeData[0].id,
-    title: 'About Awesome Gadgets & Goods',
+    title: 'אודותינו',
     content:
-      'We are passionate about bringing you the latest and greatest gadgets and unique home goods.',
-    imageUrl: 'https://picsum.photos/seed/about-awesome/800/400',
+      'Awesome Gadgets & Goods is an online store specializing in smart gadgets and selected products for a more convenient and enjoyable life. The store offers a wide range of advanced technology products, audio accessories, smart home devices, quality kitchen and lifestyle products. All products are carefully selected to combine innovation, design and functionality – for a smart and updated shopping experience.',
+      'גאדג\'טים ומוצרים מעולים היא חנות מקוונת המתמחה בגאדג\'טים חכמים ומוצרים נבחרים לחיים נוחים ומענגים יותר. החנות מציעה מגוון רחב של מוצרי טכנולוגיה מתקדמים, אביזרי אודיו, מכשירי בית חכם, מוצרי מטבח ואורח חיים באיכות גבוהה. כל המוצרים נבחרים בקפידה לשלב חדשנות, עיצוב ופונקציונליות – לחוויית קניות חכמה ומעודכנת.',
+    imageUrl: 'https://images.unsplash.com/photo-1597664607810-e59e0318e775?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXdlc29tZSUyMGdhZGdldHN8ZW58MHx8MHx8fDA%3D',
+  },
+  {
+    storeId: storeData[0].id,
+    title: 'Shipping Policy',
+    content:
+      'We offer fast and reliable shipping on all orders. Standard shipping typically takes 3-5 business days within the country. Express options are available for urgent deliveries. International shipping is provided to select countries with delivery times ranging from 7-14 business days. All shipments are tracked and insured. Free shipping is available on orders over $50.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[0].id,
+    title: 'Return Policy',
+    content:
+      'We want you to be completely satisfied with your purchase. If you are not happy with your item, you can return it within 30 days of delivery for a full refund or exchange. Items must be in their original condition and packaging. Return shipping costs are covered by us for defective items. For all other returns, customers are responsible for return shipping costs.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[0].id,
+    title: 'Privacy Policy',
+    content:
+      'We are committed to protecting your privacy. We collect personal information only for order processing and customer service. Your data is securely stored and never shared with third parties without your consent. We use industry-standard encryption and follow all relevant data protection regulations. You can request to view, update, or delete your personal information at any time.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[0].id,
+    title: 'Terms of Service',
+    content:
+      'By using our website and services, you agree to our terms. All products are sold as-is with warranty coverage as specified by manufacturers. We reserve the right to modify prices and availability without notice. Intellectual property on our site belongs to Awesome Gadgets & Goods. Any misuse of our services may result in account suspension.',
+    imageUrl: undefined,
+  },
+  // Fashion & Fun Zone
+  {
+    storeId: storeData[1].id,
+    title: 'About Us',
+    content:
+      'Fashion & Fun Zone is your ultimate destination for stylish apparel and entertaining products. We curate the latest trends in clothing, accessories, and fun items for all ages. From trendy fashion pieces to toys and sporting goods, our collection combines quality, style, and enjoyment to make every day more fun and fashionable.',
+    imageUrl: 'https://picsum.photos/seed/about-fashion/800/400',
   },
   {
     storeId: storeData[1].id,
-    title: 'About Fashion & Fun Zone',
+    title: 'Shipping Policy',
     content:
-      'Discover the latest fashion trends and fun items for the whole family.',
-    imageUrl: 'https://picsum.photos/seed/about-fashion/800/400',
+      'Fashion & Fun Zone provides reliable shipping services to ensure your orders arrive quickly and safely. Domestic shipping typically takes 2-4 business days, with express options available. We ship internationally to over 50 countries, with delivery times of 5-10 business days. All packages are carefully packaged and tracked. Free shipping applies to orders over $75.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[1].id,
+    title: 'Return Policy',
+    content:
+      'Customer satisfaction is our priority at Fashion & Fun Zone. We offer a hassle-free 30-day return policy on all items. Returns must be in original condition with tags attached. We provide prepaid return labels for easy returns. Exchanges are processed within 5-7 business days. Refunds are issued to the original payment method within 3-5 business days after receipt.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[1].id,
+    title: 'Privacy Policy',
+    content:
+      'Your privacy matters to us. We collect information only necessary for processing orders and improving our services. Personal data is encrypted and stored securely. We comply with all privacy laws and never sell your information. You have the right to access, correct, or delete your data. Contact us for any privacy-related concerns.',
+    imageUrl: undefined,
+  },
+  {
+    storeId: storeData[1].id,
+    title: 'Terms of Service',
+    content:
+      'Welcome to Fashion & Fun Zone. By shopping with us, you agree to these terms. Products are sold with manufacturer warranties. Prices and availability are subject to change. Our intellectual property is protected. Accounts may be terminated for violations of our policies. Disputes are resolved through our customer service team.',
+    imageUrl: undefined,
   },
   gjAboutContentData,
+  ljAboutContentData,
 ];
 
 // --- Testimonial Data ---
@@ -1063,6 +1183,7 @@ const testimonialData = [
     rating: 5,
   },
   ...gjTestimonialData,
+  ...ljTestimonialData,
 ];
 // --- FAQ Data ---
 const faqData = [
@@ -1082,6 +1203,7 @@ const faqData = [
     answer: 'Yes, we ship to select international destinations.',
   },
   ...gjFaqData,
+  ...ljFaqData,
 ];
 
 // --- Review Data (Placeholder - needs product and user IDs) ---
@@ -1122,6 +1244,11 @@ const promoCodeData: Partial<PromoCodeEntity>[] = [
     validTo: pc.validTo ? new Date(pc.validTo) : undefined,
     validFrom: pc.validFrom ? new Date(pc.validFrom) : undefined,
   })), // Add Green Jewelry promo codes
+  ...ljPromoCodeData.map((pc) => ({
+    ...pc,
+    validTo: pc.validTo ? new Date(pc.validTo) : undefined,
+    validFrom: pc.validFrom ? new Date(pc.validFrom) : undefined,
+  })), // Add Luxury Jewelry promo codes
 ];
 
 async function bootstrap() {
@@ -1188,11 +1315,9 @@ async function bootstrap() {
 
     // --- Seed Categories ---
     logger.log('Seeding categories...');
-    const categoryUpsertResult = await categoryRepository.upsert(categoryData, [
-      'id',
-    ]);
+    const categorySaveResult = await categoryRepository.save(categoryData);
     logger.log(
-      `Categories seeded/updated: ${categoryUpsertResult.raw?.length || categoryUpsertResult.generatedMaps?.length || 'N/A (check upsert result)'}`,
+      `Categories seeded: ${categorySaveResult.length}`,
     );
     const categoryCount = await categoryRepository.count();
     logger.log(`Total categories in DB after seeding: ${categoryCount}`);
@@ -1264,32 +1389,32 @@ async function bootstrap() {
     const genericCarouselData = [
       // Store 1: Awesome Gadgets & Goods
       {
-        imageUrl: 'https://picsum.photos/seed/carousel1-store1/1920/400',
+        imageUrl: 'https://plus.unsplash.com/premium_photo-1679513691474-73102089c117?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8V2lyZWxlc3MlMjBIZWFkcGhvbmVzfGVufDB8fDB8fHww',
         altText: 'Promotion: Wireless Headphones',
-        linkUrl: skuToIdMap.get('ELEC-001'),
+        linkUrl: skuToIdMap.get('FP1v2'),
         storeId: storeData[0].id,
       },
       {
-        imageUrl: 'https://picsum.photos/seed/carousel2-store1/1920/400',
+        imageUrl: 'https://plus.unsplash.com/premium_photo-1726848084754-8045e048c62b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjV8fENvZmZlZSUyME11ZyUyMFNldHxlbnwwfHwwfHx8MA%3D%3D',
         altText: 'Promotion: Coffee Mug Set',
         linkUrl: skuToIdMap.get('HOME-001'),
         storeId: storeData[0].id,
       },
       {
-        imageUrl: 'https://picsum.photos/seed/carousel3-store1/1920/400',
+        imageUrl: 'https://images.unsplash.com/photo-1678138458795-793494b64ea7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fEZlYXR1cmVkJTIwQm9vayUzQSUyMFRoZSUyME1pZG5pZ2h0JTIwTGlicmFyeXxlbnwwfHwwfHx8MA%3D%3D',
         altText: 'Featured Book: The Midnight Library',
         linkUrl: skuToIdMap.get('BOOK-001'),
         storeId: storeData[0].id,
       },
       // Store 2: Fashion & Fun Zone
       {
-        imageUrl: 'https://picsum.photos/seed/carousel1-store2/1920/400',
+        imageUrl: 'https://picsum.photos/seed/newcarousel1-store2/1920/400',
         altText: 'Featured: Classic Cotton T-Shirt',
         linkUrl: skuToIdMap.get('APPA-001'),
         storeId: storeData[1].id,
       },
       {
-        imageUrl: 'https://picsum.photos/seed/carousel2-store2/1920/400',
+        imageUrl: 'https://picsum.photos/seed/newcarousel2-store2/1920/400',
         altText: 'Featured: Premium Yoga Mat',
         linkUrl: skuToIdMap.get('SPRT-001'),
         storeId: storeData[1].id,
@@ -1309,7 +1434,20 @@ async function bootstrap() {
       };
     });
 
-    carouselData = [...genericCarouselData, ...greenJewelryCarouselData].filter(
+    const luxuryJewelryCarouselData = ljCarouselItemData.map((item) => {
+      const sku = item.linkUrl?.startsWith('product_sku:')
+        ? item.linkUrl.split(':')[1]
+        : undefined;
+      const productId = sku ? skuToIdMap.get(sku) : undefined;
+      return {
+        imageUrl: item.imageUrl,
+        altText: item.altText,
+        linkUrl: productId, // Use resolved product ID
+        storeId: item.storeId,
+      };
+    });
+
+    carouselData = [...genericCarouselData, ...greenJewelryCarouselData, ...luxuryJewelryCarouselData].filter(
       (item) => !!item.linkUrl && !!item.storeId,
     );
 
@@ -1864,6 +2002,263 @@ async function bootstrap() {
     const finalOrderCountAfterAaUser = await orderRepository.count();
     logger.log(
       `Total orders in DB after A@A.com user orders: ${finalOrderCountAfterAaUser}`,
+    );
+
+    // --- Seed Luxury Jewelry Specific Data ---
+    logger.log(
+      'Seeding Luxury Jewelry specific orders, wishlists, and reviews...',
+    );
+
+    // --- Seed Luxury Jewelry Orders ---
+    const ljUserForOrder1 = findSeededUser(ljUserData[0].id); // Corresponds to LJ_USER_ID_1
+    const ljUserForOrder2 = findSeededUser(ljUserData[1].id); // Corresponds to LJ_USER_ID_2
+
+    let ljAddressForOrder1: AddressEntity | undefined;
+    let ljAddressForOrder2: AddressEntity | undefined;
+    const ljAddressIdForOrder1Raw = ljAddressData.length > 0 ? ljAddressData[0].id : undefined;
+    const ljAddressIdForOrder2Raw = ljAddressData.length > 1 ? ljAddressData[1].id : undefined;
+    if (ljAddressIdForOrder1Raw) {
+      ljAddressForOrder1 = findSeededAddress(ljAddressIdForOrder1Raw);
+    }
+    if (ljAddressIdForOrder2Raw) {
+      ljAddressForOrder2 = findSeededAddress(ljAddressIdForOrder2Raw);
+    }
+
+    const ljProductForOrder1Sku = 'LJ-RNG-001';
+    const ljProductForOrder2Sku = 'LJ-NECK-001';
+    const ljProductForOrder3Sku = 'LJ-BRACE-001';
+
+    const ljDbProductForOrder1 = await productRepository.findOneBy({
+      sku: ljProductForOrder1Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+    const ljDbProductForOrder2 = await productRepository.findOneBy({
+      sku: ljProductForOrder2Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+    const ljDbProductForOrder3 = await productRepository.findOneBy({
+      sku: ljProductForOrder3Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+
+    // Seed Order 1 for Luxury Jewelry
+    if (
+      ljUserForOrder1 &&
+      ljAddressForOrder1 &&
+      ljDbProductForOrder1
+    ) {
+      const ljOrderItems1: Partial<OrderItemEntity>[] = [
+        {
+          product: ljDbProductForOrder1,
+          quantity: 1,
+          pricePerUnit: ljDbProductForOrder1.price,
+          productName: ljDbProductForOrder1.name,
+        },
+      ];
+
+      const ljSubtotal1 = ljOrderItems1.reduce(
+        (sum, item) => sum + (item.pricePerUnit || 0) * (item.quantity || 0),
+        0,
+      );
+      const ljShippingCost1 = 15.0;
+      const ljTaxRate1 = 0.08;
+      const ljTaxAmount1 = parseFloat((ljSubtotal1 * ljTaxRate1).toFixed(2));
+      const ljTotalAmount1 = parseFloat(
+        (ljSubtotal1 + ljShippingCost1 + ljTaxAmount1).toFixed(2),
+      );
+
+      const luxuryJewelryOrder1 = orderRepository.create({
+        id: ljOrderData[0].id,
+        orderReference: `LJ-ORD-${Date.now()}-001`,
+        user: { id: ljUserForOrder1.id },
+        store: { id: LUXURY_JEWELRY_STORE_ID },
+        status: OrderStatus.DELIVERED,
+        paymentStatus: PaymentStatus.PAID,
+        subtotal: ljSubtotal1,
+        shippingCost: ljShippingCost1,
+        taxAmount: ljTaxAmount1,
+        totalAmount: ljTotalAmount1,
+        shippingAddress: { id: ljAddressForOrder1.id },
+        shippingMethod: 'Express Delivery',
+        trackingNumber: 'LJTRK123456789',
+        items: ljOrderItems1.map((item) => orderItemRepository.create(item)),
+        orderDate: new Date(),
+      });
+      await orderRepository.save(luxuryJewelryOrder1);
+      logger.log(
+        `Seeded Luxury Jewelry order 1: ${luxuryJewelryOrder1.orderReference}`,
+      );
+    }
+
+    // Seed Order 2 for Luxury Jewelry
+    if (
+      ljUserForOrder2 &&
+      ljAddressForOrder2 &&
+      ljDbProductForOrder2 &&
+      ljDbProductForOrder3
+    ) {
+      const ljOrderItems2: Partial<OrderItemEntity>[] = [
+        {
+          product: ljDbProductForOrder2,
+          quantity: 2,
+          pricePerUnit: ljDbProductForOrder2.price,
+          productName: ljDbProductForOrder2.name,
+        },
+        {
+          product: ljDbProductForOrder3,
+          quantity: 1,
+          pricePerUnit: ljDbProductForOrder3.price,
+          productName: ljDbProductForOrder3.name,
+        },
+      ];
+
+      const ljSubtotal2 = ljOrderItems2.reduce(
+        (sum, item) => sum + (item.pricePerUnit || 0) * (item.quantity || 0),
+        0,
+      );
+      const ljShippingCost2 = 25.0;
+      const ljTaxRate2 = 0.08;
+      const ljTaxAmount2 = parseFloat((ljSubtotal2 * ljTaxRate2).toFixed(2));
+      const ljTotalAmount2 = parseFloat(
+        (ljSubtotal2 + ljShippingCost2 + ljTaxAmount2).toFixed(2),
+      );
+
+      const luxuryJewelryOrder2 = orderRepository.create({
+        id: ljOrderData[1].id,
+        orderReference: `LJ-ORD-${Date.now()}-002`,
+        user: { id: ljUserForOrder2.id },
+        store: { id: LUXURY_JEWELRY_STORE_ID },
+        status: OrderStatus.PROCESSING,
+        paymentStatus: PaymentStatus.PAID,
+        subtotal: ljSubtotal2,
+        shippingCost: ljShippingCost2,
+        taxAmount: ljTaxAmount2,
+        totalAmount: ljTotalAmount2,
+        shippingAddress: { id: ljAddressForOrder2.id },
+        shippingMethod: 'Standard Delivery',
+        trackingNumber: 'LJTRK987654321',
+        items: ljOrderItems2.map((item) => orderItemRepository.create(item)),
+        orderDate: new Date(),
+      });
+      await orderRepository.save(luxuryJewelryOrder2);
+      logger.log(
+        `Seeded Luxury Jewelry order 2: ${luxuryJewelryOrder2.orderReference}`,
+      );
+    }
+
+    // --- Seed Luxury Jewelry Wishlists ---
+    const ljUserForWishlist1 = findSeededUser(ljUserData[0].id); // Sophia
+    const ljUserForWishlist2 = findSeededUser(ljUserData[1].id); // Alexander
+    const ljProductForWishlist1Sku = 'LJ-EARR-001';
+    const ljProductForWishlist2Sku = 'LJ-WATCH-001';
+
+    const ljDbProductForWishlist1 = await productRepository.findOneBy({
+      sku: ljProductForWishlist1Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+    const ljDbProductForWishlist2 = await productRepository.findOneBy({
+      sku: ljProductForWishlist2Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+
+    if (ljUserForWishlist1 && ljDbProductForWishlist1) {
+      const luxuryJewelryWishlist1 = wishlistRepository.create({
+        id: ljWishlistData[0].id,
+        user: { id: ljUserForWishlist1.id },
+        store: { id: LUXURY_JEWELRY_STORE_ID },
+        items: [
+          wishlistItemRepository.create({ product: ljDbProductForWishlist1 }),
+        ],
+      });
+      await wishlistRepository.save(luxuryJewelryWishlist1);
+      logger.log(
+        `Seeded Luxury Jewelry wishlist 1 for user ${ljUserForWishlist1.id}`,
+      );
+    }
+
+    if (ljUserForWishlist2 && ljDbProductForWishlist2) {
+      const luxuryJewelryWishlist2 = wishlistRepository.create({
+        id: ljWishlistData[1].id,
+        user: { id: ljUserForWishlist2.id },
+        store: { id: LUXURY_JEWELRY_STORE_ID },
+        items: [
+          wishlistItemRepository.create({ product: ljDbProductForWishlist2 }),
+        ],
+      });
+      await wishlistRepository.save(luxuryJewelryWishlist2);
+      logger.log(
+        `Seeded Luxury Jewelry wishlist 2 for user ${ljUserForWishlist2.id}`,
+      );
+    }
+
+    // --- Seed Luxury Jewelry Reviews ---
+    const ljUserForReview1 = findSeededUser(ljUserData[0].id); // Sophia
+    const ljUserForReview2 = findSeededUser(ljUserData[1].id); // Alexander
+    const ljProductForReview1Sku = 'LJ-RNG-002';
+    const ljProductForReview2Sku = 'LJ-NECK-002';
+
+    const ljDbProductForReview1 = await productRepository.findOneBy({
+      sku: ljProductForReview1Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+    const ljDbProductForReview2 = await productRepository.findOneBy({
+      sku: ljProductForReview2Sku,
+      storeId: LUXURY_JEWELRY_STORE_ID,
+    });
+
+    if (ljDbProductForReview1 && ljUserForReview1 && ljUserForReview2) {
+      const luxuryJewelryReviews1 = reviewRepository.create([
+        {
+          id: ljReviewData[0].id,
+          product: ljDbProductForReview1,
+          user: { id: ljUserForReview1.id },
+          store: { id: LUXURY_JEWELRY_STORE_ID },
+          rating: 5,
+          comment: 'Absolutely stunning! The craftsmanship is exceptional.',
+        },
+        {
+          id: ljReviewData[1].id,
+          product: ljDbProductForReview1,
+          user: { id: ljUserForReview2.id },
+          store: { id: LUXURY_JEWELRY_STORE_ID },
+          rating: 4,
+          comment: 'Beautiful piece, worth every penny.',
+        },
+      ]);
+      await reviewRepository.save(luxuryJewelryReviews1);
+      logger.log(
+        `Seeded ${luxuryJewelryReviews1.length} Luxury Jewelry reviews for product ${ljDbProductForReview1.sku}`,
+      );
+    }
+
+    if (ljDbProductForReview2 && ljUserForReview1 && ljUserForReview2) {
+      const luxuryJewelryReviews2 = reviewRepository.create([
+        {
+          id: ljReviewData[2].id,
+          product: ljDbProductForReview2,
+          user: { id: ljUserForReview1.id },
+          store: { id: LUXURY_JEWELRY_STORE_ID },
+          rating: 5,
+          comment: 'Elegant and timeless design. Perfect for special occasions.',
+        },
+      ]);
+      await reviewRepository.save(luxuryJewelryReviews2);
+      logger.log(
+        `Seeded ${luxuryJewelryReviews2.length} Luxury Jewelry reviews for product ${ljDbProductForReview2.sku}`,
+      );
+    }
+
+    const finalOrderCountAfterLuxury = await orderRepository.count();
+    logger.log(
+      `Total orders in DB after Luxury Jewelry seeding: ${finalOrderCountAfterLuxury}`,
+    );
+    const finalWishlistCountAfterLuxury = await wishlistRepository.count();
+    logger.log(
+      `Total wishlists in DB after Luxury Jewelry seeding: ${finalWishlistCountAfterLuxury}`,
+    );
+    const finalReviewCountAfterLuxury = await reviewRepository.count();
+    logger.log(
+      `Total reviews in DB after Luxury Jewelry seeding: ${finalReviewCountAfterLuxury}`,
     );
 
     // --- Seed Promo Codes ---

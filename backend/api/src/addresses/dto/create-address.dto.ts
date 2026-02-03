@@ -30,6 +30,7 @@ export class CreateAddressDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
+  country: string;
   // state: string; // Removed state
   @IsString()
   @IsNotEmpty()

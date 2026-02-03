@@ -1,191 +1,209 @@
-// Using global variables defined in src/styles.scss
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap');
 
-:host {
+.min-h-screen {
+  font-family: 'Heebo', sans-serif;
+  min-height: 100vh;
+  direction: rtl;
+  text-align: right;
+  background-color: #ffffff;
+}
+
+.container-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 3rem;
+  padding-left: 1.5rem;
+  padding-right: 12rem;
+}
+
+.max-w-2xl { max-width: 42rem; }
+
+.text-display {
+  font-size: 3rem;
+  font-weight: 400;
+  color: #111827;
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+.separator {
+  width: 60%;
+  border: 0;
+  border-bottom: 1px solid #d1d5db;  
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.breadcrumb {
   display: flex;
-  justify-content: center;
-  align-items: flex-start; // Align to top
-  padding: var(--spacing-xxl) var(--container-padding-x);
-  min-height: 70vh; // Ensure it takes up significant height
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #4b5563; 
+  padding: 0;
+  list-style: none;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+    &:hover { color: #111827; }
+  }
+
+  .current {
+    color: #111827;
+    font-weight: 500;
+  }
 }
 
-.registration-container {
-  width: 100%;
-  max-width: 500px; // Limit form width
-  padding: var(--spacing-xl);
-  background-color: var(--background-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--box-shadow-md);
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1.5rem;
+}
 
-  h1 {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-    font-size: 1.8rem;
+.input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.custom-input {
+  width: 65%;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e5e5e5; 
+  background-color: #ffffff;
+  color: #262626;
+  border-radius: 1.5rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  text-align: right;
+
+  &::placeholder { 
+    color: #737373; 
+    text-align: right; 
   }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md); // Space between form groups
-
-    .form-group {
-      label {
-        display: block;
-        margin-bottom: var(--spacing-xs);
-        font-weight: var(--font-weight-medium);
-      }
-
-      input[type="text"],
-      input[type="email"],
-      input[type="password"],
-      input[type="tel"] {
-        // Inherits base styles from global styles.scss
-        width: 100%; // Ensure full width within container
-      }
-
-      // Styling for invalid inputs
-      input.is-invalid {
-        border-color: var(--error-color);
-
-        &:focus {
-          box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25); // Red focus ring
-        }
-      }
-
-      .invalid-feedback {
-        color: var(--error-color);
-        font-size: 0.85rem;
-        margin-top: var(--spacing-xs);
-      }
-
-      // Password requirements list styling (nested within form-group)
-      .password-requirements {
-        font-size: 0.8rem;
-        color: var(--text-color-light);
-        list-style: disc;
-        padding-left: 1.5rem; // Indent list items
-        margin-top: var(--spacing-xs);
-        margin-bottom: 0; // Reset default margin
-      }
-
-      // Placeholder styling for strength meter (nested within form-group)
-      .password-strength-meter {
-        font-size: 0.8rem;
-        color: var(--text-color-light);
-        margin-top: var(--spacing-xs);
-        // Add more specific styles when implemented
-      }
-    }
-
-    // End of .form-group
-
-    // Styling for checkbox groups (direct child of form)
-    .form-check {
-      display: flex;
-      align-items: center;
-      margin-bottom: var(--spacing-sm); // Smaller margin for checkboxes
-
-      .form-check-input {
-        margin-right: var(--spacing-sm);
-        cursor: pointer;
-        // Use browser default or apply custom styles if needed
-
-        &.is-invalid {
-          // Add specific invalid style if needed, e.g., outline
-          outline: 1px solid var(--error-color);
-        }
-      }
-
-      .form-check-label {
-        margin-bottom: 0; // Align label vertically
-        font-weight: normal; // Normal weight for checkbox labels
-        cursor: pointer;
-        user-select: none;
-
-        a {
-          // Style link within label (e.g., Terms)
-          color: var(--primary-color);
-          text-decoration: none;
-
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
-
-      // Need to target the invalid-feedback *after* the form-check div
-      // This assumes the invalid-feedback div is placed immediately after the form-check div in the HTML
-      +.invalid-feedback {
-        color: var(--error-color);
-        font-size: 0.85rem;
-        margin-top: var(--spacing-xs);
-        display: block; // Ensure it shows
-      }
-    }
-
-    // End of .form-check
-
-    .alert {
-      padding: var(--spacing-md);
-      margin-bottom: var(--spacing-md);
-      border: 1px solid transparent;
-      border-radius: var(--border-radius-md);
-      text-align: center;
-
-      &.alert-success {
-        color: #0f5132;
-        background-color: #d1e7dd;
-        border-color: #badbcc;
-      }
-
-      &.alert-danger {
-        color: #842029;
-        background-color: #f8d7da;
-        border-color: #f5c2c7;
-      }
-    }
-
-    // End of .alert
-
-    .submit-btn {
-      // Inherits base button styles
-      margin-top: var(--spacing-md);
-      padding: var(--spacing-md) var(--spacing-lg);
-      font-size: 1.1rem;
-      background-color: #1ec423;
-      border-color: #1ec423;
-
-      &:disabled {
-        background-color: var(--neutral-medium);
-        border-color: var(--neutral-medium);
-        cursor: not-allowed;
-      }
-    }
-
-    // End of .submit-btn
-
+  &.focus {
+    outline: none;
+    border-color:#262626;
+    box-shadow: 0 0 0 1px #111827;
   }
 
-  // End of form
+  &.is-invalid {
+    border-color: #ef4444;
+  }
+}
 
-  .login-link {
-    text-align: center;
-    margin-top: var(--spacing-lg);
+// צ'קבוקסים מעוצבים
+.checkbox-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-right: 2rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #374151;
+  user-select: none;
+
+  input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+
+  .checkmark {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 1.25rem;
+    width: 1.25rem;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+  }
+
+  &:hover input ~ .checkmark { background-color: #f3f4f6; }
+  input:checked ~ .checkmark { background-color: #000; border-color: #000; }
+  .checkmark:after {
+    content: ""; position: absolute; display: none;
+    left: 7px; top: 3px; width: 5px; height: 10px;
+    border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  input:checked ~ .checkmark:after { display: block; }
+}
+
+.submit-button {
+  background-color: #000;
+  color: #fff;
+  padding: 0.85rem 3rem;
+  border-radius: 9999px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+  &:hover:not(:disabled) { background-color: #111827; }
+  &:disabled { background-color: #4b5563; cursor: not-allowed; }
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.login-link-container {
+  font-size: 0.875rem;
+  color: #4b5563;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.link-bold { color: #111827; font-weight: 600; text-decoration: none; &:hover { text-decoration: underline; } }
+
+.invalid-feedback {
+  position: absolute;
+   bottom: -1.3rem;
+    right: 0.25rem; 
+    color: #ef4444; 
+    font-size: 0.75rem;
+  &.static { position: static; margin-top: 0.25rem; }
+}
+
+.alert {
+  padding: 1rem; 
+  border-radius: 0.75rem;
+   text-align: center;
     font-size: 0.9rem;
-    color: var(--text-color-light);
-
-    a {
-      font-weight: var(--font-weight-medium);
-      color: var(--primary-color);
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  // End of .login-link
-
+  &.alert-success { background: #d1e7dd; color: #0f5132; }
+  &.alert-danger { background: #f8d7da; color: #842029; }
+}
+.form-group-checkbox {
+  position: relative; /* מאפשר לשגיאה לצוף מתחת */
+  margin-bottom: 1.5rem; /* יוצר רווח קבוע מראש לשגיאה כדי שלא תזיז את הכפתור */
 }
 
-// End of .registration-container
+.checkbox-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.invalid-feedback {
+  position: absolute;
+  bottom: -1.2rem; /* גובה קבוע מתחת לאלמנט */
+  right: 0.25rem;
+  color: #ef4444;
+  font-size: 0.8rem;
+  white-space: nowrap; /* מונע מהשגיאה לקפוץ שורה */
+}
+@media (max-width: 768px) {
+  .row-grid { grid-template-columns: 1fr; }
+  .form-actions { flex-direction: column; align-items: flex-start; gap: 1rem; }
+}

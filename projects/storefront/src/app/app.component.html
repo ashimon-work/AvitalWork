@@ -1,12 +1,14 @@
-<app-header></app-header>
+<div [dir]="i18nService.currentLang$() === 'he' ? 'rtl' : 'ltr'">
+  <app-header></app-header>
 
-<main style="overflow-x: hidden;">
-  <router-outlet></router-outlet>
-  <app-notification-toast></app-notification-toast>
-</main>
-<!-- Cart Notification -->
-<div *ngIf="showCartNotification" class="cart-notification">
-  {{ tKeys.SF_CART_NOTIFICATION_ITEM_ADDED | translate }}
+  <main style="overflow-x: hidden;">
+    <router-outlet></router-outlet>
+    <app-notification-toast></app-notification-toast>
+  </main>
+  <!-- Cart Notification -->
+  <div *ngIf="showCartNotification" class="cart-notification">
+    {{ tKeys['SF_CART_NOTIFICATION_ITEM_ADDED'] | translate }}
+  </div>
+
+  <app-footer></app-footer>
 </div>
-
-<app-footer></app-footer>
